@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class IndexController {
 
-    @GetMapping({"/index", "/"})
+    // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
+    @GetMapping({"", "/index"})
     public String index() {
         return "admin/index";
     }
@@ -21,6 +22,14 @@ public class IndexController {
     @GetMapping("/console/workplace")
     public String workplace() {
         return "admin/console/workplace";
+    }
+
+    /**
+     * 权限管理页面
+     */
+    @GetMapping("/system/authorities")
+    public String authorities() {
+        return "admin/system/authorities";
     }
 
 }

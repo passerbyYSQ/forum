@@ -36,12 +36,10 @@ public enum StatusCode {
     TOKEN_IS_EXPIRED(6202, "token已过期，请重新登录"),
     TOKEN_IS_INVALID(6203, "无效token"),
 
-    // 好友相关的
-    FRIEND_REQUEST_FREQUENT(6300, "距离上一次好友申请不足半个小时，请勿频繁申请"),
-    CAN_NOT_ADD_SELF(6301, "不能添加自己为好友"),
-    HAVE_BEEN_FRIEND(6302, "你们已经是好友，请勿重复处理"),
-    FRIEND_REQUEST_NOT_EXIST(6303, "好友申请不存在"), // 传参错误
-    REPEAT_PROCESS(6304, "请勿重复处理")
+    // 权限相关
+    AUTHORITY_NAME_EXIST(6300, "权限名称已存在"),
+    AUTHORITY_NOT_EXIST(6301, "权限不存在"),
+    AUTHORITY_UPDATE_FAILED(6302, "您未做任何更新")
     ;
 
 

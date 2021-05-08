@@ -1,14 +1,11 @@
 package top.ysqorz.forum.po;
 
+import java.time.LocalDateTime;
+import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

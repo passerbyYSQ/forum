@@ -7,10 +7,11 @@
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="parent_id" jdbcType="INTEGER" property="parentId" />
-    <result column="permission" jdbcType="VARCHAR" property="permission" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
     <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="permission" jdbcType="VARCHAR" property="permission" />
+    <result column="type" jdbcType="TINYINT" property="type" />
     <result column="sort_weight" jdbcType="INTEGER" property="sortWeight" />
   </resultMap>
 </mapper>
