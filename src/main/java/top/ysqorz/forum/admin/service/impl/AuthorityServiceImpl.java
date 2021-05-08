@@ -26,10 +26,11 @@ public class AuthorityServiceImpl implements AuthorityService {
     public List<Resource> getAuthorityList(QueryAuthorityCondition conditions) {
         Example example = new Example(Resource.class);
         example.orderBy("sortWeight").desc();
+        conditions.fillDefault(); // 填充默认值
         example.createCriteria()
-                .andLike("name", conditions.getName())
-                .andLike("url", conditions.getUrl())
-                .andLike("permission", conditions.getPermission());
+                .andLike("name", "%" + conditions.getName()  + "%")
+                .andLike("url", "%" + conditions.getUrl() + "%")
+                .andLike("permission", "%" + conditions.getPermission() + "%");
         return resourceMapper.selectByExample(example);
     }
 
@@ -47,7 +48,6 @@ public class AuthorityServiceImpl implements AuthorityService {
         if (ObjectUtils.isEmpty(resource.getParentId())) {
             resource.setParentId(0);
         }
-        resource.setSortWeight(0); // 默认的排序权重
         // 自增长生成的id会被设置进resource中
         resourceMapper.insertUseGeneratedKeys(resource);
         return resource;
@@ -55,6 +55,10 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     @Override
     public int updateAuthorityById(Resource resource) {
+        // parentId为空，说明添加的是根节点
+        if (ObjectUtils.isEmpty(resource.getParentId())) {
+            resource.setParentId(0);
+        }
         return resourceMapper.updateByPrimaryKey(resource); // 全部更新，而不是非空字段更新
     }
 

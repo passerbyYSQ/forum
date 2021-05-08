@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 08/05/2021 00:06:15
+ Date: 09/05/2021 00:36:35
 */
 
 SET NAMES utf8mb4;
@@ -275,30 +275,31 @@ CREATE TABLE `resource`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) UNSIGNED NOT NULL COMMENT '权限名称',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '资源名称',
-  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图标',
-  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '路径',
-  `permission` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '权限表达式',
+  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '图标',
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '路径',
+  `permission` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '权限表达式',
   `type` tinyint(4) NOT NULL COMMENT '类型。0：菜单，1：按钮',
   `sort_weight` int(11) NULL DEFAULT NULL COMMENT '排序权重',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of resource
 -- ----------------------------
-INSERT INTO `resource` VALUES (1, 0, '系统管理', 'layui-icon layui-icon-set', NULL, NULL, 0, 1);
-INSERT INTO `resource` VALUES (2, 1, '用户管理', NULL, 'system/user', NULL, 0, 2);
-INSERT INTO `resource` VALUES (3, 2, '查看用户', NULL, NULL, 'user:view', 1, 3);
-INSERT INTO `resource` VALUES (4, 2, '更新用户', NULL, NULL, 'user:update', 1, 4);
-INSERT INTO `resource` VALUES (5, 1, '角色管理', NULL, 'system/role', NULL, 0, 5);
-INSERT INTO `resource` VALUES (6, 5, '查看角色', NULL, NULL, 'role:view', 1, 6);
-INSERT INTO `resource` VALUES (7, 5, '更新角色', NULL, NULL, 'role:update', 1, 7);
-INSERT INTO `resource` VALUES (8, 1, '权限管理', NULL, 'system/authorities', NULL, 0, 8);
-INSERT INTO `resource` VALUES (9, 8, '查看权限', NULL, NULL, 'authorities:view', 1, 9);
-INSERT INTO `resource` VALUES (10, 8, '更新权限', NULL, NULL, 'authorities:update', 1, 10);
-INSERT INTO `resource` VALUES (11, 1, '登录日志', NULL, 'system/loginRecord', 'loginRecord:view', 0, 11);
-INSERT INTO `resource` VALUES (12, 0, '系统监控', 'layui-icon layui-icon-engine', NULL, NULL, 0, 12);
-INSERT INTO `resource` VALUES (13, 12, 'Druid监控', NULL, 'druid', NULL, 0, 133);
+truncate `resource`;
+INSERT INTO `resource` VALUES (1, 0, '系统管理', 'layui-icon layui-icon-set', '', '', 0, 1);
+INSERT INTO `resource` VALUES (2, 1, '用户管理', '', 'system/user', '', 0, 2);
+INSERT INTO `resource` VALUES (3, 2, '查看用户', '', '', 'user:view', 1, 3);
+INSERT INTO `resource` VALUES (4, 2, '更新用户', '', '', 'user:update', 1, 4);
+INSERT INTO `resource` VALUES (5, 1, '角色管理', '', 'system/role', '', 0, 5);
+INSERT INTO `resource` VALUES (6, 5, '查看角色', '', '', 'role:view', 1, 6);
+INSERT INTO `resource` VALUES (7, 5, '更新角色', '', '', 'role:update', 1, 7);
+INSERT INTO `resource` VALUES (8, 1, '权限管理', '', 'system/authorities', '', 0, 8);
+INSERT INTO `resource` VALUES (9, 8, '查看权限', '', '', 'authorities:view', 1, 9);
+INSERT INTO `resource` VALUES (10, 8, '更新权限', '', '', 'authorities:update', 1, 10);
+INSERT INTO `resource` VALUES (11, 1, '登录日志', '', 'system/loginRecord', 'loginRecord:view', 0, 11);
+INSERT INTO `resource` VALUES (12, 0, '系统监控', 'layui-icon layui-icon-engine', '', '', 0, 12);
+INSERT INTO `resource` VALUES (13, 12, 'Druid监控', '', 'druid', '', 0, 133);
 
 -- ----------------------------
 -- Table structure for role

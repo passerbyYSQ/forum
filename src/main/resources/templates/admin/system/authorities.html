@@ -134,7 +134,10 @@
         var treeTable = layui.treeTable;
         var util = layui.util;
         var xmSelect = layui.xmSelect;
-        var tbDataList = [];
+        var tbDataList = []; // 已形成树形结构
+
+        var dataList = []; // 后端返回的数据，尚未形成树形结构
+        var conditions = {};
 
         // 开发文档：https://gitee.com/whvse/treetable-lay
         // 渲染表格
@@ -173,8 +176,11 @@
             ]],
             reqData: function (data, callback) {
                 // 在这里写ajax请求，通过callback方法回调数据
-                $.get('/admin/system/authorities/tree', function (res) {
-                    if (res.code === 2000) callback(res.data);
+                $.get('/admin/system/authorities/tree', conditions, function (res) {
+                    if (res.code === 2000) {
+                        dataList = res.data;
+                        callback(res.data);
+                    }
                     else callback(res.msg);
                 });
             },
@@ -219,7 +225,10 @@
 
         /* 表格搜索 */
         form.on('submit(authoritiesTbSearch)', function (data) {
-            doTbSearch(data.field, 'id');
+            //doTbSearch(data.field, 'id');
+            conditions = data.field;
+            console.log(conditions);
+            insTb.refresh();
             return false;
         });
 
@@ -319,26 +328,28 @@
         /* 搜索表格数据 */
         function doTbSearch(field, idName) {
             console.log(field);
-            // var ids = [], isClear = true;
-            // for (var i = 0; i < tbDataList.length; i++) {
-            //     var item = tbDataList[i], flag = true;
-            //     for (var f in field) {
-            //         if (!field.hasOwnProperty(f)) continue;
-            //         if (!field[f]) continue;
-            //         isClear = false;
-            //         if (!item[f] || item[f].indexOf(field[f]) === -1) {
-            //             flag = false;
-            //             break;
-            //         }
-            //     }
-            //     if (flag) ids.push(item[idName]);
-            // }
-            // console.log(ids);
-            // if (isClear) {
-            //     insTb.clearFilter();
-            // } else {
-            //     insTb.filterData(ids);
-            // }
+            console.log(dataList);
+            // insTb.filterData([21]);
+            var ids = [], isClear = true;
+            for (var i = 0; i < tbDataList.length; i++) {
+                var item = tbDataList[i], flag = true;
+                for (var f in field) {
+                    if (!field.hasOwnProperty(f)) continue;
+                    if (!field[f]) continue;
+                    isClear = false;
+                    if (!item[f] || item[f].indexOf(field[f]) === -1) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) ids.push(item[idName]);
+            }
+            console.log(ids);
+            if (isClear) {
+                insTb.clearFilter();
+            } else {
+                insTb.filterData(ids);
+            }
         }
 
     });
