@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import top.ysqorz.forum.common.TreeNode;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -19,7 +20,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @EqualsAndHashCode
 @Table(name = "resource")
-public class Resource implements Serializable {
+public class Resource extends TreeNode<Integer> implements Serializable {
 
     /**
      * 由于权限新增和更新都公用一个模型，

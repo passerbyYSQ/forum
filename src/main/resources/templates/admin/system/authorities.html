@@ -136,8 +136,8 @@
         var xmSelect = layui.xmSelect;
         var tbDataList = []; // 已形成树形结构
 
-        var dataList = []; // 后端返回的数据，尚未形成树形结构
-        var conditions = {};
+        //var dataList = []; // 后端返回的数据，尚未形成树形结构
+        var conditions = {}; // 筛选条件
 
         // 开发文档：https://gitee.com/whvse/treetable-lay
         // 渲染表格
@@ -237,9 +237,42 @@
             showEditModel();
         });
 
+        // 在root这棵树去除id及其子孙
+        function removeDescendant(root, id) {
+            var children = root.children;
+            if (children == null) {
+                return false;
+            }
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].id === id) {
+                    children.splice(i, 1); // 删除该元素
+                    return true;
+                }
+                if (removeDescendant(children[i], id)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /* 显示表单弹窗。修改和新增公用 */
         function showEditModel(mData) {
             console.log(mData);
+
+            var json = JSON.stringify(insTb.options.data);
+            var treeData = JSON.parse(json); // 实现深拷贝
+            // 伪头节点
+            var fakeRoot = {
+                id: 0,
+                name: "根节点",
+                children: treeData,
+                parentId: -1
+            };
+
+            if (mData) { // 修改
+                removeDescendant(fakeRoot, mData.id);
+            }
+
             admin.open({
                 type: 1,
                 area: '600px',
@@ -283,8 +316,8 @@
                     var insXmSel = xmSelect.render({
                         el: '#authoritiesEditParentSel',
                         height: '250px',
-                        data: insTb.options.data,
-                        initValue: mData ? [mData.parentId] : [],
+                        data: [fakeRoot],
+                        initValue: mData ? [mData.parentId] : [0],
                         model: {label: {type: 'text'}},
                         prop: {
                             name: 'name',

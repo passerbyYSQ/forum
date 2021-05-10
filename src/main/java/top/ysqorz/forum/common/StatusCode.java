@@ -39,7 +39,8 @@ public enum StatusCode {
     // 权限相关
     AUTHORITY_NAME_EXIST(6300, "权限名称已存在"),
     AUTHORITY_NOT_EXIST(6301, "权限不存在"),
-    AUTHORITY_UPDATE_FAILED(6302, "您未做任何更新")
+    AUTHORITY_UPDATE_FAILED(6302, "您未做任何更新"),
+    AUTHORITY_PID_NOT_VALID(6303, "新的父权限不能为当前权限及子孙权限")
     ;
 
 

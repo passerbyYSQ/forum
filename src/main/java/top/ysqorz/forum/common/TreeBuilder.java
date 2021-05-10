@@ -1,9 +1,6 @@
 package top.ysqorz.forum.common;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @param <T>   T 是节点中id（parentId）的类型
@@ -18,6 +15,10 @@ public class TreeBuilder<T> {
     private Map<T, List<TreeNode<T>>> map = new HashMap<>();
     // 根节点（可能有多个）的parentId的值。根节点的parentId值都指向一个不存在的相同id
     private T rootParentId;
+    // 森林
+    private List<TreeNode<T>> treeData;
+    // 所有的id
+    private Set<T> idSet;
 
     /**
      * @param nodeList      所有节点
@@ -26,19 +27,22 @@ public class TreeBuilder<T> {
     public TreeBuilder(List<? extends TreeNode<T>> nodeList, T rootParentId) {
         this.nodeList = nodeList;
         this.rootParentId = rootParentId;
+
+        this.treeData = buildTree();
     }
 
     /**
      * 构建森林
      * @return  返回多棵树的真实根节点
      */
-    public List<TreeNode<T>> buildTree() {
+    private List<TreeNode<T>> buildTree() {
         // 预处理
         preProcess();
 
         // 如果有多个根节点，为了方便，创建一个伪头节点
         TreeNode<T> fakeRoot = new TreeNode<>(rootParentId);
 
+        idSet = new HashSet<>();
         // 递归建树
         doBuildTreeByDfs(fakeRoot);
 
@@ -48,6 +52,7 @@ public class TreeBuilder<T> {
     private void doBuildTreeByDfs(TreeNode<T> root) {
         List<TreeNode<T>> children = map.get(root.getId());
         root.setChildren(children);
+        idSet.add(root.getId());
         // 当前节点没有孩子节点，说明当前节点是叶子节点，回溯
         if (children == null) {
             return;
@@ -57,6 +62,50 @@ public class TreeBuilder<T> {
 //            child.setParent(root); // 注释掉，否则无法打印测试
             doBuildTreeByDfs(child);
         }
+    }
+
+    // 判断id是否合法
+    public boolean isValidId(T id) {
+        return idSet.contains(id);
+    }
+
+    // id对应的节点是否叶子节点
+    public boolean isLeaf(T id) {
+        return isValidId(id) && !map.containsKey(id);
+    }
+
+    // 判断key是否是root自己或者它的子孙节点
+    public boolean isDescendant(T root, T key) {
+        if (root.equals(key)) {
+            return true;
+        }
+        List<TreeNode<T>> children = map.get(root);
+        if (children == null) {
+            return false;
+        }
+        for (TreeNode<T> child : children) {
+            if (isDescendant(child, key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 判断key是否是root的子孙节点
+    private boolean isDescendant(TreeNode<T> root, T key) {
+        List<TreeNode<T>> children = root.getChildren();
+        if (root.getId().equals(key)) {
+            return true;
+        }
+        if (children == null) {
+            return false;
+        }
+        for (TreeNode<T> child : children) {
+            if (isDescendant(child, key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -78,7 +127,10 @@ public class TreeBuilder<T> {
                 map.put(parentId, children);
             }
         }
+    }
 
+    public List<TreeNode<T>> getTreeData() {
+        return treeData;
     }
 
 }

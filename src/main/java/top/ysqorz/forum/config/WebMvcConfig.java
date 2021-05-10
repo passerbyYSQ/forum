@@ -1,6 +1,7 @@
 package top.ysqorz.forum.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -28,8 +29,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
      *
      * @param registry
      */
-//    @Override
-//    public void addFormatters(FormatterRegistry registry) {
-//        registry.addConverter(new EscapeStringConverter());
-//    }
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new EscapeStringConverter());
+    }
 }

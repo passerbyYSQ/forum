@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.admin.service.AuthorityService;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.vo.QueryAuthorityCondition;
 
@@ -51,6 +52,26 @@ public class AuthorityController {
 
     @PostMapping("/update")
     public ResultModel updateAuthority(@Validated(Resource.Update.class) Resource resource) {
+        // parentId为空，说明为根权限
+        if (ObjectUtils.isEmpty(resource.getParentId())) {
+            resource.setParentId(0);
+        }
+
+        // 查询权限列表
+        List<Resource> resourceList = authorityService.getAuthorityList(null);
+        // 构建一棵树
+        TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0);
+        // 权限id是否合法（是否存在）
+        if (!builder.isValidId(resource.getId()) || !builder.isValidId(resource.getParentId())) {
+            return ResultModel.failed(StatusCode.AUTHORITY_NOT_EXIST);
+        }
+
+        // 判断新的parentId是否是当前id的子孙，如果是，parentId非法
+        boolean flag = builder.isDescendant(resource.getId(), resource.getParentId());
+        if (flag) {
+            return ResultModel.failed(StatusCode.AUTHORITY_PID_NOT_VALID);
+        }
+
         int cnt = authorityService.updateAuthorityById(resource);
         return cnt == 1 ? ResultModel.success() :
                 ResultModel.failed(StatusCode.AUTHORITY_UPDATE_FAILED);

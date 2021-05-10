@@ -25,6 +25,9 @@ public class TreeNode<T> {
 //    private TreeNode<T> parent;
     private List<TreeNode<T>> children;
 
+    public TreeNode() {
+    }
+
     public TreeNode(T id) {
         this.id = id;
     }
