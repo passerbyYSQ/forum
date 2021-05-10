@@ -94,29 +94,29 @@
         <!-- 谨慎【覆盖】，小心重新生成覆盖导致xml中自己写的sql语句全部没有了 -->
 <!--        <table tableName="chat_msg"/>-->
 
-        <table tableName="admin" />
-        <table tableName="admin_role" />
-        <table tableName="blacklist" />
-        <table tableName="collect" />
-        <table tableName="comment_notification" />
-        <table tableName="first_comment" />
-        <table tableName="follow" />
-        <table tableName="follow_notification" />
-        <table tableName="label" />
-        <table tableName="like" />
-        <table tableName="points_record" />
-        <table tableName="points_type" />
-        <table tableName="post" />
-        <table tableName="post_label" />
-        <table tableName="resource" />
-        <table tableName="role" />
-        <table tableName="role_resource" />
-        <table tableName="second_comment" />
-        <table tableName="system_config" />
-        <table tableName="system_notification" />
-        <table tableName="topic" />
+<!--        <table tableName="admin" />-->
+<!--        <table tableName="admin_role" />-->
+<!--        <table tableName="blacklist" />-->
+<!--        <table tableName="collect" />-->
+<!--        <table tableName="comment_notification" />-->
+<!--        <table tableName="first_comment" />-->
+<!--        <table tableName="follow" />-->
+<!--        <table tableName="follow_notification" />-->
+<!--        <table tableName="label" />-->
+<!--        <table tableName="like" />-->
+<!--        <table tableName="points_record" />-->
+<!--        <table tableName="points_type" />-->
+<!--        <table tableName="post" />-->
+<!--        <table tableName="post_label" />-->
+<!--        <table tableName="resource" />-->
+<!--        <table tableName="role" />-->
+<!--        <table tableName="role_resource" />-->
+<!--        <table tableName="second_comment" />-->
+<!--        <table tableName="system_config" />-->
+<!--        <table tableName="system_notification" />-->
+<!--        <table tableName="topic" />-->
 
-<!--        <table tableName="xxx" />-->
+        <table tableName="xxx" />
 
     </context>
 
