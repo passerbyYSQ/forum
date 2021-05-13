@@ -1,5 +1,6 @@
 package top.ysqorz.forum.po;
 
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,4 +29,10 @@ public class Role {
      * 描述
      */
     private String description;
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "create_time")
+    private LocalDateTime createTime;
 }

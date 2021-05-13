@@ -10,6 +10,8 @@
     <result column="admin_id" jdbcType="INTEGER" property="adminId" />
     <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <result column="is_read" jdbcType="TINYINT" property="isRead" />
   </resultMap>
 </mapper>

@@ -27,7 +27,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Override
     public List<Resource> getAuthorityList(QueryAuthorityCondition conditions) {
         Example example = new Example(Resource.class);
-        if (conditions != null) {
+        if (conditions != null) { // 条件筛选
             example.orderBy("sortWeight").desc();
             conditions.fillDefault(); // 填充默认值
             example.createCriteria()

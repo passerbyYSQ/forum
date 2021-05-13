@@ -11,45 +11,11 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 09/05/2021 00:36:35
+ Date: 13/05/2021 15:22:18
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for admin
--- ----------------------------
-DROP TABLE IF EXISTS `admin`;
-CREATE TABLE `admin`  (
-  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理员id',
-  `user_id` int(11) UNSIGNED NOT NULL COMMENT '用户id（外键）',
-  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `user_id`(`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of admin
--- ----------------------------
-
--- ----------------------------
--- Table structure for admin_role
--- ----------------------------
-DROP TABLE IF EXISTS `admin_role`;
-CREATE TABLE `admin_role`  (
-  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `admin_id` int(11) UNSIGNED NOT NULL COMMENT '管理员id',
-  `role_id` int(11) NOT NULL COMMENT '角色id',
-  `create_time` datetime(0) NOT NULL COMMENT '分配角色的时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `admin_id`(`admin_id`) USING BTREE,
-  INDEX `role_id`(`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of admin_role
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for blacklist
@@ -61,7 +27,9 @@ CREATE TABLE `blacklist`  (
   `admin_id` int(11) UNSIGNED NOT NULL COMMENT '操作人',
   `start_time` datetime(0) NOT NULL COMMENT '起始时间',
   `end_time` datetime(0) NOT NULL COMMENT '结束时间',
+  `create_time` datetime(0) NOT NULL COMMENT '操作时间',
   `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '封禁原因',
+  `is_read` tinyint(4) NOT NULL COMMENT '是否已被用户阅读',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '黑名单（小黑屋）' ROW_FORMAT = Dynamic;
 
@@ -273,7 +241,7 @@ CREATE TABLE `post_label`  (
 DROP TABLE IF EXISTS `resource`;
 CREATE TABLE `resource`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `parent_id` int(11) UNSIGNED NOT NULL COMMENT '权限名称',
+  `parent_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '权限名称',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '资源名称',
   `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '图标',
   `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '路径',
@@ -309,6 +277,7 @@ CREATE TABLE `role`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '角色id',
   `role_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色名',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
+  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色' ROW_FORMAT = Dynamic;
 
@@ -426,6 +395,24 @@ CREATE TABLE `user`  (
 
 -- ----------------------------
 -- Records of user
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for user_role
+-- ----------------------------
+DROP TABLE IF EXISTS `user_role`;
+CREATE TABLE `user_role`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) UNSIGNED NOT NULL COMMENT '管理员id',
+  `role_id` int(11) NOT NULL COMMENT '角色id',
+  `create_time` datetime(0) NOT NULL COMMENT '分配角色的时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `admin_id`(`user_id`) USING BTREE,
+  INDEX `role_id`(`role_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of user_role
 -- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;

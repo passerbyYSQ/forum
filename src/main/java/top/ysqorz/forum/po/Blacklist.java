@@ -41,7 +41,19 @@ public class Blacklist {
     private LocalDateTime endTime;
 
     /**
+     * 操作时间
+     */
+    @Column(name = "create_time")
+    private LocalDateTime createTime;
+
+    /**
      * 封禁原因
      */
     private String reason;
+
+    /**
+     * 是否已被用户阅读
+     */
+    @Column(name = "is_read")
+    private Byte isRead;
 }

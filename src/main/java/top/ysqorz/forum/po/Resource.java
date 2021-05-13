@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Accessors(chain = true)
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Table(name = "resource")
 public class Resource extends TreeNode<Integer> implements Serializable {
 

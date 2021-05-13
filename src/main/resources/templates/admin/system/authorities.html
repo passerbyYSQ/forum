@@ -23,21 +23,9 @@
             <form class="layui-form toolbar">
                 <div class="layui-form-item">
                     <div class="layui-inline">
-                        <label class="layui-form-label">权限名称:</label>
+                        <label class="layui-form-label">关键词:</label>
                         <div class="layui-input-inline">
-                            <input name="name" class="layui-input" placeholder="输入权限名称"/>
-                        </div>
-                    </div>
-                    <div class="layui-inline">
-                        <label class="layui-form-label">菜单url:</label>
-                        <div class="layui-input-inline">
-                            <input name="url" class="layui-input" placeholder="输入路由地址"/>
-                        </div>
-                    </div>
-                    <div class="layui-inline">
-                        <label class="layui-form-label">权限标识:</label>
-                        <div class="layui-input-inline">
-                            <input name="permission" class="layui-input" placeholder="输入权限标识"/>
+                            <input name="keyword" class="layui-input" placeholder="支持任意列的关键字"/>
                         </div>
                     </div>
                     <div class="layui-inline">&emsp;
@@ -137,7 +125,7 @@
         var tbDataList = []; // 已形成树形结构
 
         //var dataList = []; // 后端返回的数据，尚未形成树形结构
-        var conditions = {}; // 筛选条件
+        // var conditions = {}; // 筛选条件
 
         // 开发文档：https://gitee.com/whvse/treetable-lay
         // 渲染表格
@@ -176,9 +164,10 @@
             ]],
             reqData: function (data, callback) {
                 // 在这里写ajax请求，通过callback方法回调数据
-                $.get('/admin/system/authorities/tree', conditions, function (res) {
+                $.get('/admin/system/authorities/tree', {}, function (res) {
                     if (res.code === 2000) {
                         dataList = res.data;
+                        console.log(res.data);
                         callback(res.data);
                     }
                     else callback(res.msg);
@@ -186,7 +175,7 @@
             },
             done: function (data) { // 表格渲染完回调
                 // 我们的响应数据被组件处理成树形数据（此处的data）
-                console.log(data);
+                // console.log(data);
                 // 表格渲染后，展开全部全部节点
                 insTb.expandAll();
                 tbDataList = data;
@@ -225,11 +214,14 @@
 
         /* 表格搜索 */
         form.on('submit(authoritiesTbSearch)', function (data) {
-            //doTbSearch(data.field, 'id');
-            conditions = data.field;
-            console.log(conditions);
-            insTb.refresh();
-            return false;
+            console.log(data.field);
+            var keyword = data.field.keyword;
+            if (keyword) {
+                insTb.filterData(keyword);
+            } else {
+                insTb.clearFilter();
+            }
+            return false; // 不提交表单
         });
 
         /* 添加 */
@@ -356,33 +348,6 @@
                     }
                 }, 'json');
             });
-        }
-
-        /* 搜索表格数据 */
-        function doTbSearch(field, idName) {
-            console.log(field);
-            console.log(dataList);
-            // insTb.filterData([21]);
-            var ids = [], isClear = true;
-            for (var i = 0; i < tbDataList.length; i++) {
-                var item = tbDataList[i], flag = true;
-                for (var f in field) {
-                    if (!field.hasOwnProperty(f)) continue;
-                    if (!field[f]) continue;
-                    isClear = false;
-                    if (!item[f] || item[f].indexOf(field[f]) === -1) {
-                        flag = false;
-                        break;
-                    }
-                }
-                if (flag) ids.push(item[idName]);
-            }
-            console.log(ids);
-            if (isClear) {
-                insTb.clearFilter();
-            } else {
-                insTb.filterData(ids);
-            }
         }
 
     });
