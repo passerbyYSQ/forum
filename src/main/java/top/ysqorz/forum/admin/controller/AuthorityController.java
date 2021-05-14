@@ -52,6 +52,8 @@ public class AuthorityController {
 
     @PostMapping("/update")
     public ResultModel updateAuthority(@Validated(Resource.Update.class) Resource resource) {
+        // TODO 检查id合法性
+
         // parentId为空，说明为根权限
         if (ObjectUtils.isEmpty(resource.getParentId())) {
             resource.setParentId(0);

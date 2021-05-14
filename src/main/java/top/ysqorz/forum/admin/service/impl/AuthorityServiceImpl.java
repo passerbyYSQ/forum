@@ -27,13 +27,9 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Override
     public List<Resource> getAuthorityList(QueryAuthorityCondition conditions) {
         Example example = new Example(Resource.class);
+        example.orderBy("sortWeight").desc();
         if (conditions != null) { // 条件筛选
-            example.orderBy("sortWeight").desc();
-            conditions.fillDefault(); // 填充默认值
-            example.createCriteria()
-                    .andLike("name", "%" + conditions.getName()  + "%")
-                    .andLike("url", "%" + conditions.getUrl() + "%")
-                    .andLike("permission", "%" + conditions.getPermission() + "%");
+            conditions.joinConditions(example); // 拼接条件
         }
         return resourceMapper.selectByExample(example);
     }

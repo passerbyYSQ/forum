@@ -1,10 +1,14 @@
 package top.ysqorz.forum.po;
 
-import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 
 @Getter
 @Setter
@@ -26,4 +30,12 @@ public class RoleResource {
      */
     @Column(name = "resource_id")
     private Integer resourceId;
+
+    public RoleResource() {
+    }
+
+    public RoleResource(Integer roleId, Integer resourceId) {
+        this.roleId = roleId;
+        this.resourceId = resourceId;
+    }
 }

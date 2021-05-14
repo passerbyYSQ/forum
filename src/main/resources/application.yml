@@ -94,6 +94,8 @@ mybatis:
 pagehelper:
   helper-dialect: mysql
   #  params: =count=countSql
+  # 分页参数的合理化，默认值为false。
+  # 当此参数设置为时true， pageNum <= 0将查询第一页 PageNum> pages（超过总数），将查询最后一页
   reasonable: true
   support-methods-arguments: true
 

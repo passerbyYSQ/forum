@@ -32,4 +32,13 @@ public class IndexController {
         return "admin/system/authorities";
     }
 
+    /**
+     * 角色管理页面
+     */
+    @GetMapping("/system/role")
+    public String role() {
+        return "admin/system/role";
+    }
+
+
 }

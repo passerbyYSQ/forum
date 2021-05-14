@@ -3,6 +3,7 @@ package top.ysqorz.forum.vo;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.ObjectUtils;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * @author passerbyYSQ
@@ -15,15 +16,17 @@ public class QueryAuthorityCondition {
     private String url; // url关键字
     private String permission; // 权限标识关键字
 
-    public void fillDefault() {
-        if (ObjectUtils.isEmpty(name)) { // null
-            name = "";
+    // 拼接条件
+    public void joinConditions(Example example) {
+        Example.Criteria criteria = example.createCriteria();
+        if (!ObjectUtils.isEmpty(name)) {
+            criteria.andLike("name", "%" + name  + "%");
         }
-        if (ObjectUtils.isEmpty(url)) {
-            url = "";
+        if (!ObjectUtils.isEmpty(url)) {
+            criteria.andLike("url", "%" + url  + "%");
         }
-        if (ObjectUtils.isEmpty(permission)) {
-            permission = "";
+        if (!ObjectUtils.isEmpty(permission)) {
+            criteria.andLike("permission", "%" + permission  + "%");
         }
     }
 
