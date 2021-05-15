@@ -1,5 +1,6 @@
 package top.ysqorz.forum.admin.service;
 
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
 
@@ -11,6 +12,16 @@ import java.util.Set;
  * @create 2021-05-13 23:54
  */
 public interface RoleService {
+
+    /**
+     * 根据id删除角色
+     */
+    void delRoleWithPerms(Integer[] roleIds) throws ParameterErrorException;
+
+    /**
+     * 根据id更新角色
+     */
+    int updateRoleById(Role role);
 
     /**
      * 添加角色（没有任何权限）

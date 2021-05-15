@@ -103,8 +103,8 @@
                 };
             },
             page: true, // 开启分页
-            limit: 2, // 每一页显示的记录数
-            limits: [1, 2, 10, 20, 30, 60, 100],
+            limit: 3, // 每一页显示的记录数
+            limits: [1, 2, 3, 10, 20, 30],
             toolbar: ['<p>',
                 '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
                 '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
@@ -153,7 +153,7 @@
                     return;
                 }
                 var ids = checkRows.data.map(function (d) {
-                    return d.roleId;
+                    return d.id; // 角色id
                 });
                 doDel({ids: ids});
             }
@@ -161,6 +161,7 @@
 
         /* 显示表单弹窗 */
         function showEditModel(mData) {
+            console.log(mData);
             admin.open({
                 type: 1,
                 title: (mData ? '修改' : '添加') + '角色',
@@ -172,6 +173,9 @@
                     form.on('submit(roleEditSubmit)', function (data) {
                         var loadIndex = layer.load(2);
                         var url = '/admin/system/role/' + (mData ? 'update' : 'add');
+                        if (mData) {
+                            data.field.id = mData.id;
+                        }
                         $.post(url, data.field, function (res) {
                             layer.close(loadIndex);
                             if (2000 === res.code) {
@@ -190,18 +194,18 @@
 
         /* 删除 */
         function doDel(obj) {
+            console.log(obj);
             layer.confirm('确定要删除选中数据吗？', {
                 skin: 'layui-layer-admin',
                 shade: .1
             }, function (i) {
                 layer.close(i);
                 var loadIndex = layer.load(2);
-                $.get('../../json/ok.json', {
-                    id: obj.data ? obj.data.roleId : '',
-                    ids: obj.ids ? obj.ids.join(',') : ''
+                $.post('/admin/system/role/del', {
+                    roleIds : obj.data ? [obj.data.id] : obj.ids
                 }, function (res) {
                     layer.close(loadIndex);
-                    if (200 === res.code) {
+                    if (2000 === res.code) {
                         layer.msg(res.msg, {icon: 1});
                         insTb.reload({page: {curr: 1}});
                     } else {

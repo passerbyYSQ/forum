@@ -9,10 +9,7 @@ import top.ysqorz.forum.common.TreeNode;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 
 @Getter
@@ -46,7 +43,8 @@ public class Resource extends TreeNode<Integer> implements Serializable {
      * 资源名称
      */
 //    @JsonProperty("authorityName")
-    @NotBlank
+    @NotEmpty
+    @Size(min = 2, max = 32)
     private String name;
 
     /**

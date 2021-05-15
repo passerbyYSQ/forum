@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 
@@ -68,6 +69,14 @@ public class GlobalExceptionHandler {
         List<FieldError> errors = e.getBindingResult().getFieldErrors();
         ResultModel<Object> res = ResultModel.failed(StatusCode.PARAM_IS_INVALID.getCode(),
                 joinErrorMsg(errors));
+        return wrapModelAndView(res, request);
+    }
+
+    // 参数错误
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({ParameterErrorException.class})
+    public ModelAndView handleOtherException(ParameterErrorException e, HttpServletRequest request) {
+        ResultModel<Object> res = ResultModel.failed(StatusCode.PARAM_IS_INVALID.getCode(), e.getMessage());
         return wrapModelAndView(res, request);
     }
 

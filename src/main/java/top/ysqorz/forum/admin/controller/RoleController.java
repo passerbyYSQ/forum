@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.admin.service.AuthorityService;
 import top.ysqorz.forum.admin.service.RoleService;
 import top.ysqorz.forum.common.PageData;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.po.Resource;
@@ -16,6 +17,7 @@ import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
 import top.ysqorz.forum.vo.PermZTreeNode;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
@@ -39,11 +41,28 @@ public class RoleController {
     @Autowired
     private AuthorityService authorityService;
 
+    @PostMapping("/del")
+    public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds)
+            throws ParameterErrorException {
+        roleService.delRoleWithPerms(roleIds);
+        return ResultModel.success();
+    }
+
+    /**
+     * 修改角色
+     */
+    @PostMapping("/update")
+    public ResultModel updateRole(@Validated(Role.Update.class) Role role) {
+        int cnt = roleService.updateRoleById(role);
+        return cnt == 1 ? ResultModel.success() :
+                ResultModel.failed(StatusCode.ROLE_NOT_EXIST); // 修改失败，可能是角色不存在
+    }
+
     /**
      * 添加角色（没有任何权限）
      */
     @PostMapping("/add")
-    public ResultModel<Role> addRole(@Validated Role role) {
+    public ResultModel<Role> addRole(@Validated(Role.Add.class) Role role) {
         return ResultModel.success(roleService.addRole(role));
     }
 
