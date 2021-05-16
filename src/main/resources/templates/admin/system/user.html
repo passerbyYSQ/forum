@@ -202,19 +202,19 @@
         form.on('submit(userTbSearch)', function (data) {
            // console.log(data);
             console.log(data.field);
-            var loadIndex = layer.load(2);
-
-            var url = '/admin/system/user/table';
-            $.get(url, data.field, function (res) {
-                layer.close(loadIndex);
-                if (res.code === 2000) {
-                    //layer.close(dIndex);
-                    layer.msg(res.msg, {icon: 1});
-                    // insTb.refresh();
-                } else {
-                    layer.msg(res.msg, {icon: 2});
-                }
-            }, 'json');
+            // var loadIndex = layer.load(2);
+            //
+            // var url = '/admin/system/user/table';
+            // $.get(url, data.field, function (res) {
+            //     layer.close(loadIndex);
+            //     if (res.code === 2000) {
+            //         //layer.close(dIndex);
+            //         layer.msg(res.msg, {icon: 1});
+            //         // insTb.refresh();
+            //     } else {
+            //         layer.msg(res.msg, {icon: 2});
+            //     }
+            // }, 'json');
             insTb.reload({where: data.field, page: {curr: 1}});
             return false;
 
