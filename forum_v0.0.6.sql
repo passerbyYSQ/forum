@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 本地MySQL-5.7
+ Source Server         : acan
  Source Server Type    : MySQL
- Source Server Version : 50726
+ Source Server Version : 50732
  Source Host           : localhost:3306
  Source Schema         : forum
 
  Target Server Type    : MySQL
- Target Server Version : 50726
+ Target Server Version : 50732
  File Encoding         : 65001
 
- Date: 13/05/2021 15:22:18
+ Date: 16/05/2021 12:21:40
 */
 
 SET NAMES utf8mb4;
@@ -31,11 +31,15 @@ CREATE TABLE `blacklist`  (
   `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '封禁原因',
   `is_read` tinyint(4) NOT NULL COMMENT '是否已被用户阅读',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '黑名单（小黑屋）' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '黑名单（小黑屋）' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of blacklist
 -- ----------------------------
+INSERT INTO `blacklist` VALUES (8, 4, 1, '2021-05-28 00:00:00', '2021-05-28 00:00:00', '2021-05-15 20:58:13', '123123', 0);
+INSERT INTO `blacklist` VALUES (9, 6, 1, '2021-05-16 00:00:00', '2021-05-16 00:00:00', '2021-05-15 20:59:44', '阿八八八', 0);
+INSERT INTO `blacklist` VALUES (10, 5, 1, '2021-05-20 00:00:00', '2021-06-22 00:00:00', '2021-05-15 21:00:49', '才说的', 0);
+INSERT INTO `blacklist` VALUES (13, 9, 1, '2021-05-25 00:00:00', '2021-06-17 00:00:00', '2021-05-15 21:05:01', '12312', 0);
 
 -- ----------------------------
 -- Table structure for collect
@@ -249,25 +253,23 @@ CREATE TABLE `resource`  (
   `type` tinyint(4) NOT NULL COMMENT '类型。0：菜单，1：按钮',
   `sort_weight` int(11) NULL DEFAULT NULL COMMENT '排序权重',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of resource
 -- ----------------------------
-truncate `resource`;
 INSERT INTO `resource` VALUES (1, 0, '系统管理', 'layui-icon layui-icon-set', '', '', 0, 1);
 INSERT INTO `resource` VALUES (2, 1, '用户管理', '', 'system/user', '', 0, 2);
-INSERT INTO `resource` VALUES (3, 2, '查看用户', '', '', 'user:view', 1, 3);
-INSERT INTO `resource` VALUES (4, 2, '更新用户', '', '', 'user:update', 1, 4);
 INSERT INTO `resource` VALUES (5, 1, '角色管理', '', 'system/role', '', 0, 5);
 INSERT INTO `resource` VALUES (6, 5, '查看角色', '', '', 'role:view', 1, 6);
 INSERT INTO `resource` VALUES (7, 5, '更新角色', '', '', 'role:update', 1, 7);
 INSERT INTO `resource` VALUES (8, 1, '权限管理', '', 'system/authorities', '', 0, 8);
-INSERT INTO `resource` VALUES (9, 8, '查看权限', '', '', 'authorities:view', 1, 9);
 INSERT INTO `resource` VALUES (10, 8, '更新权限', '', '', 'authorities:update', 1, 10);
 INSERT INTO `resource` VALUES (11, 1, '登录日志', '', 'system/loginRecord', 'loginRecord:view', 0, 11);
-INSERT INTO `resource` VALUES (12, 0, '系统监控', 'layui-icon layui-icon-engine', '', '', 0, 12);
+INSERT INTO `resource` VALUES (12, 8, '系统监控', 'layui-icon layui-icon-engine', '', '', 0, 12);
 INSERT INTO `resource` VALUES (13, 12, 'Druid监控', '', 'druid', '', 0, 133);
+INSERT INTO `resource` VALUES (14, 11, 'ddddddddddddd', 'asdf', '123', '', 0, 5);
+INSERT INTO `resource` VALUES (15, 0, 'avcsdf', 'asdf', '', '', 0, -2);
 
 -- ----------------------------
 -- Table structure for role
@@ -391,11 +393,31 @@ CREATE TABLE `user`  (
   `reward_points` int(11) UNSIGNED NOT NULL COMMENT '积分',
   `fans_count` int(11) UNSIGNED NOT NULL COMMENT '粉丝数',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
+INSERT INTO `user` VALUES (1, '1', '1', '1', '123456', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (2, '2', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (3, '3', '3', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (4, '4', '4', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-22 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (5, '5', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (6, '6', '6', '1', '123456', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-04-22 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (7, '7', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (8, '8', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (9, '9', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-04-29 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (10, '10', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (11, '11', '1', '1', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (12, '12', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (13, '13', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (14, '14', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-10 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (15, '15', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-06-17 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (16, '16', '1', '1', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (17, '17', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (18, '18', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (19, '19', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-04-28 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (20, '20', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
 
 -- ----------------------------
 -- Table structure for user_role

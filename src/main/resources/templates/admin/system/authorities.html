@@ -184,6 +184,8 @@
 
         /* 表格操作列点击事件 */
         treeTable.on('tool(authoritiesTable)', function (obj) {
+            console.log(obj);
+            console.log(obj.data);
             if (obj.event === 'edit') { // 修改
                 showEditModel(obj.data);
             } else if (obj.event === 'del') { // 删除
@@ -274,6 +276,7 @@
                 success: function (layero, dIndex) {
                     // 回显表单数据
                     form.val('authoritiesEditForm', mData);
+                    console.log(mData);
                     // 表单提交事件
                     form.on('submit(authoritiesEditSubmit)', function (data) {
                         console.log(data.field);
@@ -338,7 +341,9 @@
             }, function (i) {
                 layer.close(i);
                 var loadIndex = layer.load(2);
-                $.post('/admin/system/authorities/del', {authorityIds: obj.data ? [obj.data.id] : obj.ids}, function (res) {
+                $.post('/admin/system/authorities/del',
+                    {authorityIds: obj.data ? [obj.data.id] : obj.ids},
+                    function (res) {
                     layer.close(loadIndex);
                     if (res.code === 2000) {
                         layer.msg(res.msg, {icon: 1});

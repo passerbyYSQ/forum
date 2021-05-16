@@ -41,4 +41,13 @@ public class IndexController {
     }
 
 
+    /*
+     * 用户管理界面
+     * @return
+     */
+
+    @GetMapping("/system/user")
+    public String systemuser(){
+        return "admin/system/user";
+    }
 }

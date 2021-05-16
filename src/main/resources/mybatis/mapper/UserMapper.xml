@@ -23,4 +23,24 @@
     <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
     <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
   </resultMap>
+  <select id="selectAllUser" parameterType="top.ysqorz.forum.vo.QueryUserCondition" resultType="top.ysqorz.forum.vo.MyUser">
+    select  u.id,username,email,phone,photo,gender,register_time,last_login_time,start_time
+    from user u
+    left join blacklist b
+    on u.id=b.user_id
+    where 1=1
+    <if test="username!=null and username!=''">
+      and username like concat('%',#{username},'%')
+    </if>
+    <if test="phone!=null and phone!=''">
+      and phone like concat('%',#{phone},'%')
+    </if>
+    <if test='state=="1" and starttime!=null'>
+      and register_time between #{starttime} and #{endtime}
+
+    </if>
+    <if test='state=="2" and starttime!=null'>
+      and last_login_time between #{starttime} and #{endtime}
+    </if>
+  </select>
 </mapper>
