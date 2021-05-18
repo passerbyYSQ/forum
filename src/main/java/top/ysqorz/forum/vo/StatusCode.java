@@ -1,4 +1,4 @@
-package top.ysqorz.forum.common;
+package top.ysqorz.forum.vo;
 
 /**
  * 2000 - 成功处理请求

@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+import top.ysqorz.forum.common.FileUploadException;
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.common.ResultModel;
-import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.vo.ResultModel;
+import top.ysqorz.forum.vo.StatusCode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -74,8 +75,8 @@ public class GlobalExceptionHandler {
 
     // 参数错误
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({ParameterErrorException.class})
-    public ModelAndView handleOtherException(ParameterErrorException e, HttpServletRequest request) {
+    @ExceptionHandler({ParameterErrorException.class, FileUploadException.class})
+    public ModelAndView handleMyrException(Exception e, HttpServletRequest request) { // 注意写基类！！！
         ResultModel<Object> res = ResultModel.failed(StatusCode.PARAM_IS_INVALID.getCode(), e.getMessage());
         return wrapModelAndView(res, request);
     }

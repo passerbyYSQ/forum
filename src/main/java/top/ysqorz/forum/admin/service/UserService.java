@@ -1,11 +1,8 @@
 package top.ysqorz.forum.admin.service;
 
-import top.ysqorz.forum.common.PageData;
 import top.ysqorz.forum.po.Blacklist;
-import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.vo.MyUser;
-import top.ysqorz.forum.vo.QueryAuthorityCondition;
 import top.ysqorz.forum.vo.QueryUserCondition;
 
 import java.util.List;

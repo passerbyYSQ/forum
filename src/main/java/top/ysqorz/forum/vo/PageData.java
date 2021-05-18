@@ -1,4 +1,4 @@
-package top.ysqorz.forum.common;
+package top.ysqorz.forum.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

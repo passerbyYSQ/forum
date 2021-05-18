@@ -1,20 +1,14 @@
 package top.ysqorz.forum.admin.service.impl;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.admin.service.UserService;
-import top.ysqorz.forum.common.PageData;
 import top.ysqorz.forum.dao.BlacklistMapper;
-import top.ysqorz.forum.dao.ResourceMapper;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.po.Blacklist;
-import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.vo.MyUser;
-import top.ysqorz.forum.vo.QueryAuthorityCondition;
 import top.ysqorz.forum.vo.QueryUserCondition;
 
 import java.time.LocalDateTime;
