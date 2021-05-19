@@ -94,7 +94,6 @@
         <!-- 谨慎【覆盖】，小心重新生成覆盖导致xml中自己写的sql语句全部没有了 -->
 <!--        <table tableName="chat_msg"/>-->
 
-<!--        <table tableName="admin_role" />-->
 <!--        <table tableName="blacklist" />-->
 <!--        <table tableName="collect" />-->
 <!--        <table tableName="comment_notification" />-->
@@ -115,9 +114,7 @@
 <!--        <table tableName="system_notification" />-->
 <!--        <table tableName="topic" />-->
 <!--        <table tableName="user" />-->
-        <table tableName="xxx" />
-
-
+        <table tableName="user_role" />
 
     </context>
 
