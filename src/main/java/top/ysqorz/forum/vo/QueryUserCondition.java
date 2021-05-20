@@ -15,34 +15,29 @@ import java.time.LocalDateTime;
 public class QueryUserCondition {
     private String username; // 名字关键字
     private String phone; // 手机号关键字
-    private String Time;
-     private String state="0";
-    private LocalDateTime starttime;
-    private LocalDateTime endtime;
+    private byte state;  //state 1代表查询注册时间 2代表查询上一次登录时间
+    private LocalDateTime startTime;//起始时间
+    private LocalDateTime endTime; //结束时间
+    private LocalDateTime now = LocalDateTime.now(); //当前时间
 
-    public void fillDefault() {
-        if (ObjectUtils.isEmpty(username)) { // null
-            username = "";
-        }
-        if (ObjectUtils.isEmpty(phone)) {
-            phone = "";
-        }
-        if (ObjectUtils.isEmpty(Time)) {
-            Time = "";
-        }
-
-
-    }
+//    public void fillDefault() {
+//        if (ObjectUtils.isEmpty(username)) { // null
+//            username = "";
+//        }
+//        if (ObjectUtils.isEmpty(phone)) {
+//            phone = "";
+//        }
+//
+//    }
 
     @Override
     public String toString() {
         return "QueryUserCondition{" +
                 "username='" + username + '\'' +
                 ", phone='" + phone + '\'' +
-                ", Time='" + Time + '\'' +
-                ", state='" + state + '\'' +
-                ", starttime=" + starttime +
-                ", endtime=" + endtime +
+                ", state=" + state +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 '}';
     }
 }

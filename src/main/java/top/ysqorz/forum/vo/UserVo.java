@@ -1,18 +1,20 @@
 package top.ysqorz.forum.vo;
 
 import lombok.Data;
+import top.ysqorz.forum.po.Role;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author 阿灿
  * @create 2021-05-14 22:47
  */
 @Data
-public class MyUser {
+public class UserVo {
     /**
      * 用户id
      */
@@ -35,8 +37,6 @@ public class MyUser {
     private String phone;
 
 
-
-
     /**
      * 性别。0：男；1：女；3：保密
      */
@@ -48,13 +48,11 @@ public class MyUser {
     private String photo;
 
 
-
     /**
      * 注册时间
      */
     @Column(name = "register_time")
     private LocalDateTime registerTime;
-
 
 
     /**
@@ -65,8 +63,10 @@ public class MyUser {
 
 
     /**
-     * 起始时间
+     * 结束时间
      */
-    @Column(name = "start_time")
-    private LocalDateTime startTime;
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
+
+    private List<Role> roles;
 }

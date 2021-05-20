@@ -11,7 +11,7 @@
  Target Server Version : 50732
  File Encoding         : 65001
 
- Date: 16/05/2021 12:21:40
+ Date: 20/05/2021 17:36:01
 */
 
 SET NAMES utf8mb4;
@@ -31,15 +31,30 @@ CREATE TABLE `blacklist`  (
   `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '封禁原因',
   `is_read` tinyint(4) NOT NULL COMMENT '是否已被用户阅读',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '黑名单（小黑屋）' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '黑名单（小黑屋）' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of blacklist
 -- ----------------------------
-INSERT INTO `blacklist` VALUES (8, 4, 1, '2021-05-28 00:00:00', '2021-05-28 00:00:00', '2021-05-15 20:58:13', '123123', 0);
-INSERT INTO `blacklist` VALUES (9, 6, 1, '2021-05-16 00:00:00', '2021-05-16 00:00:00', '2021-05-15 20:59:44', '阿八八八', 0);
-INSERT INTO `blacklist` VALUES (10, 5, 1, '2021-05-20 00:00:00', '2021-06-22 00:00:00', '2021-05-15 21:00:49', '才说的', 0);
-INSERT INTO `blacklist` VALUES (13, 9, 1, '2021-05-25 00:00:00', '2021-06-17 00:00:00', '2021-05-15 21:05:01', '12312', 0);
+INSERT INTO `blacklist` VALUES (63, 4, 1, '2021-05-19 16:06:53', '2021-05-19 16:07:57', '2021-05-19 16:06:53', '123', 0);
+INSERT INTO `blacklist` VALUES (64, 1, 1, '2021-05-19 16:08:52', '2021-05-19 16:07:55', '2021-05-19 16:08:52', '123', 0);
+INSERT INTO `blacklist` VALUES (65, 2, 1, '2021-05-19 16:09:09', '2021-05-19 16:33:03', '2021-05-19 16:09:09', '123', 0);
+INSERT INTO `blacklist` VALUES (66, 3, 1, '2021-05-19 16:32:20', '2021-05-19 16:36:14', '2021-05-19 16:32:20', '123', 0);
+INSERT INTO `blacklist` VALUES (67, 5, 1, '2021-05-19 16:37:22', '2021-05-19 16:36:35', '2021-05-19 16:37:22', '1324', 0);
+INSERT INTO `blacklist` VALUES (68, 1, 1, '2021-05-19 16:37:28', '2021-05-19 16:36:34', '2021-05-19 16:37:28', '123123', 0);
+INSERT INTO `blacklist` VALUES (69, 4, 1, '2021-05-19 16:40:34', '2021-05-19 16:39:53', '2021-05-19 16:40:34', '123', 0);
+INSERT INTO `blacklist` VALUES (70, 9, 1, '2021-05-19 16:40:40', '2021-05-19 16:39:49', '2021-05-19 16:40:40', '123', 0);
+INSERT INTO `blacklist` VALUES (71, 2, 1, '2021-05-19 16:52:49', '2021-05-19 16:52:26', '2021-05-19 16:52:49', '123', 0);
+INSERT INTO `blacklist` VALUES (72, 4, 1, '2021-05-19 16:52:53', '2021-05-19 16:52:22', '2021-05-19 16:52:53', '123', 0);
+INSERT INTO `blacklist` VALUES (73, 6, 1, '2021-05-19 16:53:03', '2021-05-19 16:52:20', '2021-05-19 16:53:03', '312', 0);
+INSERT INTO `blacklist` VALUES (74, 2, 1, '2021-05-19 22:19:16', '2021-05-19 22:18:41', '2021-05-19 22:19:16', '123123', 0);
+INSERT INTO `blacklist` VALUES (75, 4, 1, '2021-05-19 22:19:21', '2021-05-19 22:18:38', '2021-05-19 22:19:21', '123123', 0);
+INSERT INTO `blacklist` VALUES (76, 1, 1, '2021-05-20 16:03:52', '2021-05-20 16:56:04', '2021-05-20 16:03:52', '123', 0);
+INSERT INTO `blacklist` VALUES (77, 13, 1, '2021-05-20 16:56:56', '2021-05-20 16:56:00', '2021-05-20 16:56:56', '123123', 0);
+INSERT INTO `blacklist` VALUES (78, 4, 1, '2021-05-20 16:57:31', '2021-05-20 16:56:47', '2021-05-20 16:57:31', '123', 0);
+INSERT INTO `blacklist` VALUES (79, 9, 1, '2021-05-20 16:57:35', '2021-05-20 16:56:45', '2021-05-20 16:57:35', '123', 0);
+INSERT INTO `blacklist` VALUES (80, 7, 1, '2021-05-20 16:57:39', '2021-05-20 16:56:44', '2021-05-20 16:57:39', '123', 0);
+INSERT INTO `blacklist` VALUES (81, 2, 1, '2021-05-20 17:01:59', '2021-05-22 00:00:00', '2021-05-20 17:01:59', '123', 0);
 
 -- ----------------------------
 -- Table structure for collect
@@ -281,11 +296,17 @@ CREATE TABLE `role`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role
 -- ----------------------------
+INSERT INTO `role` VALUES (2, 'acan', '123', '2021-05-16 18:05:49');
+INSERT INTO `role` VALUES (3, 'b', '123', '2021-05-19 16:54:43');
+INSERT INTO `role` VALUES (17, '12333', '12', '2021-05-20 15:57:26');
+INSERT INTO `role` VALUES (18, 'b', '132', '2021-05-20 16:59:53');
+INSERT INTO `role` VALUES (19, 'b', '132', '2021-05-20 16:59:56');
+INSERT INTO `role` VALUES (20, '123', '123', '2021-05-20 16:59:58');
 
 -- ----------------------------
 -- Table structure for role_resource
@@ -398,26 +419,26 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, '1', '1', '1', '123456', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', 1, 1);
-INSERT INTO `user` VALUES (2, '2', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (3, '3', '3', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (4, '4', '4', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-22 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (5, '5', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (6, '6', '6', '1', '123456', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-04-22 14:50:30', 1, 1);
-INSERT INTO `user` VALUES (7, '7', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (8, '8', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (9, '9', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-04-29 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (10, '10', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (11, '11', '1', '1', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', 1, 1);
-INSERT INTO `user` VALUES (12, '12', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (13, '13', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (14, '14', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-10 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (15, '15', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-06-17 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (16, '16', '1', '1', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-12 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', 1, 1);
-INSERT INTO `user` VALUES (17, '17', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (18, '18', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (19, '19', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-04-28 14:51:36', '2021-05-12 14:51:39', 2, 2);
-INSERT INTO `user` VALUES (20, '20', '2', '2', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (1, '请问', '1', '1', '123456', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-04-01 14:50:24', '2021-05-04 14:50:27', '2021-07-17 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (2, '阿斯蒂', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-03 14:51:34', '2021-05-11 14:51:36', '2021-07-16 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (3, '阿萨大', '3', '3', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-06 14:51:34', '2021-05-11 14:51:36', '2021-06-26 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (4, '分', '4', '4', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-23 14:51:34', '2021-05-11 14:51:36', '2021-06-20 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (5, '对', '5', '5', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-01 14:51:34', '2021-05-11 14:51:36', '2021-06-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (6, 'VS的', '6', '6', '123456', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-08 14:50:24', '2021-05-04 14:50:27', '2021-06-22 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (7, 'v萨维奇', '7', '7', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-13 14:51:34', '2021-05-11 14:51:36', '2021-05-28 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (8, '二维', '8', '8', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-15 14:51:34', '2021-05-11 14:51:36', '2021-05-22 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (9, '她', '9', '9', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-22 14:51:34', '2021-05-11 14:51:36', '2021-04-29 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (10, '和', '10', '10', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-28 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (11, '而', '11', '11', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-30 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (12, '广东佛山', '12', '12', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-01 14:51:34', '2021-05-11 14:51:36', '2021-05-26 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (13, '覆盖', '13', '13', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-10 14:51:34', '2021-05-11 14:51:36', '2021-04-29 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (14, '都发过', '14', '14', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-04 14:51:34', '2021-05-11 14:51:36', '2021-04-19 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (15, '分', '15', '15', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-25 14:51:34', '2021-05-11 14:51:36', '2021-04-13 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (16, '给对方', '16', '16', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-29 14:50:24', '2021-05-04 14:50:27', '2021-05-20 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (17, '断分', '17', '17', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-27 14:51:34', '2021-05-11 14:51:36', '2021-03-11 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (18, '是个', '18', '18', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-17 14:51:34', '2021-05-11 14:51:36', '2021-05-03 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (19, '代国防', '19', '19', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-08-21 14:51:34', '2021-04-28 14:51:36', '2021-02-18 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (20, '三个地方', '20', '20', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-24 14:51:34', '2021-05-11 14:51:36', '2021-03-12 14:51:39', 2, 2);
 
 -- ----------------------------
 -- Table structure for user_role
@@ -431,10 +452,31 @@ CREATE TABLE `user_role`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`user_id`) USING BTREE,
   INDEX `role_id`(`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_role
 -- ----------------------------
+INSERT INTO `user_role` VALUES (25, 3, 2, '2021-05-20 15:55:17');
+INSERT INTO `user_role` VALUES (26, 3, 3, '2021-05-20 15:55:17');
+INSERT INTO `user_role` VALUES (27, 4, 3, '2021-05-20 15:56:35');
+INSERT INTO `user_role` VALUES (28, 5, 2, '2021-05-20 15:56:39');
+INSERT INTO `user_role` VALUES (29, 5, 3, '2021-05-20 15:56:39');
+INSERT INTO `user_role` VALUES (32, 1, 17, '2021-05-20 15:57:35');
+INSERT INTO `user_role` VALUES (33, 4, 2, '2021-05-20 16:57:10');
+INSERT INTO `user_role` VALUES (34, 5, 17, '2021-05-20 16:57:17');
+INSERT INTO `user_role` VALUES (35, 1, 18, '2021-05-20 17:00:07');
+INSERT INTO `user_role` VALUES (36, 1, 19, '2021-05-20 17:00:07');
+INSERT INTO `user_role` VALUES (37, 1, 20, '2021-05-20 17:00:07');
+INSERT INTO `user_role` VALUES (39, 2, 3, '2021-05-20 17:28:18');
+INSERT INTO `user_role` VALUES (40, 2, 17, '2021-05-20 17:28:18');
+INSERT INTO `user_role` VALUES (42, 2, 19, '2021-05-20 17:28:18');
+INSERT INTO `user_role` VALUES (44, 7, 2, '2021-05-20 17:28:40');
+INSERT INTO `user_role` VALUES (45, 7, 3, '2021-05-20 17:28:40');
+INSERT INTO `user_role` VALUES (46, 7, 17, '2021-05-20 17:28:40');
+INSERT INTO `user_role` VALUES (47, 7, 18, '2021-05-20 17:28:40');
+INSERT INTO `user_role` VALUES (48, 7, 19, '2021-05-20 17:28:40');
+INSERT INTO `user_role` VALUES (49, 7, 20, '2021-05-20 17:28:40');
+INSERT INTO `user_role` VALUES (50, 8, 2, '2021-05-20 17:29:35');
 
 SET FOREIGN_KEY_CHECKS = 1;

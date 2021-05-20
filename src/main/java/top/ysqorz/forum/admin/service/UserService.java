@@ -2,7 +2,13 @@ package top.ysqorz.forum.admin.service;
 
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.vo.MyUser;
+
+
+import top.ysqorz.forum.po.Role;
+import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.vo.BlackInfoVo;
+import top.ysqorz.forum.vo.UserVo;
+
 import top.ysqorz.forum.vo.QueryUserCondition;
 
 import java.util.List;
@@ -15,23 +21,23 @@ public interface UserService {
 
     /**
      * 获取所有MyUser信息
-     *
      */
-    List<MyUser> getMyUserList(QueryUserCondition conditions);
+    List<UserVo> getMyUserList(QueryUserCondition conditions);
 
     /**
      * 重置密码
      */
-    int updatePsw(User  user);
+    int updatePsw(Integer userId);
+
     /**
      * 根据id查询user信息
-     *
      */
-    User getinfobyId(Integer id);
+    User getInfoById(Integer id);
+
     /**
      * 取消拉黑
      */
-    int cancelblock(Integer id);
+    int cancelBlock(Integer id);
 
     /**
      * 拉黑
@@ -39,4 +45,34 @@ public interface UserService {
      * @return
      */
     int block(Blacklist blacklist);
+
+    /**
+     * 获取封禁信息
+     *
+     * @param userId
+     * @return
+     */
+    BlackInfoVo getBlackInfo(Integer userId);
+
+    /**
+     * 获取所有角色信息
+     */
+    List<Role> getAllRole();
+
+    /**
+     * 为某一用户添加角色
+     */
+    int addRoleForUser(Integer[] roleIds, Integer userId);
+
+    /**
+     * 查询用户已有角色
+     */
+    List<Role> getRoleByUserId(Integer userId);
+
+    /**
+     * 删除用户已分配角色
+     */
+    int delRoleForUser(Integer[] roleIds, Integer userId);
+
+
 }

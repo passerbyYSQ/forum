@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.BlacklistMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.Blacklist">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="admin_id" jdbcType="INTEGER" property="adminId" />
-    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
-    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="reason" jdbcType="VARCHAR" property="reason" />
-    <result column="is_read" jdbcType="TINYINT" property="isRead" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.Blacklist">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="admin_id" jdbcType="INTEGER" property="adminId"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="is_read" jdbcType="TINYINT" property="isRead"/>
+    </resultMap>
+    <select id="getBlockInfo" resultType="top.ysqorz.forum.vo.BlackInfoVo">
+        select u.username username, iu.username adminname, start_time, end_time, reason
+        from blacklist b
+                 join user u on u.id = b.user_id
+                 join user iu on iu.id = b.admin_id
+        where b.user_id = #{userId}
+          and #{localDateTime}between b.start_time and b.end_time
+
+    </select>
 </mapper>

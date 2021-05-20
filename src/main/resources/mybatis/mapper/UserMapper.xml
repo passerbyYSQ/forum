@@ -1,46 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.UserMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.User">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="passsword" jdbcType="VARCHAR" property="passsword" />
-    <result column="login_salt" jdbcType="VARCHAR" property="loginSalt" />
-    <result column="jwt_salt" jdbcType="VARCHAR" property="jwtSalt" />
-    <result column="gender" jdbcType="TINYINT" property="gender" />
-    <result column="photo" jdbcType="VARCHAR" property="photo" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="birth" jdbcType="DATE" property="birth" />
-    <result column="position" jdbcType="VARCHAR" property="position" />
-    <result column="register_time" jdbcType="TIMESTAMP" property="registerTime" />
-    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
-    <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
-    <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
-    <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
-  </resultMap>
-  <select id="selectAllUser" parameterType="top.ysqorz.forum.vo.QueryUserCondition" resultType="top.ysqorz.forum.vo.MyUser">
-    select  u.id,username,email,phone,photo,gender,register_time,last_login_time,start_time
-    from user u
-    left join blacklist b
-    on u.id=b.user_id
-    where 1=1
-    <if test="username!=null and username!=''">
-      and username like concat('%',#{username},'%')
-    </if>
-    <if test="phone!=null and phone!=''">
-      and phone like concat('%',#{phone},'%')
-    </if>
-    <if test='state=="1" and starttime!=null'>
-      and register_time between #{starttime} and #{endtime}
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.User">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="passsword" jdbcType="VARCHAR" property="passsword"/>
+        <result column="login_salt" jdbcType="VARCHAR" property="loginSalt"/>
+        <result column="jwt_salt" jdbcType="VARCHAR" property="jwtSalt"/>
+        <result column="gender" jdbcType="TINYINT" property="gender"/>
+        <result column="photo" jdbcType="VARCHAR" property="photo"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="birth" jdbcType="DATE" property="birth"/>
+        <result column="position" jdbcType="VARCHAR" property="position"/>
+        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
+        <result column="reward_points" jdbcType="INTEGER" property="rewardPoints"/>
+        <result column="fans_count" jdbcType="INTEGER" property="fansCount"/>
+    </resultMap>
+    <resultMap id="allUserAndRole" type="top.ysqorz.forum.vo.UserVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="gender" jdbcType="TINYINT" property="gender"/>
+        <result column="photo" jdbcType="VARCHAR" property="photo"/>
+        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <collection property="roles" ofType="top.ysqorz.forum.po.Role">
+            <id column="rid" jdbcType="INTEGER" property="id"/>
+            <result column="roleName" jdbcType="VARCHAR" property="roleName"/>
+            <result column="description" jdbcType="VARCHAR" property="description"/>
+            <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        </collection>
+    </resultMap>
+    <select id="selectAllUser" parameterType="top.ysqorz.forum.vo.QueryUserCondition" resultMap="allUserAndRole">
+        select u.id,username,email,phone,photo,gender,register_time,last_login_time,b.end_time, r.id as rid,
+        r.role_name as roleName,r.description as description,r.create_time as createTime
+        from user u
+        left join user_role ur
+        on u.id=ur.user_id
+        left join role r
+        on r.id=ur.role_id
+        left join blacklist b
+        on (u.id=b.user_id and #{now} between b.start_time and b.end_time)
+        where 1=1
+        <if test="username!=null and username!=''">
+            <bind name="paran_username" value="'%'+username+'%'"/>
+            and username like #{paran_username}
+        </if>
+        <if test="phone!=null and phone!=''">
+            <bind name="paran_phone" value="'%'+phone+'%'"/>
+            and phone like #{paran_phone}
+        </if>
+        <if test='state==1 and startTime!=null'>
+            and register_time between #{startTime} and #{endTime}
 
-    </if>
-    <if test='state=="2" and starttime!=null'>
-      and last_login_time between #{starttime} and #{endtime}
-    </if>
-  </select>
+        </if>
+        <if test='state==2 and startTime!=null'>
+            and last_login_time between #{startTime} and #{endTime}
+        </if>
+    </select>
 </mapper>
