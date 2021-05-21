@@ -20,7 +20,7 @@
                  join user u on u.id = b.user_id
                  join user iu on iu.id = b.admin_id
         where b.user_id = #{userId}
-          and #{localDateTime}between b.start_time and b.end_time
+        and #{localDateTime} between b.start_time and b.end_time
 
     </select>
 </mapper>

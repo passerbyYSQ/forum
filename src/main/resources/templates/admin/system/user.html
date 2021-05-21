@@ -11,6 +11,26 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+        #userTable + .layui-table-view .layui-table-body tbody > tr > td {
+            padding: 0;
+        }
+
+        #userTable + .layui-table-view .layui-table-body tbody > tr > td > .layui-table-cell {
+            text-align: center;
+            height: auto;
+            white-space: normal;
+            /*line-height: 48px;*/
+        }
+
+        .tb-img-circle {
+            width: 40px;
+            height: 40px;
+            cursor: zoom-in;
+            border-radius: 50%;
+            border: 2px solid #dddddd;
+        }
+    </style>
 </head>
 <body>
 <!-- 正文开始 -->
@@ -59,31 +79,13 @@
             </form>
             <!-- 数据表格 -->
             <table id="userTable" lay-filter="userTable"></table>
-            <style type="text/css">
-                /*正确显示图片的style*/
-                .layui-table-cell {
-
-                    text-align: center;
-
-                    height: auto;
-
-                    white-space: normal;
-
-                }
-
-                .layui-table img {
-
-                    max-width: 300px
-
-                }
-            </style>
 
         </div>
     </div>
 </div>
 <!--头像操作显示-->
 <script type="text/html" id="imgtmp">
-    <img src="{{ d.photo}}" style="height:50px;width:50px">
+    <img data-index="{{d.LAY_INDEX - 1}}" src="{{d.photo}}" class="tb-img-circle" tb-img alt="">
 </script>
 <!-- 表格操作列 -->
 <script type="text/html" id="userTbBar">
@@ -95,8 +97,7 @@
 <!-- 表格状态列 -->
 <script type="text/html" id="userTbState">
     <input type="checkbox" lay-filter="userTbStateCk" value="{{d.username}}" lay-skin="switch"
-
-           lay-text="正常|拉黑" {{d.endTime==null?'checked':''}} style="display: none;"
+            lay-text="正常|封禁" {{d.blackId==null?'checked':''}} style="display: none;"
            data-q="{{d.id}}"/>
     <!--    <p style="display: none;">{{d.startTime!=null?'正常':'锁定'}}</p>-->
 </script>
@@ -122,7 +123,7 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label layui-form-required">封禁时长:</label>
+            <label class="layui-form-label layui-form-required">封禁至:</label>
             <div class="layui-input-block">
                 <input name="data" class="layui-input"
                        lay-verType="tips" lay-verify="required" required readonly/>
@@ -156,7 +157,6 @@
                        readonly required/>
             </div>
         </div>
-
 
         <div class="layui-form-item">
             <label class="layui-form-label layui-form-required">封禁时长:</label>
@@ -224,29 +224,40 @@
             cellMinWidth: 100,
             cols: [[
 
-                {field: 'username', title: '用户名', sort: true, style: 'height:50px'},
-                {field: 'email', title: '邮箱', sort: true},
-                {field: 'phone', title: '手机号', sort: true},
-                {field: 'gender', title: '性别', sort: true},
-                {field: 'photo', title: '头像', templet: "#imgtmp"},
+                {field: 'username', title: '用户名', align: 'center'},
+                {field: 'email', title: '邮箱', sort: true, align: 'center'},
+                {field: 'phone', title: '手机号', sort: true, align: 'center'},
+                {field: 'gender', title: '性别', templet: function (d) {
+                        var icon;
+                        switch (d.gender) {
+                            // 男
+                            case 0: icon = '<i class="layui-icon layui-icon-male" style="font-size: 20px; color: #1E9FFF;"></i>'; break;
+                            // 女
+                            case 1: icon = '<i class="layui-icon layui-icon-female" style="font-size: 20px; color: #FF5722;"></i>'; break;
+                            // 保密
+                            default: icon = '<i class="layui-icon layui-icon-help" style="font-size: 20px; color: #ccc;"></i>'
+                        }
+                        return  icon;
+                    }, align: 'center', width: 60 },
+                {field: 'photo', title: '头像', templet: "#imgtmp", align: 'center', width: 90, unresize: true },
                 {
                     field: 'roleName', title: '角色', templet: function (d) {
                         return d.roles.map(function (item) {
-                            return '<span class="layui-badge layui-badge-gray">' + item.roleName + '</span>';
+                            return '<span class="layui-badge layui-badge-blue">' + item.roleName + '</span>';
                         }).join('&nbsp;&nbsp;');
-                    }, sort: true, width: 150
+                    }, width: 150, align: 'center'
                 },
                 {
                     field: 'registerTime', title: '注册时间', templet: function (d) {
                         return util.toDateString(d.registerTime);
-                    }, sort: true
+                    }, sort: true, align: 'center'
                 },
                 {
                     field: 'lastLoginTime', title: '上一次登录时间', templet: function (d) {
                         return util.toDateString(d.lastLoginTime);
-                    }, sort: true
+                    }, sort: true, align: 'center'
                 },
-                {title: '状态', templet: '#userTbState', sort: true, width: 100},
+                {title: '状态', templet: '#userTbState', sort: true, width: 100, align: 'center'},
                 {title: '操作', toolbar: '#userTbBar', align: 'center', minWidth: 200}
             ]],
 
@@ -657,6 +668,17 @@
                 }, 'json');
             });
         }
+
+        /* 点击图片放大 */
+        $(document).off('click.tbImg').on('click.tbImg', '[tb-img]', function () {
+            var imgList = table.cache['userTable'].map(function (d) {
+                return {
+                    alt: d.username,
+                    src: d.photo || '/admin/assets/images/head.jpg'
+                }
+            });
+            layer.photos({photos: {data: imgList, start: $(this).data('index')}, shade: .1, closeBtn: true});
+        });
 
 
     });

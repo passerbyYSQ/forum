@@ -1,15 +1,17 @@
 package top.ysqorz.forum.po;
 
-import java.time.LocalDateTime;
-import javax.persistence.*;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,6 +22,7 @@ public class Blacklist {
 
     public interface Add {}
 
+    @NotNull(groups = Add.class) // 分组校验
     @Id
     private Integer id;
 

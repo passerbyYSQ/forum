@@ -29,6 +29,7 @@ public enum StatusCode {
     USERNAME_IS_EXIST(6101, "用户名已存在"),
     PASSWORD_INCORRECT(6102, "密码错误"),
     USER_NOT_EXIST(6103, "用户不存在"), // 可能是userId错误
+    USER_NOT_BLOCK(6104, "用户当前不处于封禁状态"),
 
     // 账户相关
     TOKEN_IS_MISSING(6200, "token缺失"),

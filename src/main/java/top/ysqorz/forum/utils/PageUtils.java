@@ -1,4 +1,4 @@
-package top.ysqorz.forum.common;
+package top.ysqorz.forum.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.List;
  * @author 阿灿
  * @create 2021-05-20 15:36
  */
-public class PageUtil {
+public class PageUtils {
     /**
      * 手动分页类
      * PageHelper在一对多级联查询时返回的条数不对,使用参考UserControllerd的getUserAndRole

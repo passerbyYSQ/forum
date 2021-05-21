@@ -32,7 +32,7 @@
         <result column="photo" jdbcType="VARCHAR" property="photo"/>
         <result column="register_time" jdbcType="TIMESTAMP" property="registerTime"/>
         <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
-        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="black_id" jdbcType="INTEGER" property="blackId"/>
         <collection property="roles" ofType="top.ysqorz.forum.po.Role">
             <id column="rid" jdbcType="INTEGER" property="id"/>
             <result column="roleName" jdbcType="VARCHAR" property="roleName"/>
@@ -41,7 +41,7 @@
         </collection>
     </resultMap>
     <select id="selectAllUser" parameterType="top.ysqorz.forum.vo.QueryUserCondition" resultMap="allUserAndRole">
-        select u.id,username,email,phone,photo,gender,register_time,last_login_time,b.end_time, r.id as rid,
+        select u.id,username,email,phone,photo,gender,register_time,last_login_time,b.id as black_id, r.id as rid,
         r.role_name as roleName,r.description as description,r.create_time as createTime
         from user u
         left join user_role ur
@@ -61,10 +61,10 @@
         </if>
         <if test='state==1 and startTime!=null'>
             and register_time between #{startTime} and #{endTime}
-
         </if>
         <if test='state==2 and startTime!=null'>
             and last_login_time between #{startTime} and #{endTime}
         </if>
+        order by register_time desc
     </select>
 </mapper>

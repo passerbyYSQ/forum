@@ -20,15 +20,6 @@ public class QueryUserCondition {
     private LocalDateTime endTime; //结束时间
     private LocalDateTime now = LocalDateTime.now(); //当前时间
 
-//    public void fillDefault() {
-//        if (ObjectUtils.isEmpty(username)) { // null
-//            username = "";
-//        }
-//        if (ObjectUtils.isEmpty(phone)) {
-//            phone = "";
-//        }
-//
-//    }
 
     @Override
     public String toString() {

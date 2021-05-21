@@ -4,8 +4,6 @@ import lombok.Data;
 import top.ysqorz.forum.po.Role;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -63,10 +61,10 @@ public class UserVo {
 
 
     /**
-     * 结束时间
+     * 如果当前用户处于封禁，必有一条当前的小黑记录。
+     * 可能当前用户之前也被封过，但是我们需要当前封禁的记录id
      */
-    @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private Integer blackId;
 
     private List<Role> roles;
 }

@@ -37,31 +37,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVo> getMyUserList(QueryUserCondition conditions) {
-
-//        if (conditions != null) {
-//            conditions.fillDefault(); // 填充默认值
-////            if(!"".equals(conditions.getTime())){
-////                String[] time=conditions.getTime().split(" - ");
-////                // System.out.println(time[0]+time[1]);
-////                DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-////                conditions.setStarttime(LocalDateTime.parse(time[0],df));
-////                conditions.setEndtime(LocalDateTime.parse(time[1],df));
-////                System.out.println(conditions.getEndtime());
-////                System.out.println(conditions.getStarttime());
-////            }
-//        }
-        System.out.println(conditions);
+        //System.out.println(conditions);
         return userMapper.selectAllUser(conditions);
     }
 
     @Override
     public int updatePsw(Integer userId) {
-
         User record = new User();
         record.setId(userId);
         record.setPasssword("123456");
         return userMapper.updateByPrimaryKeySelective(record);
-
     }
 
 
@@ -80,18 +65,21 @@ public class UserServiceImpl implements UserService {
                 .andGreaterThan("endTime", LocalDateTime.now());
 
         Blacklist record = new Blacklist();
+        record.setIsRead((byte) 0); // 重置为未读
         record.setEndTime(LocalDateTime.now().minusMinutes(1));  //这里给解封时间设置为当前时间-1分钟
         return blacklistMapper.updateByExampleSelective(record, example);
     }
 
     @Override
     public int block(Blacklist blacklist) {
+        blacklist.setCreateTime(LocalDateTime.now());
+        blacklist.setStartTime(LocalDateTime.now());
+        blacklist.setIsRead((byte) 0);
         return blacklistMapper.insert(blacklist);
     }
 
     @Override
     public BlackInfoVo getBlackInfo(Integer userId) {
-
         return blacklistMapper.getBlockInfo(userId, LocalDateTime.now());
     }
 
