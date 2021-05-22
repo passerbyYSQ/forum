@@ -1,5 +1,9 @@
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
     url: jdbc:mysql://localhost:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
@@ -42,17 +46,18 @@ spring:
         url-pattern: /*   # 添加过滤规则
         exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"   # 忽略过滤格式
   mvc:
+
     format:
       date-time: yyyy-MM-dd HH:mm:ss
-    multipart:
-      enabled: true   # 默认为 true 即允许附件上传
-      # 限定了当上传的文件超过定长度时，就先写到临时文件里
-      # 这有助于上传文件不占用过多的内存，单位是 MB 或者。默认是 即不限定阔值
-      file-size-threshold: 128KB
-      # location 指的是临时文件的存放目录，如果不设定，则是服务器提供的一个临时目录
-      location:
-      max-file-size: 100MB    # 单个文件的最大长度，默认是 MB
-      max-request-size: 125MB     # 单次 HTTP 请求上传的最大长度
+#    multipart:
+#      enabled: true   # 默认为 true 即允许附件上传
+#      # 限定了当上传的文件超过定长度时，就先写到临时文件里
+#      # 这有助于上传文件不占用过多的内存，单位是 MB 或者。默认是 即不限定阔值
+#      file-size-threshold: 128KB
+#      # location 指的是临时文件的存放目录，如果不设定，则是服务器提供的一个临时目录
+#      # location:
+#      max-file-size: 100MB    # 单个文件的最大长度，默认是 MB
+#      max-request-size: 125MB     # 单次 HTTP 请求上传的最大长度
     static-path-pattern: /**
   redis:
     host: 119.45.164.115

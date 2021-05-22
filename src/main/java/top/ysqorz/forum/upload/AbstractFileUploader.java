@@ -52,17 +52,19 @@ public abstract class AbstractFileUploader implements FileUploader {
         if (multipartFile.getSize() <= 0) {
             throw new FileUploadException("上传文件不能为空");
         }
+        if (!checkSuffix(multipartFile.getOriginalFilename())) {
+            throw new FileUploadException("不支持该文件格式：" + this.suffix);
+        }
+        if (!checkContentType(multipartFile.getContentType())) {
+            throw new FileUploadException("不支持该媒体类型：" + multipartFile.getContentType());
+        }
+
         if (!checkFileSize(multipartFile.getSize())) {
             throw new FileUploadException(
                     String.format("当前文件大小：%d MB，超出可上传的最大值：%d MB",
                     fileSize.toMegabytes(), allowedMaximumFileSize.toMegabytes()));
         }
-        if (!checkContentType(multipartFile.getContentType())) {
-            throw new FileUploadException("不支持该媒体类型：" + multipartFile.getContentType());
-        }
-        if (!checkSuffix(multipartFile.getOriginalFilename())) {
-            throw new FileUploadException("不支持该文件格式：" + this.suffix);
-        }
+
 
         String newFilename = generateNewFilename();
 
