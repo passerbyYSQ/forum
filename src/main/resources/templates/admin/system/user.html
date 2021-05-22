@@ -337,7 +337,10 @@
                             id: 'openProductTable',
                             height: 480,
                             method: 'get', //接口http请求类型，默认：get
-                            url: '/admin/system/user/getRole',
+                            url: '/admin/system/role/list',
+                            request: {
+                                limitName: 'count' //每页数据量的参数名，默认：limit
+                            },
                             response: {
                                 statusCode: 2000 //规定成功的状态码，默认：0
 

@@ -2,8 +2,10 @@ package top.ysqorz.forum.admin.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.admin.service.UserService;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dao.*;
 
 import top.ysqorz.forum.po.*;
@@ -88,9 +90,16 @@ public class UserServiceImpl implements UserService {
         return roleMapper.selectAll();
     }
 
+    @Transactional // 开启事务操作
     @Override
-    public int addRoleForUser(Integer[] roleIds, Integer userId) {
+    public int addRoleForUser(Integer[] roleIds, Integer userId) throws ParameterErrorException {
         for (int i = 0; i < roleIds.length; i++) {
+            Example example2 = new Example(Role.class);
+            example2.createCriteria().andEqualTo("id", roleIds[i]);
+            Role role = roleMapper.selectOneByExample(example2);
+            if (role == null) {
+                throw new ParameterErrorException("角色不存在");
+            }
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)
                     .andEqualTo("roleId", roleIds[i]);

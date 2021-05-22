@@ -179,6 +179,7 @@
                 // 表格渲染后，展开全部全部节点
                 insTb.expandAll();
                 tbDataList = data;
+                console.log(tbDataList);
             }
         });
 
@@ -255,6 +256,7 @@
 
             var json = JSON.stringify(insTb.options.data);
             var treeData = JSON.parse(json); // 实现深拷贝
+            console.log(treeData);
             // 伪头节点
             var fakeRoot = {
                 id: 0,

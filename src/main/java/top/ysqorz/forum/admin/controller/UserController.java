@@ -7,6 +7,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.admin.service.UserService;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
@@ -38,37 +39,37 @@ public class UserController {
         if (limit <= 0) {
             limit = 10;
         }
-//        PageHelper.startPage(page,limit);
-//      //  PageHelper.clearPage(); //不加报错
-//        List<UserVo> myUserList = userService.getMyUserList(conditions);
-//       // List<User> userList = userService.getUserList(conditions);
-//        PageInfo<UserVo> pageinfo = new PageInfo<>(myUserList);
-//        PageData<UserVo> pageData=new PageData<>();
-//        pageData.setList(myUserList);
-//        pageData.setTotal(pageinfo.getTotal());
-//        pageData.setPage(pageinfo.getPageNum());
-//        pageData.setCount(pageinfo.getPageSize());
-//
-//        return ResultModel.success(pageData);
-        //获取结果集
+        PageHelper.startPage(page, limit);
+        //  PageHelper.clearPage(); //不加报错
         List<UserVo> myUserList = userService.getMyUserList(conditions);
-        //使用工具类得到分页后的结果集
-        List<UserVo> data = PageUtils.getPageSizeDataForRelations(myUserList, limit, page);
-
-        int size = myUserList.size();//总条数
-        //总页数
-        int totlePage = size / limit;//取整
-        int i = size % limit;//取余
-        if (i > 0) {
-            totlePage += 1;
-        }
+        // List<User> userList = userService.getUserList(conditions);
+        PageInfo<UserVo> pageinfo = new PageInfo<>(myUserList);
         PageData<UserVo> pageData = new PageData<>();
-        pageData.setList(data);  //传入PageUtil处理后的结果集
-        pageData.setTotal((long) size);  //总数
-        pageData.setPage(limit);        //每页显示条数
-        pageData.setCount(totlePage); //总页数
+        pageData.setList(myUserList);
+        pageData.setTotal(pageinfo.getTotal());
+        pageData.setPage(pageinfo.getPageNum());
+        pageData.setCount(pageinfo.getPageSize());
 
         return ResultModel.success(pageData);
+        //获取结果集
+//        List<UserVo> myUserList = userService.getMyUserList(conditions);
+//        //使用工具类得到分页后的结果集
+//        List<UserVo> data = PageUtils.getPageSizeDataForRelations(myUserList, limit, page);
+//
+//        int size = myUserList.size();//总条数
+//        //总页数
+//        int totlePage = size / limit;//取整
+//        int i = size % limit;//取余
+//        if (i > 0) {
+//            totlePage += 1;
+//        }
+//        PageData<UserVo> pageData = new PageData<>();
+//        pageData.setList(data);  //传入PageUtil处理后的结果集
+//        pageData.setTotal((long) size);  //总数
+//        pageData.setPage(limit);        //每页显示条数
+//        pageData.setCount(totlePage); //总页数
+//
+//        return ResultModel.success(pageData);
 
     }
 
@@ -116,39 +117,16 @@ public class UserController {
         return ResultModel.success(blackInfo);
     }
 
-    /**
-     * 查询所有可分配角色
-     *
-     * @return
-     */
-    @GetMapping("/getRole")
-    public ResultModel<PageData<Role>> getRole(@RequestParam(defaultValue = "10") Integer limit,
-                                               @RequestParam(defaultValue = "1") Integer page) {
-
-        //System.out.println(conditions);
-        if (limit <= 0) {
-            limit = 10;
-        }
-        PageHelper.startPage(page, limit);
-        List<Role> allRole = userService.getAllRole();
-        PageInfo<Role> pageInfo = new PageInfo<>(allRole);
-        PageData<Role> pageData = new PageData<>();
-        pageData.setList(allRole);
-        pageData.setTotal(pageInfo.getTotal());
-        pageData.setPage(pageInfo.getPageNum());
-        pageData.setCount(pageInfo.getPageSize());
-
-        return ResultModel.success(pageData);
-
-
-    }
 
     /**
      * 添加角色
      */
     @PostMapping("/addRole")
     public ResultModel addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
-                               @RequestParam("userId") @NotNull Integer userId) {
+                               @RequestParam("userId") @NotNull Integer userId) throws ParameterErrorException {
+        if (userService.getInfoById(userId) == null) {
+            return ResultModel.failed(StatusCode.USER_NOT_EXIST);
+        }
         int i = userService.addRoleForUser(roleIds, userId);
         return i == 1 ? ResultModel.success() :
                 ResultModel.failed(StatusCode.USERNAME_IS_EXIST);

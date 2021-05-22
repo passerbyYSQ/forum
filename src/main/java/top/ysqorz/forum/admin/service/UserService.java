@@ -1,5 +1,6 @@
 package top.ysqorz.forum.admin.service;
 
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.User;
 
@@ -62,7 +63,7 @@ public interface UserService {
     /**
      * 为某一用户添加角色
      */
-    int addRoleForUser(Integer[] roleIds, Integer userId);
+    int addRoleForUser(Integer[] roleIds, Integer userId) throws ParameterErrorException;
 
     /**
      * 查询用户已有角色
