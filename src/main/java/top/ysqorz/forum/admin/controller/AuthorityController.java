@@ -52,7 +52,9 @@ public class AuthorityController {
 
     @PostMapping("/update")
     public ResultModel updateAuthority(@Validated(Resource.Update.class) Resource resource) {
-        // TODO 检查id合法性
+        if (ObjectUtils.isEmpty(authorityService.getAuthorityById(resource.getId()))) {
+            return ResultModel.failed(StatusCode.AUTHORITY_NOT_EXIST);
+        }
 
         // parentId为空，说明为根权限
         if (ObjectUtils.isEmpty(resource.getParentId())) {
@@ -88,7 +90,7 @@ public class AuthorityController {
     public ResultModel delAuthority(@RequestParam("authorityIds[]") @NotEmpty Integer[] authorityIds) {
         int cnt = authorityService.delAuthorityById(authorityIds);
         return cnt == authorityIds.length ? ResultModel.success() :
-                ResultModel.failed(StatusCode.AUTHORITY_NOT_EXIST);
+                ResultModel.failed(StatusCode.AUTHORITY_DEL_FAILED);
     }
 
 }

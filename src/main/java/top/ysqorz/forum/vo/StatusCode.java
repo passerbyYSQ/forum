@@ -42,6 +42,7 @@ public enum StatusCode {
     AUTHORITY_NOT_EXIST(6301, "权限不存在"),
     AUTHORITY_UPDATE_FAILED(6302, "您未做任何更新"),
     AUTHORITY_PID_NOT_VALID(6303, "新的父权限不能为当前权限及子孙权限"),
+    AUTHORITY_DEL_FAILED(6301, "非叶子节点的权限无法直接删除"),
 
     // 角色相关的
     ROLE_NOT_EXIST(6400, "角色不存在")

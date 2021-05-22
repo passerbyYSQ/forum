@@ -35,6 +35,11 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
+    public Resource getAuthorityById(Integer authorityId) {
+        return resourceMapper.selectByPrimaryKey(authorityId);
+    }
+
+    @Override
     public Resource getAuthorityByName(String authorityName) {
         Example example = new Example(Resource.class);
         example.createCriteria()
@@ -67,8 +72,12 @@ public class AuthorityServiceImpl implements AuthorityService {
                 .filter(builder::isLeaf)
                 .collect(Collectors.toList());
 
+        if (ids.isEmpty()) {
+            return 0;
+        }
+
         Example example = new Example(Resource.class);
-        example.createCriteria().andIn("id", ids);
+        example.createCriteria().andIn("id", ids); // 不能传入空的List，前面需要判断
         return resourceMapper.deleteByExample(example);
     }
 }

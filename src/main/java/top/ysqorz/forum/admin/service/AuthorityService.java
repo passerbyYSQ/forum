@@ -19,6 +19,11 @@ public interface AuthorityService {
     /**
      * 根据id查找权限
      */
+    Resource getAuthorityById(Integer authorityId);
+
+    /**
+     * 根据名字查找权限
+     */
     Resource getAuthorityByName(String authorityName);
 
     /**

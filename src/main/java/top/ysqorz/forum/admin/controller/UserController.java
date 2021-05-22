@@ -131,12 +131,12 @@ public class UserController {
         }
         PageHelper.startPage(page, limit);
         List<Role> allRole = userService.getAllRole();
-        PageInfo<Role> pageinfo = new PageInfo<>(allRole);
+        PageInfo<Role> pageInfo = new PageInfo<>(allRole);
         PageData<Role> pageData = new PageData<>();
         pageData.setList(allRole);
-        pageData.setTotal(pageinfo.getTotal());
-        pageData.setPage(pageinfo.getPageNum());
-        pageData.setCount(pageinfo.getPageSize());
+        pageData.setTotal(pageInfo.getTotal());
+        pageData.setPage(pageInfo.getPageNum());
+        pageData.setCount(pageInfo.getPageSize());
 
         return ResultModel.success(pageData);
 
@@ -168,12 +168,12 @@ public class UserController {
         }
         PageHelper.startPage(page, limit);
         List<Role> role = userService.getRoleByUserId(userId);
-        PageInfo<Role> pageinfo = new PageInfo<>(role);
+        PageInfo<Role> pageInfo = new PageInfo<>(role);
         PageData<Role> pageData = new PageData<>();
         pageData.setList(role);
-        pageData.setTotal(pageinfo.getTotal());
-        pageData.setPage(pageinfo.getPageNum());
-        pageData.setCount(pageinfo.getPageSize());
+        pageData.setTotal(pageInfo.getTotal());
+        pageData.setPage(pageInfo.getPageNum());
+        pageData.setCount(pageInfo.getPageSize());
 
         return ResultModel.success(pageData);
     }
