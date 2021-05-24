@@ -24,6 +24,7 @@ public enum StatusCode {
     PARAM_IS_INVALID(6002, "参数无效"),
     FILE_TYPE_INVALID(6003, "非法文件类型"),
     FILE_SIZE_EXCEEDED(6004, "文件大小超出限制"),
+    CAPTCHA_INVALID(6004, "文件大小超出限制"),
 
     // 用户相关
     USERNAME_IS_EXIST(6101, "用户名已存在"),
@@ -45,7 +46,10 @@ public enum StatusCode {
     AUTHORITY_DEL_FAILED(6301, "非叶子节点的权限无法直接删除"),
 
     // 角色相关的
-    ROLE_NOT_EXIST(6400, "角色不存在")
+    ROLE_NOT_EXIST(6400, "角色不存在"),
+
+    // 话题相关
+    TOPIC_NOT_EXIST(6500, "话题不存在")
 
     ;
 

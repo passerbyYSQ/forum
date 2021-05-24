@@ -18,7 +18,7 @@ public class UploadResult {
     // 后缀名
     private String suffix;
     // 文件url
-    private String[] url;
+    private String[] url; // 可以放多个url。图片可以放不同缩略图的url
 
     public UploadResult() {
     }

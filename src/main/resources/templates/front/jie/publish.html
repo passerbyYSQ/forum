@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>发表问题 编辑问题 公用</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="fly,layui,前端社区">
+    <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
+    <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
+    <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
+
+    <style>
+        .captcha {
+            height: 38px;
+            width: 100px;
+            cursor: pointer;
+            box-sizing: border-box;
+            border: 1px solid #e6e6e6;
+            border-radius: 2px !important;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="fly-header layui-bg-black">
+    <div class="layui-container">
+        <a class="fly-logo" href="/">
+            <img th:src="@{/front/res/images/logo.png}" src="../../res/images/logo.png" alt="layui">
+        </a>
+        <ul class="layui-nav fly-nav layui-hide-xs">
+            <li class="layui-nav-item layui-this">
+                <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="../case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
+            </li>
+        </ul>
+
+        <ul class="layui-nav fly-nav-user">
+
+            <!-- 未登入的状态 -->
+            <!--
+            <li class="layui-nav-item">
+              <a class="iconfont icon-touxiang layui-hide-xs" href="user/login.html"></a>
+            </li>
+            <li class="layui-nav-item">
+              <a href="user/login.html">登入</a>
+            </li>
+            <li class="layui-nav-item">
+              <a href="user/reg.html">注册</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs">
+              <a href="/app/qq/" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" title="QQ登入" class="iconfont icon-qq"></a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs">
+              <a href="/app/weibo/" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})" title="微博登入" class="iconfont icon-weibo"></a>
+            </li>
+             -->
+
+            <!-- 登入后的状态 -->
+            <li class="layui-nav-item">
+                <a class="fly-nav-avatar" href="javascript:;">
+                    <cite class="layui-hide-xs">贤心</cite>
+                    <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i>
+                    <i class="layui-badge fly-badge-vip layui-hide-xs">VIP3</i>
+                    <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="../user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>
+                    <dd><a href="../user/message.html"><i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a>
+                    </dd>
+                    <dd><a href="../user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
+                    </dd>
+                    <hr style="margin: 5px 0;">
+                    <dd><a href="" style="text-align: center;">退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="layui-container fly-marginTop">
+    <div class="fly-panel" pad20 style="padding-top: 5px;">
+        <!--<div class="fly-none">没有权限</div>-->
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief" lay-filter="user">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">发表新帖<!-- 编辑帖子 --></li>
+                </ul>
+                <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
+                    <div class="layui-tab-item layui-show">
+                        <form action="/post/publish" method="post">
+                            <div class="layui-row layui-col-space15 layui-form-item">
+                                <div class="layui-col-md3">
+                                    <label class="layui-form-label">所属话题</label>
+                                    <div class="layui-input-block">
+                                        <select lay-verify="required" name="topicId" lay-filter="column">
+                                            <option></option>
+                                            <option value="0">提问</option>
+                                            <option value="99">分享</option>
+                                            <option value="100">讨论</option>
+                                            <option value="101">建议</option>
+                                            <option value="168">公告</option>
+                                            <option value="169">动态</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-col-md9">
+                                    <label for="L_title" class="layui-form-label">标题</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="L_title" name="title" required
+                                               lay-verify="required|title"
+                                               autocomplete="off" class="layui-input">
+                                        <!-- <input type="hidden" name="id" value="{{d.edit.id}}"> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="layui-row layui-col-space15 layui-form-item layui-hide" id="LAY_quiz">
+                                <div class="layui-col-md3">
+                                    <label class="layui-form-label">所属产品</label>
+                                    <div class="layui-input-block">
+                                        <select name="project">
+                                            <option></option>
+                                            <option value="layui">layui</option>
+                                            <option value="独立版layer">独立版layer</option>
+                                            <option value="独立版layDate">独立版layDate</option>
+                                            <option value="LayIM">LayIM</option>
+                                            <option value="Fly社区模板">Fly社区模板</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-col-md3">
+                                    <label class="layui-form-label" for="L_version">版本号</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="L_version" value="" name="version" autocomplete="off"
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-col-md6">
+                                    <label class="layui-form-label" for="L_browser">浏览器</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="L_browser" value="" name="browser"
+                                               placeholder="浏览器名称及版本，如：IE 11" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            -->
+                            <div class="layui-form-item layui-form-text">
+                                <!-- 富文本编辑器。index.js中通过fly-editor来定位和加载编辑器 required lay-verify="required"-->
+                                <div class="layui-input-block">
+                                    <textarea id="editorContent" name="content"
+                                              placeholder="详细描述" class="layui-textarea fly-editor"
+                                              style="height: 260px;"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">帖子可见性</label>
+                                    <div class="layui-input-inline" style="width: 190px;">
+                                        <select name="visibilityType" lay-filter="visibilityType">
+                                            <option value="0">任何人可见</option>
+                                            <option value="1">粉丝可见</option>
+                                            <option value="2">点赞后可见</option>
+                                            <option value="3">积分购买后可见</option>
+                                        </select>
+                                    </div>
+                                    <div class="layui-input-inline">
+                                        <input type="number" max="99" name="points" lay-verify="points"
+                                               placeholder="积分数 <= 99" class="layui-input inline-block layui-hide"
+                                               style="width: 160px;" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                               onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">相关标签</label>
+                                    <div class="layui-input-block"
+                                         style="border-left: 1px solid #e6e6e6; border-radius: 2px;">
+                                        <input id="label" name="labels" value="辣妹子,大长腿" class="layui-hide"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label for="L_vercode" class="layui-form-label">人类验证</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="L_vercode" name="captcha" required lay-verify="required"
+                                               placeholder="请回答后面的问题" autocomplete="off" class="layui-input">
+
+                                    </div>
+                                    <div class="layui-input-inline">
+                                        <img src="/post/captcha" class="captcha" alt=""
+                                             onclick="this.src = this.src + '?timestamp=' + (new Date).getTime();"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <button class="layui-btn" lay-filter="publish" lay-submit>立即发布</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fly-footer">
+    <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/"
+                                                                                target="_blank">layui.com 出品</a></p>
+    <p>
+        <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
+        <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
+        <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
+    </p>
+</div>
+
+<script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
+<!--<script type="text/javascript"  src="../../../assets/js/common.js?v=318"></script>-->
+<script type="text/javascript" th:src="@{/admin/assets/libs/tinymce/tinymce.min.js}"
+        src="../../../assets/libs/tinymce/tinymce.min.js"></script>
+<script>
+    layui.cache.page = 'jie';
+    layui.cache.user = {
+        username: '游客'
+        , uid: -1
+        , avatar: '../../res/images/avatar/00.jpg'
+        , experience: 83
+        , sex: '男'
+    };
+
+
+    layui.config({
+        version: "3.0.0",
+        base: '/front/res/mods/'
+    }).extend({
+        fly: 'index',
+        tagsInput: 'tagsInput/tagsInput',
+    }).use(['jquery', 'form', 'layer', 'tagsInput', 'fly'], function () {
+        var $ = layui.jquery
+            , form = layui.form
+            , fly = layui.fly
+            , tagsInput = layui.tagsInput;
+
+        var editorObj; // 编辑器实例
+
+        // https://www.layui.com/doc/modules/form.html#verify
+        // 表单提交前，会自动校验
+        form.verify({
+            title: function (value, item) {
+                if (value.length < 3) {
+                    return '标题不能少于3个字符';
+                }
+            },
+            // 校验输入的积分
+            points: function (value, item) { //value：表单的值、item：表单的DOM对象
+                var visibility = $("select[name=visibilityType]").val();
+                if (visibility === '3') { // 选择了积分购买可见，才校验
+                    console.log(visibility);
+                    if (value === '') {
+                        return '请填写积分';
+                    } else if (parseInt(value) <= 3 || parseInt(value) > 99) {
+                        return '积分必须在[4, 99]范围内';
+                    }
+                }
+            }
+        });
+
+        /*
+         captcha: "123"
+         content: ""
+         points: ""
+         title: "123"
+         topicId: "0"
+         visibilityType: "0"
+         */
+        form.on('submit(publish)', function (data) {
+            // data.field.content 是原始 textarea中的值，并非编辑器中的内容
+            var content = editorObj.getContent();
+            // console.log(content);
+            // console.log(content.length);
+            // console.log(fly.charLen(content));
+            if (fly.charLen(content) < 12) {
+                layer.msg('帖子内容不能少于5个字符', {icon: 5});
+            } else {
+                data.field.content = content;
+                // 网络请求
+                fly.ajax('/post/publish', data.field, function (res) {
+                    // 业务成功（业务状态码）的回调
+                    console.log("请求成功");
+                });
+            }
+            return false;
+        });
+
+        // 监听帖子可见性的下拉选择
+        form.on('select(visibilityType)', function (data) {
+            // 注意不要写成 $("input[name='points']")
+            var pointsInput = $("input[name=points]"); // 积分输入框
+            if (data.value !== '3') { // 积分购买后可见
+                pointsInput.addClass('layui-hide'); // 隐藏
+            } else {
+                pointsInput.removeClass('layui-hide'); // 显示
+            }
+        });
+
+        // 渲染标签输入
+        $("#label").tagsInput({
+            skin: 'tagsinput-default',
+            maxChars: 16,
+            onChange: function () {
+                var input = $(this).siblings('.tagsinput');
+                var maxLen = 5; // e.g.
+                if (input.children('span.tag').length >= maxLen) {
+                    input.children('div').hide();
+                } else {
+                    input.children('div').show();
+                }
+                // console.log($(this).val());
+            }
+        });
+
+        // 渲染富文本编辑器
+        tinymce.init({
+            selector: '#editorContent',
+            height: 480,
+            branding: false,
+            language: 'zh_CN',
+            plugins: 'code print preview fullscreen paste searchreplace save autosave link autolink image imagetools media table codesample lists advlist hr charmap emoticons anchor directionality pagebreak quickbars nonbreaking visualblocks visualchars wordcount',
+            toolbar: 'fullscreen | undo redo | forecolor backcolor | bold italic underline strikethrough | alignleft aligncenter alignright | indent | numlist bullist | formatselect fontselect fontsizeselect | link image media emoticons charmap anchor pagebreak codesample',
+            menubar: [],
+            toolbar_drawer: 'sliding',
+            images_upload_url: '/upload/image',
+            file_picker_types: 'media',
+            file_picker_callback: function (callback, value, meta) {
+                layer.msg('暂不支持上传本地视频', {anim: 6});
+            },
+            init_instance_callback: function (editor) {
+                // console.log(editor);
+                editorObj = editor; // 保存编辑器实例
+            },
+            images_upload_handler: function (blobInfo, succFun, failFun) {
+                var xhr, formData;
+                var file = blobInfo.blob(); //转化为易于理解的file对象
+                xhr = new XMLHttpRequest();
+                xhr.withCredentials = false; // !!!是否携带cookie
+                xhr.open('POST', '/upload/image');
+                xhr.onload = function () {
+                    var json;
+                    // 处理响应的数据
+                    res = JSON.parse(xhr.responseText);
+                    if (xhr.status !== 200 || res.code !== 2000) {
+                        failFun(res.msg);
+                        return;
+                    }
+                    succFun(res.data.url[0]);
+                };
+                formData = new FormData();
+                formData.append('image', file, file.name);//此处与源文档不一样
+                xhr.send(formData);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
