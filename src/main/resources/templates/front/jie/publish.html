@@ -97,15 +97,17 @@
                             <div class="layui-row layui-col-space15 layui-form-item">
                                 <div class="layui-col-md3">
                                     <label class="layui-form-label">所属话题</label>
-                                    <div class="layui-input-block">
-                                        <select lay-verify="required" name="topicId" lay-filter="column">
+                                    <div class="layui-input-block" >
+                                        <select lay-verify="required" name="topicId" >
                                             <option></option>
+                                            <!--
                                             <option value="0">提问</option>
                                             <option value="99">分享</option>
                                             <option value="100">讨论</option>
                                             <option value="101">建议</option>
                                             <option value="168">公告</option>
                                             <option value="169">动态</option>
+                                            -->
                                         </select>
                                     </div>
                                 </div>
@@ -191,12 +193,12 @@
                                     <label for="L_vercode" class="layui-form-label">人类验证</label>
                                     <div class="layui-input-inline">
                                         <input type="text" id="L_vercode" name="captcha" required lay-verify="required"
-                                               placeholder="请回答后面的问题" autocomplete="off" class="layui-input">
+                                               placeholder="验证码" autocomplete="off" class="layui-input">
 
                                     </div>
                                     <div class="layui-input-inline">
-                                        <img src="/post/captcha" class="captcha" alt=""
-                                             onclick="this.src = this.src + '?timestamp=' + (new Date).getTime();"/>
+                                        <img id="captchaImage" src="/post/captcha" class="captcha" alt=""
+                                             onclick="this.src = '/post/captcha?timestamp=' + (new Date).getTime();"/>
                                     </div>
                                 </div>
                             </div>
@@ -223,8 +225,8 @@
 
 <script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
 <!--<script type="text/javascript"  src="../../../assets/js/common.js?v=318"></script>-->
-<script type="text/javascript" th:src="@{/admin/assets/libs/tinymce/tinymce.min.js}"
-        src="../../../assets/libs/tinymce/tinymce.min.js"></script>
+<script th:src="@{/admin/assets/libs/tinymce/tinymce.min.js}" src="../../../assets/libs/tinymce/tinymce.min.js"></script>
+<script th:src="@{/front/res/mods/app.js(v=318)}"></script>
 <script>
     layui.cache.page = 'jie';
     layui.cache.user = {
@@ -235,17 +237,10 @@
         , sex: '男'
     };
 
-
-    layui.config({
-        version: "3.0.0",
-        base: '/front/res/mods/'
-    }).extend({
-        fly: 'index',
-        tagsInput: 'tagsInput/tagsInput',
-    }).use(['jquery', 'form', 'layer', 'tagsInput', 'fly'], function () {
+    layui.use(['tagsInput', 'app'], function () {
         var $ = layui.jquery
             , form = layui.form
-            , fly = layui.fly
+            , app = layui.app
             , tagsInput = layui.tagsInput;
 
         var editorObj; // 编辑器实例
@@ -272,6 +267,17 @@
             }
         });
 
+        // 动态渲染话题列表
+        app.ajax("/topic/all", {}, function (res) {
+           console.log(res);
+           var html = '<option></option>';
+           layui.each(res.data, function (index, item) {
+               html += ('<option value='+ item.id +'>' + item.topicName + '</option>');
+           });
+           $("select[name=topicId]").html(html);
+           form.render('select');
+        }, "get");
+
         /*
          captcha: "123"
          content: ""
@@ -283,17 +289,25 @@
         form.on('submit(publish)', function (data) {
             // data.field.content 是原始 textarea中的值，并非编辑器中的内容
             var content = editorObj.getContent();
+            console.log(data.field);
             // console.log(content);
             // console.log(content.length);
-            // console.log(fly.charLen(content));
-            if (fly.charLen(content) < 12) {
+            // console.log(app.charLen(content));
+            if (app.charLen(content) < 12) {
                 layer.msg('帖子内容不能少于5个字符', {icon: 5});
             } else {
                 data.field.content = content;
+                data.field.labels = $("#label").val();
                 // 网络请求
-                fly.ajax('/post/publish', data.field, function (res) {
+                app.ajax('/post/publish', data.field, function (res) {
                     // 业务成功（业务状态码）的回调
                     console.log("请求成功");
+                    location.reload();
+                }, "post", function (res) {
+                    // 业务失败的回调
+                    // 模拟点击，刷新验证码
+                    $("input[name=captcha]").val('');
+                    $("#captchaImage").click();
                 });
             }
             return false;

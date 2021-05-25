@@ -12,4 +12,9 @@
     <result column="create_id" jdbcType="INTEGER" property="createId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
+
+  <update id="updatePostCountById" parameterType="map">
+    update topic set post_count = post_count + #{cnt} where id = #{topicId}
+  </update>
+
 </mapper>

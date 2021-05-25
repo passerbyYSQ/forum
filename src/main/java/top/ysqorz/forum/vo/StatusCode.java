@@ -24,7 +24,7 @@ public enum StatusCode {
     PARAM_IS_INVALID(6002, "参数无效"),
     FILE_TYPE_INVALID(6003, "非法文件类型"),
     FILE_SIZE_EXCEEDED(6004, "文件大小超出限制"),
-    CAPTCHA_INVALID(6004, "文件大小超出限制"),
+    CAPTCHA_INVALID(6004, "验证码错误"),
 
     // 用户相关
     USERNAME_IS_EXIST(6101, "用户名已存在"),

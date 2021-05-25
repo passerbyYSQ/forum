@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : acan
+ Source Server         : 本地MySQL-5.7
  Source Server Type    : MySQL
- Source Server Version : 50732
+ Source Server Version : 50726
  Source Host           : localhost:3306
  Source Schema         : forum
 
  Target Server Type    : MySQL
- Target Server Version : 50732
+ Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 20/05/2021 17:36:01
+ Date: 25/05/2021 23:20:31
 */
 
 SET NAMES utf8mb4;
@@ -54,7 +54,7 @@ INSERT INTO `blacklist` VALUES (77, 13, 1, '2021-05-20 16:56:56', '2021-05-20 16
 INSERT INTO `blacklist` VALUES (78, 4, 1, '2021-05-20 16:57:31', '2021-05-20 16:56:47', '2021-05-20 16:57:31', '123', 0);
 INSERT INTO `blacklist` VALUES (79, 9, 1, '2021-05-20 16:57:35', '2021-05-20 16:56:45', '2021-05-20 16:57:35', '123', 0);
 INSERT INTO `blacklist` VALUES (80, 7, 1, '2021-05-20 16:57:39', '2021-05-20 16:56:44', '2021-05-20 16:57:39', '123', 0);
-INSERT INTO `blacklist` VALUES (81, 2, 1, '2021-05-20 17:01:59', '2021-05-22 00:00:00', '2021-05-20 17:01:59', '123', 0);
+INSERT INTO `blacklist` VALUES (81, 2, 1, '2021-05-20 17:01:59', '2021-05-23 23:32:12', '2021-05-20 17:01:59', '123', 0);
 
 -- ----------------------------
 -- Table structure for collect
@@ -154,11 +154,15 @@ CREATE TABLE `label`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '标签描述',
   `post_count` int(10) UNSIGNED NOT NULL COMMENT '帖子数',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '标签\r\n' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '标签\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of label
 -- ----------------------------
+INSERT INTO `label` VALUES (1, '大长腿', '', 1);
+INSERT INTO `label` VALUES (2, '测试', '', 1);
+INSERT INTO `label` VALUES (3, '辣妹子', '', 1);
+INSERT INTO `label` VALUES (4, '帅哥', '', 1);
 
 -- ----------------------------
 -- Table structure for like
@@ -228,15 +232,19 @@ CREATE TABLE `post`  (
   `is_hight_quality` tinyint(4) NOT NULL COMMENT '是否为精品',
   `top_weight` int(11) NOT NULL COMMENT '置顶权重',
   `last_comment_time` datetime(0) NULL DEFAULT NULL COMMENT '最后一次评论时间',
-  `visibility_type` tinyint(4) NULL DEFAULT NULL COMMENT '可见策略（之后再考虑规划）',
+  `visibility_type` tinyint(4) NULL DEFAULT NULL COMMENT '可见策略\r\n0：任何人可见\r\n1：粉丝可见\r\n2：点赞后可见\r\n>=3：积分购买后可见（积分就是visibility_type）',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `creator_id`(`creator_id`) USING BTREE,
   INDEX `topic_id`(`topic_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '主题帖' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '主题帖' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of post
 -- ----------------------------
+INSERT INTO `post` VALUES (1, '测试1111111', '<p>测试1111111说的不是吧微软</p>', 1, 1, '2021-05-25 21:13:29', '2021-05-25 21:13:29', 0, 0, 0, 0, 0, 0, NULL, 0);
+INSERT INTO `post` VALUES (2, '235236236', '<p>asvdv</p>', 1, 1, '2021-05-25 22:58:29', '2021-05-25 22:58:29', 0, 0, 0, 0, 0, 0, NULL, 0);
+INSERT INTO `post` VALUES (3, '这是一条非常重要的通知！！！', '<p><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/fc8ef26c62b94b9dbcad19570d9a6880.jpg?timestamp=1621955365165\" width=\"800\" /></p>\n<h1>欢迎。。。</h1>\n<p>&nbsp;</p>\n<table style=\"border-collapse: collapse; width: 100%;\" border=\"1\">\n<tbody>\n<tr>\n<td style=\"width: 50%;\">1</td>\n<td style=\"width: 50%;\">2</td>\n</tr>\n<tr>\n<td style=\"width: 50%;\">3</td>\n<td style=\"width: 50%;\">&nbsp;</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>\n<p><span style=\"font-size: 36pt;\">😂</span></p>\n<p><span style=\"font-size: 14pt;\">你好</span></p>', 1, 2, '2021-05-25 23:11:16', '2021-05-25 23:11:16', 0, 0, 0, 0, 0, 0, NULL, 0);
+INSERT INTO `post` VALUES (4, '我是真的帅', '<p>我是真的帅</p>', 1, 2, '2021-05-25 23:13:02', '2021-05-25 23:13:02', 0, 0, 0, 0, 0, 0, NULL, 1);
 
 -- ----------------------------
 -- Table structure for post_label
@@ -248,11 +256,21 @@ CREATE TABLE `post_label`  (
   `label_id` int(11) UNSIGNED NOT NULL COMMENT '标签id',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `label_id`(`label_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '主题帖表和标签表的关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '主题帖表和标签表的关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of post_label
 -- ----------------------------
+INSERT INTO `post_label` VALUES (1, 1, 1);
+INSERT INTO `post_label` VALUES (2, 1, 2);
+INSERT INTO `post_label` VALUES (3, 1, 3);
+INSERT INTO `post_label` VALUES (4, 2, 1);
+INSERT INTO `post_label` VALUES (5, 2, 3);
+INSERT INTO `post_label` VALUES (6, 3, 1);
+INSERT INTO `post_label` VALUES (7, 3, 3);
+INSERT INTO `post_label` VALUES (8, 4, 1);
+INSERT INTO `post_label` VALUES (9, 4, 4);
+INSERT INTO `post_label` VALUES (10, 4, 3);
 
 -- ----------------------------
 -- Table structure for resource
@@ -266,7 +284,7 @@ CREATE TABLE `resource`  (
   `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '路径',
   `permission` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '权限表达式',
   `type` tinyint(4) NOT NULL COMMENT '类型。0：菜单，1：按钮',
-  `sort_weight` int(11) NULL DEFAULT NULL COMMENT '排序权重',
+  `sort_weight` int(11) NULL DEFAULT 0 COMMENT '排序权重',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
 
@@ -276,14 +294,8 @@ CREATE TABLE `resource`  (
 INSERT INTO `resource` VALUES (1, 0, '系统管理', 'layui-icon layui-icon-set', '', '', 0, 1);
 INSERT INTO `resource` VALUES (2, 1, '用户管理', '', 'system/user', '', 0, 2);
 INSERT INTO `resource` VALUES (5, 1, '角色管理', '', 'system/role', '', 0, 5);
-INSERT INTO `resource` VALUES (6, 5, '查看角色', '', '', 'role:view', 1, 6);
-INSERT INTO `resource` VALUES (7, 5, '更新角色', '', '', 'role:update', 1, 7);
 INSERT INTO `resource` VALUES (8, 1, '权限管理', '', 'system/authorities', '', 0, 8);
-INSERT INTO `resource` VALUES (10, 8, '更新权限', '', '', 'authorities:update', 1, 10);
 INSERT INTO `resource` VALUES (11, 1, '登录日志', '', 'system/loginRecord', 'loginRecord:view', 0, 11);
-INSERT INTO `resource` VALUES (12, 8, '系统监控', 'layui-icon layui-icon-engine', '', '', 0, 12);
-INSERT INTO `resource` VALUES (13, 12, 'Druid监控', '', 'druid', '', 0, 133);
-INSERT INTO `resource` VALUES (14, 11, 'ddddddddddddd', 'asdf', '123', '', 0, 5);
 INSERT INTO `resource` VALUES (15, 0, 'avcsdf', 'asdf', '', '', 0, -2);
 
 -- ----------------------------
@@ -318,11 +330,23 @@ CREATE TABLE `role_resource`  (
   `resource_id` int(11) UNSIGNED NOT NULL COMMENT '权限id',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `resource_id`(`resource_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表和资源表的关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表和资源表的关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role_resource
 -- ----------------------------
+INSERT INTO `role_resource` VALUES (1, 20, 15);
+INSERT INTO `role_resource` VALUES (2, 2, 1);
+INSERT INTO `role_resource` VALUES (3, 2, 11);
+INSERT INTO `role_resource` VALUES (4, 2, 14);
+INSERT INTO `role_resource` VALUES (5, 2, 8);
+INSERT INTO `role_resource` VALUES (6, 2, 12);
+INSERT INTO `role_resource` VALUES (7, 2, 13);
+INSERT INTO `role_resource` VALUES (8, 2, 10);
+INSERT INTO `role_resource` VALUES (9, 2, 5);
+INSERT INTO `role_resource` VALUES (10, 2, 7);
+INSERT INTO `role_resource` VALUES (11, 2, 6);
+INSERT INTO `role_resource` VALUES (12, 2, 2);
 
 -- ----------------------------
 -- Table structure for second_comment
@@ -384,12 +408,15 @@ CREATE TABLE `topic`  (
   `post_count` int(10) UNSIGNED NOT NULL COMMENT '帖子数',
   `create_id` int(11) UNSIGNED NOT NULL COMMENT '创建者',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `sort_weight` int(11) NULL DEFAULT 0 COMMENT '排序权重',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '话题\r\n' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '话题\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of topic
 -- ----------------------------
+INSERT INTO `topic` VALUES (1, '测试', '测试专用', 2, 1, '2021-05-25 16:09:46', 0);
+INSERT INTO `topic` VALUES (2, '通知', '发通知', 2, 1, '2021-05-25 16:10:09', 0);
 
 -- ----------------------------
 -- Table structure for user
@@ -419,8 +446,8 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, '请问', '1', '1', '123456', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-04-01 14:50:24', '2021-05-04 14:50:27', '2021-07-17 14:50:30', 1, 1);
-INSERT INTO `user` VALUES (2, '阿斯蒂', '2', '2', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-03 14:51:34', '2021-05-11 14:51:36', '2021-07-16 14:51:39', 2, 2);
+INSERT INTO `user` VALUES (1, '请问', '1', '1', '123456', '1', '1', 0, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-04-01 14:50:24', '2021-05-04 14:50:27', '2021-07-17 14:50:30', 1, 1);
+INSERT INTO `user` VALUES (2, '阿斯蒂', '2', '2', '123456', '2', '2', 1, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-03 14:51:34', '2021-05-11 14:51:36', '2021-07-16 14:51:39', 2, 2);
 INSERT INTO `user` VALUES (3, '阿萨大', '3', '3', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-06 14:51:34', '2021-05-11 14:51:36', '2021-06-26 14:51:39', 2, 2);
 INSERT INTO `user` VALUES (4, '分', '4', '4', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-23 14:51:34', '2021-05-11 14:51:36', '2021-06-20 14:51:39', 2, 2);
 INSERT INTO `user` VALUES (5, '对', '5', '5', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-01 14:51:34', '2021-05-11 14:51:36', '2021-06-12 14:51:39', 2, 2);
@@ -452,7 +479,7 @@ CREATE TABLE `user_role`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`user_id`) USING BTREE,
   INDEX `role_id`(`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 64 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_role
@@ -478,5 +505,17 @@ INSERT INTO `user_role` VALUES (47, 7, 18, '2021-05-20 17:28:40');
 INSERT INTO `user_role` VALUES (48, 7, 19, '2021-05-20 17:28:40');
 INSERT INTO `user_role` VALUES (49, 7, 20, '2021-05-20 17:28:40');
 INSERT INTO `user_role` VALUES (50, 8, 2, '2021-05-20 17:29:35');
+INSERT INTO `user_role` VALUES (52, 11, 2, '2021-05-21 22:11:54');
+INSERT INTO `user_role` VALUES (53, 11, 3, '2021-05-21 22:11:54');
+INSERT INTO `user_role` VALUES (54, 11, 17, '2021-05-21 22:11:54');
+INSERT INTO `user_role` VALUES (55, 11, 18, '2021-05-21 22:11:54');
+INSERT INTO `user_role` VALUES (56, 11, 19, '2021-05-21 22:11:54');
+INSERT INTO `user_role` VALUES (57, 11, 20, '2021-05-21 22:11:54');
+INSERT INTO `user_role` VALUES (58, 10, 2, '2021-05-22 00:30:39');
+INSERT INTO `user_role` VALUES (59, 10, 3, '2021-05-22 00:30:39');
+INSERT INTO `user_role` VALUES (60, 10, 17, '2021-05-22 00:30:39');
+INSERT INTO `user_role` VALUES (61, 19, 2, '2021-05-22 00:31:10');
+INSERT INTO `user_role` VALUES (62, 19, 3, '2021-05-22 00:31:10');
+INSERT INTO `user_role` VALUES (63, 19, 17, '2021-05-22 00:31:10');
 
 SET FOREIGN_KEY_CHECKS = 1;

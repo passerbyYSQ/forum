@@ -3,19 +3,20 @@ package top.ysqorz.forum.controller.admin;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.service.AuthorityService;
-import top.ysqorz.forum.service.RoleService;
-import top.ysqorz.forum.vo.PageData;
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
+import top.ysqorz.forum.service.AuthorityService;
+import top.ysqorz.forum.service.RoleService;
+import top.ysqorz.forum.vo.PageData;
 import top.ysqorz.forum.vo.PermZTreeNode;
+import top.ysqorz.forum.vo.ResultModel;
+import top.ysqorz.forum.vo.StatusCode;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -30,10 +31,11 @@ import java.util.stream.Collectors;
  * @author passerbyYSQ
  * @create 2021-05-13 23:28
  */
-@RestController // !!!
+@Controller
+@ResponseBody
 @RequestMapping("/admin/system/role")
 @Validated
-public class RoleController {
+public class AdminRoleController {
 
     @Autowired
     private RoleService roleService;

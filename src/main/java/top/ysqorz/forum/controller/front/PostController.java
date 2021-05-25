@@ -1,12 +1,15 @@
 package top.ysqorz.forum.controller.front;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.po.Topic;
+import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.TopicService;
 import top.ysqorz.forum.utils.CaptchaUtils;
 import top.ysqorz.forum.vo.PublishPostVo;
@@ -32,11 +35,14 @@ public class PostController {
     @Resource
     private TopicService topicService;
 
+    @Resource
+    private PostService postService;
+
     /**
      * 发帖页面
      */
     @GetMapping("/publish")
-    public String publishPage() {
+    public String publishPage(Model model) {
         return "front/jie/publish";
     }
 
@@ -55,11 +61,15 @@ public class PostController {
     /**
      * 临时的发帖接口，为了方便往数据库插入数据
      */
+    @ResponseBody
     @PostMapping("/publish")
     public ResultModel publish(@Validated PublishPostVo vo, HttpSession session) {
         // 校验验证码
         String correctCaptcha = (String) session.getAttribute("publishCaptcha");
-        if (correctCaptcha.equalsIgnoreCase(vo.getCaptcha())) {
+        // 由于验证码是一次性的，访问过立马失效，不管校验正确与否
+        session.removeAttribute("publishCaptcha");
+
+        if (!vo.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码错误
         }
 
@@ -69,9 +79,8 @@ public class PostController {
             return ResultModel.failed(StatusCode.TOPIC_NOT_EXIST); // 话题不存在
         }
 
-        // 业务层插入数据。TODO 由于还没做登录，此处传入一个固定的creatorId
-
-
+        // TODO 由于还没做登录，此处传入一个固定的creatorId
+        postService.publishPost(vo, 1);
 
         return ResultModel.success();
     }

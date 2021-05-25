@@ -3,14 +3,15 @@ package top.ysqorz.forum.controller.admin;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.vo.*;
 
 import javax.validation.constraints.NotEmpty;
@@ -21,10 +22,11 @@ import java.util.List;
  * @author 阿灿
  * @create 2021-05-10 16:08
  */
-@RestController
+@Controller
+@ResponseBody
 @RequestMapping("/admin/system/user")
 @Validated
-public class UserController {
+public class AdminUserController {
     @Autowired
     private UserService userService;
 
@@ -50,26 +52,6 @@ public class UserController {
         pageData.setCount(pageinfo.getPageSize());
 
         return ResultModel.success(pageData);
-        //获取结果集
-//        List<UserVo> myUserList = userService.getMyUserList(conditions);
-//        //使用工具类得到分页后的结果集
-//        List<UserVo> data = PageUtils.getPageSizeDataForRelations(myUserList, limit, page);
-//
-//        int size = myUserList.size();//总条数
-//        //总页数
-//        int totlePage = size / limit;//取整
-//        int i = size % limit;//取余
-//        if (i > 0) {
-//            totlePage += 1;
-//        }
-//        PageData<UserVo> pageData = new PageData<>();
-//        pageData.setList(data);  //传入PageUtil处理后的结果集
-//        pageData.setTotal((long) size);  //总数
-//        pageData.setPage(limit);        //每页显示条数
-//        pageData.setCount(totlePage); //总页数
-//
-//        return ResultModel.success(pageData);
-
     }
 
     /**

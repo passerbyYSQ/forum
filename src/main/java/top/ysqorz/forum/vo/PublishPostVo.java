@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 发帖的vo
@@ -19,7 +22,7 @@ public class PublishPostVo {
     private Integer topicId; // 所属话题
 
     @NotEmpty
-    @Size(min = 3)
+    @Size(min = 3, max = 64)
     private String title; // 帖子标题
 
     @NotEmpty
@@ -48,5 +51,13 @@ public class PublishPostVo {
 //    @Size(min = 0, max = 5)
 //    private List<String> labels;
     private String labels;  // 标签，逗号作为分隔符
+
+    public Set<String> splitLabels() {
+        return Arrays.stream(labels.split(",")) // 根据逗号分割
+                .map(s -> s.replace(" ", "").trim()) // 去除空格
+                .filter(s -> !s.isEmpty()) // 只留下非空的
+                .limit(5) // 只取前5个
+                .collect(Collectors.toSet());
+    }
 
 }

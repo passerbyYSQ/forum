@@ -43,11 +43,9 @@ public class AdminIndexController {
 
     /*
      * 用户管理界面
-     * @return
      */
-
     @GetMapping("/system/user")
-    public String systemuser(){
+    public String systemUser(){
         return "admin/system/user";
     }
 }

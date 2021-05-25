@@ -3,8 +3,6 @@
  @Name: Fly社区主入口
 
  */
-
-
 layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function (exports) {
 
     var $ = layui.jquery

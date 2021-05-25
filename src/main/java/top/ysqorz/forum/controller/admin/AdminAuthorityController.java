@@ -1,15 +1,16 @@
 package top.ysqorz.forum.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.service.AuthorityService;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
 import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.po.Resource;
+import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.vo.QueryAuthorityCondition;
+import top.ysqorz.forum.vo.ResultModel;
+import top.ysqorz.forum.vo.StatusCode;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -19,10 +20,11 @@ import java.util.List;
  * @author passerbyYSQ
  * @create 2021-05-08 10:55
  */
-@RestController
+@Controller
+@ResponseBody
 @RequestMapping("/admin/system/authorities")
 @Validated
-public class AuthorityController {
+public class AdminAuthorityController {
 
     @Autowired
     private AuthorityService authorityService;
