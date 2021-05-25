@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
+    <title>话题管理</title>
+    <link href="admin/libs/layui/css/layui.css" rel="stylesheet" th:href="@{/admin/assets/libs/layui/css/layui.css}"/>
+    <link href="admin/module/admin.css?v=318" rel="stylesheet" th:href="@{/admin/assets/module/admin.css(v=318)}"/>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">话题名:</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" name="topicName" placeholder="输入话题名"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn" lay-filter="topicTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="topicTable" lay-filter="topicTable"></table>
+
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script id="userTbBar" type="text/html">
+
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="check">查看帖子</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改话题</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除话题</a>
+</script>
+<!-- 表单弹窗 -->
+<script id="topicEditDialog" type="text/html">
+    <form id="topicEditForm" lay-filter="topicEditForm" class="layui-form model-form">
+        <input name="topicId" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">话题名:</label>
+            <div class="layui-input-block">
+                <input name="topicName" placeholder="请输入话题名" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述:</label>
+            <div class="layui-input-block">
+                <textarea name="description" placeholder="请输入话题描述" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="topicEditSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+<!-- js部分 -->
+<script src="admin/libs/layui/layui.js" th:src="@{/admin/assets/libs/layui/layui.js}" type="text/javascript"></script>
+<script src="admin/js/common.js?v=318" th:src="@{/admin/assets/js/common.js(v=318)}" type="text/javascript"></script>
+<script th:inline="none">
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'laydate', 'xmSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+
+
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#topicTable',
+            url: '/admin/system/topic/table',
+            response: {
+                statusCode: 2000 //规定成功的状态码，默认：0
+
+            },
+            parseData: function (res) { //res 即为原始返回的数据
+                console.log(res);
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.data.total, //解析数据长度
+                    "data": res.data.list //解析数据列表
+                };
+            },
+            // where: {token: 'sasasas', id: 123},
+            page: true,
+            toolbar: ['<p>',
+                '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'topicName', title: '话题名', align: 'center'},
+                {field: 'description', title: '话题描述', sort: true, align: 'center'},
+                {field: 'postCount', title: '帖子数', sort: true, align: 'center'},
+                {field: 'username', title: '创建者', sort: true, align: 'center'},
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true, align: 'center'
+                },
+                {title: '操作', toolbar: '#userTbBar', align: 'center', minWidth: 200}
+            ]],
+
+
+        });
+
+
+        /* 表格搜索 */
+        form.on('submit(topicTbSearch)', function (data) {
+            console.log(data.field);
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(topicTable)', function (obj) {
+            if (obj.event === 'add') { // 添加
+                showEditModel();
+            } else if (obj.event === 'del') { // 删除
+                var checkRows = table.checkStatus('topicTable');
+                if (checkRows.data.length === 0) {
+                    layer.msg('请选择要删除的数据', {icon: 2});
+                    return;
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.id;
+                });
+                doDel({ids: ids});
+            }
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(topicTable)', function (obj) {
+            if (obj.event === 'edit') { // 修改
+                showEditModel(obj.data);
+            } else if (obj.event === 'del') { // 删除
+                doDel(obj);
+            } else if (obj.event === 'check') {  // 查看topic下的帖子
+                //未写
+            }
+        });
+
+
+        /* 显示表单弹窗 */
+        function showEditModel(mData) {
+            console.log(mData);
+            admin.open({
+                type: 1,
+                title: (mData ? '修改' : '添加') + '话题',
+                content: $('#topicEditDialog').html(),
+                success: function (layero, dIndex) {
+                    // 回显表单数据
+                    form.val('topicEditForm', mData);
+                    // 表单提交事件
+                    form.on('submit(topicEditSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        var url = '/admin/system/topic/' + (mData ? 'update' : 'add');
+                        if (mData) {
+                            data.field.id = mData.id;
+                        }
+                        $.post(url, data.field, function (res) {
+                            layer.close(loadIndex);
+                            if (2000 === res.code) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                insTb.reload({page: {curr: 1}});
+                            } else {
+                                layer.msg(res.msg, {icon: 2});
+                            }
+                        }, 'json');
+                        return false;
+                    });
+                }
+            });
+        }
+
+
+        /* 删除 */
+        function doDel(obj) {
+            console.log(obj);
+            layer.confirm('确定要删除选中数据吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.post('/admin/system/topic/del', {
+                    topicIds: obj.data ? [obj.data.id] : obj.ids
+                }, function (res) {
+                    layer.close(loadIndex);
+                    if (2000 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                }, 'json');
+            });
+        }
+
+
+    });
+</script>
+
+</body>
+</html>

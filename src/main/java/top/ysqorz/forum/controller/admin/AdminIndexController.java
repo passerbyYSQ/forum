@@ -47,7 +47,15 @@ public class AdminIndexController {
      */
 
     @GetMapping("/system/user")
-    public String systemuser(){
+    public String user() {
         return "admin/system/user";
+    }
+
+    /**
+     * 话题管理
+     */
+    @GetMapping("/system/topic")
+    public String topic() {
+        return "admin/system/topic";
     }
 }

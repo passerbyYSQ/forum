@@ -1,11 +1,18 @@
 package top.ysqorz.forum.po;
 
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,15 +20,26 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode
 @Table(name = "topic")
 public class Topic {
+
+    public interface Add {
+    }
+
+    public interface Update {
+    }
+
     /**
      * 话题id
      */
+    @NotNull(groups = Topic.Update.class) // 分组校验
+    @Min(value = 0, groups = Role.Update.class)
     @Id
     private Integer id;
 
     /**
      * 话题名
      */
+    @NotEmpty
+    @Size(min = 2, max = 32)
     @Column(name = "topic_name")
     private String topicName;
 
