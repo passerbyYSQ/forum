@@ -5,16 +5,25 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="topic_name" jdbcType="VARCHAR" property="topicName" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="post_count" jdbcType="INTEGER" property="postCount" />
-    <result column="create_id" jdbcType="INTEGER" property="createId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <id column="id" jdbcType="INTEGER" property="id"/>
+    <result column="topic_name" jdbcType="VARCHAR" property="topicName"/>
+    <result column="description" jdbcType="VARCHAR" property="description"/>
+    <result column="post_count" jdbcType="INTEGER" property="postCount"/>
+    <result column="create_id" jdbcType="INTEGER" property="createId"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
   </resultMap>
 
   <update id="updatePostCountById" parameterType="map">
     update topic set post_count = post_count + #{cnt} where id = #{topicId}
   </update>
 
+  <select id="getAllTopic" resultType="top.ysqorz.forum.vo.TopicVo">
+
+    select t.*,u.username from topic t join user u on t.create_id=u.id
+    where 1=1
+    <if test="topicName!=null and topicName!=''">
+      <bind name="paran_topicName" value="'%'+topicName+'%'"/>
+      and topic_name like #{paran_topicName}
+    </if>
+  </select>
 </mapper>
