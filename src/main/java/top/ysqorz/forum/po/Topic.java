@@ -69,6 +69,8 @@ public class Topic {
 	/**
      * 排序权重
      */
+    @NotNull
+    @Min(value = 0)
     @Column(name = "sort_weight")
     private Integer sortWeight;
 

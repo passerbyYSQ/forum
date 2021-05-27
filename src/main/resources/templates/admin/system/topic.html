@@ -43,8 +43,15 @@
 <script id="userTbBar" type="text/html">
 
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="check">查看帖子</a>
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改话题</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除话题</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
+<!--    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除话题</a>-->
+</script>
+<!-- 表格状态列 -->
+<script type="text/html" id="userTbState">
+    <input type="checkbox" lay-filter="userTbStateCk" value="{{d.topicName}}" lay-skin="switch"
+           lay-text="正常|已归档" {{d.archive==0?'checked':''}} style="display: none;"
+           data-q="{{d.id}}"/>
+    <!--    <p style="display: none;">{{d.startTime!=null?'正常':'锁定'}}</p>-->
 </script>
 <!-- 表单弹窗 -->
 <script id="topicEditDialog" type="text/html">
@@ -54,6 +61,13 @@
             <label class="layui-form-label layui-form-required">话题名:</label>
             <div class="layui-input-block">
                 <input name="topicName" placeholder="请输入话题名" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">排序号:</label>
+            <div class="layui-input-block">
+                <input name="sortWeight" placeholder="请输入排序号" class="layui-input"
                        lay-verType="tips" lay-verify="required" required/>
             </div>
         </div>
@@ -103,16 +117,17 @@
             page: true,
             toolbar: ['<p>',
                 '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
-                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
                 '</p>'].join(''),
             cellMinWidth: 100,
             cols: [[
-                {type: 'checkbox'},
+               // {type: 'checkbox'},
                 {type: 'numbers'},
                 {field: 'topicName', title: '话题名', align: 'center'},
                 {field: 'description', title: '话题描述', sort: true, align: 'center'},
                 {field: 'postCount', title: '帖子数', sort: true, align: 'center'},
                 {field: 'username', title: '创建者', sort: true, align: 'center'},
+                {field: 'sortWeight', title: '排序号', align: 'center', width: 80},
+                {title: '状态', templet: '#userTbState', sort: true, width: 100, align: 'center'},
                 {
                     field: 'createTime', title: '创建时间', templet: function (d) {
                         return util.toDateString(d.createTime);
@@ -160,7 +175,54 @@
                 //未写
             }
         });
+        /* 修改话题状态 */
+        form.on('switch(userTbStateCk)', function (obj) {
+            console.log(obj);
+            var i = obj.elem.checked ? 0 : 1;
+            var q = $(this).data('q');
+            if (i == 1) {
+                layer.confirm('确定要将“' + obj.elem.value + '”归档吗？', {
+                    skin: 'layui-layer-admin',
+                    shade: .1
+                }, function (i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    $.post('/admin/system/topic/archive', {
+                        id:q,state:1
+                    }, function (res) {
+                        layer.close(loadIndex);
+                        if (2000 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.reload({page: {curr: 1}});
+                        } else {
+                            layer.msg(res.msg, {icon: 2});
+                        }
+                    }, 'json');
+                });
 
+            } else {
+
+                layer.confirm('确定要将“' + obj.elem.value + '”取消归档吗？', {
+                    skin: 'layui-layer-admin',
+                    shade: .1
+                }, function (i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    $.post('/admin/system/topic/archive', {
+                       id:q,state:0
+                    }, function (res) {
+                        layer.close(loadIndex);
+                        if (2000 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.reload({page: {curr: 1}});
+                        } else {
+                            layer.msg(res.msg, {icon: 2});
+                        }
+                    }, 'json');
+                });
+            }
+
+        });
 
         /* 显示表单弹窗 */
         function showEditModel(mData) {
@@ -178,6 +240,7 @@
                         var url = '/admin/system/topic/' + (mData ? 'update' : 'add');
                         if (mData) {
                             data.field.id = mData.id;
+                            data.field.archive=mData.archive;
                         }
                         $.post(url, data.field, function (res) {
                             layer.close(loadIndex);

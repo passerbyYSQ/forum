@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 25/05/2021 23:20:31
+ Date: 27/05/2021 20:56:36
 */
 
 SET NAMES utf8mb4;
@@ -409,14 +409,15 @@ CREATE TABLE `topic`  (
   `create_id` int(11) UNSIGNED NOT NULL COMMENT '创建者',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   `sort_weight` int(11) NULL DEFAULT 0 COMMENT '排序权重',
+  `archive` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否归档。0：没有归档，1：已归档',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '话题\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of topic
 -- ----------------------------
-INSERT INTO `topic` VALUES (1, '测试', '测试专用', 2, 1, '2021-05-25 16:09:46', 0);
-INSERT INTO `topic` VALUES (2, '通知', '发通知', 2, 1, '2021-05-25 16:10:09', 0);
+INSERT INTO `topic` VALUES (1, '测试', '测试专用', 2, 1, '2021-05-25 16:09:46', 0, 0);
+INSERT INTO `topic` VALUES (2, '通知', '发通知', 2, 1, '2021-05-25 16:10:09', 0, 0);
 
 -- ----------------------------
 -- Table structure for user
