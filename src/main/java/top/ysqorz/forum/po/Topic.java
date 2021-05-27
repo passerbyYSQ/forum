@@ -30,7 +30,7 @@ public class Topic {
     /**
      * 话题id
      */
-    @NotNull(groups = Topic.Update.class) // 分组校验
+    @NotNull(groups = Update.class) // 分组校验
     @Min(value = 0, groups = Role.Update.class)
     @Id
     private Integer id;
@@ -65,4 +65,15 @@ public class Topic {
      */
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
+	/**
+     * 排序权重
+     */
+    @Column(name = "sort_weight")
+    private Integer sortWeight;
+
+    /**
+     * 是否归档。0：没有归档，1：已归档
+     */
+    private Byte archive;
 }

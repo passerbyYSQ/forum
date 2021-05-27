@@ -114,7 +114,7 @@
 <!--        <table tableName="system_notification" />-->
 <!--        <table tableName="topic" />-->
 <!--        <table tableName="user" />-->
-        <table tableName="user_role" />
+        <table tableName="topic" />
 
     </context>
 

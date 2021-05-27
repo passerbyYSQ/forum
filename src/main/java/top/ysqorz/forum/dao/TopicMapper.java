@@ -5,7 +5,6 @@ import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.vo.TopicVo;
 
 import java.util.List;
-
 import java.util.Map;
 
 public interface TopicMapper extends BaseMapper<Topic> {

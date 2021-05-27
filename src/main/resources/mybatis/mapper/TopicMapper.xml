@@ -5,12 +5,14 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="id" jdbcType="INTEGER" property="id"/>
-    <result column="topic_name" jdbcType="VARCHAR" property="topicName"/>
-    <result column="description" jdbcType="VARCHAR" property="description"/>
-    <result column="post_count" jdbcType="INTEGER" property="postCount"/>
-    <result column="create_id" jdbcType="INTEGER" property="createId"/>
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="topic_name" jdbcType="VARCHAR" property="topicName" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="post_count" jdbcType="INTEGER" property="postCount" />
+    <result column="create_id" jdbcType="INTEGER" property="createId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="sort_weight" jdbcType="INTEGER" property="sortWeight" />
+    <result column="archive" jdbcType="TINYINT" property="archive" />
   </resultMap>
 
   <update id="updatePostCountById" parameterType="map">
@@ -26,4 +28,5 @@
       and topic_name like #{paran_topicName}
     </if>
   </select>
+
 </mapper>
