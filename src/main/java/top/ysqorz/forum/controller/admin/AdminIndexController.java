@@ -41,7 +41,7 @@ public class AdminIndexController {
     }
 
 
-    /*
+    /**
      * 用户管理界面
      */
     @GetMapping("/system/user")

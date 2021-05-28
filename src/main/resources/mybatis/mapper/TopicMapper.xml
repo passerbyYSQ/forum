@@ -27,6 +27,7 @@
       <bind name="paran_topicName" value="'%'+topicName+'%'"/>
       and topic_name like #{paran_topicName}
     </if>
+    order by sort_weight desc
   </select>
 
 </mapper>

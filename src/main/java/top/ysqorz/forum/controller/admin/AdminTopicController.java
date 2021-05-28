@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
 import top.ysqorz.forum.vo.PageData;
@@ -13,7 +12,7 @@ import top.ysqorz.forum.vo.ResultModel;
 import top.ysqorz.forum.vo.StatusCode;
 import top.ysqorz.forum.vo.TopicVo;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -51,15 +50,6 @@ public class AdminTopicController {
 
     }
 
-    /**
-     * 删除话题
-     */
-    @PostMapping("/del")
-    public ResultModel delTopic(@RequestParam("topicIds[]") @NotEmpty Integer[] topicIds)
-            throws ParameterErrorException {
-        topicService.deleteTopic(topicIds);
-        return ResultModel.success();
-    }
 
     /**
      * 添加话题
@@ -78,6 +68,21 @@ public class AdminTopicController {
         return cnt == 1 ? ResultModel.success() :
                 ResultModel.failed(StatusCode.TOPIC_NOT_EXIST);
     }
+
+    /**
+     * 是否归档
+     *
+     * @param id
+     * @param state
+     * @return
+     */
+    @PostMapping("/archive")
+    public ResultModel archive(@NotNull Integer id, @NotNull Integer state) {
+        int cnt = topicService.archive(id, state);
+        return cnt == 1 ? ResultModel.success() :
+                ResultModel.failed(StatusCode.PARAM_NOT_COMPLETED);
+    }
+
 
 }
 

@@ -48,4 +48,15 @@ public class TopicVo {
     @Column(name = "create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 排序权重
+     */
+    @Column(name = "sort_weight")
+    private Integer sortWeight;
+
+    /**
+     * 是否归档。0：没有归档，1：已归档
+     */
+    private Byte archive;
+
 }
