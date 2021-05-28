@@ -23,9 +23,11 @@ public class TopicController {
     @Resource
     private TopicService topicService;
 
+    /**
+     * 不分页获取所有话题
+     */
     @GetMapping("/all")
     public ResultModel<List<Topic>> allTopic() {
         return ResultModel.success(topicService.getAllTopic());
     }
-
 }

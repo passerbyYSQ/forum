@@ -297,7 +297,7 @@
                 layer.msg('帖子内容不能少于5个字符', {icon: 5});
             } else {
                 data.field.content = content;
-                data.field.labels = $("#label").val();
+                data.field.labels = $("#label").val(); // 标签
                 // 网络请求
                 app.ajax('/post/publish', data.field, function (res) {
                     // 业务成功（业务状态码）的回调
@@ -330,14 +330,24 @@
             maxChars: 16,
             onChange: function () {
                 var input = $(this).siblings('.tagsinput');
-                var maxLen = 5; // e.g.
+                var maxLen = 5; // e.g. 限制只能输入5个标签
                 if (input.children('span.tag').length >= maxLen) {
                     input.children('div').hide();
                 } else {
                     input.children('div').show();
                 }
                 // console.log($(this).val());
+            },
+            autocomplete_request: function (keyword, callback) {
+                app.ajax('/label/like', {
+                    name: keyword,
+                    maxCount: 5
+                }, function (res) {
+                    var labels = res.data.map(label => label.labelName);
+                    callback(labels);
+                }, "get");
             }
+
         });
 
         // 渲染富文本编辑器

@@ -1,12 +1,15 @@
 package top.ysqorz.forum.service.impl;
 
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.dao.LabelMapper;
 import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.service.LabelService;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author passerbyYSQ
@@ -17,6 +20,15 @@ public class LabelServiceImpl implements LabelService {
 
     @Resource
     private LabelMapper labelMapper;
+
+    @Override
+    public List<Label> getLabelsLikeName(String labelName, Integer maxCount) {
+        Example example = new Example(Label.class);
+        if (!ObjectUtils.isEmpty(labelName)) {
+            example.createCriteria().andLike("labelName", "%" + labelName + "%");
+        }
+        return labelMapper.selectByExampleAndRowBounds(example, new RowBounds(0, maxCount));
+    }
 
     @Override
     public Label getLabelByName(String labelName) {

@@ -93,19 +93,19 @@ public class UserServiceImpl implements UserService {
     @Transactional // 开启事务操作
     @Override
     public int addRoleForUser(Integer[] roleIds, Integer userId) throws ParameterErrorException {
-        for (int i = 0; i < roleIds.length; i++) {
+        for (Integer roleId : roleIds) {
             Example example2 = new Example(Role.class);
-            example2.createCriteria().andEqualTo("id", roleIds[i]);
+            example2.createCriteria().andEqualTo("id", roleId);
             Role role = roleMapper.selectOneByExample(example2);
             if (role == null) {
                 throw new ParameterErrorException("角色不存在");
             }
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)
-                    .andEqualTo("roleId", roleIds[i]);
+                    .andEqualTo("roleId", roleId);
             if (userRoleMapper.selectCountByExample(example) == 0) {
                 UserRole userRole = new UserRole();
-                userRole.setRoleId(roleIds[i]);
+                userRole.setRoleId(roleId);
                 userRole.setUserId(userId);
                 userRole.setCreateTime(LocalDateTime.now());
                 userRoleMapper.insert(userRole);

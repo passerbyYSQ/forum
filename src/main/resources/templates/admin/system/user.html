@@ -52,30 +52,36 @@
                             <input name="phone" class="layui-input" placeholder="输入手机号"/>
                         </div>
                     </div>
-
-                    <div class="layui-inline">
-                        <label class="layui-form-label">时间段:</label>
+                    <div class="layui-inline form-search-show-expand">
+                        <label class="layui-form-label">时间类型:</label>
                         <div class="layui-input-inline">
                             <select name="state">
-                                <option value="0" selected="selected">请选择时间类型</option>
+                                <option value="0">请选择时间类型</option>
                                 <option value="1">注册时间</option>
                                 <option value="2">登录时间</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="layui-inline">
                         <!--                        <label class="layui-form-label">输入时间段:</label>-->
-                        <div>
-                            <input name="time" id="time" class="layui-input" size="50"/>
+                    </div>
+                    <div class="layui-inline form-search-show-expand">
+                        <label class="layui-form-label">时间范围:</label>
+                        <div class="layui-input-inline">
+                            <input name="time" id="time" class="layui-input icon-date"
+                                   placeholder="选择时间范围" autocomplete="off"/>
                         </div>
                     </div>
-
-                    <div class="layui-inline">&emsp;
+                    <div class="layui-inline">
+                        <label class="layui-form-label"></label>
                         <button class="layui-btn icon-btn" lay-filter="userTbSearch" lay-submit>
                             <i class="layui-icon">&#xe615;</i>搜索
                         </button>
+                        <a class="layui-btn form-search-expand" search-expand>
+                            展开 <i class="layui-icon layui-icon-down"></i></a>
                     </div>
                 </div>
+<!--                <div class="layui-form-item">-->
+<!--                    -->
+<!--                </div>-->
             </form>
             <!-- 数据表格 -->
             <table id="userTable" lay-filter="userTable"></table>
@@ -328,7 +334,7 @@
                 layer.open({
                     type: 1,
                     title: '角色分配',
-                    area: ['700px', '600px'], //宽高
+                    area: ['640px', '560px'], //宽高
                     content: $('#roleDialog').html(),
                     success: function (layero, dIndex) {
 
@@ -408,7 +414,7 @@
                 layer.open({
                     type: 1,
                     title: '已有角色删除',
-                    area: ['700px', '600px'], //宽高
+                    area: ['640px', '560px'], //宽高
                     content: $('#roleDelDialog').html(),
                     success: function (layero, dIndex) {
 
