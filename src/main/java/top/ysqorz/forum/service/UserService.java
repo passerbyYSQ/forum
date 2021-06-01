@@ -2,15 +2,11 @@ package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Blacklist;
-import top.ysqorz.forum.po.User;
-
-
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.vo.BlackInfoVo;
-import top.ysqorz.forum.vo.UserVo;
-
 import top.ysqorz.forum.vo.QueryUserCondition;
+import top.ysqorz.forum.vo.UserVo;
 
 import java.util.List;
 
@@ -74,6 +70,14 @@ public interface UserService {
      * 删除用户已分配角色
      */
     int delRoleForUser(Integer[] roleIds, Integer userId);
+
+
+    void register(User user);
+
+    User login(String username, String password);
+
+    String generateJwt(User user);
+
 
 
 }

@@ -3,6 +3,7 @@ package top.ysqorz.forum.config;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -89,6 +90,13 @@ public class GlobalExceptionHandler {
         ResultModel res = ResultModel.failed(e instanceof TokenExpiredException ?
                         StatusCode.TOKEN_IS_EXPIRED : StatusCode.TOKEN_IS_INVALID); // token过期，登录状态过期
         return wrapModelAndView(res, request);
+    }
+
+    // 授权异常
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AuthorizationException.class)
+    public ModelAndView handlerAuthorizationException(AuthorizationException e, HttpServletRequest request) {
+        return wrapModelAndView(ResultModel.failed(StatusCode.AUTHORIZATION_FAILED), request);
     }
 
 

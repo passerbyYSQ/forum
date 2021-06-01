@@ -1,19 +1,23 @@
 package top.ysqorz.forum.po;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @EqualsAndHashCode
 @Table(name = "user")
-public class User {
+public class User implements Serializable {
     /**
      * 用户id
      */
@@ -106,4 +110,27 @@ public class User {
      */
     @Column(name = "fans_count")
     private Integer fansCount;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", passsword='" + passsword + '\'' +
+                ", loginSalt='" + loginSalt + '\'' +
+                ", jwtSalt='" + jwtSalt + '\'' +
+                ", gender=" + gender +
+                ", photo='" + photo + '\'' +
+                ", description='" + description + '\'' +
+                ", birth=" + birth +
+                ", position='" + position + '\'' +
+                ", registerTime=" + registerTime +
+                ", modifyTime=" + modifyTime +
+                ", lastLoginTime=" + lastLoginTime +
+                ", rewardPoints=" + rewardPoints +
+                ", fansCount=" + fansCount +
+                '}';
+    }
 }

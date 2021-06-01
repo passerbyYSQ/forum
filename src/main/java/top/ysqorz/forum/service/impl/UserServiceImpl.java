@@ -1,30 +1,35 @@
 package top.ysqorz.forum.service.impl;
 
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
-import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.dao.*;
-
-import top.ysqorz.forum.po.*;
-
+import top.ysqorz.forum.dao.BlacklistMapper;
+import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
+import top.ysqorz.forum.dao.UserRoleMapper;
 import top.ysqorz.forum.po.Blacklist;
+import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.po.UserRole;
+import top.ysqorz.forum.service.UserService;
+import top.ysqorz.forum.utils.JwtUtils;
+import top.ysqorz.forum.utils.RandomUtil;
 import top.ysqorz.forum.vo.BlackInfoVo;
-import top.ysqorz.forum.vo.UserVo;
 import top.ysqorz.forum.vo.QueryUserCondition;
+import top.ysqorz.forum.vo.UserVo;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 阿灿
  * @create 2021-05-10 16:10
  */
-@Service
+@Service("userService") // 不要忘了
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -130,6 +135,55 @@ public class UserServiceImpl implements UserService {
 
         }
         return 1;
+    }
+
+    @Override
+    public void register(User user) {
+
+        // 8个字符的随机字符串，作为加密登录的随机盐。
+        String salt = RandomUtil.generateStr(8);
+        // 保存到user表，以后每次密码登录的时候，需要使用
+        user.setLoginSalt(salt);
+
+        // Md5Hash默认将随机盐拼接到源字符串的前面，然后使用md5加密，再经过x次的哈希散列
+        // 第三个参数（hashIterations）：哈希散列的次数
+        Md5Hash md5Hash = new Md5Hash(user.getPasssword(), user.getLoginSalt(), 1024);
+        // 保存加密后的密码
+        user.setPasssword(md5Hash.toHex());
+
+        user.setRegisterTime(LocalDateTime.now());
+        user.setModifyTime(LocalDateTime.now());
+        user.setRewardPoints(0);
+        user.setFansCount(0);
+
+
+       userMapper.insertUseGeneratedKeys(user);
+    }
+
+    @Override
+    public User login(String username, String password) {
+        Example example = new Example(User.class);
+        example.createCriteria().andEqualTo("username", username);
+        User user = userMapper.selectOneByExample(example);
+        if (user == null) {
+            return null; // 用户名不存在
+        }
+        // 以注册时的相同规则，加密用户输入的密码
+        Md5Hash md5Hash = new Md5Hash(password, user.getLoginSalt(), 1024);
+        // 比对密码
+        return user.getPasssword().equals(md5Hash.toHex()) ? user : null;
+    }
+
+    @Override
+    public String generateJwt(User user) {
+        // 8个字符的随机字符串，作为生成jwt的随机盐
+        // 保证每次登录成功返回的Token都不一样
+        String jwtSecret = RandomUtil.generateStr(8);
+        // 将此次登录成功的jwt secret存到数据库，下次携带jwt时解密需要使用
+        user.setJwtSalt(jwtSecret);
+        userMapper.updateByPrimaryKeySelective(user);
+        return JwtUtils.generateJwt("userId", user.getId().toString(),
+                jwtSecret, TimeUnit.SECONDS.toMillis(60 * 60)); // 有效期 60s
     }
 
 

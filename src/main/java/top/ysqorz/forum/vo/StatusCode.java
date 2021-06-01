@@ -26,6 +26,19 @@ public enum StatusCode {
     FILE_SIZE_EXCEEDED(6004, "文件大小超出限制"),
     CAPTCHA_INVALID(6004, "验证码错误"),
 
+    // 认证相关
+    TOKEN_INVALID(6000, "无效token"),
+    TOKEN_EXPIRED(6001, "token已过期，请重新登录"),
+    ACCOUNT_INCORRECT(6002, "账号错误"),
+    CREDENTIAL_INCORRECT(6003, "密码错误"), // 凭证错误
+    AUTHENTICATION_FAILED(6004, "认证失败，无效token或token已过期"),
+    // 授权相关
+    AUTHORIZATION_FAILED(6005, "无权限访问"),
+
+    LOGIN_FAILED(6020, "登录失败，检查账号或密码是否错误"),
+    PARAMETER_INVALID(6021, "参数错误"),
+
+
     // 用户相关
     USERNAME_IS_EXIST(6101, "用户名已存在"),
     PASSWORD_INCORRECT(6102, "密码错误"),
