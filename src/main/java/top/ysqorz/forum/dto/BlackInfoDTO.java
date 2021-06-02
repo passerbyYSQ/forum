@@ -1,10 +1,9 @@
-package top.ysqorz.forum.vo;
+package top.ysqorz.forum.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-public class BlackInfoVo {
+public class BlackInfoDTO {
 
 
     /**

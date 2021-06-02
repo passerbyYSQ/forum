@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.service.LabelService;
-import top.ysqorz.forum.vo.ResultModel;
+import top.ysqorz.forum.dto.ResultModel;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -30,6 +30,7 @@ public class LabelController {
     @GetMapping("/like")
     public ResultModel<List<Label>> getLabelsLikeName(String name,  // 可以不传，在service层判断了
            @RequestParam(defaultValue = "1") Integer maxCount) { // 可以不传，有默认值
+
         return ResultModel.success(labelService.getLabelsLikeName(name, maxCount));
     }
 

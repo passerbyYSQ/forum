@@ -1,4 +1,4 @@
-package top.ysqorz.forum.vo;
+package top.ysqorz.forum.dto;
 
 import lombok.Data;
 import top.ysqorz.forum.po.Role;
@@ -12,7 +12,7 @@ import java.util.List;
  * @create 2021-05-14 22:47
  */
 @Data
-public class UserVo {
+public class UserDTO {
     /**
      * 用户id
      */

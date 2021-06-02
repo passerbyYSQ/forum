@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.JwtUtils;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
+import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.dto.StatusCode;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;

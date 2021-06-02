@@ -1,7 +1,7 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.po.Topic;
-import top.ysqorz.forum.vo.TopicVo;
+import top.ysqorz.forum.dto.TopicDTO;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface TopicService {
     /**
      * 获取所有topic
      */
-    List<TopicVo> getAllTopic(String topicName);
+    List<TopicDTO> getAllTopic(String topicName);
 
     /**
      * 获取所有话题（不分表，不联表）

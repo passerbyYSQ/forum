@@ -16,10 +16,10 @@ import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.po.UserRole;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.JwtUtils;
-import top.ysqorz.forum.utils.RandomUtil;
-import top.ysqorz.forum.vo.BlackInfoVo;
-import top.ysqorz.forum.vo.QueryUserCondition;
-import top.ysqorz.forum.vo.UserVo;
+import top.ysqorz.forum.utils.RandomUtils;
+import top.ysqorz.forum.dto.BlackInfoDTO;
+import top.ysqorz.forum.dto.QueryUserCondition;
+import top.ysqorz.forum.dto.UserDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,7 +43,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserVo> getMyUserList(QueryUserCondition conditions) {
+    public User getUserByEmail(String email) {
+        Example example = new Example(User.class);
+        example.createCriteria().andEqualTo("email", email);
+        return userMapper.selectOneByExample(example);
+    }
+
+    @Override
+    public List<UserDTO> getMyUserList(QueryUserCondition conditions) {
         //System.out.println(conditions);
         return userMapper.selectAllUser(conditions);
     }
@@ -86,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BlackInfoVo getBlackInfo(Integer userId) {
+    public BlackInfoDTO getBlackInfo(Integer userId) {
         return blacklistMapper.getBlockInfo(userId, LocalDateTime.now());
     }
 
@@ -141,7 +148,7 @@ public class UserServiceImpl implements UserService {
     public void register(User user) {
 
         // 8个字符的随机字符串，作为加密登录的随机盐。
-        String salt = RandomUtil.generateStr(8);
+        String salt = RandomUtils.generateStr(8);
         // 保存到user表，以后每次密码登录的时候，需要使用
         user.setLoginSalt(salt);
 
@@ -156,29 +163,15 @@ public class UserServiceImpl implements UserService {
         user.setRewardPoints(0);
         user.setFansCount(0);
 
-
        userMapper.insertUseGeneratedKeys(user);
     }
 
-    @Override
-    public User login(String username, String password) {
-        Example example = new Example(User.class);
-        example.createCriteria().andEqualTo("username", username);
-        User user = userMapper.selectOneByExample(example);
-        if (user == null) {
-            return null; // 用户名不存在
-        }
-        // 以注册时的相同规则，加密用户输入的密码
-        Md5Hash md5Hash = new Md5Hash(password, user.getLoginSalt(), 1024);
-        // 比对密码
-        return user.getPasssword().equals(md5Hash.toHex()) ? user : null;
-    }
 
     @Override
     public String generateJwt(User user) {
         // 8个字符的随机字符串，作为生成jwt的随机盐
         // 保证每次登录成功返回的Token都不一样
-        String jwtSecret = RandomUtil.generateStr(8);
+        String jwtSecret = RandomUtils.generateStr(8);
         // 将此次登录成功的jwt secret存到数据库，下次携带jwt时解密需要使用
         user.setJwtSalt(jwtSecret);
         userMapper.updateByPrimaryKeySelective(user);

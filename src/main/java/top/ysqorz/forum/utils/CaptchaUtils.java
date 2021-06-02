@@ -17,8 +17,8 @@ import java.util.Random;
  */
 public class CaptchaUtils {
 
-	private static Integer width = 92;
-	private static Integer height = 36;
+	private static Integer width = 120;
+	private static Integer height = 46;
 	private static Integer charCnt = 4; // 验证码图片中字符的个数
 	private static Integer lineCnt = 8;
 

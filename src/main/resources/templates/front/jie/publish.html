@@ -97,8 +97,8 @@
                             <div class="layui-row layui-col-space15 layui-form-item">
                                 <div class="layui-col-md3">
                                     <label class="layui-form-label">所属话题</label>
-                                    <div class="layui-input-block" >
-                                        <select lay-verify="required" name="topicId" >
+                                    <div class="layui-input-block">
+                                        <select lay-verify="required" name="topicId">
                                             <option></option>
                                             <!--
                                             <option value="0">提问</option>
@@ -224,8 +224,8 @@
 </div>
 
 <script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
-<!--<script type="text/javascript"  src="../../../assets/js/common.js?v=318"></script>-->
-<script th:src="@{/admin/assets/libs/tinymce/tinymce.min.js}" src="../../../assets/libs/tinymce/tinymce.min.js"></script>
+<script th:src="@{/admin/assets/libs/tinymce/tinymce.min.js}"
+        src="../../../assets/libs/tinymce/tinymce.min.js"></script>
 <script th:src="@{/front/res/mods/app.js(v=318)}"></script>
 <script>
     layui.cache.page = 'jie';
@@ -269,13 +269,13 @@
 
         // 动态渲染话题列表
         app.ajax("/topic/all", {}, function (res) {
-           console.log(res);
-           var html = '<option></option>';
-           layui.each(res.data, function (index, item) {
-               html += ('<option value='+ item.id +'>' + item.topicName + '</option>');
-           });
-           $("select[name=topicId]").html(html);
-           form.render('select');
+            console.log(res);
+            var html = '<option></option>';
+            layui.each(res.data, function (index, item) {
+                html += ('<option value=' + item.id + '>' + item.topicName + '</option>');
+            });
+            $("select[name=topicId]").html(html);
+            form.render('select');
         }, "get");
 
         /*
@@ -338,6 +338,7 @@
                 }
                 // console.log($(this).val());
             },
+            //
             autocomplete_request: function (keyword, callback) {
                 app.ajax('/label/like', {
                     name: keyword,

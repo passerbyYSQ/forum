@@ -19,7 +19,7 @@
     update topic set post_count = post_count + #{cnt} where id = #{topicId}
   </update>
 
-  <select id="getAllTopic" resultType="top.ysqorz.forum.vo.TopicVo">
+  <select id="getAllTopic" resultType="top.ysqorz.forum.dto.TopicDTO">
 
     select t.*,u.username from topic t join user u on t.create_id=u.id
     where 1=1

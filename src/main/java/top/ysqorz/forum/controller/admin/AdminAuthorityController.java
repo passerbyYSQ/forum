@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.service.AuthorityService;
-import top.ysqorz.forum.vo.QueryAuthorityCondition;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
+import top.ysqorz.forum.dto.QueryAuthorityCondition;
+import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.dto.StatusCode;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;

@@ -79,9 +79,9 @@
                             展开 <i class="layui-icon layui-icon-down"></i></a>
                     </div>
                 </div>
-<!--                <div class="layui-form-item">-->
-<!--                    -->
-<!--                </div>-->
+                <!--                <div class="layui-form-item">-->
+                <!--                    -->
+                <!--                </div>-->
             </form>
             <!-- 数据表格 -->
             <table id="userTable" lay-filter="userTable"></table>
@@ -103,7 +103,7 @@
 <!-- 表格状态列 -->
 <script type="text/html" id="userTbState">
     <input type="checkbox" lay-filter="userTbStateCk" value="{{d.username}}" lay-skin="switch"
-            lay-text="正常|封禁" {{d.blackId==null?'checked':''}} style="display: none;"
+           lay-text="正常|封禁" {{d.blackId==null?'checked':''}} style="display: none;"
            data-q="{{d.id}}"/>
     <!--    <p style="display: none;">{{d.startTime!=null?'正常':'锁定'}}</p>-->
 </script>
@@ -233,19 +233,26 @@
                 {field: 'username', title: '用户名', align: 'center'},
                 {field: 'email', title: '邮箱', sort: true, align: 'center'},
                 {field: 'phone', title: '手机号', sort: true, align: 'center'},
-                {field: 'gender', title: '性别', templet: function (d) {
+                {
+                    field: 'gender', title: '性别', templet: function (d) {
                         var icon;
                         switch (d.gender) {
                             // 男
-                            case 0: icon = '<i class="layui-icon layui-icon-male" style="font-size: 20px; color: #1E9FFF;"></i>'; break;
+                            case 0:
+                                icon = '<i class="layui-icon layui-icon-male" style="font-size: 20px; color: #1E9FFF;"></i>';
+                                break;
                             // 女
-                            case 1: icon = '<i class="layui-icon layui-icon-female" style="font-size: 20px; color: #FF5722;"></i>'; break;
+                            case 1:
+                                icon = '<i class="layui-icon layui-icon-female" style="font-size: 20px; color: #FF5722;"></i>';
+                                break;
                             // 保密
-                            default: icon = '<i class="layui-icon layui-icon-help" style="font-size: 20px; color: #ccc;"></i>'
+                            default:
+                                icon = '<i class="layui-icon layui-icon-help" style="font-size: 20px; color: #ccc;"></i>'
                         }
-                        return  icon;
-                    }, align: 'center', width: 60 },
-                {field: 'photo', title: '头像', templet: "#imgtmp", align: 'center', width: 90, unresize: true },
+                        return icon;
+                    }, align: 'center', width: 60
+                },
+                {field: 'photo', title: '头像', templet: "#imgtmp", align: 'center', width: 90, unresize: true},
                 {
                     field: 'roleName', title: '角色', templet: function (d) {
                         return d.roles.map(function (item) {

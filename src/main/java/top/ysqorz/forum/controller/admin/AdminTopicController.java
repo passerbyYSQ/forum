@@ -7,10 +7,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
-import top.ysqorz.forum.vo.PageData;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
-import top.ysqorz.forum.vo.TopicVo;
+import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.dto.TopicDTO;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -31,24 +31,22 @@ public class AdminTopicController {
      */
 
     @GetMapping("/table")
-    public ResultModel<PageData<TopicVo>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
-                                                         @RequestParam(defaultValue = "1") Integer page,
-                                                         String topicName) {
+    public ResultModel<PageData<TopicDTO>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
+                                                          @RequestParam(defaultValue = "1") Integer page,
+                                                          String topicName) {
         if (limit <= 0) {
             limit = 10;
         }
         PageHelper.startPage(page, limit);
-        List<TopicVo> allTopic = topicService.getAllTopic(topicName);
-        PageInfo<TopicVo> pageinfo = new PageInfo<>(allTopic);
-        PageData<TopicVo> pageData = new PageData<>();
+        List<TopicDTO> allTopic = topicService.getAllTopic(topicName);
+        PageInfo<TopicDTO> pageInfo = new PageInfo<>(allTopic);
+        PageData<TopicDTO> pageData = new PageData<>();
         pageData.setList(allTopic);
-        pageData.setTotal(pageinfo.getTotal());
-        pageData.setPage(pageinfo.getPageNum());
-        pageData.setCount(pageinfo.getPageSize());
+        pageData.setTotal(pageInfo.getTotal());
+        pageData.setPage(pageInfo.getPageNum());
+        pageData.setCount(pageInfo.getPageSize());
 
         return ResultModel.success(pageData);
-
-
     }
 
 

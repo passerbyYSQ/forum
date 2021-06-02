@@ -1,4 +1,4 @@
-package top.ysqorz.forum.vo;
+package top.ysqorz.forum.dto;
 
 import lombok.Data;
 

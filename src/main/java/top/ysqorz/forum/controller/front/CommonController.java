@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.FileUploadException;
 import top.ysqorz.forum.upload.ImageUploader;
 import top.ysqorz.forum.upload.UploadRepository;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.UploadResult;
+import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.dto.UploadResult;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;

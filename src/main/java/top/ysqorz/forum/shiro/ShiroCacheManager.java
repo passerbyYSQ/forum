@@ -3,7 +3,6 @@ package top.ysqorz.forum.shiro;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
 import org.apache.shiro.cache.CacheManager;
-import top.ysqorz.forum.shiro.realm.ShiroCache;
 
 /**
  * @author passerbyYSQ

@@ -76,9 +76,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function 
                        failedCallback = function(res) { layer.msg(res.msg, {shift: 6}); }) { // 业务失败
 
             var loadIndex = layer.load(2); // 显示loading...
-
-            // TODO 从缓存中获取token信息
-            var token;
+            var token = layui.cache.user.token; // 可能为空
 
             $.ajax(url, {
                 type: type,
@@ -90,6 +88,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function 
                     token: token // 携带token
                 },
                 success: function(res, textStatus, xhr) {
+                    console.log(res);
                     layer.close(loadIndex); // 关闭 loading
                     if (res.code !== 2000) {
                         failedCallback(res); // 业务失败的回调，可通过传参自定义。默认实现以弹框形式输出错误信息
@@ -97,7 +96,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function 
                         // 判断是否签发了新的token。如果是，更新token
                         var header = xhr.getAllResponseHeaders();
                         if (fly.isNotBlank(header.token)) { // 如果签发了新的token
-                            // TODO 更新缓存中的token
+                            layui.cache.user.token = header.token;
                         }
                         successCallback(res); // 业务成功
                     }

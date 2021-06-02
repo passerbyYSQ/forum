@@ -1,7 +1,7 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.po.Post;
-import top.ysqorz.forum.vo.PublishPostVo;
+import top.ysqorz.forum.dto.PublishPostDTO;
 
 /**
  * @author passerbyYSQ
@@ -14,12 +14,12 @@ public interface PostService {
      * @param vo            相关参数
      * @param creatorId     发帖者的id
      */
-    Post addPost(PublishPostVo vo, Integer creatorId);
+    Post addPost(PublishPostDTO vo, Integer creatorId);
 
     /**
      * 发布帖子。包含：Post，Label，PostLabel多表操作
      */
-    void publishPost(PublishPostVo vo, Integer creatorId);
+    void publishPost(PublishPostDTO vo, Integer creatorId);
 
 
 }

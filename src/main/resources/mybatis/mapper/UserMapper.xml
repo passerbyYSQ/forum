@@ -23,7 +23,7 @@
         <result column="reward_points" jdbcType="INTEGER" property="rewardPoints"/>
         <result column="fans_count" jdbcType="INTEGER" property="fansCount"/>
     </resultMap>
-    <resultMap id="allUserAndRole" type="top.ysqorz.forum.vo.UserVo">
+    <resultMap id="allUserAndRole" type="top.ysqorz.forum.dto.UserDTO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
@@ -36,7 +36,7 @@
         <collection property="roles" ofType="top.ysqorz.forum.po.Role" column="id" select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
         </collection>
     </resultMap>
-    <select id="selectAllUser" parameterType="top.ysqorz.forum.vo.QueryUserCondition" resultMap="allUserAndRole">
+    <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.QueryUserCondition" resultMap="allUserAndRole">
         select u.id as id,username,email,phone,photo,gender,register_time,last_login_time,b.id as black_id
         from user u
         left join blacklist b

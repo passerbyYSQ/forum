@@ -1,12 +1,13 @@
 package top.ysqorz.forum.utils;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * @author passerbyYSQ
  * @create 2020-08-21 11:08
  */
-public class RandomUtil {
+public class RandomUtils {
 
     private static final String allChar = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-+=";
     private static final String letterChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -27,8 +28,10 @@ public class RandomUtil {
         return sbd.toString();
     }
 
-    public static void main(String[] args) {
-        System.out.println(RandomUtil.generateStr(8));
+    /**
+     * 生成一个uuid
+     */
+    public static String generateUUID() {
+        return UUID.randomUUID().toString().replace("-", "").toUpperCase();
     }
-
 }

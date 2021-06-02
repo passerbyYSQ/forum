@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.FileUploadException;
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.vo.UploadResult;
+import top.ysqorz.forum.dto.UploadResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

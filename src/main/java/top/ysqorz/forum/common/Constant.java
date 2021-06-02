@@ -14,4 +14,7 @@ public interface Constant {
     // 匹配常见图片的base64编码的正则表达式
     String BASE64_REGEX =  "^(data:image/(jpg|jpeg|png);base64,)(\\S+)";
 
+    // redis prefix captcha
+    String REDIS_PREFIX_CAPTCHA = "captcha:";
+
 }

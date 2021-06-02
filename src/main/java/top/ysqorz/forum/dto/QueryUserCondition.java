@@ -1,8 +1,7 @@
-package top.ysqorz.forum.vo;
+package top.ysqorz.forum.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 

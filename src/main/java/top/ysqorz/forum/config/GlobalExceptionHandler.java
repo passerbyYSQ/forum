@@ -1,7 +1,5 @@
 package top.ysqorz.forum.config;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import top.ysqorz.forum.common.FileUploadException;
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
+import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.dto.StatusCode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -43,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     public ModelAndView handleBindException(BindException e, HttpServletRequest request) {
         List<FieldError> errors = e.getFieldErrors();
-        ResultModel res = ResultModel.failed(StatusCode.PARAM_IS_INVALID.getCode(),
+        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(),
                 joinErrorMsg(errors));
         return wrapModelAndView(res, request);
     }
@@ -59,7 +57,7 @@ public class GlobalExceptionHandler {
             errorMsg.append(cvl.getPropertyPath().toString().split("\\.")[1]) // .需要转义
                     .append(cvl.getMessage());
         }
-        ResultModel res = ResultModel.failed(StatusCode.PARAM_IS_INVALID.getCode(),
+        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(),
                 errorMsg.toString());
         return wrapModelAndView(res, request);
     }
@@ -69,7 +67,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ModelAndView methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e, HttpServletRequest request) {
         List<FieldError> errors = e.getBindingResult().getFieldErrors();
-        ResultModel<Object> res = ResultModel.failed(StatusCode.PARAM_IS_INVALID.getCode(),
+        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(),
                 joinErrorMsg(errors));
         return wrapModelAndView(res, request);
     }
@@ -78,10 +76,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ParameterErrorException.class, FileUploadException.class})
     public ModelAndView handleMyrException(Exception e, HttpServletRequest request) { // 注意写基类！！！
-        ResultModel<Object> res = ResultModel.failed(StatusCode.PARAM_IS_INVALID.getCode(), e.getMessage());
+        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(), e.getMessage());
         return wrapModelAndView(res, request);
     }
 
+    /*
     // jwt校验错误
     @ResponseStatus(HttpStatus.FORBIDDEN) // 无登录权限。Jwt之后会结合shiro，之后再改
     @ExceptionHandler(JWTVerificationException.class)
@@ -91,6 +90,7 @@ public class GlobalExceptionHandler {
                         StatusCode.TOKEN_IS_EXPIRED : StatusCode.TOKEN_IS_INVALID); // token过期，登录状态过期
         return wrapModelAndView(res, request);
     }
+    */
 
     // 授权异常
     @ResponseStatus(HttpStatus.FORBIDDEN)

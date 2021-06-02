@@ -8,7 +8,7 @@ import top.ysqorz.forum.dao.PostMapper;
 import top.ysqorz.forum.dao.TopicMapper;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
-import top.ysqorz.forum.vo.TopicVo;
+import top.ysqorz.forum.dto.TopicDTO;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class TopicServiceImpl implements TopicService {
     private PostMapper postMapper;
 
     @Override
-    public List<TopicVo> getAllTopic(String topicName) {
+    public List<TopicDTO> getAllTopic(String topicName) {
         return topicMapper.getAllTopic(topicName);
     }
 

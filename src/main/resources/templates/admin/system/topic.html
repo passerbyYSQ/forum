@@ -44,7 +44,7 @@
 
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="check">查看帖子</a>
     <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
-<!--    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除话题</a>-->
+    <!--    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除话题</a>-->
 </script>
 <!-- 表格状态列 -->
 <script type="text/html" id="userTbState">
@@ -67,7 +67,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label layui-form-required">排序号:</label>
             <div class="layui-input-block">
-                <input name="sortWeight" placeholder="请输入排序号" class="layui-input"
+                <input type="number" name="sortWeight" placeholder="请输入排序号" class="layui-input"
                        lay-verType="tips" lay-verify="required" required/>
             </div>
         </div>
@@ -120,7 +120,7 @@
                 '</p>'].join(''),
             cellMinWidth: 100,
             cols: [[
-               // {type: 'checkbox'},
+                // {type: 'checkbox'},
                 {type: 'numbers'},
                 {field: 'topicName', title: '话题名', align: 'center'},
                 {field: 'description', title: '话题描述', sort: true, align: 'center'},
@@ -188,7 +188,7 @@
                     layer.close(i);
                     var loadIndex = layer.load(2);
                     $.post('/admin/system/topic/archive', {
-                        id:q,state:1
+                        id: q, state: 1
                     }, function (res) {
                         layer.close(loadIndex);
                         if (2000 === res.code) {
@@ -198,6 +198,10 @@
                             layer.msg(res.msg, {icon: 2});
                         }
                     }, 'json');
+                }, function () { // 取消
+                    console.log("----");
+                    obj.elem.checked = !obj.elem.checked;
+                    form.render('checkbox');
                 });
 
             } else {
@@ -209,7 +213,7 @@
                     layer.close(i);
                     var loadIndex = layer.load(2);
                     $.post('/admin/system/topic/archive', {
-                       id:q,state:0
+                        id: q, state: 0
                     }, function (res) {
                         layer.close(loadIndex);
                         if (2000 === res.code) {
@@ -219,6 +223,9 @@
                             layer.msg(res.msg, {icon: 2});
                         }
                     }, 'json');
+                }, function () {
+                    obj.elem.checked = !obj.elem.checked;
+                    form.render('checkbox');
                 });
             }
 
@@ -240,7 +247,7 @@
                         var url = '/admin/system/topic/' + (mData ? 'update' : 'add');
                         if (mData) {
                             data.field.id = mData.id;
-                            data.field.archive=mData.archive;
+                            data.field.archive = mData.archive;
                         }
                         $.post(url, data.field, function (res) {
                             layer.close(loadIndex);

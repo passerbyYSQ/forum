@@ -1,4 +1,4 @@
-package top.ysqorz.forum.shiro.realm;
+package top.ysqorz.forum.shiro;
 
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -13,7 +13,6 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.util.StringUtils;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
-import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 

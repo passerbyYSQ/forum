@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import top.ysqorz.forum.shiro.JwtAuthenticatingFilter;
 import top.ysqorz.forum.shiro.JwtCredentialsMatcher;
 import top.ysqorz.forum.shiro.ShiroCacheManager;
-import top.ysqorz.forum.shiro.realm.JwtRealm;
+import top.ysqorz.forum.shiro.JwtRealm;
 
 import javax.servlet.Filter;
 import java.util.Collections;

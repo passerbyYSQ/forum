@@ -2,7 +2,7 @@ package top.ysqorz.forum.dao;
 
 import top.ysqorz.forum.common.BaseMapper;
 import top.ysqorz.forum.po.Topic;
-import top.ysqorz.forum.vo.TopicVo;
+import top.ysqorz.forum.dto.TopicDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -15,5 +15,5 @@ public interface TopicMapper extends BaseMapper<Topic> {
      */
     int updatePostCountById(Map<String, Object> params);
 
-    List<TopicVo> getAllTopic(String topicName);
+    List<TopicDTO> getAllTopic(String topicName);
 }

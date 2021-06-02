@@ -12,9 +12,9 @@ import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.TopicService;
 import top.ysqorz.forum.utils.CaptchaUtils;
-import top.ysqorz.forum.vo.PublishPostVo;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
+import top.ysqorz.forum.dto.PublishPostDTO;
+import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.dto.StatusCode;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -63,7 +63,7 @@ public class PostController {
      */
     @ResponseBody
     @PostMapping("/publish")
-    public ResultModel publish(@Validated PublishPostVo vo, HttpSession session) {
+    public ResultModel publish(@Validated PublishPostDTO vo, HttpSession session) {
         // 校验验证码
         String correctCaptcha = (String) session.getAttribute("publishCaptcha");
         // 由于验证码是一次性的，访问过立马失效，不管校验正确与否

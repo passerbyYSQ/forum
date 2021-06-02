@@ -1,4 +1,4 @@
-package top.ysqorz.forum.vo;
+package top.ysqorz.forum.dto;
 
 /**
  * 2000 - 成功处理请求
@@ -21,10 +21,11 @@ public enum StatusCode {
 
     // 参数相关
     PARAM_NOT_COMPLETED(6001, "参数缺失"),
-    PARAM_IS_INVALID(6002, "参数无效"),
+    PARAM_INVALID(6002, "参数无效"),
     FILE_TYPE_INVALID(6003, "非法文件类型"),
     FILE_SIZE_EXCEEDED(6004, "文件大小超出限制"),
     CAPTCHA_INVALID(6004, "验证码错误"),
+    CAPTCHA_EXPIRED(6004, "验证码已过期"),
 
     // 认证相关
     TOKEN_INVALID(6000, "无效token"),
@@ -35,21 +36,19 @@ public enum StatusCode {
     // 授权相关
     AUTHORIZATION_FAILED(6005, "无权限访问"),
 
-    LOGIN_FAILED(6020, "登录失败，检查账号或密码是否错误"),
-    PARAMETER_INVALID(6021, "参数错误"),
-
-
     // 用户相关
     USERNAME_IS_EXIST(6101, "用户名已存在"),
-    PASSWORD_INCORRECT(6102, "密码错误"),
-    USER_NOT_EXIST(6103, "用户不存在"), // 可能是userId错误
-    USER_NOT_BLOCK(6104, "用户当前不处于封禁状态"),
+    USER_NOT_EXIST(6102, "用户不存在"), // 可能是userId错误
+    USER_NOT_BLOCK(6103, "用户当前不处于封禁状态"),
+
 
     // 账户相关
     TOKEN_IS_MISSING(6200, "token缺失"),
     FORCED_OFFLINE(6201, "当前账号在异地登录，您已被挤下线"),
     TOKEN_IS_EXPIRED(6202, "token已过期，请重新登录"),
     TOKEN_IS_INVALID(6203, "无效token"),
+    EMAIL_INCORRECT(6204, "邮箱错误或者邮箱尚未注册"),
+    PASSWORD_INCORRECT(6205, "密码错误"),
 
     // 权限相关
     AUTHORITY_NAME_EXIST(6300, "权限名称已存在"),

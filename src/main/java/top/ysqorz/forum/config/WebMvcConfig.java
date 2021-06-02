@@ -26,8 +26,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     /**
      * 在参数绑定时，自定义String->String的转换器，
      * 在转换逻辑中对参数值进行转义，从而达到防XSS的效果
-     *
-     * @param registry
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {

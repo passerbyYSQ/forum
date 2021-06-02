@@ -1,4 +1,4 @@
-package top.ysqorz.forum.vo;
+package top.ysqorz.forum.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public class PublishPostVo {
+public class PublishPostDTO {
 
     @NotNull
     private Integer topicId; // 所属话题

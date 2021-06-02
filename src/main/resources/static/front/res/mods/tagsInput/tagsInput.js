@@ -200,6 +200,7 @@
             width: '',
             height: '',
             //autocomplete: {type: 'get', data: {}},
+            // 我新增的属性
             autocomplete_request: undefined,
             hide: true,
             delimiter: ',',

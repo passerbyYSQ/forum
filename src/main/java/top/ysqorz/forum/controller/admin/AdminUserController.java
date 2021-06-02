@@ -12,7 +12,7 @@ import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
-import top.ysqorz.forum.vo.*;
+import top.ysqorz.forum.dto.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -34,18 +34,18 @@ public class AdminUserController {
      * 获取User数据
      */
     @GetMapping("/table")
-    public ResultModel<PageData<UserVo>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
-                                                        @RequestParam(defaultValue = "1") Integer page,
-                                                        QueryUserCondition conditions) {
+    public ResultModel<PageData<UserDTO>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
+                                                         @RequestParam(defaultValue = "1") Integer page,
+                                                         QueryUserCondition conditions) {
         if (limit <= 0) {
             limit = 10;
         }
         PageHelper.startPage(page, limit);
         //  PageHelper.clearPage(); //不加报错
-        List<UserVo> myUserList = userService.getMyUserList(conditions);
+        List<UserDTO> myUserList = userService.getMyUserList(conditions);
         // List<User> userList = userService.getUserList(conditions);
-        PageInfo<UserVo> pageinfo = new PageInfo<>(myUserList);
-        PageData<UserVo> pageData = new PageData<>();
+        PageInfo<UserDTO> pageinfo = new PageInfo<>(myUserList);
+        PageData<UserDTO> pageData = new PageData<>();
         pageData.setList(myUserList);
         pageData.setTotal(pageinfo.getTotal());
         pageData.setPage(pageinfo.getPageNum());
@@ -93,8 +93,8 @@ public class AdminUserController {
      * 取消封禁时拉取封禁信息
      */
     @GetMapping("/getBlockInfo")
-    public ResultModel<BlackInfoVo> getBlockInfo(@RequestParam("userId") @NotNull Integer userId) {
-        BlackInfoVo blackInfo = userService.getBlackInfo(userId);
+    public ResultModel<BlackInfoDTO> getBlockInfo(@RequestParam("userId") @NotNull Integer userId) {
+        BlackInfoDTO blackInfo = userService.getBlackInfo(userId);
         return ResultModel.success(blackInfo);
     }
 

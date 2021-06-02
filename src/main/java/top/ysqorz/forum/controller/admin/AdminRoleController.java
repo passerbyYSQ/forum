@@ -13,10 +13,10 @@ import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
 import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.service.RoleService;
-import top.ysqorz.forum.vo.PageData;
-import top.ysqorz.forum.vo.PermZTreeNode;
-import top.ysqorz.forum.vo.ResultModel;
-import top.ysqorz.forum.vo.StatusCode;
+import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.PermZTreeNode;
+import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.dto.StatusCode;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

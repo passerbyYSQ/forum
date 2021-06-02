@@ -12,7 +12,7 @@ import top.ysqorz.forum.po.PostLabel;
 import top.ysqorz.forum.service.LabelService;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.TopicService;
-import top.ysqorz.forum.vo.PublishPostVo;
+import top.ysqorz.forum.dto.PublishPostDTO;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -40,7 +40,7 @@ public class PostServiceImpl implements PostService {
     private LabelService labelService;
 
     @Override
-    public Post addPost(PublishPostVo vo, Integer creatorId) {
+    public Post addPost(PublishPostDTO vo, Integer creatorId) {
         Post post = new Post();
         post.setCreatorId(creatorId) // 发帖人id
                 .setTopicId(vo.getTopicId())  // 所属话题的id
@@ -72,7 +72,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional // 开启事务
     @Override
-    public void publishPost(PublishPostVo vo, Integer creatorId) {
+    public void publishPost(PublishPostDTO vo, Integer creatorId) {
         // 注意要用this对象，否则调用的不是被AOP代理后的对象的方法
         Post post = this.addPost(vo, creatorId);
 

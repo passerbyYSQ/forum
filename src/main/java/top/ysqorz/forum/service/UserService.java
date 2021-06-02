@@ -4,9 +4,9 @@ import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.vo.BlackInfoVo;
-import top.ysqorz.forum.vo.QueryUserCondition;
-import top.ysqorz.forum.vo.UserVo;
+import top.ysqorz.forum.dto.BlackInfoDTO;
+import top.ysqorz.forum.dto.QueryUserCondition;
+import top.ysqorz.forum.dto.UserDTO;
 
 import java.util.List;
 
@@ -17,9 +17,14 @@ import java.util.List;
 public interface UserService {
 
     /**
-     * 获取所有MyUser信息
+     * 根据用户名查询用户
      */
-    List<UserVo> getMyUserList(QueryUserCondition conditions);
+    User getUserByEmail(String email);
+
+    /**
+     * 后台用户管理
+     */
+    List<UserDTO> getMyUserList(QueryUserCondition conditions);
 
     /**
      * 重置密码
@@ -38,18 +43,13 @@ public interface UserService {
 
     /**
      * 拉黑
-     *
-     * @return
      */
     int block(Blacklist blacklist);
 
     /**
      * 获取封禁信息
-     *
-     * @param userId
-     * @return
      */
-    BlackInfoVo getBlackInfo(Integer userId);
+    BlackInfoDTO getBlackInfo(Integer userId);
 
     /**
      * 获取所有角色信息
@@ -74,10 +74,6 @@ public interface UserService {
 
     void register(User user);
 
-    User login(String username, String password);
-
     String generateJwt(User user);
-
-
 
 }

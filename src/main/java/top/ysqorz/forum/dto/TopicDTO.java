@@ -1,4 +1,4 @@
-package top.ysqorz.forum.vo;
+package top.ysqorz.forum.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-public class TopicVo {
+public class TopicDTO {
     /**
      * 话题id
      */

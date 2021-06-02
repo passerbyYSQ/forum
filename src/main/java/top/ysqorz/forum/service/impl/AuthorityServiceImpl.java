@@ -8,7 +8,7 @@ import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.dao.ResourceMapper;
 import top.ysqorz.forum.po.Resource;
-import top.ysqorz.forum.vo.QueryAuthorityCondition;
+import top.ysqorz.forum.dto.QueryAuthorityCondition;
 
 import java.util.Arrays;
 import java.util.List;
