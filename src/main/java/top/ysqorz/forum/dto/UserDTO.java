@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
+ * 用户管理界面返回的表单
  * @author 阿灿
  * @create 2021-05-14 22:47
  */

@@ -4,4 +4,5 @@ import top.ysqorz.forum.common.BaseMapper;
 import top.ysqorz.forum.po.Post;
 
 public interface PostMapper extends BaseMapper<Post> {
+    Integer selectCountByTodayTopic(Integer topicId);
 }

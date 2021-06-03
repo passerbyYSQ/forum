@@ -7,7 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-/**
+/** 后台话题管理请求table返回表单
  * @author 阿灿
  * @create 2021-05-24 21:44
  */
@@ -58,5 +58,10 @@ public class TopicDTO {
      * 是否归档。0：没有归档，1：已归档
      */
     private Byte archive;
+
+    /**
+     * 今日新增
+     */
+    private Integer todayCount;
 
 }

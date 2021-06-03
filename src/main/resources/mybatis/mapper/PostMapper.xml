@@ -21,4 +21,7 @@
     <result column="visibility_type" jdbcType="TINYINT" property="visibilityType" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
+  <select id="selectCountByTodayTopic" resultType="java.lang.Integer">
+    select count(*) from post where create_time >=curdate() and topic_id=#{topicId};
+  </select>
 </mapper>

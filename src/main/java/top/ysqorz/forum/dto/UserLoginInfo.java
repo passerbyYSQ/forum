@@ -31,6 +31,7 @@ public class UserLoginInfo {
     }
 
     public UserLoginInfo(String token, User user) {
+        this.token=token;
         BeanUtils.copyProperties(user, this);
     }
 }

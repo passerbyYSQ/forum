@@ -13,16 +13,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.utils.CaptchaUtils;
 import top.ysqorz.forum.utils.RandomUtils;
-import top.ysqorz.forum.dto.LoginDTO;
-import top.ysqorz.forum.dto.ResultModel;
-import top.ysqorz.forum.dto.StatusCode;
-import top.ysqorz.forum.dto.UserLoginInfo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -56,14 +53,40 @@ public class UserController {
     /**
      * TODO 用户注册
      */
-    @PostMapping("/register")
+    @PostMapping("/reg")
     @ResponseBody
-    public ResultModel register(User user) {
-        // 参数判断省略
-        // ...
-        System.out.println(user);
-        userService.register(user);
+    public ResultModel register(@Validated RegiserDTO vo) {
+
+        String correctCaptcha = redisService.getCaptcha(vo.getToken());
+
+        if (ObjectUtils.isEmpty(correctCaptcha)) {
+            return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
+        }
+        if (!vo.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
+            return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码错误
+        }
+        if (!vo.getPassword().equals(vo.getRepassword())) {
+
+            return ResultModel.failed(StatusCode.PASSWORD_INCONSISENT); // 两次输入密码不一致
+        }
+        User user = userService.getUserByEmail(vo.getEmail());
+        if (!ObjectUtils.isEmpty(user)) {
+            return ResultModel.failed(StatusCode.EMAIL_ISEXIST); // 该邮箱已注册
+        }
+
+        userService.register(vo);
         return ResultModel.success();
+    }
+
+    /**
+     * 跳转到注册页面
+     */
+    @GetMapping("/reg")
+    public String registerpage(Model model) {
+        // 用于验证码缓存和校验。植入到注册的登录页面的隐藏表单元素中
+        String token = RandomUtils.generateUUID();
+        model.addAttribute("token", token);
+        return "front/user/reg";
     }
 
     /**
@@ -78,7 +101,7 @@ public class UserController {
     }
 
     /**
-     * 登录页面的验证码图片
+     * 登录页面的验证码图片(注册页面也用这个接口)
      */
     @GetMapping("/login/captcha")
     public void captchaImage(@NotEmpty String token, HttpServletResponse response)

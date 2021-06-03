@@ -10,6 +10,10 @@ import top.ysqorz.forum.dao.BlacklistMapper;
 import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dao.UserRoleMapper;
+import top.ysqorz.forum.dto.BlackInfoDTO;
+import top.ysqorz.forum.dto.QueryUserCondition;
+import top.ysqorz.forum.dto.RegiserDTO;
+import top.ysqorz.forum.dto.UserDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
@@ -17,9 +21,6 @@ import top.ysqorz.forum.po.UserRole;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
-import top.ysqorz.forum.dto.BlackInfoDTO;
-import top.ysqorz.forum.dto.QueryUserCondition;
-import top.ysqorz.forum.dto.UserDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -145,7 +146,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(User user) {
+    public void register(RegiserDTO vo) {
+
+        User user = new User();
+        user.setEmail(vo.getEmail());
+        user.setUsername(vo.getUsername());
 
         // 8个字符的随机字符串，作为加密登录的随机盐。
         String salt = RandomUtils.generateStr(8);
@@ -154,7 +159,7 @@ public class UserServiceImpl implements UserService {
 
         // Md5Hash默认将随机盐拼接到源字符串的前面，然后使用md5加密，再经过x次的哈希散列
         // 第三个参数（hashIterations）：哈希散列的次数
-        Md5Hash md5Hash = new Md5Hash(user.getPasssword(), user.getLoginSalt(), 1024);
+        Md5Hash md5Hash = new Md5Hash(vo.getPassword(), user.getLoginSalt(), 1024);
         // 保存加密后的密码
         user.setPasssword(md5Hash.toHex());
 
@@ -163,7 +168,7 @@ public class UserServiceImpl implements UserService {
         user.setRewardPoints(0);
         user.setFansCount(0);
 
-       userMapper.insertUseGeneratedKeys(user);
+       userMapper.insertSelective(user);
     }
 
 

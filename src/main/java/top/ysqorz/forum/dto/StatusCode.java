@@ -33,6 +33,7 @@ public enum StatusCode {
     ACCOUNT_INCORRECT(6002, "账号错误"),
     CREDENTIAL_INCORRECT(6003, "密码错误"), // 凭证错误
     AUTHENTICATION_FAILED(6004, "认证失败，无效token或token已过期"),
+    PASSWORD_INCONSISENT(6005,"两次输入密码不一致"),
     // 授权相关
     AUTHORIZATION_FAILED(6005, "无权限访问"),
 
@@ -48,6 +49,7 @@ public enum StatusCode {
     TOKEN_IS_EXPIRED(6202, "token已过期，请重新登录"),
     TOKEN_IS_INVALID(6203, "无效token"),
     EMAIL_INCORRECT(6204, "邮箱错误或者邮箱尚未注册"),
+    EMAIL_ISEXIST(6204, "邮箱已注册"),
     PASSWORD_INCORRECT(6205, "密码错误"),
 
     // 权限相关

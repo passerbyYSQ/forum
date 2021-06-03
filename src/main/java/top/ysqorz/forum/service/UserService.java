@@ -1,12 +1,13 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.ParameterErrorException;
+import top.ysqorz.forum.dto.BlackInfoDTO;
+import top.ysqorz.forum.dto.QueryUserCondition;
+import top.ysqorz.forum.dto.RegiserDTO;
+import top.ysqorz.forum.dto.UserDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.dto.BlackInfoDTO;
-import top.ysqorz.forum.dto.QueryUserCondition;
-import top.ysqorz.forum.dto.UserDTO;
 
 import java.util.List;
 
@@ -72,7 +73,7 @@ public interface UserService {
     int delRoleForUser(Integer[] roleIds, Integer userId);
 
 
-    void register(User user);
+    void register(RegiserDTO vo);
 
     String generateJwt(User user);
 
