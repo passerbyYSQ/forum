@@ -1,30 +1,30 @@
 package top.ysqorz.forum.service.impl;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
+import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dao.BlacklistMapper;
 import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dao.UserRoleMapper;
-import top.ysqorz.forum.dto.BlackInfoDTO;
-import top.ysqorz.forum.dto.QueryUserCondition;
-import top.ysqorz.forum.dto.RegiserDTO;
-import top.ysqorz.forum.dto.UserDTO;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.po.UserRole;
 import top.ysqorz.forum.service.UserService;
+import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author 阿灿
@@ -41,7 +41,6 @@ public class UserServiceImpl implements UserService {
     private RoleMapper roleMapper;
     @Autowired
     private UserRoleMapper userRoleMapper;
-
 
     @Override
     public User getUserByEmail(String email) {
@@ -146,7 +145,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(RegiserDTO vo) {
+    public void register(RegisterDTO vo) {
 
         User user = new User();
         user.setEmail(vo.getEmail());
@@ -167,21 +166,48 @@ public class UserServiceImpl implements UserService {
         user.setModifyTime(LocalDateTime.now());
         user.setRewardPoints(0);
         user.setFansCount(0);
+        user.setGender((byte) 3); // 性别保密
+        user.setJwtSalt("");
 
-       userMapper.insertSelective(user);
+        userMapper.insertSelective(user);
+    }
+
+    @Override
+    public UserLoginInfo login(User user) {
+        String jwtSecret = RandomUtils.generateStr(8);
+        // 更新数据库中的jwt salt
+        this.updateJwtSalt(user.getId(), jwtSecret);
+
+        JwtToken token = this.generateJwtToken(user.getId(), jwtSecret);
+        Subject subject = SecurityUtils.getSubject();
+        subject.login(token);
+
+        return new UserLoginInfo(token.getToken(), user);
+    }
+
+    @Override
+    public void logout() {
+        Subject subject = SecurityUtils.getSubject();
+        // 为什么可以强制转成User？与在Realm中认证方法返回的SimpleAuthenticationInfo()的第一个参数有关
+        Integer userId = Integer.valueOf((String) subject.getPrincipal());
+        this.updateJwtSalt(userId, "");
+        subject.logout();
     }
 
 
     @Override
-    public String generateJwt(User user) {
-        // 8个字符的随机字符串，作为生成jwt的随机盐
-        // 保证每次登录成功返回的Token都不一样
-        String jwtSecret = RandomUtils.generateStr(8);
-        // 将此次登录成功的jwt secret存到数据库，下次携带jwt时解密需要使用
-        user.setJwtSalt(jwtSecret);
-        userMapper.updateByPrimaryKeySelective(user);
-        return JwtUtils.generateJwt("userId", user.getId().toString(),
-                jwtSecret, TimeUnit.SECONDS.toMillis(60 * 60)); // 有效期 60s
+    public JwtToken generateJwtToken(Integer userId, String jwtSalt) {
+        String jwt = JwtUtils.generateJwt("userId", userId.toString(),
+                jwtSalt, Constant.JWT_DURATION);
+        return new JwtToken(jwt);
+    }
+
+    @Override
+    public int updateJwtSalt(Integer userId, String jwtSalt) {
+        User record = new User();
+        record.setId(userId);
+        record.setJwtSalt(jwtSalt);
+        return userMapper.updateByPrimaryKeySelective(record);
     }
 
 

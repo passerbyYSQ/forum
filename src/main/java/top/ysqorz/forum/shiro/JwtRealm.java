@@ -51,9 +51,6 @@ public class JwtRealm extends AuthorizingRealm {
         // 取决于JwtToken的getPrincipal()
         Integer userId =  Integer.valueOf((String) token.getPrincipal());
 
-
-        // 从jwt中解析出username
-        //String userId = JwtUtils.getClaimByKey(tokenStr, "userId");
         if (!ObjectUtils.isEmpty(userId)) {
             UserService userService = (UserService) SpringUtils.getBean("userService");
             // 根据token中的username去数据库查询用户信息，并封装成SimpleAuthenticationInfo（认证信息）给Matcher去校验
@@ -76,19 +73,6 @@ public class JwtRealm extends AuthorizingRealm {
             if (getCredentialsMatcher().doCredentialsMatch(token, info)) {
                 return info;
             }
-
-
-            // 校验失败，会抛出异常，被shiro捕获
-//            Map<String, String> claims = new HashMap<>();
-//            claims.put("userId", user.getId().toString());
-//            try {
-//                JwtUtils.verifyJwt(tokenStr, user.getJwtSalt(), claims);
-//                return new SimpleAuthenticationInfo(token.getPrincipal(), user, this.getName());
-//            } catch (JWTVerificationException e) {
-//                e.printStackTrace();
-//            }
-
-
         }
 
         return null;

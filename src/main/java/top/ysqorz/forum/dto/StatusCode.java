@@ -24,16 +24,16 @@ public enum StatusCode {
     PARAM_INVALID(6002, "参数无效"),
     FILE_TYPE_INVALID(6003, "非法文件类型"),
     FILE_SIZE_EXCEEDED(6004, "文件大小超出限制"),
-    CAPTCHA_INVALID(6004, "验证码错误"),
-    CAPTCHA_EXPIRED(6004, "验证码已过期"),
+    CAPTCHA_INVALID(6005, "验证码错误"),
+    CAPTCHA_EXPIRED(6005, "验证码已过期"),
 
     // 认证相关
     TOKEN_INVALID(6000, "无效token"),
     TOKEN_EXPIRED(6001, "token已过期，请重新登录"),
     ACCOUNT_INCORRECT(6002, "账号错误"),
     CREDENTIAL_INCORRECT(6003, "密码错误"), // 凭证错误
-    AUTHENTICATION_FAILED(6004, "认证失败，无效token或token已过期"),
-    PASSWORD_INCONSISENT(6005,"两次输入密码不一致"),
+    AUTHENTICATION_FAILED(6004, "无效token，登录过期或者被挤下线"),
+    PASSWORD_NOT_EQUAL(6005,"两次输入密码不一致"),
     // 授权相关
     AUTHORIZATION_FAILED(6005, "无权限访问"),
 

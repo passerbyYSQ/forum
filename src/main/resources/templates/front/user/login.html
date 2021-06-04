@@ -172,7 +172,7 @@
                         <!--  验证码的token  -->
                         <input name="token" th:value="${token}" hidden/>
                         <div class="layui-form-item layui-input-icon-group">
-                            <i class="layui-icon layui-icon-username"></i>
+                            <i class="layui-icon layui-icon-email"></i>
                             <input class="layui-input" name="email" placeholder="请输入邮箱" autocomplete="off"
                                    lay-verType="tips" lay-verify="required|email" required/>
                         </div>
@@ -185,7 +185,7 @@
                             <i class="layui-icon layui-icon-auz"></i>
                             <input class="layui-input" name="captcha" placeholder="请输入验证码" autocomplete="off"
                                    lay-verType="tips" lay-verify="required" required/>
-                            <img id="captchaImage" th:src="@{/user/login/captcha(token=${token})}" class="login-captcha" alt=""
+                            <img id="captchaImage" th:src="@{/user/captcha(token=${token})}" class="login-captcha" alt=""
                                  onclick="onCaptchaImageClicked(this)"/>
                         </div>
                         <div class="layui-form-item">
@@ -230,7 +230,7 @@
     // 验证码图片的点击事件
     function onCaptchaImageClicked(obj) {
         console.log(obj);
-        obj.src = '/user/login/captcha?token=[[${token}]]&timestamp=' + (new Date().getTime());
+        obj.src = '/user/captcha?token=[[${token}]]&timestamp=' + (new Date().getTime());
     }
 
     layui.use(['app'], function () {

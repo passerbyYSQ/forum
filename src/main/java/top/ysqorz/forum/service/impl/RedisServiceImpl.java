@@ -6,7 +6,6 @@ import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.service.RedisService;
 
 import javax.annotation.Resource;
-import java.time.Duration;
 
 /**
  * @author passerbyYSQ
@@ -21,7 +20,7 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public void saveCaptcha(String key, String captcha) {
         redisTemplate.opsForValue().set(Constant.REDIS_PREFIX_CAPTCHA + key,
-                captcha, Duration.ofMinutes(5));
+                captcha, Constant.CAPTCHA_DURATION);
     }
 
     @Override

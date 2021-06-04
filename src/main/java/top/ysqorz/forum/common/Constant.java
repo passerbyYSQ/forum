@@ -1,5 +1,7 @@
 package top.ysqorz.forum.common;
 
+import java.time.Duration;
+
 /**
  * 项目中的用到的常量
  *
@@ -16,5 +18,11 @@ public interface Constant {
 
     // redis prefix captcha
     String REDIS_PREFIX_CAPTCHA = "captcha:";
+
+    // redis captcha 有效期：5分钟
+    Duration CAPTCHA_DURATION = Duration.ofMinutes(5);
+
+    // jwt 的有效期：7天
+    long JWT_DURATION = Duration.ofDays(7).toMillis();
 
 }

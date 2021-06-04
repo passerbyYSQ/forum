@@ -7,17 +7,19 @@ import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
-import top.ysqorz.forum.utils.JsonUtils;
-import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.dto.ResultModel;
 import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.utils.DateTimeUtils;
+import top.ysqorz.forum.utils.JsonUtils;
+import top.ysqorz.forum.utils.JwtUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * @author passerbyYSQ
@@ -54,13 +56,10 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-//        Subject subject = SecurityUtils.getSubject();
-//        subject.logout(); // 清除缓存
-
         HttpServletResponse httpResponse = WebUtils.toHttp(response);
         httpResponse.setCharacterEncoding("UTF-8");
         httpResponse.setContentType("application/json;charset=UTF-8");
-        httpResponse.setStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value());
+        httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
         PrintWriter writer = response.getWriter();
         String json = JsonUtils.objectToJson(ResultModel.failed(StatusCode.AUTHENTICATION_FAILED));
         writer.print(json);
@@ -101,9 +100,11 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
                                      ServletRequest request, ServletResponse response) {
 
         String oldToken = (String) token.getPrincipal();
-        Date expireAt = JwtUtils.getExpireAt(oldToken);
+        LocalDateTime expireAt = DateTimeUtils.toLocalDateTime(JwtUtils.getExpireAt(oldToken));
 
-        if (shouldRefreshToken) {
+
+        if (shouldRefreshToken &&
+                DateTimeUtils.dif(LocalDateTime.now(), expireAt, ChronoUnit.DAYS) < 1) {
             // 刷新token...
         }
 

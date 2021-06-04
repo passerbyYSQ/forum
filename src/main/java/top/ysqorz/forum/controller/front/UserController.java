@@ -9,10 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
@@ -23,7 +20,6 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 
 /**
@@ -43,6 +39,7 @@ public class UserController {
     @Autowired
     private RedisService redisService;
 
+
 //    @RequiresRoles({"ysq"})
     @RequestMapping("/info")
     @ResponseBody
@@ -51,30 +48,29 @@ public class UserController {
     }
 
     /**
-     * TODO 用户注册
+     * 用户注册
      */
     @PostMapping("/reg")
     @ResponseBody
-    public ResultModel register(@Validated RegiserDTO vo) {
-
-        String correctCaptcha = redisService.getCaptcha(vo.getToken());
-
+    public ResultModel register(@Validated RegisterDTO dto) {
+        if (!dto.getPassword().equals(dto.getRePassword())) {
+            return ResultModel.failed(StatusCode.PASSWORD_NOT_EQUAL); // 两次输入密码不一致
+        }
+        String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
         }
-        if (!vo.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
+        if (!dto.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码错误
         }
-        if (!vo.getPassword().equals(vo.getRepassword())) {
 
-            return ResultModel.failed(StatusCode.PASSWORD_INCONSISENT); // 两次输入密码不一致
-        }
-        User user = userService.getUserByEmail(vo.getEmail());
+        User user = userService.getUserByEmail(dto.getEmail());
         if (!ObjectUtils.isEmpty(user)) {
             return ResultModel.failed(StatusCode.EMAIL_ISEXIST); // 该邮箱已注册
         }
 
-        userService.register(vo);
+        userService.register(dto);
+
         return ResultModel.success();
     }
 
@@ -82,7 +78,7 @@ public class UserController {
      * 跳转到注册页面
      */
     @GetMapping("/reg")
-    public String registerpage(Model model) {
+    public String registerPage(Model model) {
         // 用于验证码缓存和校验。植入到注册的登录页面的隐藏表单元素中
         String token = RandomUtils.generateUUID();
         model.addAttribute("token", token);
@@ -103,8 +99,8 @@ public class UserController {
     /**
      * 登录页面的验证码图片(注册页面也用这个接口)
      */
-    @GetMapping("/login/captcha")
-    public void captchaImage(@NotEmpty String token, HttpServletResponse response)
+    @GetMapping("/captcha")
+    public void captchaImage(@RequestParam String token, HttpServletResponse response)
             throws ServletException, IOException {
         String captcha = CaptchaUtils.generateAndOutput(response);
         redisService.saveCaptcha(token, captcha);
@@ -115,35 +111,35 @@ public class UserController {
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResultModel login(@Validated LoginDTO vo, HttpServletResponse response) {
-        String correctCaptcha = redisService.getCaptcha(vo.getToken());
+    public ResultModel<UserLoginInfo> login(@Validated LoginDTO dto, HttpServletResponse response) {
+        String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
         }
-        if (!vo.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
+        if (!dto.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码过期
         }
 
-        User user = userService.getUserByEmail(vo.getEmail());
+        User user = userService.getUserByEmail(dto.getEmail());
         if (ObjectUtils.isEmpty(user)) {
             return ResultModel.failed(StatusCode.EMAIL_INCORRECT); // 邮箱错误
         }
 
         // 以注册时的相同规则，加密用户输入的密码
-        Md5Hash md5Hash = new Md5Hash(vo.getPassword(), user.getLoginSalt(), 1024);
+        Md5Hash md5Hash = new Md5Hash(dto.getPassword(), user.getLoginSalt(), 1024);
         if (!user.getPasssword().equals(md5Hash.toHex())) {
             return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
-
-        // 生成jwt
-        String jwt = userService.generateJwt(user);
         Subject subject = SecurityUtils.getSubject();
-        if (subject.getPrincipal() != null) {
-            subject.logout();
+        // 旧的盐未被清空说明，已经登录尚未退出
+        if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
+            // 根据旧盐再一次生成旧的token
+            JwtToken oldToken = userService.generateJwtToken(user.getId(), user.getJwtSalt());
+            subject.login(oldToken);
+            userService.logout(); // 清除旧token的缓存
         }
 
-        // 由于jwt是正确的，所以这里的login必定成功。此举是为了将认证信息缓存起来
-        subject.login(new JwtToken(jwt));
+        UserLoginInfo loginInfo = userService.login(user);
 
         // 为什么登录不使用UsernamePasswordToken和定义专门的LoginRealm（Service层的逻辑）来处理UsernamePasswordToken？
         // 由于密码登录只用一次，成功之后都凭借jwt令牌来访问
@@ -151,21 +147,16 @@ public class UserController {
 
         // 将token放到请求头中，方便前端判断有无token刷新
         // 将常显的数据返回给前端缓存
-        return ResultModel.success(new UserLoginInfo(jwt, user));
+        return ResultModel.success(loginInfo);
     }
 
     /**
-     * TODO 退出登录
      * 销毁主体的认证信息
      */
     @RequestMapping("/logout")
     @ResponseBody
     public ResultModel logout() {
-        Subject subject = SecurityUtils.getSubject();
-        // 为什么可以强制转成User？与在Realm中认证方法返回的SimpleAuthenticationInfo()的第一个参数有关
-        //User user = (User) subject.getPrincipal();
-        //userService.logout(user.getUsername());
-        subject.logout();
+        userService.logout();
         return ResultModel.success();
     }
 

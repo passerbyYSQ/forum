@@ -14,11 +14,13 @@ import javax.validation.constraints.NotEmpty;
  */
 @Getter
 @Setter
-public class RegiserDTO {
+public class RegisterDTO {
     @NotEmpty
     private String token;
+
     @NotEmpty
     private String username;
+
     @NotEmpty
     @Email
     private String email;
@@ -27,7 +29,7 @@ public class RegiserDTO {
     private String password;
 
     @NotEmpty
-    private String repassword;
+    private String rePassword;
 
     @NotEmpty
     private String captcha;

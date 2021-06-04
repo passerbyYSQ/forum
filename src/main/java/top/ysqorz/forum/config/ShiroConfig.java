@@ -172,9 +172,8 @@ public class ShiroConfig {
 //    }
 
     @Bean
-    public CacheManager shiroCacheManager(
-            org.springframework.cache.CacheManager springCacheManager) {
-        return new ShiroCacheManager(springCacheManager);
+    public CacheManager shiroCacheManager() {
+        return new ShiroCacheManager(); // org.springframework.cache.CacheManager springCacheManager
     }
 
 }

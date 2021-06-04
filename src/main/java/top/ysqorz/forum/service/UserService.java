@@ -1,13 +1,11 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.dto.BlackInfoDTO;
-import top.ysqorz.forum.dto.QueryUserCondition;
-import top.ysqorz.forum.dto.RegiserDTO;
-import top.ysqorz.forum.dto.UserDTO;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.shiro.JwtToken;
 
 import java.util.List;
 
@@ -16,6 +14,26 @@ import java.util.List;
  * @create 2021-05-10 16:09
  */
 public interface UserService {
+
+    /**
+     * 退出登录的时候，需要清空Jwt的salt
+     */
+    int updateJwtSalt(Integer userId, String jwtSalt);
+
+    /**
+     * 登录
+     */
+    UserLoginInfo login(User user);
+
+    /**
+     * 退出登录
+     */
+    void logout();
+
+    /**
+     * 生成jwt字符串
+     */
+    JwtToken generateJwtToken(Integer userId, String jwtSalt);
 
     /**
      * 根据用户名查询用户
@@ -73,8 +91,6 @@ public interface UserService {
     int delRoleForUser(Integer[] roleIds, Integer userId);
 
 
-    void register(RegiserDTO vo);
-
-    String generateJwt(User user);
+    void register(RegisterDTO vo);
 
 }
