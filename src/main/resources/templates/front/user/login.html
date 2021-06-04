@@ -243,13 +243,13 @@
             console.log(data.field);
             app.ajax('/user/login', data.field, function (res) {
                 // 业务成功（业务状态码）的回调
-                layui.cache.user = res.data;
+               // layui.cache.user = res.data;
                 console.log(res);
-                localStorage.setItem("token",res.data.token);
+                localStorage.setItem("user",res.data);
                 app.successNotice("登录成功");
-                setTimeout(function() {
-                    window.location = '/';
-                }, 1000);
+                // setTimeout(function() {
+                //     window.location = '/';
+                // }, 1000);
                 //location.reload();
             }, "post", function (res) {
                 // 业务失败的回调

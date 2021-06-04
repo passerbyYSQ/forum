@@ -23,6 +23,6 @@ public interface Constant {
     Duration CAPTCHA_DURATION = Duration.ofMinutes(5);
 
     // jwt 的有效期：7天
-    long JWT_DURATION = Duration.ofDays(7).toMillis();
+    Duration JWT_DURATION = Duration.ofDays(7);
 
 }

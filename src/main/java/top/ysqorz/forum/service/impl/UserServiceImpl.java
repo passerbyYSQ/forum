@@ -30,7 +30,7 @@ import java.util.List;
  * @author 阿灿
  * @create 2021-05-10 16:10
  */
-@Service("userService") // 不要忘了
+@Service // 不要忘了
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -173,23 +173,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserLoginInfo login(User user) {
+    public String login(Integer userId) {
         String jwtSecret = RandomUtils.generateStr(8);
         // 更新数据库中的jwt salt
-        this.updateJwtSalt(user.getId(), jwtSecret);
+        this.updateJwtSalt(userId, jwtSecret);
 
-        JwtToken token = this.generateJwtToken(user.getId(), jwtSecret);
+        JwtToken token = this.generateJwtToken(userId, jwtSecret);
         Subject subject = SecurityUtils.getSubject();
         subject.login(token);
 
-        return new UserLoginInfo(token.getToken(), user);
+        return (String) token.getCredentials();
     }
 
     @Override
     public void logout() {
         Subject subject = SecurityUtils.getSubject();
         // 为什么可以强制转成User？与在Realm中认证方法返回的SimpleAuthenticationInfo()的第一个参数有关
-        Integer userId = Integer.valueOf((String) subject.getPrincipal());
+        Integer userId = (Integer) subject.getPrincipal();
         this.updateJwtSalt(userId, "");
         subject.logout();
     }
@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public JwtToken generateJwtToken(Integer userId, String jwtSalt) {
         String jwt = JwtUtils.generateJwt("userId", userId.toString(),
-                jwtSalt, Constant.JWT_DURATION);
+                jwtSalt, Constant.JWT_DURATION.toMillis());
         return new JwtToken(jwt);
     }
 

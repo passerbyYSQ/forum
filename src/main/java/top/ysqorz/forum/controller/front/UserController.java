@@ -2,6 +2,7 @@ package top.ysqorz.forum.controller.front;
 
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class UserController {
     private RedisService redisService;
 
 
-//    @RequiresRoles({"ysq"})
+    @RequiresRoles({"ysq"})
     @RequestMapping("/info")
     @ResponseBody
     public ResultModel<String> index() {
@@ -139,7 +140,7 @@ public class UserController {
             userService.logout(); // 清除旧token的缓存
         }
 
-        UserLoginInfo loginInfo = userService.login(user);
+        String token = userService.login(user.getId());
 
         // 为什么登录不使用UsernamePasswordToken和定义专门的LoginRealm（Service层的逻辑）来处理UsernamePasswordToken？
         // 由于密码登录只用一次，成功之后都凭借jwt令牌来访问
@@ -147,7 +148,7 @@ public class UserController {
 
         // 将token放到请求头中，方便前端判断有无token刷新
         // 将常显的数据返回给前端缓存
-        return ResultModel.success(loginInfo);
+        return ResultModel.success(new UserLoginInfo(token, user));
     }
 
     /**

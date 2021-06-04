@@ -23,7 +23,7 @@ public interface UserService {
     /**
      * 登录
      */
-    UserLoginInfo login(User user);
+    String login(Integer userId);
 
     /**
      * 退出登录

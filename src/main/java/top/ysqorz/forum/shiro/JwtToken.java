@@ -37,7 +37,7 @@ public class JwtToken implements HostAuthenticationToken {
      */
     @Override
     public Object getPrincipal() {
-        return JwtUtils.getClaimByKey(token, "userId");
+        return Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
     }
 
     /**

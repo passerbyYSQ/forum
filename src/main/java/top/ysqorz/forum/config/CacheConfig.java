@@ -15,8 +15,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
-import java.time.Duration;
+import top.ysqorz.forum.common.Constant;
 
 /**
  * redis配置类
@@ -61,7 +60,7 @@ public class CacheConfig extends CachingConfigurerSupport {
     @Bean
     public CacheManager springCacheManager(RedisConnectionFactory connectionFactory) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(7)) // 7 天
+                .entryTtl(Constant.JWT_DURATION) // 7 天
                 .disableCachingNullValues();
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)

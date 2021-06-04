@@ -12,8 +12,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
-import top.ysqorz.forum.utils.JwtUtils;
-import top.ysqorz.forum.utils.SpringUtils;
+
+import javax.annotation.Resource;
 
 /**
  * @author passerbyYSQ
@@ -21,6 +21,8 @@ import top.ysqorz.forum.utils.SpringUtils;
  */
 public class JwtRealm extends AuthorizingRealm {
 
+    @Resource
+    private UserService userService;
     /**
      * 当前Realm支持处理哪些Token
      */
@@ -31,8 +33,7 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String jwt = (String) principals.getPrimaryPrincipal();
-        String userId = JwtUtils.getClaimByKey(jwt, "userId");
+        Integer userId = (Integer) principals.getPrimaryPrincipal();
         // 从数据库查询角色和权限信息
         // ... 略
 
@@ -49,10 +50,9 @@ public class JwtRealm extends AuthorizingRealm {
 //        String tokenStr = jwtToken.getToken();
 
         // 取决于JwtToken的getPrincipal()
-        Integer userId =  Integer.valueOf((String) token.getPrincipal());
+        Integer userId = (Integer) token.getPrincipal();
 
         if (!ObjectUtils.isEmpty(userId)) {
-            UserService userService = (UserService) SpringUtils.getBean("userService");
             // 根据token中的username去数据库查询用户信息，并封装成SimpleAuthenticationInfo（认证信息）给Matcher去校验
             User user = userService.getInfoById(userId);
             /*

@@ -59,7 +59,8 @@ layui.define(['jquery', 'layer', 'form', 'notice'], function (exports) {
 
             //var loadIndex = layer.load(2); // 显示loading...
             app.showLoading();
-
+            // = layui.cache.user.token; // 可能为空
+            var user = localStorage.getItem("user");
             // TODO 从缓存中获取token信息
             var token;
 
@@ -70,7 +71,7 @@ layui.define(['jquery', 'layer', 'form', 'notice'], function (exports) {
                 data: data,
                 timeout: 30000, // 超时时间为30秒
                 headers: {
-                    token: token // 携带token
+                    token: user.token// 携带token
                 },
                 success: function(res, textStatus, xhr) {
                     //layer.close(loadIndex); // 关闭 loading
@@ -83,7 +84,9 @@ layui.define(['jquery', 'layer', 'form', 'notice'], function (exports) {
                         // 判断是否签发了新的token。如果是，更新token
                         var header = xhr.getAllResponseHeaders();
                         if (app.isNotBlank(header.token)) { // 如果签发了新的token
-                            // TODO 更新缓存中的token
+                            //   layui.cache.user.token = header.token;
+                            user.token = header.token
+                            localStorage.setItem("user", user);
                         }
                         successCallback(res); // 业务成功
                     }

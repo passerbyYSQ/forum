@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import top.ysqorz.forum.dto.ResultModel;
 import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.JwtUtils;
+import top.ysqorz.forum.utils.SpringUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -28,11 +30,17 @@ import java.time.temporal.ChronoUnit;
 @Slf4j
 public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
 
+
+
     // 是否刷新token
     private boolean shouldRefreshToken;
 
     public JwtAuthenticatingFilter() {
         this.shouldRefreshToken = false;
+    }
+
+    public JwtAuthenticatingFilter(Boolean shouldRefreshToken) {
+        this.shouldRefreshToken=shouldRefreshToken;
     }
 
     /**
@@ -99,13 +107,18 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject,
                                      ServletRequest request, ServletResponse response) {
 
-        String oldToken = (String) token.getPrincipal();
+        String oldToken = (String) token.getCredentials();
         LocalDateTime expireAt = DateTimeUtils.toLocalDateTime(JwtUtils.getExpireAt(oldToken));
 
 
         if (shouldRefreshToken &&
                 DateTimeUtils.dif(LocalDateTime.now(), expireAt, ChronoUnit.DAYS) < 1) {
+
+            UserService userService = (UserService) SpringUtils.getBean("userServiceImpl");
             // 刷新token...
+            userService.logout();
+            String jwt = userService.login((Integer) token.getPrincipal());
+            WebUtils.toHttp(response).setHeader("token", jwt);
         }
 
         return true;
