@@ -1,8 +1,14 @@
 package top.ysqorz.forum.shiro;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
+import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.utils.JwtUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author passerbyYSQ
@@ -11,22 +17,22 @@ import org.apache.shiro.authc.credential.CredentialsMatcher;
 public class JwtCredentialsMatcher implements CredentialsMatcher {
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-//        //  AuthenticationInfo info 是我们在JwtRealm中doGetAuthenticationInfo()返回的那个
-//        User user = (User) info.getCredentials();
-//
-//        //String tokenStr = (String) token.getPrincipal();
-//        String tokenStr = (String) info.getPrincipals().getPrimaryPrincipal();
-//
-//        // 校验失败，会抛出异常，被shiro捕获
-//        Map<String, String> claims = new HashMap<>();
-//        claims.put("userId", user.getId().toString());
-//        try {
-//            JwtUtils.verifyJwt(tokenStr, user.getJwtSalt(), claims);
-//            return true;
-//        } catch (JWTVerificationException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-        return true;
+        //  AuthenticationInfo info 是我们在JwtRealm中doGetAuthenticationInfo()返回的那个
+        User user = (User) info.getCredentials();
+
+        //String tokenStr = (String) token.getPrincipal();
+        //Integer userId = (Integer) info.getPrincipals().getPrimaryPrincipal();
+
+        // 校验失败，会抛出异常，被shiro捕获
+        Map<String, String> claims = new HashMap<>();
+        claims.put("userId", user.getId().toString());
+        try {
+            JwtUtils.verifyJwt(((JwtToken) token).getToken(), user.getJwtSalt(), claims);
+            return true;
+        } catch (JWTVerificationException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }

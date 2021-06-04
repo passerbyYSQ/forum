@@ -1,7 +1,6 @@
 package top.ysqorz.forum.shiro;
 
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -10,14 +9,11 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.SpringUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author passerbyYSQ
@@ -53,14 +49,15 @@ public class JwtRealm extends AuthorizingRealm {
 //        String tokenStr = jwtToken.getToken();
 
         // 取决于JwtToken的getPrincipal()
-        String tokenStr = (String) token.getPrincipal();
+        Integer userId =  Integer.valueOf((String) token.getPrincipal());
+
 
         // 从jwt中解析出username
-        String userId = JwtUtils.getClaimByKey(tokenStr, "userId");
-        if (!StringUtils.isEmpty(userId)) {
+        //String userId = JwtUtils.getClaimByKey(tokenStr, "userId");
+        if (!ObjectUtils.isEmpty(userId)) {
             UserService userService = (UserService) SpringUtils.getBean("userService");
             // 根据token中的username去数据库查询用户信息，并封装成SimpleAuthenticationInfo（认证信息）给Matcher去校验
-            User user = userService.getInfoById(Integer.parseInt(userId));
+            User user = userService.getInfoById(userId);
             /*
             注意第一个参数必须是与token.getPrincipal()，否则在remove缓存时的key，会与put的时候的key不一样
             从而导致退出的时候无法remove掉缓存。
@@ -75,18 +72,21 @@ public class JwtRealm extends AuthorizingRealm {
             json序列化。但我个人不建议使用json，用json无非是为了可视化，意义不大，但是由于java是强类型语言，
             反序列化的时候可能就会出问题
              */
+            AuthenticationInfo info = new SimpleAuthenticationInfo(token.getPrincipal(), user, this.getName());
+            if (getCredentialsMatcher().doCredentialsMatch(token, info)) {
+                return info;
+            }
 
 
             // 校验失败，会抛出异常，被shiro捕获
-            Map<String, String> claims = new HashMap<>();
-            claims.put("userId", user.getId().toString());
-            try {
-                JwtUtils.verifyJwt(tokenStr, user.getJwtSalt(), claims);
-                return new SimpleAuthenticationInfo(token.getPrincipal(), user, this.getName());
-            } catch (JWTVerificationException e) {
-                e.printStackTrace();
-            }
-
+//            Map<String, String> claims = new HashMap<>();
+//            claims.put("userId", user.getId().toString());
+//            try {
+//                JwtUtils.verifyJwt(tokenStr, user.getJwtSalt(), claims);
+//                return new SimpleAuthenticationInfo(token.getPrincipal(), user, this.getName());
+//            } catch (JWTVerificationException e) {
+//                e.printStackTrace();
+//            }
 
 
         }

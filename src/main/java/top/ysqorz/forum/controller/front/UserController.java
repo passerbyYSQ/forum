@@ -138,6 +138,10 @@ public class UserController {
         // 生成jwt
         String jwt = userService.generateJwt(user);
         Subject subject = SecurityUtils.getSubject();
+        if (subject.getPrincipal() != null) {
+            subject.logout();
+        }
+
         // 由于jwt是正确的，所以这里的login必定成功。此举是为了将认证信息缓存起来
         subject.login(new JwtToken(jwt));
 
