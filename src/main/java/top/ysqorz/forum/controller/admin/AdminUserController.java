@@ -44,12 +44,12 @@ public class AdminUserController {
         //  PageHelper.clearPage(); //不加报错
         List<UserDTO> myUserList = userService.getMyUserList(conditions);
         // List<User> userList = userService.getUserList(conditions);
-        PageInfo<UserDTO> pageinfo = new PageInfo<>(myUserList);
+        PageInfo<UserDTO> pageInfo = new PageInfo<>(myUserList);
         PageData<UserDTO> pageData = new PageData<>();
         pageData.setList(myUserList);
-        pageData.setTotal(pageinfo.getTotal());
-        pageData.setPage(pageinfo.getPageNum());
-        pageData.setCount(pageinfo.getPageSize());
+        pageData.setTotal(pageInfo.getTotal());
+        pageData.setPage(pageInfo.getPageNum());
+        pageData.setCount(pageInfo.getPageSize());
 
         return ResultModel.success(pageData);
     }

@@ -64,13 +64,20 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+
+        HttpServletRequest httpRequest = WebUtils.toHttp(request);
         HttpServletResponse httpResponse = WebUtils.toHttp(response);
-        httpResponse.setCharacterEncoding("UTF-8");
-        httpResponse.setContentType("application/json;charset=UTF-8");
-        httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
-        PrintWriter writer = response.getWriter();
-        String json = JsonUtils.objectToJson(ResultModel.failed(StatusCode.AUTHENTICATION_FAILED));
-        writer.print(json);
+        if (httpRequest.getHeader("Accept") == null ||
+                !httpRequest.getHeader("Accept").contains("text/html")) { // api
+            httpResponse.setCharacterEncoding("UTF-8");
+            httpResponse.setContentType("application/json;charset=UTF-8");
+            httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            PrintWriter writer = response.getWriter();
+            String json = JsonUtils.objectToJson(ResultModel.failed(StatusCode.AUTHENTICATION_FAILED));
+            writer.print(json);
+        } else { // html
+            httpResponse.sendRedirect("/user/login"); // 重定向到登录页面
+        }
         return false;
     }
 
@@ -113,9 +120,8 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
 
         if (shouldRefreshToken &&
                 DateTimeUtils.dif(LocalDateTime.now(), expireAt, ChronoUnit.DAYS) < 1) {
-
+            // 刷新token
             UserService userService = (UserService) SpringUtils.getBean("userServiceImpl");
-            // 刷新token...
             userService.logout();
             String jwt = userService.login((Integer) token.getPrincipal());
             WebUtils.toHttp(response).setHeader("token", jwt);

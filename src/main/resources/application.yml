@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 87654321
+    password: ysqJYKL2010
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       initial-size: 5   # 初始化连接数
@@ -88,7 +88,7 @@ mybatis:
   # xxMapper.xml文件在resources/mybatis/mapper下
   mapper-locations: classpath:mybatis/mapper/*.xml
   # 与数据库表对应的po类所在的包，配置之后可以直接在xml中写类命
-  type-aliases-package: top.ysqorz.forum
+  type-aliases-package: top.ysqorz.forum.po
   configuration:
     # 将数据库表的带下划线字段转成java中的驼峰命名
     map-underscore-to-camel-case: true

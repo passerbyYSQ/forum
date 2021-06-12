@@ -10,4 +10,12 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="post_count" jdbcType="INTEGER" property="postCount" />
   </resultMap>
+
+  <select id="selectLabelsByPostId" parameterType="Integer" resultType="top.ysqorz.forum.po.Label">
+    select l.*
+    from post_label pl
+    left join label l on pl.label_id = l.id
+    where post_id = #{postId}
+  </select>
+
 </mapper>

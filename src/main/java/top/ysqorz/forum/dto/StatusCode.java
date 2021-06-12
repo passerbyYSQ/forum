@@ -63,7 +63,10 @@ public enum StatusCode {
     ROLE_NOT_EXIST(6400, "角色不存在"),
 
     // 话题相关
-    TOPIC_NOT_EXIST(6500, "话题不存在")
+    TOPIC_NOT_EXIST(6500, "话题不存在"),
+
+    // 帖子相关
+    POST_NOT_EXIST(6600, "帖子不存在")
 
     ;
 

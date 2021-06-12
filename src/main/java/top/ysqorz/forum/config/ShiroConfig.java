@@ -80,16 +80,16 @@ public class ShiroConfig {
     @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
-        chainDefinition.addPathDefinition("/user/register", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/user/login", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
-        chainDefinition.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
-        chainDefinition.addPathDefinition("/user/captcha", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/front/**", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,anon");
+//        chainDefinition.addPathDefinition("/user/register", "noSessionCreation,anon");
+//        chainDefinition.addPathDefinition("/user/login", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
+//        chainDefinition.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
+//        chainDefinition.addPathDefinition("/user/captcha", "noSessionCreation,anon");
+//        chainDefinition.addPathDefinition("/front/**", "noSessionCreation,anon");
+//        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,anon");
 //        // 注意第2个参数的"jwtAuth"需要与上面的 filters.put("jwtAuth", new JwtAuthenticatingFilter()); 一致
 //        // 做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
-        chainDefinition.addPathDefinition("/user/logout", "noSessionCreation,jwtAuth[permissive]");
-        chainDefinition.addPathDefinition("/**", "noSessionCreation,jwtAuth"); // 默认进行用户鉴权
+//        chainDefinition.addPathDefinition("/user/logout", "noSessionCreation,jwtAuth[permissive]");
+//        chainDefinition.addPathDefinition("/**", "noSessionCreation,jwtAuth"); // 默认进行用户鉴权
         return chainDefinition;
     }
 

@@ -2,23 +2,17 @@ package top.ysqorz.forum.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
-import top.ysqorz.forum.dao.PostLabelMapper;
 import top.ysqorz.forum.dao.PostMapper;
-import top.ysqorz.forum.po.Label;
-import top.ysqorz.forum.po.Post;
-import top.ysqorz.forum.po.PostLabel;
-import top.ysqorz.forum.service.LabelService;
-import top.ysqorz.forum.service.PostService;
-import top.ysqorz.forum.service.TopicService;
 import top.ysqorz.forum.dto.PublishPostDTO;
+import top.ysqorz.forum.dto.QueryPostCondition;
+import top.ysqorz.forum.dto.SimplePostDTO;
+import top.ysqorz.forum.po.Post;
+import top.ysqorz.forum.service.*;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author passerbyYSQ
@@ -31,13 +25,42 @@ public class PostServiceImpl implements PostService {
     private PostMapper postMapper;
 
     @Resource
-    private PostLabelMapper postLabelMapper;
+    private PostLabelService postLabelService;
 
     @Resource
     private TopicService topicService;
 
     @Resource
     private LabelService labelService;
+
+    @Resource
+    private UserService userService;
+
+    @Transactional
+    @Override
+    public void changeHighQuality(Integer userId, Integer postId, Boolean isHighQuality) {
+        // 奖励积分 或者 撤销积分。TODO 到时候需要从配置中读取奖励的积分值
+        userService.updateRewardPoints(userId, isHighQuality ? 5 : -5);
+        // 更新精品状态
+        Post post = new Post();
+        post.setId(postId).setIsHighQuality((byte) (isHighQuality ? 1 : 0));
+        this.updatePostById(post);
+    }
+
+    @Override
+    public Post getPostById(Integer postId) {
+        return postMapper.selectByPrimaryKey(postId);
+    }
+
+    @Override
+    public int updatePostById(Post post) {
+        return postMapper.updateByPrimaryKeySelective(post);
+    }
+
+    @Override
+    public List<SimplePostDTO> getPostList(QueryPostCondition condition) {
+        return postMapper.selectListByConditions(condition);
+    }
 
     @Override
     public Post addPost(PublishPostDTO vo, Integer creatorId) {
@@ -50,6 +73,7 @@ public class PostServiceImpl implements PostService {
                 // [0, 3]：表示4种可见性。其中3表示：帖子需要花积分（[4,99]）购买才可见
                 // 所以当VisibilityType为3时，干脆直接用VisibilityType来存积分数x
                 .setVisibilityType(vo.getVisibilityType() == 3 ? vo.getPoints() : vo.getVisibilityType())
+                .setIsLocked((byte) (vo.getIsLocked() ? 1 : 0))
 
                 .setCreateTime(LocalDateTime.now())
                 .setLastModifyTime(LocalDateTime.now())
@@ -59,7 +83,7 @@ public class PostServiceImpl implements PostService {
                 .setVisitCount(0) // 访问数
                 .setLikeCount(0) // 点赞数
 
-                .setIsHightQuality((byte) 0) // 不是精品帖
+                .setIsHighQuality((byte) 0) // 不是精品帖
                 .setTopWeight(0); // 置顶权重，0：不置顶
 
         postMapper.insertUseGeneratedKeys(post);
@@ -75,24 +99,28 @@ public class PostServiceImpl implements PostService {
     public void publishPost(PublishPostDTO vo, Integer creatorId) {
         // 注意要用this对象，否则调用的不是被AOP代理后的对象的方法
         Post post = this.addPost(vo, creatorId);
+        // 批量插入帖子和标签的映射关系
+        postLabelService.addPostLabelList(post.getId(), vo.splitLabels());
+    }
 
-        // postId --- labelId 的映射关系
-        List<PostLabel> postLabels = new ArrayList<>();
-        Set<String> labelSet = vo.splitLabels();
-        for (String name : labelSet) {
-            Label label = labelService.getLabelByName(name);
-            if (ObjectUtils.isEmpty(label)) { // 标签不存在，就创建
-                label = labelService.addLabel(name); // 自增长id被设置进去了
-            }
-            if (!ObjectUtils.isEmpty(label.getId())) {
-                postLabels.add(new PostLabel(post.getId(), label.getId()));
-            }
-        }
+    @Transactional
+    @Override
+    public void updatePostAndLabels(PublishPostDTO vo) {
+        Post post = new Post();
+        post.setId(vo.getPostId())
+                .setTopicId(vo.getTopicId())
+                .setTitle(vo.getTitle())
+                .setContent(HtmlUtils.htmlUnescape(vo.getContent()))
+                .setVisibilityType(vo.getVisibilityType() == 3 ?
+                        vo.getPoints() : vo.getVisibilityType())
+                .setIsLocked((byte) (vo.getIsLocked() ? 1 : 0));
+        this.updatePostById(post);
 
-        if (!ObjectUtils.isEmpty(postLabels)) {
-            // 批量插入帖子和标签的映射关系
-            postLabelMapper.insertList(postLabels);
-        }
+        // 先把当与前帖子相关标签的映射关系全部删除
+        postLabelService.delPostLabelByPostId(vo.getPostId());
+
+        // 批量插入帖子和标签的映射关系
+        postLabelService.addPostLabelList(vo.getPostId(), vo.splitLabels());
     }
 
 }

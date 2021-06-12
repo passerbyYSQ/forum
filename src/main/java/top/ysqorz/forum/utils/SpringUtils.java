@@ -1,5 +1,6 @@
 package top.ysqorz.forum.utils;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
 public class SpringUtils implements ApplicationContextAware {
 
 	private static ApplicationContext applicationContext;
+	private static PropertyNamingStrategy.PropertyNamingStrategyBase
+			snakeCaseStrategy = new PropertyNamingStrategy.SnakeCaseStrategy();
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -41,4 +44,8 @@ public class SpringUtils implements ApplicationContextAware {
 		return getApplicationContext().getBean(name, clazz);
 	}
 
+	// 将变量名转成下划线命名方式
+	public static String snakeCaseFormat(String variableName) {
+		return snakeCaseStrategy.translate(variableName);
+	}
 }

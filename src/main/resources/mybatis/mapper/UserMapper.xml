@@ -58,4 +58,8 @@
         </if>
         order by register_time desc
     </select>
+
+    <update id="updateRewardPoints" parameterType="map">
+        update user set reward_points = reward_points + #{num} where id = #{userId}
+    </update>
 </mapper>

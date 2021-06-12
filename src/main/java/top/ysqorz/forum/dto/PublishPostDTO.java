@@ -18,6 +18,12 @@ import java.util.stream.Collectors;
 @Setter
 public class PublishPostDTO {
 
+    public interface Add {}
+    public interface Update {}
+
+    @NotNull(groups = Update.class)
+    private Integer postId;
+
     @NotNull
     private Integer topicId; // 所属话题
 
@@ -31,6 +37,9 @@ public class PublishPostDTO {
 
     @NotEmpty
     private String captcha; // 验证码
+
+    @NotNull
+    private Boolean isLocked;
 
     /**
      * 可见策略

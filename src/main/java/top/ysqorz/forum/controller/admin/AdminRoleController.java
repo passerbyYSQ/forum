@@ -143,8 +143,7 @@ public class AdminRoleController {
 
         PageInfo<Role> pageInfo = new PageInfo<>(roleList);
         // 获取必需的分页属性
-        PageData<Role> pageData = new PageData<>(pageInfo.getPageNum(),
-                pageInfo.getPageSize(), pageInfo.getTotal(), roleList);
+        PageData<Role> pageData = new PageData<>(pageInfo, roleList);
 
         return ResultModel.success(pageData);
     }

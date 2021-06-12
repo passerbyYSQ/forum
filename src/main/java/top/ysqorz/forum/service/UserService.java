@@ -16,6 +16,11 @@ import java.util.List;
 public interface UserService {
 
     /**
+     * 加减积分。注意自增和自减，只能自己写SQL语句，没办法使用tk
+     */
+    int updateRewardPoints(Integer userId, Integer num);
+
+    /**
      * 退出登录的时候，需要清空Jwt的salt
      */
     int updateJwtSalt(Integer userId, String jwtSalt);

@@ -22,6 +22,11 @@ public class LabelServiceImpl implements LabelService {
     private LabelMapper labelMapper;
 
     @Override
+    public List<Label> getLabelsByPostId(Integer postId) {
+        return labelMapper.selectLabelsByPostId(postId);
+    }
+
+    @Override
     public List<Label> getLabelsLikeName(String labelName, Integer maxCount) {
         Example example = new Example(Label.class);
         if (!ObjectUtils.isEmpty(labelName)) {

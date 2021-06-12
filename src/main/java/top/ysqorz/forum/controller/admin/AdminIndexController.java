@@ -14,13 +14,13 @@ public class AdminIndexController {
 
     // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
     @GetMapping({"", "/index"})
-    public String index() {
+    public String indexPage() {
         return "admin/index";
     }
 
 
     @GetMapping("/console/workplace")
-    public String workplace() {
+    public String workplacePage() {
         return "admin/console/workplace";
     }
 
@@ -28,7 +28,7 @@ public class AdminIndexController {
      * 权限管理页面
      */
     @GetMapping("/system/authorities")
-    public String authorities() {
+    public String authoritiesPage() {
         return "admin/system/authorities";
     }
 
@@ -36,7 +36,7 @@ public class AdminIndexController {
      * 角色管理页面
      */
     @GetMapping("/system/role")
-    public String role() {
+    public String rolePage() {
         return "admin/system/role";
     }
 
@@ -45,7 +45,7 @@ public class AdminIndexController {
      * 用户管理界面
      */
     @GetMapping("/system/user")
-    public String user() {
+    public String userPage() {
         return "admin/system/user";
     }
 
@@ -53,7 +53,16 @@ public class AdminIndexController {
      * 话题管理
      */
     @GetMapping("/system/topic")
-    public String topic() {
+    public String topicPage() {
         return "admin/system/topic";
     }
+
+    /**
+     * 帖子管理
+     */
+    @GetMapping("/system/post")
+    public String postPage() {
+        return "admin/system/post";
+    }
+
 }

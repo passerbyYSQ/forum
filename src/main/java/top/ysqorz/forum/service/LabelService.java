@@ -11,6 +11,11 @@ import java.util.List;
 public interface LabelService {
 
     /**
+     * 查询帖子的相关的标签
+     */
+    List<Label> getLabelsByPostId(Integer postId);
+
+    /**
      * 根据名字模糊匹配标签
      */
     List<Label> getLabelsLikeName(String labelName, Integer maxCount);
@@ -24,5 +29,4 @@ public interface LabelService {
      * 添加一个标签
      */
     Label addLabel(String labelName);
-
 }

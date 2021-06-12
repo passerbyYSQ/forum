@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>帖子管理</title>
+    <link rel="stylesheet" href="admin/libs/layui/css/layui.css" th:href="@{/admin/assets/libs/layui/css/layui.css}"/>
+    <link rel="stylesheet" href="admin/module/admin.css?v=318" th:href="@{/admin/assets/module/admin.css(v=318)}"/>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        #postTable + .layui-table-view .layui-table-body tbody > tr > td {
+            padding: 0;
+        }
+
+        #postTable + .layui-table-view .layui-table-body tbody > tr > td > .layui-table-cell {
+            text-align: center;
+            height: auto;
+            white-space: normal;
+            /*line-height: 48px;*/
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">发帖用户:</label>
+                        <div class="layui-input-inline">
+                            <input name="creator" class="layui-input" placeholder="输入用户名"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">标题:</label>
+                        <div class="layui-input-inline">
+                            <input name="title" class="layui-input" placeholder="输入标题"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">所属话题:</label>
+                        <div class="layui-input-inline">
+                            <select name="topicId">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline form-search-show-expand">
+                        <label class="layui-form-label">发帖时间:</label>
+                        <div class="layui-input-inline">
+                            <input id="publishTimeRange" name="publishTimeRange" class="layui-input icon-date"
+                                   placeholder="选择发帖时间" autocomplete="off"/>
+                        </div>
+                    </div>
+                    <!--
+                    <div class="layui-inline form-search-show-expand">
+                        <label class="layui-form-label">标签</label>
+                        <div class="layui-input-block" style="min-width: 190px;">
+                            <input id="tagsInput" name="labels" value="" class="layui-hide"/>
+                        </div>
+                    </div>
+                    -->
+                    <div class="layui-inline">
+                        <label class="layui-form-label"></label>
+                        <button class="layui-btn icon-btn" lay-filter="postTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <a class="layui-btn form-search-expand" search-expand>
+                            展开 <i class="layui-icon layui-icon-down"></i></a>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="postTable" lay-filter="postTable"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="postTbBar">
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="top">置顶</a>
+</script>
+<!-- 表格状态列 -->
+<script type="text/html" id="postTbState">
+    <input type="checkbox" lay-filter="lockStateCk" value="{{d.id}}" lay-skin="switch"
+           lay-text="正常|锁定" {{d.isLocked==0?'checked':''}} style="display: none;"/>
+    <p style="display: none;">{{d.isLocked==0?'正常':'锁定'}}</p>
+    &nbsp;
+    <input type="checkbox" lay-filter="highQualityStateCk" value="{{d.id}}" lay-skin="switch"
+           lay-text="精品|普通" {{d.isHighQuality==1?'checked':''}} style="display: none;"/>
+    <p style="display: none;">{{d.isHighQuality==1?'精品':'普通'}}</p>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="topDialog">
+    <form id="topForm" lay-filter="topForm" class="layui-form model-form">
+        <input name="id" type="hidden"/> <!-- postId -->
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">置顶权重:</label>
+            <div class="layui-input-block">
+                <input name="topWeight" placeholder="请输入账号" class="layui-input"
+                       type="number" lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="topSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+<script type="text/html" id="userEditDialog">
+    <form id="userEditForm" lay-filter="userEditForm" class="layui-form model-form">
+        <input name="userId" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">账号:</label>
+            <div class="layui-input-block">
+                <input name="username" placeholder="请输入账号" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">用户名:</label>
+            <div class="layui-input-block">
+                <input name="nickName" placeholder="请输入用户名" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">性别:</label>
+            <div class="layui-input-block">
+                <input type="radio" name="sex" value="男" title="男" checked/>
+                <input type="radio" name="sex" value="女" title="女"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">手机号:</label>
+            <div class="layui-input-block">
+                <input name="phone" placeholder="请输入手机号" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">角色:</label>
+            <div class="layui-input-block">
+                <div id="userEditRoleSel"></div>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="userEditSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+
+<!-- js部分 -->
+<script type="text/javascript" src="admin/libs/layui/layui.js" th:src="@{/admin/assets/libs/layui/layui.js}"></script>
+<script type="text/javascript" src="admin/js/common.js?v=318" th:src="@{/admin/assets/js/common.js(v=318)}"></script>
+<script th:inline="none">
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'tagsInput', 'laydate', 'app'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var xmSelect = layui.xmSelect;
+        var tagsInput = layui.tagsInput;
+        var laydate = layui.laydate;
+        var app = layui.app;
+
+        // 渲染时间选择框
+        laydate.render({
+            elem: '#publishTimeRange',
+            type: 'datetime',
+            range: true,
+            max: 0 // 最大的日期。当天
+        });
+
+        // 动态渲染话题列表
+        app.ajax("/topic/all", {}, function (res) {
+            console.log(res);
+            var html = '<option></option>';
+            layui.each(res.data, function (index, item) {
+                html += ('<option value=' + item.id + '>' + item.topicName + '</option>');
+            });
+            $("select[name=topicId]").html(html);
+            form.render('select');
+        }, "get");
+
+        // 标签输入框样式
+        /*
+        $('#tagsInput').tagsInput({
+            maxChars: 16,
+            removeWithBackspace: true,
+            defaultText: '敲回车',
+            onChange: function () {
+                var input = $(this).siblings('.tagsinput');
+                var maxLen = 5; // e.g. 限制只能输入5个标签
+                if (input.children('span.tag').length >= maxLen) {
+                    input.children('div').hide();
+                } else {
+                    input.children('div').show();
+                }
+                // console.log($(this).val());
+            },
+        });
+        */
+
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#postTable',
+            url: '/admin/system/post/list',
+            request: {
+                limitName: 'count' //每页数据量的参数名，默认：limit
+            },
+            response: {
+                statusCode: 2000 //规定成功的状态码，默认：0
+            },
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.data.total, //解析数据长度
+                    "data": res.data.list //解析数据列表
+                };
+            },
+            page: true, // 开启分页
+            limit: 3, // 每一页显示的记录数
+            limits: [1, 2, 3, 10, 20, 30],
+            toolbar: ['<p>',
+                '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {field: 'creator', title: '作者', align: 'center'},
+                {field: 'title', title: '标题', align: 'center'},
+                {field: 'topic', title: '所属话题', align: 'center'},
+                {
+                    field: 'labels', title: '标签', templet: function (d) {
+                        return d.labelList.map(function (item) {
+                            return '<span class="layui-badge layui-badge-blue">' + item.labelName + '</span>';
+                        }).join('&nbsp;&nbsp;');
+                    }, align: 'center', width: 144
+                },
+                {
+                    field: 'createTime', title: '发帖时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, align: 'center', sort: true
+                },
+                {field: 'visitCount', title: '浏览数', align: 'center', sort: true, width: 88},
+                {field: 'likeCount', title: '点赞数', align: 'center', sort: true, width: 88},
+                {field: 'commentCount', title: '评论数', align: 'center', sort: true, width: 88},
+                {field: 'state', title: '状态', templet: '#postTbState', align: 'center', width: 156},
+                {title: '操作', toolbar: '#postTbBar', align: 'center', width: 160}
+            ]]
+        });
+
+        // 表格排序事件
+        table.on('sort(postTable)', function (obj) { //注：sort 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            // console.log(obj.field); //当前排序的字段名
+            // console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+            //console.log(this); //当前排序的 th 对象
+
+            // 实现服务端排序
+            table.reload('postTable', {
+                initSort: obj, //记录初始排序，如果不设的话，将无法标记表头的排序状态。
+                where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                    field: obj.field, //排序字段
+                    order: obj.type //排序方式
+                }
+            });
+
+            layer.msg('服务端排序：order by ' + obj.field + ' ' + obj.type);
+        });
+
+        /* 表格搜索 */
+        form.on('submit(postTbSearch)', function (data) {
+            var reqData = data.field;
+            if (app.isNotBlank(reqData.publishTimeRange)) {
+                var arr = reqData.publishTimeRange.split(' - ');
+                reqData.startPublishTime = arr[0];
+                reqData.endPublishTime = arr[1];
+            }
+            insTb.reload({where: reqData, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(postTable)', function (obj) {
+            console.log(obj);
+            if (obj.event === 'edit') { // 修改
+                showEditModel(obj.data);
+            } else if (obj.event === 'del') { // 删除
+                doDel(obj);
+            } else if (obj.event === 'top') { // 置顶
+                showTopDialog(obj.data);
+            }
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(postTable)', function (obj) {
+            if (obj.event === 'add') { // 添加
+                showEditModel();
+            } else if (obj.event === 'del') { // 删除
+                var checkRows = table.checkStatus('postTable');
+                if (checkRows.data.length === 0) {
+                    layer.msg('请选择要删除的数据', {icon: 2});
+                    return;
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.userId;
+                });
+                doDel({ids: ids});
+            }
+        });
+
+        function showTopDialog(mData) {
+            admin.open({
+                type: 1,
+                title: '置顶',
+                content: $('#topDialog').html(),
+                success: function (layero, dIndex) {
+                    // 回显表单数据
+                    form.val('topForm', mData);
+                    // 表单提交事件
+                    form.on('submit(topSubmit)', function (data) {
+                        console.log(data);
+                        app.ajax("/admin/system/post/top", data.field);
+                    });
+                    // 禁止弹窗出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                }
+            });
+        }
+
+        /* 显示表单弹窗 */
+        function showEditModel(mData) {
+            console.log(mData);
+            admin.open({
+                type: 2,
+                title: '修改帖子',
+                shade: 0,
+                maxmin: true,
+                resize: true,
+                area: ['1000px', '500px'],
+                content: '/post/publish?postId=' + mData.id,
+                success: function (layero) {
+                    $(layero).css('min-width', '600px'); // 往style属性中追加样式
+                },
+                end: function () {
+                    insTb.reload();
+                }
+            });
+        }
+
+        /* 删除 */
+        function doDel(obj) {
+            layer.confirm('确定要删除选中数据吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.get('../../json/ok.json', {
+                    id: obj.data ? obj.data.userId : '',
+                    ids: obj.ids ? obj.ids.join(',') : ''
+                }, function (res) {
+                    layer.close(loadIndex);
+                    if (res.code === 200) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                }, 'json');
+            });
+        }
+
+        /* 修改帖子锁定 */
+        form.on('switch(lockStateCk)', function (obj) {
+            //console.log(obj.elem.checked);
+            if (obj.elem.checked === false) {
+                layer.confirm('确认锁定帖子吗？帖子锁定后将无法评论！', {
+                    skin: 'layui-layer-admin',
+                    shade: .1
+                }, function (i) {
+                    layer.close(i); // 关闭
+                    reqLock();
+                }, function () { // 取消
+                    obj.elem.checked = !obj.elem.checked;   // 还原开关状态
+                    form.render('checkbox'); // 重新渲染开关样式
+                });
+            } else {
+                reqLock();
+            }
+
+            // js允许循环嵌套定义函数
+            function reqLock() {
+                app.ajax("/admin/system/post/lock", {
+                    postId: obj.elem.value,
+                    // checked : false（灰色，锁定） => isLock: true
+                    isLock: !obj.elem.checked
+                });
+            }
+        });
+
+        /* 修改精品状态 */
+        form.on('switch(highQualityStateCk)', function (obj) {
+            var msg = obj.elem.checked ? '作者已获得对应的积分奖励' : '已撤销对作者的积分奖励';
+            app.ajax("/admin/system/post/highQuality", {
+                postId: obj.elem.value,
+                // checked : true（精品） => isHighQuality: true
+                isHighQuality: obj.elem.checked
+            }, function (res) {
+                app.successNotice(msg);
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -13,7 +13,10 @@ import top.ysqorz.forum.dao.BlacklistMapper;
 import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dao.UserRoleMapper;
-import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.BlackInfoDTO;
+import top.ysqorz.forum.dto.QueryUserCondition;
+import top.ysqorz.forum.dto.RegisterDTO;
+import top.ysqorz.forum.dto.UserDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
@@ -24,7 +27,9 @@ import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 阿灿
@@ -200,6 +205,14 @@ public class UserServiceImpl implements UserService {
         String jwt = JwtUtils.generateJwt("userId", userId.toString(),
                 jwtSalt, Constant.JWT_DURATION.toMillis());
         return new JwtToken(jwt);
+    }
+
+    @Override
+    public int updateRewardPoints(Integer userId, Integer num) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("userId", userId);
+        param.put("num", num);
+        return userMapper.updateRewardPoints(param);
     }
 
     @Override

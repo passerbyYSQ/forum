@@ -1,27 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.PostMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.Post">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
-    <result column="topic_id" jdbcType="INTEGER" property="topicId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="last_modify_time" jdbcType="TIMESTAMP" property="lastModifyTime" />
-    <result column="visit_count" jdbcType="INTEGER" property="visitCount" />
-    <result column="like_count" jdbcType="INTEGER" property="likeCount" />
-    <result column="collect_count" jdbcType="INTEGER" property="collectCount" />
-    <result column="comment_count" jdbcType="INTEGER" property="commentCount" />
-    <result column="is_hight_quality" jdbcType="TINYINT" property="isHightQuality" />
-    <result column="top_weight" jdbcType="INTEGER" property="topWeight" />
-    <result column="last_comment_time" jdbcType="TIMESTAMP" property="lastCommentTime" />
-    <result column="visibility_type" jdbcType="TINYINT" property="visibilityType" />
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
-  </resultMap>
-  <select id="selectCountByTodayTopic" resultType="java.lang.Integer">
-    select count(*) from post where create_time >=curdate() and topic_id=#{topicId};
-  </select>
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.Post">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="creator_id" jdbcType="INTEGER" property="creatorId"/>
+        <result column="topic_id" jdbcType="INTEGER" property="topicId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="last_modify_time" jdbcType="TIMESTAMP" property="lastModifyTime"/>
+        <result column="visit_count" jdbcType="INTEGER" property="visitCount"/>
+        <result column="like_count" jdbcType="INTEGER" property="likeCount"/>
+        <result column="collect_count" jdbcType="INTEGER" property="collectCount"/>
+        <result column="comment_count" jdbcType="INTEGER" property="commentCount"/>
+        <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
+        <result column="is_locked" jdbcType="TINYINT" property="isLocked"/>
+        <result column="top_weight" jdbcType="INTEGER" property="topWeight"/>
+        <result column="last_comment_time" jdbcType="TIMESTAMP" property="lastCommentTime"/>
+        <result column="visibility_type" jdbcType="TINYINT" property="visibilityType"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+    </resultMap>
+    <select id="selectCountByTodayTopic" resultType="java.lang.Integer">
+        select count(*)
+        from post
+        where create_time >= curdate()
+          and topic_id = #{topicId};
+    </select>
+
+
+    <resultMap id="simplePost" type="top.ysqorz.forum.dto.SimplePostDTO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="creator" jdbcType="INTEGER" property="creator"/>
+        <result column="topic" jdbcType="INTEGER" property="topic"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="visit_count" jdbcType="INTEGER" property="visitCount"/>
+        <result column="like_count" jdbcType="INTEGER" property="likeCount"/>
+        <result column="collect_count" jdbcType="INTEGER" property="collectCount"/>
+        <result column="comment_count" jdbcType="INTEGER" property="commentCount"/>
+        <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
+        <result column="is_locked" jdbcType="TINYINT" property="isLocked"/>
+        <result column="top_weight" jdbcType="INTEGER" property="topWeight"/>
+        <collection property="labelList" ofType="top.ysqorz.forum.po.Label" column="id"
+                    select="top.ysqorz.forum.dao.LabelMapper.selectLabelsByPostId"/>
+    </resultMap>
+
+    <select id="selectListByConditions" resultMap="simplePost"
+            parameterType="top.ysqorz.forum.dto.QueryPostCondition">
+        select p.id, title,
+                username creator,
+                topic_name topic,
+                p.create_time,
+                visit_count,
+                like_count,
+                collect_count,
+                comment_count,
+                is_high_quality,
+                is_locked,
+                top_weight
+        from post p
+        left join user u on p.creator_id = u.id
+        left join topic t on p.topic_id = t.id
+        <where>
+            <if test="topicId != null and topicId > 0">
+                and t.id = #{topicId}
+            </if>
+            <if test="creator != null and creator != ''">
+                <bind name="param_creator" value="'%' + creator + '%'"/>
+                and username like #{param_creator}
+            </if>
+            <if test="title != null and title != ''">
+                <bind name="param_title" value="'%' + title + '%'"/>
+                and title like #{param_title}
+            </if>
+            <if test="startPublishTime != null and endPublishTime != null">
+                and p.create_time between #{startPublishTime} and #{endPublishTime}
+            </if>
+        </where>
+        <if test="orderByStr != null and orderByStr != ''">
+            order by ${orderByStr}
+        </if>
+    </select>
+
+
 </mapper>

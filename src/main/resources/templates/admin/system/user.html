@@ -237,16 +237,13 @@
                     field: 'gender', title: '性别', templet: function (d) {
                         var icon;
                         switch (d.gender) {
-                            // 男
-                            case 0:
+                            case 0: // 男
                                 icon = '<i class="layui-icon layui-icon-male" style="font-size: 20px; color: #1E9FFF;"></i>';
                                 break;
-                            // 女
-                            case 1:
+                            case 1: // 女
                                 icon = '<i class="layui-icon layui-icon-female" style="font-size: 20px; color: #FF5722;"></i>';
                                 break;
-                            // 保密
-                            default:
+                            default: // 保密
                                 icon = '<i class="layui-icon layui-icon-help" style="font-size: 20px; color: #ccc;"></i>'
                         }
                         return icon;
@@ -256,7 +253,7 @@
                 {
                     field: 'roleName', title: '角色', templet: function (d) {
                         return d.roles.map(function (item) {
-                            return '<span class="layui-badge layui-badge-blue">' + item.roleName + '</span>';
+                            return '<span class="layui-badge layui-badge-yellow">' + item.roleName + '</span>';
                         }).join('&nbsp;&nbsp;');
                     }, width: 150, align: 'center'
                 },

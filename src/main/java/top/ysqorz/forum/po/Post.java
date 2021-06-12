@@ -1,11 +1,15 @@
 package top.ysqorz.forum.po;
 
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,6 +20,7 @@ public class Post {
     /**
      * 帖子id
      */
+    @NotNull
     @Id
     private Integer id;
 
@@ -29,6 +34,7 @@ public class Post {
      */
     @Column(name = "creator_id")
     private Integer creatorId;
+
 
     /**
      * 所属话题
@@ -75,12 +81,19 @@ public class Post {
     /**
      * 是否为精品
      */
-    @Column(name = "is_hight_quality")
-    private Byte isHightQuality;
+    @Column(name = "is_high_quality")
+    private Byte isHighQuality;
+
+    /**
+     * 是否锁定。0：未锁定；1：锁定，锁定后不能评论，不能修改
+     */
+    @Column(name = "is_locked")
+    private Byte isLocked;
 
     /**
      * 置顶权重
      */
+    @NotNull
     @Column(name = "top_weight")
     private Integer topWeight;
 
@@ -100,4 +113,5 @@ public class Post {
      * 内容
      */
     private String content;
+
 }
