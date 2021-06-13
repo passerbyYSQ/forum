@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.UserMapper">
-    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.User">
-        <!--
-          WARNING - @mbg.generated
-        -->
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="username" jdbcType="VARCHAR" property="username"/>
-        <result column="email" jdbcType="VARCHAR" property="email"/>
-        <result column="phone" jdbcType="VARCHAR" property="phone"/>
-        <result column="passsword" jdbcType="VARCHAR" property="passsword"/>
-        <result column="login_salt" jdbcType="VARCHAR" property="loginSalt"/>
-        <result column="jwt_salt" jdbcType="VARCHAR" property="jwtSalt"/>
-        <result column="gender" jdbcType="TINYINT" property="gender"/>
-        <result column="photo" jdbcType="VARCHAR" property="photo"/>
-        <result column="description" jdbcType="VARCHAR" property="description"/>
-        <result column="birth" jdbcType="DATE" property="birth"/>
-        <result column="position" jdbcType="VARCHAR" property="position"/>
-        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime"/>
-        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
-        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
-        <result column="reward_points" jdbcType="INTEGER" property="rewardPoints"/>
-        <result column="fans_count" jdbcType="INTEGER" property="fansCount"/>
-    </resultMap>
+  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.User">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="passsword" jdbcType="VARCHAR" property="passsword" />
+    <result column="login_salt" jdbcType="VARCHAR" property="loginSalt" />
+    <result column="jwt_salt" jdbcType="VARCHAR" property="jwtSalt" />
+    <result column="gender" jdbcType="TINYINT" property="gender" />
+    <result column="photo" jdbcType="VARCHAR" property="photo" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="birth" jdbcType="DATE" property="birth" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="register_time" jdbcType="TIMESTAMP" property="registerTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+    <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
+    <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
+    <result column="gitee_id" jdbcType="INTEGER" property="giteeId" />
+  </resultMap>
     <resultMap id="allUserAndRole" type="top.ysqorz.forum.dto.UserDTO">
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="username" jdbcType="VARCHAR" property="username"/>
-        <result column="email" jdbcType="VARCHAR" property="email"/>
-        <result column="phone" jdbcType="VARCHAR" property="phone"/>
-        <result column="gender" jdbcType="TINYINT" property="gender"/>
-        <result column="photo" jdbcType="VARCHAR" property="photo"/>
-        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime"/>
-        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
-        <result column="black_id" jdbcType="INTEGER" property="blackId"/>
-        <collection property="roles" ofType="top.ysqorz.forum.po.Role" column="id" select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="gender" jdbcType="TINYINT" property="gender" />
+        <result column="photo" jdbcType="VARCHAR" property="photo" />
+        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime" />
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+        <result column="black_id" jdbcType="INTEGER" property="blackId" />
+        <collection column="id" ofType="top.ysqorz.forum.po.Role" property="roles" select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
         </collection>
     </resultMap>
     <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.QueryUserCondition" resultMap="allUserAndRole">
@@ -43,23 +44,25 @@
         on (u.id=b.user_id and #{now} between b.start_time and b.end_time)
         where 1=1
         <if test="username!=null and username!=''">
-            <bind name="paran_username" value="'%'+username+'%'"/>
+            <bind name="paran_username" value="'%'+username+'%'" />
             and username like #{paran_username}
         </if>
         <if test="phone!=null and phone!=''">
-            <bind name="paran_phone" value="'%'+phone+'%'"/>
+            <bind name="paran_phone" value="'%'+phone+'%'" />
             and phone like #{paran_phone}
         </if>
-        <if test='state==1 and startTime!=null'>
+        <if test="state==1 and startTime!=null">
             and register_time between #{startTime} and #{endTime}
         </if>
-        <if test='state==2 and startTime!=null'>
+        <if test="state==2 and startTime!=null">
             and last_login_time between #{startTime} and #{endTime}
         </if>
         order by register_time desc
     </select>
 
+
     <update id="updateRewardPoints" parameterType="map">
         update user set reward_points = reward_points + #{num} where id = #{userId}
     </update>
 </mapper>
+

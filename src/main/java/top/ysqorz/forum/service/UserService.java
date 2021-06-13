@@ -7,6 +7,7 @@ import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.shiro.JwtToken;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -95,7 +96,15 @@ public interface UserService {
      */
     int delRoleForUser(Integer[] roleIds, Integer userId);
 
-
+    /**
+     * 注册
+     * @param vo
+     */
     void register(RegisterDTO vo);
+
+    /**
+     * gitee授权
+     */
+    User oauth2Gitee(String code) throws ParameterErrorException, IOException;
 
 }

@@ -13,19 +13,19 @@ import top.ysqorz.forum.dao.BlacklistMapper;
 import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dao.UserRoleMapper;
-import top.ysqorz.forum.dto.BlackInfoDTO;
-import top.ysqorz.forum.dto.QueryUserCondition;
-import top.ysqorz.forum.dto.RegisterDTO;
-import top.ysqorz.forum.dto.UserDTO;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.po.UserRole;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
+import top.ysqorz.forum.utils.GiteeProvider;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
+import javax.annotation.Resource;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +46,9 @@ public class UserServiceImpl implements UserService {
     private RoleMapper roleMapper;
     @Autowired
     private UserRoleMapper userRoleMapper;
+
+    @Resource
+    private GiteeProvider giteeProvider;
 
     @Override
     public User getUserByEmail(String email) {
@@ -175,6 +178,41 @@ public class UserServiceImpl implements UserService {
         user.setJwtSalt("");
 
         userMapper.insertSelective(user);
+    }
+
+
+    @Override
+    public User oauth2Gitee(String code) throws ParameterErrorException, IOException {
+
+        String accessToken = giteeProvider.getAccessToken(code);
+        GiteeUserDTO giteeUser = giteeProvider.getUser(accessToken);
+        if (giteeUser == null) {
+            throw new ParameterErrorException("gitee授权出错");
+        }
+        Example example = new Example(User.class);
+        example.createCriteria().andEqualTo("giteeId", giteeUser.getId());
+        User user = userMapper.selectOneByExample(example);
+        if (user == null) {
+            user = new User();
+            String salt = RandomUtils.generateStr(8);
+            user.setGiteeId(giteeUser.getId())
+                    .setUsername(giteeUser.getName())
+                    .setPhoto(giteeUser.getAvatar_url())
+                    .setEmail(giteeUser.getEmail() != null ? giteeUser.getEmail() : "")
+                    .setPasssword("123")
+                    .setRegisterTime(LocalDateTime.now())
+                    .setModifyTime(LocalDateTime.now())
+                    .setRewardPoints(0)
+                    .setFansCount(0)
+                    .setGender((byte) 3)
+                    .setJwtSalt("")
+                    .setLoginSalt(salt);
+
+            userMapper.insertUseGeneratedKeys(user);
+        }
+
+        return user;
+
     }
 
     @Override

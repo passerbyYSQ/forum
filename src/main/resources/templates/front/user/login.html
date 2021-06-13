@@ -114,6 +114,36 @@
         .layui-link {
             color: #5FB878 !important;
         }
+
+        @font-face {
+            font-family: "iconfont"; /* Project id 2609590 */
+            src: url('//at.alicdn.com/t/font_2609590_6n6hgx034i.woff2?t=1623580594326') format('woff2'),
+            url('//at.alicdn.com/t/font_2609590_6n6hgx034i.woff?t=1623580594326') format('woff'),
+            url('//at.alicdn.com/t/font_2609590_6n6hgx034i.ttf?t=1623580594326') format('truetype');
+        }
+
+        .iconfont {
+            font-family: "iconfont" !important;
+            font-size: 26px;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .icon-QQ:before {
+            content: "\e602";
+        }
+
+        .icon-Gitee:before {
+            content: "\e601";
+        }
+
+        .icon-GitHub:before {
+            content: "\e600";
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -192,11 +222,13 @@
                             <button class="layui-btn layui-btn-fluid" lay-filter="login" lay-submit>登录</button>
                         </div>
                         <div class="layui-form-item login-oauth-group">
-                            <a href="javascript:;"><i class="layui-icon layui-icon-login-qq" style="color:#3492ed;"></i></a>&emsp;
-                            <a href="javascript:;"><i class="layui-icon layui-icon-login-wechat"
-                                                      style="color:#4daf29;"></i></a>&emsp;
-                            <a href="javascript:;"><i class="layui-icon layui-icon-login-weibo"
-                                                      style="color:#CF1900;"></i></a>
+                            <a th:href="@{https://gitee.com/oauth/authorize?client_id=d9b72e60aef218352f09dd3ef1841be3546fa31421820ef0a7966ea64a0d9ab3&redirect_uri=http://localhost:8080/user/callback&response_type=code&scope=user_info}">
+                                <i class="iconfont icon-Gitee" style="color:#ac0719;"></i></a>&emsp;
+                            <a href="javascript:;"><i class="iconfont  icon-GitHub"
+                                                      style="color:#0f0f10;">
+                            </i></a>&emsp;
+                            <a href="javascript:;"><i class="iconfont icon-QQ"
+                                                      style="color:#3492ed;"></i></a>
                         </div>
                     </form>
                 </div>
@@ -217,6 +249,7 @@
 
 <script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
 <script th:src="@{/front/res/mods/app.js(v=318)}"></script>
+
 <script>
     // layui.cache.page = 'user';
     // layui.cache.user = {
@@ -226,6 +259,7 @@
     //     , experience: 83
     //     , sex: '男'
     // };
+
 
     // 验证码图片的点击事件
     function onCaptchaImageClicked(obj) {
@@ -245,11 +279,11 @@
                 // 业务成功（业务状态码）的回调
                // layui.cache.user = res.data;
                 console.log(res);
-                localStorage.setItem("user",res.data);
+                localStorage.setItem("user",JSON.stringify(res.data));
                 app.successNotice("登录成功");
-                // setTimeout(function() {
-                //     window.location = '/';
-                // }, 1000);
+                setTimeout(function() {
+                    window.location = '/';
+                }, 1000);
                 //location.reload();
             }, "post", function (res) {
                 // 业务失败的回调

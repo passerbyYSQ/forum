@@ -18,6 +18,9 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Table(name = "user")
 public class User implements Serializable {
+
+
+    private static final long serialVersionUID = 1L;
     /**
      * 用户id
      */
@@ -111,26 +114,9 @@ public class User implements Serializable {
     @Column(name = "fans_count")
     private Integer fansCount;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", passsword='" + passsword + '\'' +
-                ", loginSalt='" + loginSalt + '\'' +
-                ", jwtSalt='" + jwtSalt + '\'' +
-                ", gender=" + gender +
-                ", photo='" + photo + '\'' +
-                ", description='" + description + '\'' +
-                ", birth=" + birth +
-                ", position='" + position + '\'' +
-                ", registerTime=" + registerTime +
-                ", modifyTime=" + modifyTime +
-                ", lastLoginTime=" + lastLoginTime +
-                ", rewardPoints=" + rewardPoints +
-                ", fansCount=" + fansCount +
-                '}';
-    }
+    /**
+     * giteeid
+     */
+    @Column(name = "gitee_id")
+    private Integer giteeId;
 }

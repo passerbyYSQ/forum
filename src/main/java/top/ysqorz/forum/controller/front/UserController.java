@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
@@ -159,6 +161,36 @@ public class UserController {
     public ResultModel logout() {
         userService.logout();
         return ResultModel.success();
+    }
+
+    /**
+     * gitee第三方授权回调地址
+     */
+    @GetMapping("/callback")
+    public String callback(@RequestParam(name = "code") String code , RedirectAttributes redirectAttributes)
+            throws IOException, ParameterErrorException {
+
+
+        User user = userService.oauth2Gitee(code);
+//        if(user.getId()==null){//gitee账户对应本论坛无账号
+//            redirectAttributes.addAttribute("giteeId", user.getGiteeId());
+//            return "redirect:/user/reg";
+//        }else{
+            Subject subject = SecurityUtils.getSubject();
+            // 旧的盐未被清空说明，已经登录尚未退出
+            if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
+                // 根据旧盐再一次生成旧的token
+                JwtToken oldToken = userService.generateJwtToken(user.getId(), user.getJwtSalt());
+                subject.login(oldToken);
+                userService.logout(); // 清除旧token的缓存
+            }
+
+            String token = userService.login(user.getId());
+            redirectAttributes.addAttribute("token", token);
+
+//        }
+
+        return "redirect:/";
     }
 
 }
