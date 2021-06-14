@@ -6,5 +6,14 @@ layui.config({
     notice: 'notice/notice',  // 第三方的通知组件
     tagsInput: 'tagsInput/tagsInput',
     app: 'common'
+}).use(['app'], function () {
+    // 判断url中是否
+    var token = app.getUrlParam('token');
+    console.log(token);
+    if (app.isNotNull(token)) {
+        var user = {};
+        user.token = token;
+        window.localStorage.setItem('user', JSON.stringify(user));
+    }
 });
 

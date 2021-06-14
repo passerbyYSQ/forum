@@ -30,6 +30,7 @@
 		<aliyun-oss.version>3.11.2</aliyun-oss.version>
 		<thumbnailator.version>0.4.8</thumbnailator.version>
 		<shiro.version>1.4.0</shiro.version>
+		<okhttp.version>3.14.2</okhttp.version>
 	</properties>
 
 	<dependencies>
@@ -93,6 +94,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+		<!-- Redis连接池Lettuce：https://blog.csdn.net/zzhongcy/article/details/102584028/ -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+		</dependency>
 		<!-- jwt https://jwt.io/ -->
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -139,23 +145,12 @@
 			<artifactId>shiro-spring-boot-web-starter</artifactId>
 			<version>${shiro.version}</version>
 		</dependency>
-		<!-- Redis连接池Lettuce：https://blog.csdn.net/zzhongcy/article/details/102584028/ -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-		</dependency>
-
+		<!-- okhttp -->
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
-			<version>3.14.2</version>
+			<version>${okhttp.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.60</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>

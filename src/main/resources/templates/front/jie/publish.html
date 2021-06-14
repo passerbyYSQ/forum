@@ -8,7 +8,6 @@
     <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
     <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
     <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
-
     <style>
         .captcha {
             height: 38px;
@@ -17,6 +16,9 @@
             box-sizing: border-box;
             border: 1px solid #e6e6e6;
             border-radius: 2px !important;
+        }
+        .tox-fullscreen {
+            z-index: 99999 !important;
         }
     </style>
 
@@ -116,37 +118,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--
-                            <div class="layui-row layui-col-space15 layui-form-item layui-hide" id="LAY_quiz">
-                                <div class="layui-col-md3">
-                                    <label class="layui-form-label">所属产品</label>
-                                    <div class="layui-input-block">
-                                        <select name="project">
-                                            <option></option>
-                                            <option value="layui">layui</option>
-                                            <option value="独立版layer">独立版layer</option>
-                                            <option value="独立版layDate">独立版layDate</option>
-                                            <option value="LayIM">LayIM</option>
-                                            <option value="Fly社区模板">Fly社区模板</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="layui-col-md3">
-                                    <label class="layui-form-label" for="L_version">版本号</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" id="L_version" value="" name="version" autocomplete="off"
-                                               class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-col-md6">
-                                    <label class="layui-form-label" for="L_browser">浏览器</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" id="L_browser" value="" name="browser"
-                                               placeholder="浏览器名称及版本，如：IE 11" autocomplete="off" class="layui-input">
-                                    </div>
-                                </div>
-                            </div>
-                            -->
                             <div class="layui-form-item layui-form-text">
                                 <!--  th:value="${post} ? ${post.content}" -->
                                 <div class="layui-input-block">
@@ -179,18 +150,23 @@
                             <div class="layui-form-item">
                                 <div class="layui-inline">
                                     <label class="layui-form-label">是否锁定</label>
-                                    <div class="layui-input-block" style="border-left: 1px solid #e6e6e6; border-radius: 2px;">
+                                    <div class="layui-input-block">
                                         <input type="hidden" name="isLocked" th:value="${post == null or post.isLocked == 0} ? false : true">
                                         <input type="checkbox" lay-filter="lockStateCk" lay-skin="switch"
                                                th:checked="${post == null or post.isLocked == 0}"
                                                lay-text="正常|锁定"/>
+
+
                                     </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <span class="layui-word-aux">帖子锁定后，将不允许评论</span>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <div class="layui-inline">
                                     <label class="layui-form-label">相关标签</label>
-                                    <div class="layui-input-block" style="border-left: 1px solid #e6e6e6; border-radius: 2px;">
+                                    <div class="layui-input-block" style="padding-left: 4px;">
                                         <input id="label" name="labels" class="layui-hide"/>
                                     </div>
                                 </div>

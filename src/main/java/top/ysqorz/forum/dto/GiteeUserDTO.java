@@ -46,5 +46,5 @@ public class GiteeUserDTO {
     private String login;
     private String name;
     private String email;
-    private String avatar_url;
+    private String avatarUrl;
 }

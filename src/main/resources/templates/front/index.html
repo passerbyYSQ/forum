@@ -790,8 +790,10 @@
 </div>
 
 <script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
-<script th:inline="javascript">
-  //获取链接参数
+<script th:src="@{/front/res/mods/app.js(v=318)}"></script>
+<!--
+<script>
+  获取链接参数
   function getQueryVariable(variable) {
     var query = window.location.search.substring(1);
     var vars = query.split("&");
@@ -821,10 +823,8 @@
         app.successNotice("登录成功");
       });
     }
-
-
   }
-</script>
+</script> -->
 <script>
 layui.cache.page = '';
 layui.cache.user = {

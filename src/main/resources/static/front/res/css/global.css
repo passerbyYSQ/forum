@@ -1,9 +1,9 @@
 /**
- 
+
  @Name: Fly社区
  @Author: 贤心
  @Site: fly.layui.com
- 
+
  */
 
 
@@ -338,13 +338,13 @@ body .layui-edit-face  .layui-layer-content{padding:0; background-color:#fff; co
 .detail-hits .layui-btn{border-radius: 0;}
 .detail-hits .layui-btn+.layui-btn{margin-left: 5px;}
 .detail-hits .jie-admin{margin-right: 1px;}
-.detail-body{margin: 20px 0 0; min-height: 306px; line-height: 26px; font-size: 16px; color: #333; word-wrap: break-word;}
+.detail-body{margin: 20px 0 0; min-height: 120px; line-height: 26px; font-size: 16px; color: #333; word-wrap: break-word;}
 .detail-body p{margin-bottom:15px;}
 .detail-body a{color:#4f99cf;}
 .detail-body img{max-width: 100%; cursor: crosshair;}
 .detail-body table{margin: 10px 0 15px;}
 .detail-body table thead{background-color:#f2f2f2;}
-.detail-body table th, 
+.detail-body table th,
 .detail-body table td{padding: 10px 20px; line-height: 22px; border: 1px solid #DFDFDF; font-size: 14px; font-weight: 400;}
 .detail .page-title{ border: none; background-color: #f2f2f2;}
 
@@ -361,7 +361,7 @@ body .layui-edit-face  .layui-layer-content{padding:0; background-color:#fff; co
 /* 回答 */
 .jieda{margin-bottom: 30px;}
 .jieda li{position: relative; padding: 20px 0 10px; border-bottom: 1px dotted #DFDFDF;}
-.jieda li:last-child{border-bottom: none;}
+/*.jieda li:last-child{border-bottom: none;}*/
 .jieda .fly-none{height: 50px; min-height: 0;}
 .jieda .icon-caina{position:absolute; right:10px; top:15px; font-size:60px; color: #58A571;}
 
@@ -465,7 +465,7 @@ body .fly-user-main{position: relative; min-height: 600px;}
 .fly-case-tab .tab-this{background-color: #009688; color: #fff;}
 
 .fly-case-list{margin-top: 15px; font-size: 0;}
-.fly-case-list li, 
+.fly-case-list li,
 .layer-ext-ul li{display: inline-block; vertical-align: middle; *display: inline; *zoom:1; font-size: 14px; background-color: #fff;}
 .fly-case-list{width: 110%;}
 .fly-case-list li{width: 239px; margin: 0 15px 15px 0; padding: 10px;}

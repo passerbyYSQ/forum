@@ -5,7 +5,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -19,8 +18,10 @@ import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.utils.CaptchaUtils;
+import top.ysqorz.forum.utils.GiteeProvider;
 import top.ysqorz.forum.utils.RandomUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -36,11 +37,14 @@ import java.io.IOException;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
+
+    @Resource
+    private GiteeProvider giteeProvider;
 
 
     @RequiresRoles({"ysq"})
@@ -163,34 +167,35 @@ public class UserController {
         return ResultModel.success();
     }
 
+    @GetMapping("/oauth/gitee/authorize")
+    public void giteeAuthorize(@RequestHeader(defaultValue = "") String referer,
+                               HttpServletResponse response) throws IOException {
+        giteeProvider.requestAuthorize(referer, response);
+    }
+
     /**
      * gitee第三方授权回调地址
      */
-    @GetMapping("/callback")
-    public String callback(@RequestParam(name = "code") String code , RedirectAttributes redirectAttributes)
+    @GetMapping("/oauth/gitee/callback")
+    public String giteeCallback(@RequestParam(value = "state", defaultValue = "") String referer,
+                                String code, RedirectAttributes redirectAttributes)
             throws IOException, ParameterErrorException {
 
-
         User user = userService.oauth2Gitee(code);
-//        if(user.getId()==null){//gitee账户对应本论坛无账号
-//            redirectAttributes.addAttribute("giteeId", user.getGiteeId());
-//            return "redirect:/user/reg";
-//        }else{
-            Subject subject = SecurityUtils.getSubject();
-            // 旧的盐未被清空说明，已经登录尚未退出
-            if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
-                // 根据旧盐再一次生成旧的token
-                JwtToken oldToken = userService.generateJwtToken(user.getId(), user.getJwtSalt());
-                subject.login(oldToken);
-                userService.logout(); // 清除旧token的缓存
-            }
 
-            String token = userService.login(user.getId());
-            redirectAttributes.addAttribute("token", token);
+        Subject subject = SecurityUtils.getSubject();
+        // 旧的盐未被清空说明，已经登录尚未退出
+        if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
+            // 根据旧盐再一次生成旧的token
+            JwtToken oldToken = userService.generateJwtToken(user.getId(), user.getJwtSalt());
+            subject.login(oldToken);
+            userService.logout(); // 清除旧token的缓存
+        }
 
-//        }
+        String token = userService.login(user.getId());
+        redirectAttributes.addAttribute("token", token);
 
-        return "redirect:/";
+        return "redirect:" + referer; // 不要加 /
     }
 
 }

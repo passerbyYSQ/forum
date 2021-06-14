@@ -3,7 +3,6 @@ package top.ysqorz.forum.service.impl;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -38,13 +37,13 @@ import java.util.Map;
 @Service // 不要忘了
 public class UserServiceImpl implements UserService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private BlacklistMapper blacklistMapper;
-    @Autowired
+    @Resource
     private RoleMapper roleMapper;
-    @Autowired
+    @Resource
     private UserRoleMapper userRoleMapper;
 
     @Resource
@@ -169,7 +168,6 @@ public class UserServiceImpl implements UserService {
         Md5Hash md5Hash = new Md5Hash(vo.getPassword(), user.getLoginSalt(), 1024);
         // 保存加密后的密码
         user.setPasssword(md5Hash.toHex());
-
         user.setRegisterTime(LocalDateTime.now());
         user.setModifyTime(LocalDateTime.now());
         user.setRewardPoints(0);
@@ -183,25 +181,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User oauth2Gitee(String code) throws ParameterErrorException, IOException {
-
-        String accessToken = giteeProvider.getAccessToken(code);
-        GiteeUserDTO giteeUser = giteeProvider.getUser(accessToken);
-        if (giteeUser == null) {
-            throw new ParameterErrorException("gitee授权出错");
-        }
-        Example example = new Example(User.class);
-        example.createCriteria().andEqualTo("giteeId", giteeUser.getId());
-        User user = userMapper.selectOneByExample(example);
+        GiteeUserDTO giteeUser = giteeProvider.getUser(code);
+        User user = giteeProvider.getDbUser(giteeUser.getId());
+        LocalDateTime now = LocalDateTime.now();
         if (user == null) {
             user = new User();
             String salt = RandomUtils.generateStr(8);
             user.setGiteeId(giteeUser.getId())
                     .setUsername(giteeUser.getName())
-                    .setPhoto(giteeUser.getAvatar_url())
+                    .setPhoto(giteeUser.getAvatarUrl())
                     .setEmail(giteeUser.getEmail() != null ? giteeUser.getEmail() : "")
-                    .setPasssword("123")
-                    .setRegisterTime(LocalDateTime.now())
-                    .setModifyTime(LocalDateTime.now())
+                    .setPasssword("")
+                    .setRegisterTime(now)
+                    .setModifyTime(now)
                     .setRewardPoints(0)
                     .setFansCount(0)
                     .setGender((byte) 3)
@@ -258,6 +250,7 @@ public class UserServiceImpl implements UserService {
         User record = new User();
         record.setId(userId);
         record.setJwtSalt(jwtSalt);
+        record.setLastLoginTime(LocalDateTime.now());
         return userMapper.updateByPrimaryKeySelective(record);
     }
 

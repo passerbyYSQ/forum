@@ -4,10 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.dto.PublishPostDTO;
 import top.ysqorz.forum.dto.ResultModel;
 import top.ysqorz.forum.dto.StatusCode;
@@ -45,6 +42,11 @@ public class PostController {
 
     @Resource
     private LabelService labelService;
+
+    @GetMapping("/{postId}")
+    public String detailPage(@PathVariable String postId) {
+        return "front/jie/detail";
+    }
 
     /**
      * 发帖页面

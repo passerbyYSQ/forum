@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 87654321
+    password: ysqJYKL2010
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       initial-size: 5   # 初始化连接数
@@ -63,7 +63,7 @@ spring:
     port: 6379
     password: ysqJYKL2010
     database: 0
-    jedis:
+    lettuce:
       pool:
         max-active: 32  # 连接池连接的最大数量。-1表示没有限制
         max-wait: -1    # 连接池阻塞的最大的等待时间。-1表示一直等待
@@ -104,14 +104,15 @@ pagehelper:
   reasonable: true
   support-methods-arguments: true
 
-
 server:
+  # 报错信息
   error:
     include-exception: true
     include-message: always
     include-stacktrace: always
     include-binding-errors: always
 
+# 自定义配置
 upload:
   repository:
     aliyun-oss:
@@ -125,4 +126,5 @@ oauth:
   gitee:
     client_id: d9b72e60aef218352f09dd3ef1841be3546fa31421820ef0a7966ea64a0d9ab3
     client_secret: 448546ccd502b7dc0586e6043fa06bc31bf5f5cf8cf1090da5c601c731c09503
-    redirect_uri: http://localhost:8080/user/callback
+    redirect_uri: http://localhost:8080/user/oauth/gitee/callback
+    po_field: giteeId

@@ -1,6 +1,5 @@
 package top.ysqorz.forum.utils;
 
-import com.alibaba.fastjson.JSON;
 import okhttp3.*;
 
 import javax.net.ssl.SSLContext;
@@ -153,7 +152,7 @@ public class OkHttpUtils {
         if (isJsonPost) {
             String json = "";
             if (paramMap != null) {
-                json = JSON.toJSONString(paramMap);
+                json = JsonUtils.objectToJson(paramMap);
             }
             requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
         } else {
@@ -194,6 +193,7 @@ public class OkHttpUtils {
             @Override
             public void onFailure(Call call, IOException e) {
                 buffer.append("请求出错：").append(e.getMessage());
+                getSemaphoreInstance().release();
             }
 
             @Override
