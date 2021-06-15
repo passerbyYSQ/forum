@@ -37,7 +37,6 @@ public abstract class OauthProvider<T> {
     @Resource
     private RedisService redisService;
 
-    public abstract String joinAuthorizeUrl(String state, HttpServletResponse response);
 
     /**
      * 请求用户授权
@@ -55,19 +54,7 @@ public abstract class OauthProvider<T> {
         // 存入redis
         redisService.saveOauthState(key, state);
         response.sendRedirect(joinAuthorizeUrl(state, response));
-    };
-
-    /**
-     * 获取Token
-     * @param code  授权码
-     */
-    protected abstract String getAccessToken(String code) throws IOException;
-
-    /**
-     * 获取返回用户信息，自行封装到T
-     * @param accessToken
-     */
-    protected abstract T getOauthUser(String accessToken) throws IOException;
+    }
 
     /**
      * 模板方法，不允许子类重写
@@ -106,4 +93,19 @@ public abstract class OauthProvider<T> {
         }
         return params[0]; // 返回真正的referer
     }
+
+    /**
+     * 拼接请求授权的url
+     */
+    public abstract String joinAuthorizeUrl(String state, HttpServletResponse response);
+
+    /**
+     * 获取Token
+     */
+    protected abstract String getAccessToken(String code) throws IOException;
+
+    /**
+     * 获取返回用户信息，自行封装到T
+     */
+    protected abstract T getOauthUser(String accessToken) throws IOException;
 }

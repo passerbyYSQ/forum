@@ -107,4 +107,11 @@ public interface UserService {
      */
     User oauth2Gitee(String code) throws ParameterErrorException, IOException;
 
+    /**
+     * 清除上一次shiro的认证缓存（实现单点登录）。
+     * 我们不直接操作缓存，而是采取先login再logout的方式，
+     * 让shiro帮我们清除缓存
+     */
+    void clearShiroAuthCache(User user);
+
 }

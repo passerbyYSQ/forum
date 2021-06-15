@@ -1,10 +1,8 @@
 package top.ysqorz.forum.controller.front;
 
 
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -13,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
-import top.ysqorz.forum.shiro.JwtToken;
-import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
@@ -125,15 +122,8 @@ public class UserController {
         if (!user.getPasssword().equals(md5Hash.toHex())) {
             return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
-        Subject subject = SecurityUtils.getSubject();
-        // 旧的盐未被清空说明，已经登录尚未退出
-        if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
-            // 根据旧盐再一次生成旧的token
-            JwtToken oldToken = userService.generateJwtToken(user.getId(), user.getJwtSalt());
-            subject.login(oldToken);
-            userService.logout(); // 清除旧token的缓存
-        }
 
+        userService.clearShiroAuthCache(user);
         String token = userService.login(user.getId());
 
         // 为什么登录不使用UsernamePasswordToken和定义专门的LoginRealm（Service层的逻辑）来处理UsernamePasswordToken？
@@ -168,24 +158,18 @@ public class UserController {
     public String giteeCallback(@RequestParam(defaultValue = "") String state,
                                 String code, RedirectAttributes redirectAttributes)
             throws IOException, ParameterErrorException {
-
+        // 校验state，防止CSRF
         String referer = giteeProvider.checkState(state);
-
+        // 检查是否存在现有账号与第三方的账号已绑定
         User user = userService.oauth2Gitee(code);
-
-        Subject subject = SecurityUtils.getSubject();
-        // 旧的盐未被清空说明，已经登录尚未退出
-        if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
-            // 根据旧盐再一次生成旧的token
-            JwtToken oldToken = userService.generateJwtToken(user.getId(), user.getJwtSalt());
-            subject.login(oldToken);
-            userService.logout(); // 清除旧token的缓存
-        }
-
+        // 清除shiro的认证缓存，实现单点登录
+        userService.clearShiroAuthCache(user);
+        // 签发我们自己的token
         String token = userService.login(user.getId());
+        // 重定向携带token
         redirectAttributes.addAttribute("token", token);
 
-        return "redirect:" + referer; // 不要加 /
+        return "redirect:" + referer; // 不要加 "/"
     }
 
 }

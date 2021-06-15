@@ -5,6 +5,7 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ParameterErrorException;
@@ -13,13 +14,13 @@ import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dao.UserRoleMapper;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.po.UserRole;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
-import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
@@ -205,6 +206,18 @@ public class UserServiceImpl implements UserService {
 
         return user;
 
+    }
+
+    @Override
+    public void clearShiroAuthCache(User user) {
+        Subject subject = SecurityUtils.getSubject();
+        // 旧的盐未被清空说明，已经登录尚未退出
+        if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
+            // 根据旧盐再一次生成旧的token
+            JwtToken oldToken = this.generateJwtToken(user.getId(), user.getJwtSalt());
+            subject.login(oldToken);
+            this.logout(); // 清除旧token的缓存
+        }
     }
 
     @Override
