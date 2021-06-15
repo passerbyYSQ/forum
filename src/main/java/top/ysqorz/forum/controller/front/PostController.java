@@ -14,14 +14,11 @@ import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.LabelService;
 import top.ysqorz.forum.service.PostService;
+import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.TopicService;
-import top.ysqorz.forum.utils.CaptchaUtils;
+import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -43,6 +40,9 @@ public class PostController {
     @Resource
     private LabelService labelService;
 
+    @Resource
+    private RedisService redisService;
+
     @GetMapping("/{postId}")
     public String detailPage(@PathVariable String postId) {
         return "front/jie/detail";
@@ -53,6 +53,10 @@ public class PostController {
      */
     @GetMapping("/publish")
     public String publishPage(Integer postId, Model model) {
+        // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
+        String token = RandomUtils.generateUUID();
+        model.addAttribute("token", token);
+
         if (!ObjectUtils.isEmpty(postId)) { // 修改的时候需要传值
             Post post = postService.getPostById(postId);
             if (!ObjectUtils.isEmpty(post)) {
@@ -63,19 +67,8 @@ public class PostController {
                 model.addAttribute("post", updatePostDTO);
             }
         }
-        return "front/jie/publish";
-    }
 
-    /**
-     * 发帖所需要的验证码图片
-     */
-    @GetMapping("/captcha")
-    public void captchaImage(HttpSession session, HttpServletResponse response)
-            throws ServletException, IOException {
-        // 生成并往网络输出流输出验证码图片，返回正确的验证码
-        String correctCaptcha = CaptchaUtils.generateAndOutput(response);
-        // TODO 暂时将验证码存到session，后面存到redis
-        session.setAttribute("publishCaptcha", correctCaptcha);
+        return "front/jie/publish";
     }
 
     /**
@@ -83,24 +76,23 @@ public class PostController {
      */
     @ResponseBody
     @PostMapping("/publish")
-    public ResultModel publish(@Validated(PublishPostDTO.Add.class) PublishPostDTO vo,
-                               HttpSession session) {
-        // 校验验证码
-        String correctCaptcha = (String) session.getAttribute("publishCaptcha");
-        // 由于验证码是一次性的，访问过立马失效，不管校验正确与否
-        session.removeAttribute("publishCaptcha");
-        if (!vo.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
-            return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码错误
+    public ResultModel publish(@Validated(PublishPostDTO.Add.class) PublishPostDTO dto) {
+        String correctCaptcha = redisService.getCaptcha(dto.getToken());
+        if (ObjectUtils.isEmpty(correctCaptcha)) {
+            return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
+        }
+        if (!dto.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
+            return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码过期
         }
 
         // 校验topicId
-        Topic topic = topicService.getTopicById(vo.getTopicId());
+        Topic topic = topicService.getTopicById(dto.getTopicId());
         if (ObjectUtils.isEmpty(topic)) {
             return ResultModel.failed(StatusCode.TOPIC_NOT_EXIST); // 话题不存在
         }
 
         // TODO 由于还没做登录，此处传入一个固定的creatorId
-        postService.publishPost(vo, 1);
+        postService.publishPost(dto, 1);
 
         return ResultModel.success();
     }
@@ -110,29 +102,30 @@ public class PostController {
      */
     @ResponseBody
     @PostMapping("/update")
-    public ResultModel updatePost(@Validated(PublishPostDTO.Update.class) PublishPostDTO vo,
-                                  HttpSession session) {
-        // 校验验证码
-        String correctCaptcha = (String) session.getAttribute("publishCaptcha");
-        // 由于验证码是一次性的，访问过立马失效，不管校验正确与否
-        session.removeAttribute("publishCaptcha");
-        if (!vo.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
-            return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码错误
+    public ResultModel updatePost(@Validated(PublishPostDTO.Update.class) PublishPostDTO dto) {
+        String correctCaptcha = redisService.getCaptcha(dto.getToken());
+        if (ObjectUtils.isEmpty(correctCaptcha)) {
+            return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
+        }
+        if (!dto.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
+            return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码过期
         }
 
         // 校验postId
-        Post post = postService.getPostById(vo.getPostId());
+        Post post = postService.getPostById(dto.getPostId());
         if (ObjectUtils.isEmpty(post)) {
             return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
         }
+        // TODO 检查是否是自己发的帖子
+
         // 校验topicId
-        Topic topic = topicService.getTopicById(vo.getTopicId());
+        Topic topic = topicService.getTopicById(dto.getTopicId());
         if (ObjectUtils.isEmpty(topic)) {
             return ResultModel.failed(StatusCode.TOPIC_NOT_EXIST); // 话题不存在
         }
 
         // 更新帖子
-        postService.updatePostAndLabels(vo);
+        postService.updatePostAndLabels(dto);
 
         return ResultModel.success();
     }

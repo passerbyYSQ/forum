@@ -19,8 +19,9 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void saveCaptcha(String key, String captcha) {
-        redisTemplate.opsForValue().set(Constant.REDIS_PREFIX_CAPTCHA + key,
-                captcha, Constant.CAPTCHA_DURATION);
+        redisTemplate.opsForValue()
+                .set(Constant.REDIS_PREFIX_CAPTCHA + key,
+                    captcha, Constant.DURATION_CAPTCHA);
     }
 
     @Override
@@ -29,5 +30,21 @@ public class RedisServiceImpl implements RedisService {
         String correctCaptcha = (String) redisTemplate.opsForValue().get(key);
         redisTemplate.delete(key);
         return correctCaptcha;
+    }
+
+    @Override
+    public void saveOauthState(String key, String salt) {
+        redisTemplate.opsForValue()
+                .set(Constant.REDIS_PREFIX_OAUTH_STATE + key,
+                    salt, Constant.DURATION_OAUTH_STATE);
+    }
+
+    @Override
+    public String getOauthState(String key) {
+        key = Constant.REDIS_PREFIX_OAUTH_STATE + key;
+        // 错误的key或者key过期，都会返回null
+        String salt = (String) redisTemplate.opsForValue().get(key);
+        redisTemplate.delete(key);
+        return salt;
     }
 }

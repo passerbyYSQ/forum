@@ -1,4 +1,4 @@
-package top.ysqorz.forum.upload;
+package top.ysqorz.forum.upload.uploader;
 
 import top.ysqorz.forum.common.FileUploadException;
 import top.ysqorz.forum.dto.UploadResult;

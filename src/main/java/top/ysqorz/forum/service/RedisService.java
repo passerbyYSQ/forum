@@ -18,4 +18,14 @@ public interface RedisService {
      */
     String getCaptcha(String key);
 
+
+    /**
+     * 第三方授权回调时防止CSRF
+     * @param key
+     * @param state
+     */
+    void saveOauthState(String key, String state);
+
+    String getOauthState(String key);
+
 }

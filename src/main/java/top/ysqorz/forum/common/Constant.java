@@ -18,11 +18,15 @@ public interface Constant {
 
     // redis prefix captcha
     String REDIS_PREFIX_CAPTCHA = "captcha:";
+    //
+    String REDIS_PREFIX_OAUTH_STATE = "oauth:state:";
 
     // redis captcha 有效期：5分钟
-    Duration CAPTCHA_DURATION = Duration.ofMinutes(5);
+    Duration DURATION_CAPTCHA = Duration.ofMinutes(5);
+    //
+    Duration DURATION_OAUTH_STATE = Duration.ofMinutes(3);
 
     // jwt 的有效期：7天
-    Duration JWT_DURATION = Duration.ofDays(7);
+    Duration DURATION_JWT = Duration.ofDays(7);
 
 }

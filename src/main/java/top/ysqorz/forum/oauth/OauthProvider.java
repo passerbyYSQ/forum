@@ -1,11 +1,14 @@
-package top.ysqorz.forum.common;
+package top.ysqorz.forum.oauth;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.service.RedisService;
+import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -31,37 +34,47 @@ public abstract class OauthProvider<T> {
     @Resource // 子类加上了@Component，父类可以注入成功
     private UserMapper userMapper;
 
-    public abstract String joinAuthorizeUrl(String referer, HttpServletResponse response);
+    @Resource
+    private RedisService redisService;
+
+    public abstract String joinAuthorizeUrl(String state, HttpServletResponse response);
 
     /**
      * 请求用户授权
      * @param referer       用户在哪个页面点击了授权登录的按钮
      */
-    public void requestAuthorize(String referer, HttpServletResponse response) throws IOException {
+    public void redirectAuthorize(String referer, HttpServletResponse response) throws IOException {
         if (referer.endsWith("/user/login")) {
             referer = "/";
         }
-        response.sendRedirect(joinAuthorizeUrl(referer, response));
+        String key = RandomUtils.generateUUID();
+        // 注意不允许有&符号
+        String salt = RandomUtils.generateStrWithNumAndLetter(4);
+        // 用于防止CSRF(跨站请求伪造)
+        String state = String.format("%s,%s,%s", referer, key, salt);
+        // 存入redis
+        redisService.saveOauthState(key, state);
+        response.sendRedirect(joinAuthorizeUrl(state, response));
     };
 
     /**
      * 获取Token
      * @param code  授权码
      */
-    protected abstract String getAccessTokenByCode(String code) throws IOException;
+    protected abstract String getAccessToken(String code) throws IOException;
 
     /**
      * 获取返回用户信息，自行封装到T
      * @param accessToken
      */
-    protected abstract T getUserByAccessToken(String accessToken) throws IOException;
+    protected abstract T getOauthUser(String accessToken) throws IOException;
 
     /**
      * 模板方法，不允许子类重写
      * @param code
      */
     public final T getUser(String code) throws IOException, ParameterErrorException {
-        T oauthUser = getUserByAccessToken(getAccessTokenByCode(code));
+        T oauthUser = getOauthUser(getAccessToken(code));
         if (ObjectUtils.isEmpty(oauthUser)) {
             throw new ParameterErrorException("Oauth授权登录出错");
         }
@@ -76,5 +89,21 @@ public abstract class OauthProvider<T> {
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo(poField, openId); //gitee_id
         return userMapper.selectOneByExample(example);
+    }
+
+    /**
+     * 校验state，防止CSRF
+     * @return
+     */
+    public String checkState(String state) throws ParameterErrorException {
+        String[] params = state.split(","); // | 是特殊字符，需要转义
+        if (params.length != 3) {
+            throw new ParameterErrorException("正在受到CSRF攻击");
+        }
+        String correctState = redisService.getOauthState(params[1]);
+        if (ObjectUtils.isEmpty(correctState) || !correctState.equals(state)) {
+            throw new ParameterErrorException("正在受到CSRF攻击");
+        }
+        return params[0]; // 返回真正的referer
     }
 }

@@ -60,7 +60,7 @@ public class CacheConfig extends CachingConfigurerSupport {
     @Bean
     public CacheManager springCacheManager(RedisConnectionFactory connectionFactory) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Constant.JWT_DURATION) // 7 天
+                .entryTtl(Constant.DURATION_JWT) // 7 天
                 .disableCachingNullValues();
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)

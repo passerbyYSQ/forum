@@ -19,7 +19,7 @@ import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.po.UserRole;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
-import top.ysqorz.forum.utils.GiteeProvider;
+import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
@@ -233,7 +233,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public JwtToken generateJwtToken(Integer userId, String jwtSalt) {
         String jwt = JwtUtils.generateJwt("userId", userId.toString(),
-                jwtSalt, Constant.JWT_DURATION.toMillis());
+                jwtSalt, Constant.DURATION_JWT.toMillis());
         return new JwtToken(jwt);
     }
 

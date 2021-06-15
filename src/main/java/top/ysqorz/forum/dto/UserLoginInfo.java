@@ -19,8 +19,9 @@ public class UserLoginInfo {
     private String token;
     private String username;
     private String email;
-    private String phone;
-    private String gender;
+    private String phone; // 手机
+    private Byte gender;
+    private String photo; // 照片
     private Integer rewardPoints;
     private LocalDateTime registerTime;
     // 角色信息...
@@ -31,7 +32,7 @@ public class UserLoginInfo {
     }
 
     public UserLoginInfo(String token, User user) {
-        this.token=token;
+        this.token = token;
         BeanUtils.copyProperties(user, this);
     }
 }

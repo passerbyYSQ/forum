@@ -7,6 +7,8 @@ layui.config({
     tagsInput: 'tagsInput/tagsInput',
     app: 'common'
 }).use(['app'], function () {
+    var app = layui.app;
+
     // 判断url中是否
     var token = app.getUrlParam('token');
     console.log(token);

@@ -97,7 +97,9 @@
                 <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
                     <div class="layui-tab-item layui-show">
                         <form action="/post/publish" method="post">
-                            <!-- -->
+                            <!--  验证码的token  -->
+                            <input type="hidden" name="token" th:value="${token}" />
+
                             <input type="hidden" name="postId" th:value="${post} ? ${post.id}" />
                             <div class="layui-row layui-col-space15 layui-form-item">
                                 <div class="layui-col-md3">
@@ -180,8 +182,8 @@
 
                                     </div>
                                     <div class="layui-input-inline">
-                                        <img id="captchaImage" src="/post/captcha" class="captcha" alt=""
-                                             onclick="this.src = '/post/captcha?timestamp=' + (new Date).getTime();"/>
+                                        <img id="captchaImage" th:src="@{/captcha(token=${token})}" class="captcha" alt=""
+                                             onclick="onCaptchaImageClicked(this)"/>
                                     </div>
                                 </div>
                             </div>
@@ -212,14 +214,21 @@
 <script th:src="@{/front/res/mods/app.js(v=318)}"></script>
 <!-- th:inline="javascript"不能少！！！ -->
 <script th:inline="javascript">
-    layui.cache.page = 'jie';
-    layui.cache.user = {
-        username: '游客'
-        , uid: -1
-        , avatar: '../../res/images/avatar/00.jpg'
-        , experience: 83
-        , sex: '男'
-    };
+    // layui.cache.page = 'jie';
+    // layui.cache.user = {
+    //     username: '游客'
+    //     , uid: -1
+    //     , avatar: '../../res/images/avatar/00.jpg'
+    //     , experience: 83
+    //     , sex: '男'
+    // };
+
+    // 验证码图片的点击事件
+    function onCaptchaImageClicked(obj) {
+        console.log(obj);
+        var token = [[${token}]];
+        obj.src = '/captcha?token=' + token + '&timestamp=' + (new Date().getTime());
+    }
 
     layui.use(['tagsInput', 'app'], function () {
         var $ = layui.jquery

@@ -1,4 +1,4 @@
-package top.ysqorz.forum.upload;
+package top.ysqorz.forum.upload.uploader;
 
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -7,6 +7,7 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.FileUploadException;
 import top.ysqorz.forum.dto.UploadResult;
+import top.ysqorz.forum.upload.UploadRepository;
 
 import java.io.IOException;
 import java.io.InputStream;

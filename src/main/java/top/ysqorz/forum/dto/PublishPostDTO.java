@@ -36,6 +36,9 @@ public class PublishPostDTO {
     private String content; // 帖子内容
 
     @NotEmpty
+    private String token;
+
+    @NotEmpty
     private String captcha; // 验证码
 
     @NotNull

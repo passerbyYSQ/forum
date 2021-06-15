@@ -196,7 +196,7 @@
                             <i class="layui-icon layui-icon-auz"></i>
                             <input class="layui-input" name="captcha" placeholder="请输入验证码" autocomplete="off"
                                    lay-verType="tips" lay-verify="required" required/>
-                            <img id="captchaImage" th:src="@{/user/captcha(token=${token})}" class="login-captcha"
+                            <img id="captchaImage" th:src="@{/captcha(token=${token})}" class="login-captcha"
                                  alt=""
                                  onclick="onCaptchaImageClicked(this)"/>
                         </div>
@@ -261,7 +261,7 @@
     }
 </script>
 
-<script>
+<script th:inline="javascript">
     // layui.cache.page = 'user';
     // layui.cache.user = {
     //   username: '游客'
@@ -273,7 +273,8 @@
     // 验证码图片的点击事件
     function onCaptchaImageClicked(obj) {
         console.log(obj);
-        obj.src = '/user/captcha?token=[[${token}]]&timestamp=' + (new Date().getTime());
+        var token = [[${token}]];
+        obj.src = '/captcha?token=' + token + '&timestamp=' + (new Date().getTime());
     }
 
     layui.use(['app'], function () {

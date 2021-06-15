@@ -2,6 +2,7 @@ package top.ysqorz.forum.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -39,6 +40,26 @@ public class JsonUtils {
         try {
             ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
             return MAPPER.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static JsonNode jsonToNode(String json) {
+        try {
+            ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
+            return MAPPER.readTree(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static <T> T nodeToObj(JsonNode node, Class<T> clazz) {
+        try {
+            ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
+            return MAPPER.treeToValue(node, clazz);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

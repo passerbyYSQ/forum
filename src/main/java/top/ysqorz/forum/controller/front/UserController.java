@@ -17,12 +17,10 @@ import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
-import top.ysqorz.forum.utils.CaptchaUtils;
-import top.ysqorz.forum.utils.GiteeProvider;
+import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -104,16 +102,6 @@ public class UserController {
     }
 
     /**
-     * 登录页面的验证码图片(注册页面也用这个接口)
-     */
-    @GetMapping("/captcha")
-    public void captchaImage(@RequestParam String token, HttpServletResponse response)
-            throws ServletException, IOException {
-        String captcha = CaptchaUtils.generateAndOutput(response);
-        redisService.saveCaptcha(token, captcha);
-    }
-
-    /**
      * 用户登录的API
      */
     @PostMapping("/login")
@@ -170,16 +158,18 @@ public class UserController {
     @GetMapping("/oauth/gitee/authorize")
     public void giteeAuthorize(@RequestHeader(defaultValue = "") String referer,
                                HttpServletResponse response) throws IOException {
-        giteeProvider.requestAuthorize(referer, response);
+        giteeProvider.redirectAuthorize(referer, response);
     }
 
     /**
      * gitee第三方授权回调地址
      */
     @GetMapping("/oauth/gitee/callback")
-    public String giteeCallback(@RequestParam(value = "state", defaultValue = "") String referer,
+    public String giteeCallback(@RequestParam(defaultValue = "") String state,
                                 String code, RedirectAttributes redirectAttributes)
             throws IOException, ParameterErrorException {
+
+        String referer = giteeProvider.checkState(state);
 
         User user = userService.oauth2Gitee(code);
 
