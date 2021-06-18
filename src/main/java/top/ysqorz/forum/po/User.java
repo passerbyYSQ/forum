@@ -119,4 +119,7 @@ public class User implements Serializable {
      */
     @Column(name = "gitee_id")
     private Integer giteeId;
+
+    @Column(name = "qq_id")
+    private String qqId;
 }

@@ -68,12 +68,12 @@ layui.define(['jquery', 'layer', 'form', 'notice'], function (exports) {
 
             //var loadIndex = layer.load(2); // 显示loading...
             app.showLoading();
-            // = layui.cache.user.token; // 可能为空
+
             var user = localStorage.getItem("user");
-            var token;
-            if (app.isNotNull(user)) {
-                token = user.token;
-            }
+            //var token;
+            // if (app.isNotNull(user)) {
+            //     token = user.token;
+            // }
 
             $.ajax(url, {
                 type: type,
@@ -81,8 +81,12 @@ layui.define(['jquery', 'layer', 'form', 'notice'], function (exports) {
                 // traditional:true, // value可以是数组
                 data: data,
                 timeout: 30000, // 超时时间为30秒
-                headers: {
-                    token: token// 携带token
+                // headers: {
+                //     token: token// 携带token
+                // },
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: true // 携带cookie
                 },
                 success: function (res, textStatus, xhr) {
                     //layer.close(loadIndex); // 关闭 loading
@@ -95,8 +99,7 @@ layui.define(['jquery', 'layer', 'form', 'notice'], function (exports) {
                         // 判断是否签发了新的token。如果是，更新token
                         var header = xhr.getAllResponseHeaders();
                         if (app.isNotBlank(header.token)) { // 如果签发了新的token
-                            //   layui.cache.user.token = header.token;
-                            user.token = header.token
+                            user.token = header.token;
                             localStorage.setItem("user", user);
                         }
                         successCallback(res); // 业务成功
@@ -114,8 +117,7 @@ layui.define(['jquery', 'layer', 'form', 'notice'], function (exports) {
                 }
             });
         }
-        ,
-    }
+    };
 
     exports('app', app);
 });

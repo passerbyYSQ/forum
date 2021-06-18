@@ -1,6 +1,8 @@
 package top.ysqorz.forum.oauth;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import top.ysqorz.forum.dto.QQUserDTO;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
@@ -13,12 +15,14 @@ import java.io.IOException;
  * @author passerbyYSQ
  * @create 2021-06-15 11:14
  */
+@Component
+@ConfigurationProperties(prefix = "oauth.qq")
 public class QQProvider extends OauthProvider<QQUserDTO> {
 
     @Override
     public String joinAuthorizeUrl(String state, HttpServletResponse response) {
         return String.format("https://graph.qq.com/oauth2.0/authorize?client_id=%s&redirect_uri=%s" +
-                "state=%s&response_type=code&scope=get_user_info", clientId, redirectUri, state);
+                "&state=%s&response_type=code&scope=get_user_info", clientId, redirectUri, state);
     }
 
     @Override
@@ -58,6 +62,8 @@ public class QQProvider extends OauthProvider<QQUserDTO> {
                 .addParam("openid", openId)
                 .get()
                 .sync();
-        return JsonUtils.jsonToObj(userInfo, QQUserDTO.class);
+        QQUserDTO qqUserDTO = JsonUtils.jsonToObj(userInfo, QQUserDTO.class);
+        qqUserDTO.setOpenId(openId);
+        return qqUserDTO;
     }
 }

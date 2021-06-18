@@ -8,10 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.GiteeProvider;
+import top.ysqorz.forum.oauth.QQProvider;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
@@ -40,6 +40,9 @@ public class UserController {
 
     @Resource
     private GiteeProvider giteeProvider;
+
+    @Resource
+    private QQProvider qqProvider;
 
 
     @RequiresRoles({"ysq"})
@@ -124,7 +127,7 @@ public class UserController {
         }
 
         userService.clearShiroAuthCache(user);
-        String token = userService.login(user.getId());
+        String token = userService.login(user.getId(), response);
 
         // 为什么登录不使用UsernamePasswordToken和定义专门的LoginRealm（Service层的逻辑）来处理UsernamePasswordToken？
         // 由于密码登录只用一次，成功之后都凭借jwt令牌来访问
@@ -156,7 +159,7 @@ public class UserController {
      */
     @GetMapping("/oauth/gitee/callback")
     public String giteeCallback(@RequestParam(defaultValue = "") String state,
-                                String code, RedirectAttributes redirectAttributes)
+                                String code, HttpServletResponse response)
             throws IOException, ParameterErrorException {
         // 校验state，防止CSRF
         String referer = giteeProvider.checkState(state);
@@ -165,10 +168,30 @@ public class UserController {
         // 清除shiro的认证缓存，实现单点登录
         userService.clearShiroAuthCache(user);
         // 签发我们自己的token
-        String token = userService.login(user.getId());
+        userService.login(user.getId(), response);
         // 重定向携带token
-        redirectAttributes.addAttribute("token", token);
+        //redirectAttributes.addAttribute("token", token);
+        return "redirect:" + referer; // 不要加 "/"
+    }
 
+    @GetMapping("/oauth/qq/authorize")
+    public void qqAuthorize(@RequestHeader(defaultValue = "") String referer,
+                            HttpServletResponse response) throws IOException {
+        qqProvider.redirectAuthorize(referer, response);
+    }
+
+    /**
+     * qq第三方授权回调地址
+     */
+    @GetMapping("/oauth/qq/callback")
+    public String qqCallback(@RequestParam(defaultValue = "") String state,
+                                String code, HttpServletResponse response)
+            throws ParameterErrorException, IOException {
+        String referer = qqProvider.checkState(state);
+        User user = userService.oauth2QQ(code);
+        userService.clearShiroAuthCache(user);
+        userService.login(user.getId(), response);
+        //redirectAttributes.addAttribute("token", token);
         return "redirect:" + referer; // 不要加 "/"
     }
 

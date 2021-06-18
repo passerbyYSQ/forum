@@ -13,6 +13,8 @@ import top.ysqorz.forum.utils.RandomUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * 第三方授权接口
@@ -83,7 +85,12 @@ public abstract class OauthProvider<T> {
      * @return
      */
     public String checkState(String state) throws ParameterErrorException {
-        String[] params = state.split(","); // | 是特殊字符，需要转义
+        try {
+            state = URLDecoder.decode(state, "utf-8"); // url decode
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String[] params = state.split(",");
         if (params.length != 3) {
             throw new ParameterErrorException("正在受到CSRF攻击");
         }

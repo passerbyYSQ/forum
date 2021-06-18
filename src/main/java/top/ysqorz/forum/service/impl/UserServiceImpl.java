@@ -15,6 +15,7 @@ import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dao.UserRoleMapper;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.GiteeProvider;
+import top.ysqorz.forum.oauth.QQProvider;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
@@ -25,6 +26,8 @@ import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -46,9 +49,10 @@ public class UserServiceImpl implements UserService {
     private RoleMapper roleMapper;
     @Resource
     private UserRoleMapper userRoleMapper;
-
     @Resource
     private GiteeProvider giteeProvider;
+    @Resource
+    private QQProvider qqProvider;
 
     @Override
     public User getUserByEmail(String email) {
@@ -187,7 +191,6 @@ public class UserServiceImpl implements UserService {
         LocalDateTime now = LocalDateTime.now();
         if (user == null) {
             user = new User();
-            String salt = RandomUtils.generateStr(8);
             user.setGiteeId(giteeUser.getId())
                     .setUsername(giteeUser.getName())
                     .setPhoto(giteeUser.getAvatarUrl())
@@ -199,13 +202,34 @@ public class UserServiceImpl implements UserService {
                     .setFansCount(0)
                     .setGender((byte) 3)
                     .setJwtSalt("")
-                    .setLoginSalt(salt);
+                    .setLoginSalt(RandomUtils.generateStr(8));
+            userMapper.insertUseGeneratedKeys(user); // 填充了主键
+        }
+        return user;
+    }
 
+    @Override
+    public User oauth2QQ(String code) throws IOException, ParameterErrorException {
+        QQUserDTO qqUser = qqProvider.getUser(code);
+        User user = qqProvider.getDbUser(qqUser.getOpenId());
+        LocalDateTime now = LocalDateTime.now();
+        if (ObjectUtils.isEmpty(user)) {
+            user = new User();
+            user.setQqId(qqUser.getOpenId())
+                    .setUsername(qqUser.getNickname())
+                    .setPhoto(qqUser.getFigureurl_qq_1())
+                    .setEmail("")
+                    .setPasssword("")
+                    .setRegisterTime(now)
+                    .setModifyTime(now)
+                    .setRewardPoints(0)
+                    .setFansCount(0)
+                    .setGender((byte) ("男".equals(qqUser.getGender()) ? 0 : 1))
+                    .setJwtSalt("")
+                    .setLoginSalt(RandomUtils.generateStr(8));
             userMapper.insertUseGeneratedKeys(user);
         }
-
         return user;
-
     }
 
     @Override
@@ -221,16 +245,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(Integer userId) {
+    public String login(Integer userId, HttpServletResponse response) {
         String jwtSecret = RandomUtils.generateStr(8);
         // 更新数据库中的jwt salt
         this.updateJwtSalt(userId, jwtSecret);
 
-        JwtToken token = this.generateJwtToken(userId, jwtSecret);
+        // shiro login
+        JwtToken jwtToken = this.generateJwtToken(userId, jwtSecret);
         Subject subject = SecurityUtils.getSubject();
-        subject.login(token);
+        subject.login(jwtToken);
 
-        return (String) token.getCredentials();
+        // 将token放置到cookie中
+        String token = (String) jwtToken.getCredentials();
+        Cookie cookie = new Cookie("token", token);
+        cookie.setMaxAge((int) Constant.DURATION_JWT.getSeconds());
+        cookie.setPath("/"); // ！！！
+        response.addCookie(cookie);
+
+        return token;
     }
 
     @Override

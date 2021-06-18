@@ -7,6 +7,7 @@ import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.shiro.JwtToken;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface UserService {
     /**
      * 登录
      */
-    String login(Integer userId);
+    String login(Integer userId, HttpServletResponse response);
 
     /**
      * 退出登录
@@ -98,7 +99,6 @@ public interface UserService {
 
     /**
      * 注册
-     * @param vo
      */
     void register(RegisterDTO vo);
 
@@ -106,6 +106,11 @@ public interface UserService {
      * gitee授权
      */
     User oauth2Gitee(String code) throws ParameterErrorException, IOException;
+
+    /**
+     * qq授权
+     */
+    User oauth2QQ(String code) throws IOException, ParameterErrorException;
 
     /**
      * 清除上一次shiro的认证缓存（实现单点登录）。

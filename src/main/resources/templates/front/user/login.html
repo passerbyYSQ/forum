@@ -142,8 +142,6 @@
             content: "\e600";
         }
 
-
-
     </style>
 </head>
 <body>
@@ -223,12 +221,14 @@
                         </div>
                         <div class="layui-form-item login-oauth-group">
                             <a th:href="@{/user/oauth/gitee/authorize}">
-                                <i class="iconfont icon-Gitee" style="color:#ac0719;"></i></a>&emsp;
-                            <a href="javascript:;"><i class="iconfont  icon-GitHub"
-                                                      style="color:#0f0f10;">
+                                <i class="iconfont icon-Gitee" style="color:#ac0719;"></i>
+                            </a>&emsp;
+                            <a href="javascript:;">
+                                <i class="iconfont icon-GitHub" style="color:#0f0f10;">
                             </i></a>&emsp;
-                            <a href="javascript:;"><i class="iconfont icon-QQ"
-                                                      style="color:#3492ed;"></i></a>
+                            <a th:href="@{/user/oauth/qq/authorize}" >
+                                <i class="iconfont icon-QQ" style="color:#3492ed;"></i>
+                            </a>
                         </div>
                     </form>
                 </div>

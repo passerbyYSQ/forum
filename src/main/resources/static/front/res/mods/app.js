@@ -10,12 +10,12 @@ layui.config({
     var app = layui.app;
 
     // 判断url中是否
-    var token = app.getUrlParam('token');
-    console.log(token);
-    if (app.isNotNull(token)) {
-        var user = {};
-        user.token = token;
-        window.localStorage.setItem('user', JSON.stringify(user));
-    }
+    // var token = app.getUrlParam('token');
+    // console.log(token);
+    // if (app.isNotNull(token)) {
+    //     var user = {};
+    //     user.token = token;
+    //     window.localStorage.setItem('user', JSON.stringify(user));
+    // }
 });
 
