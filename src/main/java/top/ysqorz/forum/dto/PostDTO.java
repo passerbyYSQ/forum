@@ -2,7 +2,10 @@ package top.ysqorz.forum.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
 import top.ysqorz.forum.po.Label;
+import top.ysqorz.forum.po.Post;
+import top.ysqorz.forum.po.Topic;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,12 +18,14 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class SimplePostDTO {
+public class PostDTO {
 
     private Integer id; // 帖子id
     private String title; // 标题
-    private String creator; // 发布者的用户名
+    private String content; // 内容
+    private SimpleUserDTO creator; // 发布者的用户名
     private String topic; // 所属话题
+    private Integer topicId;
     private LocalDateTime createTime;
     private Integer visitCount; // 访问量
     private Integer likeCount; // 点赞数
@@ -31,4 +36,15 @@ public class SimplePostDTO {
     private Integer topWeight; // 置顶权重
 
     private List<Label> labelList;  // 标签
+
+    public PostDTO() {
+    }
+
+    public PostDTO(Post post, SimpleUserDTO creator, Topic topic, List<Label> labelList) {
+        BeanUtils.copyProperties(post, this);
+        this.creator = creator;
+        this.topicId = topic.getId();
+        this.topic = topic.getTopicName();
+        this.labelList = labelList;
+    }
 }

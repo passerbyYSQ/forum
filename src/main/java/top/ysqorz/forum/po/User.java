@@ -45,7 +45,7 @@ public class User implements Serializable {
     /**
      * 密码
      */
-    private String passsword;
+    private String password;
 
     /**
      * 登录密码的随机盐

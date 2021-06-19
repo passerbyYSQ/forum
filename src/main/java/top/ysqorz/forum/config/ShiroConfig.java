@@ -79,26 +79,32 @@ public class ShiroConfig {
      */
     @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
-        DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
+        DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
 
         // 除了浏览帖子特殊（不登录也行，只是数据不一样），发帖、修改帖子等其他操作都需要登录
-        //chainDefinition.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
 
-        chainDefinition.addPathDefinition("/user/**", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
-        chainDefinition.addPathDefinition("/index", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/", "noSessionCreation,anon");
+        chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
+
+
+
+        chain.addPathDefinition("/user/**", "noSessionCreation,anon");
+        chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
+        chain.addPathDefinition("/index", "noSessionCreation,anon");
+        chain.addPathDefinition("/", "noSessionCreation,anon");
 
         // 放行静态资源。但是admin也把后台给放行了。之后再做修正
-        chainDefinition.addPathDefinition("/front/**", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,anon");
+        chain.addPathDefinition("/front/**", "noSessionCreation,anon");
+        chain.addPathDefinition("/admin/**", "noSessionCreation,anon");
 
 
 //        // 注意第2个参数的"jwtAuth"需要与上面的 filters.put("jwtAuth", new JwtAuthenticatingFilter()); 一致
 //        // 做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
 //        chainDefinition.addPathDefinition("/user/logout", "noSessionCreation,jwtAuth[permissive]");
 //        chainDefinition.addPathDefinition("/**", "noSessionCreation,jwtAuth"); // 默认进行用户鉴权
-        return chainDefinition;
+        return chain;
     }
 
     /**

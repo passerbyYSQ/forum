@@ -66,7 +66,9 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<Topic> getAllTopic() {
-        return topicMapper.selectAll();
+        Example example = new Example(Topic.class);
+        example.createCriteria().andEqualTo("archive", 0);
+        return topicMapper.selectByExample(example);
     }
 
     @Override

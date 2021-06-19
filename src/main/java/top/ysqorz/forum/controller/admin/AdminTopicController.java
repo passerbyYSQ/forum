@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.ResultModel;
-import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.TopicDTO;
 
 import javax.validation.constraints.NotNull;

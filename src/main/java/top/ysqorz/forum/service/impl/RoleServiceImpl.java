@@ -32,7 +32,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional // 开启事务操作
     @Override
-    public void delRoleWithPerms(Integer[] roleIds) throws ParameterErrorException {
+    public void delRoleWithPerms(Integer[] roleIds) {
         for (Integer roleId : roleIds) {
             // 注意删除的先后顺序
             // 先删除role_resource表中该角色相关的记录

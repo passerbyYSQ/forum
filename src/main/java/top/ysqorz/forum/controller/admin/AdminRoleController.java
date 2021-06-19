@@ -7,16 +7,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ParameterErrorException;
+import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.PermZTreeNode;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
 import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.service.RoleService;
-import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.PermZTreeNode;
-import top.ysqorz.forum.dto.ResultModel;
-import top.ysqorz.forum.dto.StatusCode;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -44,8 +43,7 @@ public class AdminRoleController {
     private AuthorityService authorityService;
 
     @PostMapping("/del")
-    public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds)
-            throws ParameterErrorException {
+    public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds) {
         roleService.delRoleWithPerms(roleIds);
         return ResultModel.success();
     }

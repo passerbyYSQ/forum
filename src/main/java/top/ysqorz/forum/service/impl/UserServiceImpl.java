@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     public int updatePsw(Integer userId) {
         User record = new User();
         record.setId(userId);
-        record.setPasssword("123456");
+        record.setPassword("123456");
         return userMapper.updateByPrimaryKeySelective(record);
     }
 
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional // 开启事务操作
     @Override
-    public int addRoleForUser(Integer[] roleIds, Integer userId) throws ParameterErrorException {
+    public int addRoleForUser(Integer[] roleIds, Integer userId) {
         for (Integer roleId : roleIds) {
             Example example2 = new Example(Role.class);
             example2.createCriteria().andEqualTo("id", roleId);
@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
         // 第三个参数（hashIterations）：哈希散列的次数
         Md5Hash md5Hash = new Md5Hash(vo.getPassword(), user.getLoginSalt(), 1024);
         // 保存加密后的密码
-        user.setPasssword(md5Hash.toHex());
+        user.setPassword(md5Hash.toHex());
         user.setRegisterTime(LocalDateTime.now());
         user.setModifyTime(LocalDateTime.now());
         user.setRewardPoints(0);
@@ -185,7 +185,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User oauth2Gitee(String code) throws ParameterErrorException, IOException {
+    public User oauth2Gitee(String code) throws IOException {
         GiteeUserDTO giteeUser = giteeProvider.getUser(code);
         User user = giteeProvider.getDbUser(giteeUser.getId());
         LocalDateTime now = LocalDateTime.now();
@@ -195,7 +195,7 @@ public class UserServiceImpl implements UserService {
                     .setUsername(giteeUser.getName())
                     .setPhoto(giteeUser.getAvatarUrl())
                     .setEmail(giteeUser.getEmail() != null ? giteeUser.getEmail() : "")
-                    .setPasssword("")
+                    .setPassword("")
                     .setRegisterTime(now)
                     .setModifyTime(now)
                     .setRewardPoints(0)
@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User oauth2QQ(String code) throws IOException, ParameterErrorException {
+    public User oauth2QQ(String code) throws IOException {
         QQUserDTO qqUser = qqProvider.getUser(code);
         User user = qqProvider.getDbUser(qqUser.getOpenId());
         LocalDateTime now = LocalDateTime.now();
@@ -219,7 +219,7 @@ public class UserServiceImpl implements UserService {
                     .setUsername(qqUser.getNickname())
                     .setPhoto(qqUser.getFigureurl_qq_1())
                     .setEmail("")
-                    .setPasssword("")
+                    .setPassword("")
                     .setRegisterTime(now)
                     .setModifyTime(now)
                     .setRewardPoints(0)
@@ -242,6 +242,11 @@ public class UserServiceImpl implements UserService {
             subject.login(oldToken);
             this.logout(); // 清除旧token的缓存
         }
+    }
+
+    @Override
+    public SimpleUserDTO getSimpleUser(Integer userId) {
+        return userMapper.selectSimpleUserById(userId);
     }
 
     @Override

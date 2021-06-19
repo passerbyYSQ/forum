@@ -7,8 +7,8 @@ import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
-import top.ysqorz.forum.dto.ResultModel;
-import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.JsonUtils;
@@ -57,8 +57,8 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
         } catch (Exception e) {
             log.info("Error occurs when login");
         }
-        return allowed;
-        //return allowed || super.isPermissive(mappedValue);
+        //return allowed;
+        return allowed || super.isPermissive(mappedValue);
     }
 
     @Override
@@ -93,9 +93,9 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
             token = httpRequest.getHeader("token");
         }
         // 从请求参数中尝试获取jwt token
-        if (StringUtils.isEmpty(token)) {
-            token = httpRequest.getParameter("token");
-        }
+//        if (StringUtils.isEmpty(token)) {
+//            token = httpRequest.getParameter("token");
+//        }
         // 从cookie中尝试获取token
         if (StringUtils.isEmpty(token)) {
             Cookie[] cookies = httpRequest.getCookies();
@@ -106,7 +106,7 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
                 }
             }
         }
-        return StringUtils.isEmpty(token) ? new JwtToken(token) : null;
+        return !StringUtils.isEmpty(token) ? new JwtToken(token) : null;
     }
 
     /**

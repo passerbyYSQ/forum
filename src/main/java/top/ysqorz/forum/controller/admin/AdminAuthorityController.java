@@ -9,8 +9,8 @@ import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.dto.QueryAuthorityCondition;
-import top.ysqorz.forum.dto.ResultModel;
-import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;

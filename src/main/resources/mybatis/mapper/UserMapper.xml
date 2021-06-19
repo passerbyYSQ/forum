@@ -9,7 +9,7 @@
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="passsword" jdbcType="VARCHAR" property="passsword" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="login_salt" jdbcType="VARCHAR" property="loginSalt" />
     <result column="jwt_salt" jdbcType="VARCHAR" property="jwtSalt" />
     <result column="gender" jdbcType="TINYINT" property="gender" />
@@ -35,9 +35,23 @@
         <result column="register_time" jdbcType="TIMESTAMP" property="registerTime" />
         <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
         <result column="black_id" jdbcType="INTEGER" property="blackId" />
-        <collection column="id" ofType="top.ysqorz.forum.po.Role" property="roles" select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
+        <collection column="id" ofType="top.ysqorz.forum.po.Role" property="roles"
+                    select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
         </collection>
     </resultMap>
+    <resultMap id="simpleUser" type="top.ysqorz.forum.dto.SimpleUserDTO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="gender" jdbcType="TINYINT" property="gender" />
+        <result column="photo" jdbcType="VARCHAR" property="photo" />
+        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime" />
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+        <result column="black_id" jdbcType="INTEGER" property="blackId" />
+        <collection column="id" ofType="top.ysqorz.forum.po.Role" property="roles"
+                    select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
+        </collection>
+    </resultMap>
+
     <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.QueryUserCondition" resultMap="allUserAndRole">
         select u.id as id,username,email,phone,photo,gender,register_time,last_login_time,b.id as black_id
         from user u
@@ -65,5 +79,20 @@
     <update id="updateRewardPoints" parameterType="map">
         update user set reward_points = reward_points + #{num} where id = #{userId}
     </update>
+
+    <select id="selectSimpleUserById" parameterType="Integer" resultMap="simpleUser">
+        select
+               u.id,
+               username,
+               gender,
+               photo,
+               last_login_time,
+               register_time,
+               b.id as black_id
+        from user u
+        left join blacklist b on
+            (u.id = b.user_id and #{now} between b.start_time and b.end_time)
+        where u.id = ${userId}
+    </select>
 </mapper>
 

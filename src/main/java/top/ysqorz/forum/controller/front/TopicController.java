@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
-import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.common.ResultModel;
 
 import javax.annotation.Resource;
 import java.util.List;

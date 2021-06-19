@@ -34,7 +34,7 @@ public interface FileUploader {
     /**
      * 上传
      */
-    UploadResult upload() throws FileUploadException, IOException;
+    UploadResult upload() throws IOException;
 
 
 }

@@ -6,12 +6,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import top.ysqorz.forum.common.FileUploadException;
-import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.UploadResult;
 import top.ysqorz.forum.service.RedisService;
-import top.ysqorz.forum.upload.uploader.ImageUploader;
 import top.ysqorz.forum.upload.UploadRepository;
+import top.ysqorz.forum.upload.uploader.ImageUploader;
 import top.ysqorz.forum.utils.CaptchaUtils;
 
 import javax.annotation.Resource;
@@ -41,7 +40,7 @@ public class CommonController {
      */
     @PostMapping("/upload/image")
     public ResultModel<UploadResult> uploadImage(@NotNull MultipartFile image)
-            throws IOException, FileUploadException {
+            throws IOException  {
         ImageUploader imageUploader = new ImageUploader(image, aliyunOssRepository);
         UploadResult uploadResult = imageUploader.upload();
         return ResultModel.success(uploadResult);

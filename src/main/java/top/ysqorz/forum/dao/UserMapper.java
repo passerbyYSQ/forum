@@ -2,6 +2,7 @@ package top.ysqorz.forum.dao;
 
 import top.ysqorz.forum.common.BaseMapper;
 import top.ysqorz.forum.dto.QueryUserCondition;
+import top.ysqorz.forum.dto.SimpleUserDTO;
 import top.ysqorz.forum.dto.UserDTO;
 import top.ysqorz.forum.po.User;
 
@@ -13,4 +14,6 @@ public interface UserMapper extends BaseMapper<User> {
     List<UserDTO> selectAllUser(QueryUserCondition conditions);
 
     int updateRewardPoints(Map<String, Object> param);
+
+    SimpleUserDTO selectSimpleUserById(Integer userId);
 }

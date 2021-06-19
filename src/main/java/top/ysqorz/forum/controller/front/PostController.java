@@ -1,13 +1,15 @@
 package top.ysqorz.forum.controller.front;
 
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dto.PublishPostDTO;
-import top.ysqorz.forum.dto.ResultModel;
-import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.UpdatePostDTO;
 import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.po.Post;
@@ -16,6 +18,7 @@ import top.ysqorz.forum.service.LabelService;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.TopicService;
+import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
@@ -43,8 +46,19 @@ public class PostController {
     @Resource
     private RedisService redisService;
 
-    @GetMapping("/{postId}")
-    public String detailPage(@PathVariable String postId) {
+    @GetMapping("/detail/{postId}")
+    public String detailPage(@PathVariable Integer postId, Model model) { //  /detail 和 /detail/sdv 都会404
+        // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
+        String token = RandomUtils.generateUUID();
+        model.addAttribute("token", token);
+
+        Post post = postService.getPostById(postId);
+        if (ObjectUtils.isEmpty(post)) {
+            throw new ParameterErrorException("帖子不存在");
+        }
+
+        postService.getPostDetailById(post);
+
         return "front/jie/detail";
     }
 
@@ -59,20 +73,26 @@ public class PostController {
 
         if (!ObjectUtils.isEmpty(postId)) { // 修改的时候需要传值
             Post post = postService.getPostById(postId);
-            if (!ObjectUtils.isEmpty(post)) {
-                UpdatePostDTO updatePostDTO = new UpdatePostDTO(post);
-                List<Label> labels = labelService.getLabelsByPostId(postId);
-                updatePostDTO.setLabelList(labels);
-
-                model.addAttribute("post", updatePostDTO);
+            if (ObjectUtils.isEmpty(post)) {
+                throw new ParameterErrorException("帖子不存在");
             }
+            // 不能修改其他人的帖子
+            if (!post.getCreatorId().equals(ShiroUtils.getUserId())) {
+                throw new AuthorizationException();
+            }
+
+            UpdatePostDTO updatePostDTO = new UpdatePostDTO(post);
+            List<Label> labels = labelService.getLabelsByPostId(postId);
+            updatePostDTO.setLabelList(labels);
+
+            model.addAttribute("post", updatePostDTO);
         }
 
         return "front/jie/publish";
     }
 
     /**
-     * 临时的发帖接口，为了方便往数据库插入数据
+     * 发帖
      */
     @ResponseBody
     @PostMapping("/publish")
@@ -91,8 +111,7 @@ public class PostController {
             return ResultModel.failed(StatusCode.TOPIC_NOT_EXIST); // 话题不存在
         }
 
-        // TODO 由于还没做登录，此处传入一个固定的creatorId
-        postService.publishPost(dto, 1);
+        postService.publishPost(dto, ShiroUtils.getUserId());
 
         return ResultModel.success();
     }
@@ -116,7 +135,10 @@ public class PostController {
         if (ObjectUtils.isEmpty(post)) {
             return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
         }
-        // TODO 检查是否是自己发的帖子
+        // 不能修改其他人的帖子
+        if (!post.getCreatorId().equals(ShiroUtils.getUserId())) {
+            throw new AuthorizationException();
+        }
 
         // 校验topicId
         Topic topic = topicService.getTopicById(dto.getTopicId());

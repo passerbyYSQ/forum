@@ -1,4 +1,4 @@
-package top.ysqorz.forum.dto;
+package top.ysqorz.forum.common;
 
 /**
  * 2000 - 成功处理请求
@@ -15,13 +15,16 @@ package top.ysqorz.forum.dto;
 public enum StatusCode {
     SUCCESS(2000, "成功"),
 
+    // 授权相关
+    AUTHORIZATION_FAILED(403, "无权限访问"), // ！！！
+
     // 服务器内部错误
     UNKNOWN_ERROR(5000, "未知错误"),
     NO_PERM(5001, "无权限操作"),
 
     // 参数相关
     PARAM_NOT_COMPLETED(6001, "参数缺失"),
-    PARAM_INVALID(6002, "参数无效"),
+    PARAM_INVALID(400, "参数无效"), // ！！！
     FILE_TYPE_INVALID(6003, "非法文件类型"),
     FILE_SIZE_EXCEEDED(6004, "文件大小超出限制"),
     CAPTCHA_INVALID(6005, "验证码错误"),
@@ -34,8 +37,7 @@ public enum StatusCode {
     CREDENTIAL_INCORRECT(6003, "密码错误"), // 凭证错误
     AUTHENTICATION_FAILED(6004, "无效token，登录过期或者被挤下线"),
     PASSWORD_NOT_EQUAL(6005,"两次输入密码不一致"),
-    // 授权相关
-    AUTHORIZATION_FAILED(6005, "无权限访问"),
+
 
     // 用户相关
     USERNAME_IS_EXIST(6101, "用户名已存在"),

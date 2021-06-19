@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.dao.PostMapper;
-import top.ysqorz.forum.dto.PublishPostDTO;
-import top.ysqorz.forum.dto.QueryPostCondition;
-import top.ysqorz.forum.dto.SimplePostDTO;
+import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.po.Post;
+import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.*;
 
 import javax.annotation.Resource;
@@ -58,13 +58,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<SimplePostDTO> getPostList(QueryPostCondition condition) {
+    public List<PostDTO> getPostList(QueryPostCondition condition) {
         return postMapper.selectListByConditions(condition);
     }
 
     @Override
     public Post addPost(PublishPostDTO vo, Integer creatorId) {
         Post post = new Post();
+        LocalDateTime now = LocalDateTime.now();
         post.setCreatorId(creatorId) // 发帖人id
                 .setTopicId(vo.getTopicId())  // 所属话题的id
                 .setTitle(vo.getTitle()) // 帖子标题
@@ -75,8 +76,8 @@ public class PostServiceImpl implements PostService {
                 .setVisibilityType(vo.getVisibilityType() == 3 ? vo.getPoints() : vo.getVisibilityType())
                 .setIsLocked((byte) (vo.getIsLocked() ? 1 : 0))
 
-                .setCreateTime(LocalDateTime.now())
-                .setLastModifyTime(LocalDateTime.now())
+                .setCreateTime(now)
+                .setLastModifyTime(now)
 
                 .setCollectCount(0) // 收藏数
                 .setCommentCount(0) // 评论数（包括一二级评论）
@@ -109,8 +110,9 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         post.setId(vo.getPostId())
                 .setTopicId(vo.getTopicId())
+                .setLastModifyTime(LocalDateTime.now()) // 最后一次的更新时间
                 .setTitle(vo.getTitle())
-                .setContent(HtmlUtils.htmlUnescape(vo.getContent()))
+                .setContent(HtmlUtils.htmlUnescape(vo.getContent())) // XSS防护做了转义，此处需要反转义
                 .setVisibilityType(vo.getVisibilityType() == 3 ?
                         vo.getPoints() : vo.getVisibilityType())
                 .setIsLocked((byte) (vo.getIsLocked() ? 1 : 0));
@@ -121,6 +123,27 @@ public class PostServiceImpl implements PostService {
 
         // 批量插入帖子和标签的映射关系
         postLabelService.addPostLabelList(vo.getPostId(), vo.splitLabels());
+    }
+
+    @Override
+    public PostDetailDTO getPostDetailById(Post post) {
+        // 发帖者
+        SimpleUserDTO creator = userService.getSimpleUser(post.getCreatorId());
+        // 所属话题
+        Topic topic = topicService.getTopicById(post.getTopicId());
+        // 相关标签
+        List<Label> labelList = labelService.getLabelsByPostId(post.getId());
+        PostDTO postDTO = new PostDTO(post, creator, topic, labelList);
+
+        // 我是否已经点赞
+
+        // 我是否已经收藏
+
+        PostDetailDTO postDetailDTO = new PostDetailDTO();
+        postDetailDTO.setDetail(postDTO);
+
+
+        return null;
     }
 
 }

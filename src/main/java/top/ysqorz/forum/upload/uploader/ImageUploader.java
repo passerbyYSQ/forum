@@ -42,7 +42,7 @@ public class ImageUploader extends AbstractFileUploader {
         this.base64 = base64;
     }
 
-    public UploadResult uploadBase64() throws FileUploadException, ParameterErrorException, IOException {
+    public UploadResult uploadBase64() throws IOException {
         Matcher matcher = BASE64_PATTERN.matcher(this.base64);
         if (!matcher.find()) {
             throw new ParameterErrorException("base64编码错误");

@@ -1,8 +1,9 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.dto.PostDetailDTO;
 import top.ysqorz.forum.dto.PublishPostDTO;
 import top.ysqorz.forum.dto.QueryPostCondition;
-import top.ysqorz.forum.dto.SimplePostDTO;
+import top.ysqorz.forum.dto.PostDTO;
 import top.ysqorz.forum.po.Post;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public interface PostService {
      * 后台帖子管理查询帖子列表
      * @param condition     查询条件
      */
-    List<SimplePostDTO> getPostList(QueryPostCondition condition);
+    List<PostDTO> getPostList(QueryPostCondition condition);
 
     /**
      * 往post表插入数据
@@ -51,4 +52,6 @@ public interface PostService {
      * 更新帖子。包括标签
      */
     void updatePostAndLabels(PublishPostDTO vo);
+
+    PostDetailDTO getPostDetailById(Post post);
 }

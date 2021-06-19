@@ -241,7 +241,10 @@
                 '</p>'].join(''),
             cellMinWidth: 100,
             cols: [[
-                {field: 'creator', title: '作者', align: 'center'},
+                {field: 'creator', title: '作者', templet: function (d) {
+                        return d.creator.username;
+                    }, align: 'center'
+                },
                 {field: 'title', title: '标题', align: 'center'},
                 {field: 'topic', title: '所属话题', align: 'center'},
                 {

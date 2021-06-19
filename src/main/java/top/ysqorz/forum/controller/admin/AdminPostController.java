@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.service.PostService;
@@ -25,7 +27,7 @@ public class AdminPostController {
     private PostService postService;
 
     @GetMapping("/list")
-    public ResultModel<PageData<SimplePostDTO>> postList(
+    public ResultModel<PageData<PostDTO>> postList(
             @RequestParam(defaultValue = "1") Integer page, // 当前页
             @RequestParam(defaultValue = "10") Integer count, // 每一页显示条数
             QueryPostCondition condition) { // 查询条件
@@ -34,9 +36,9 @@ public class AdminPostController {
         }
         condition.generateOrderByStr(); // 校验参数，并拼接order by部分的字符串
         PageHelper.startPage(page, count); // 里面会做page的越界纠正
-        List<SimplePostDTO> postList = postService.getPostList(condition);
-        PageInfo<SimplePostDTO> pageInfo = new PageInfo<>(postList);
-        PageData<SimplePostDTO> pageData = new PageData<>(pageInfo, postList);
+        List<PostDTO> postList = postService.getPostList(condition);
+        PageInfo<PostDTO> pageInfo = new PageInfo<>(postList);
+        PageData<PostDTO> pageData = new PageData<>(pageInfo, postList);
         return ResultModel.success(pageData);
     }
 

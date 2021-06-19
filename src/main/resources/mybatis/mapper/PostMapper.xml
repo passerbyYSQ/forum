@@ -30,10 +30,9 @@
     </select>
 
 
-    <resultMap id="simplePost" type="top.ysqorz.forum.dto.SimplePostDTO">
+    <resultMap id="post" type="top.ysqorz.forum.dto.PostDTO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
-        <result column="creator" jdbcType="INTEGER" property="creator"/>
         <result column="topic" jdbcType="INTEGER" property="topic"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="visit_count" jdbcType="INTEGER" property="visitCount"/>
@@ -43,15 +42,21 @@
         <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
         <result column="is_locked" jdbcType="TINYINT" property="isLocked"/>
         <result column="top_weight" jdbcType="INTEGER" property="topWeight"/>
+        <!-- 把creator_id传过去 -->
+        <association property="creator" column="creator_id"
+                     javaType="top.ysqorz.forum.dto.SimpleUserDTO"
+                     select="top.ysqorz.forum.dao.UserMapper.selectSimpleUserById" />
+        <!-- 把postId传过去 -->
         <collection property="labelList" ofType="top.ysqorz.forum.po.Label" column="id"
                     select="top.ysqorz.forum.dao.LabelMapper.selectLabelsByPostId"/>
     </resultMap>
 
-    <select id="selectListByConditions" resultMap="simplePost"
+    <select id="selectListByConditions" resultMap="post"
             parameterType="top.ysqorz.forum.dto.QueryPostCondition">
         select p.id, title,
-                username creator,
                 topic_name topic,
+                creator_id,
+                t.id topicId,
                 p.create_time,
                 visit_count,
                 like_count,

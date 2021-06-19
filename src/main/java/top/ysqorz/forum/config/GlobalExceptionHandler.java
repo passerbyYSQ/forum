@@ -14,8 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import top.ysqorz.forum.common.FileUploadException;
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.dto.ResultModel;
-import top.ysqorz.forum.dto.StatusCode;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -80,23 +80,22 @@ public class GlobalExceptionHandler {
         return wrapModelAndView(res, request);
     }
 
-    /*
     // jwt校验错误
-    @ResponseStatus(HttpStatus.FORBIDDEN) // 无登录权限。Jwt之后会结合shiro，之后再改
-    @ExceptionHandler(JWTVerificationException.class)
-    public ModelAndView handlerJwtVerificationException(JWTVerificationException e, HttpServletRequest request) {
-        // 主要分为两类错误
-        ResultModel res = ResultModel.failed(e instanceof TokenExpiredException ?
-                        StatusCode.TOKEN_IS_EXPIRED : StatusCode.TOKEN_IS_INVALID); // token过期，登录状态过期
-        return wrapModelAndView(res, request);
-    }
-    */
+//    @ResponseStatus(HttpStatus.FORBIDDEN) // 无登录权限。Jwt之后会结合shiro，之后再改
+//    @ExceptionHandler(JWTVerificationException.class)
+//    public ModelAndView handlerJwtVerificationException(JWTVerificationException e, HttpServletRequest request) {
+//        // 主要分为两类错误
+//        ResultModel res = ResultModel.failed(e instanceof TokenExpiredException ?
+//                        StatusCode.TOKEN_IS_EXPIRED : StatusCode.TOKEN_IS_INVALID); // token过期，登录状态过期
+//        return wrapModelAndView(res, request);
+//    }
 
     // 授权异常
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AuthorizationException.class)
     public ModelAndView handlerAuthorizationException(AuthorizationException e, HttpServletRequest request) {
-        return wrapModelAndView(ResultModel.failed(StatusCode.AUTHORIZATION_FAILED), request);
+        return wrapModelAndView(
+                ResultModel.failed(StatusCode.AUTHORIZATION_FAILED), request);
     }
 
 

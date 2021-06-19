@@ -48,7 +48,7 @@ public abstract class AbstractFileUploader implements FileUploader {
      * 上传
      */
     @Override
-    public UploadResult upload() throws FileUploadException, IOException {
+    public UploadResult upload() throws IOException {
         // 先完成校验
         if (multipartFile.getSize() <= 0) {
             throw new FileUploadException("上传文件不能为空");

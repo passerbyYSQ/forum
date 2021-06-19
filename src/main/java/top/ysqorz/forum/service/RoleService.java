@@ -1,6 +1,5 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
 
@@ -16,7 +15,7 @@ public interface RoleService {
     /**
      * 根据id删除角色
      */
-    void delRoleWithPerms(Integer[] roleIds) throws ParameterErrorException;
+    void delRoleWithPerms(Integer[] roleIds);
 
     /**
      * 根据id更新角色

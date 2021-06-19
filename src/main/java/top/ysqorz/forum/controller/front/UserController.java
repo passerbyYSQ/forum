@@ -8,7 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ParameterErrorException;
+import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
@@ -122,7 +123,7 @@ public class UserController {
 
         // 以注册时的相同规则，加密用户输入的密码
         Md5Hash md5Hash = new Md5Hash(dto.getPassword(), user.getLoginSalt(), 1024);
-        if (!user.getPasssword().equals(md5Hash.toHex())) {
+        if (!user.getPassword().equals(md5Hash.toHex())) {
             return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
 
@@ -159,8 +160,7 @@ public class UserController {
      */
     @GetMapping("/oauth/gitee/callback")
     public String giteeCallback(@RequestParam(defaultValue = "") String state,
-                                String code, HttpServletResponse response)
-            throws IOException, ParameterErrorException {
+                                String code, HttpServletResponse response) throws IOException {
         // 校验state，防止CSRF
         String referer = giteeProvider.checkState(state);
         // 检查是否存在现有账号与第三方的账号已绑定
@@ -185,8 +185,7 @@ public class UserController {
      */
     @GetMapping("/oauth/qq/callback")
     public String qqCallback(@RequestParam(defaultValue = "") String state,
-                                String code, HttpServletResponse response)
-            throws ParameterErrorException, IOException {
+                                String code, HttpServletResponse response) throws IOException {
         String referer = qqProvider.checkState(state);
         User user = userService.oauth2QQ(code);
         userService.clearShiroAuthCache(user);

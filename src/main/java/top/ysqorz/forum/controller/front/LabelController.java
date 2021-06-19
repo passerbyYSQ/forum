@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.service.LabelService;
-import top.ysqorz.forum.dto.ResultModel;
+import top.ysqorz.forum.common.ResultModel;
 
 import javax.annotation.Resource;
 import java.util.List;

@@ -62,7 +62,7 @@ public abstract class OauthProvider<T> {
      * 模板方法，不允许子类重写
      * @param code
      */
-    public final T getUser(String code) throws IOException, ParameterErrorException {
+    public final T getUser(String code) throws IOException {
         T oauthUser = getOauthUser(getAccessToken(code));
         if (ObjectUtils.isEmpty(oauthUser)) {
             throw new ParameterErrorException("Oauth授权登录出错");
@@ -84,7 +84,7 @@ public abstract class OauthProvider<T> {
      * 校验state，防止CSRF
      * @return
      */
-    public String checkState(String state) throws ParameterErrorException {
+    public String checkState(String state) {
         try {
             state = URLDecoder.decode(state, "utf-8"); // url decode
         } catch (UnsupportedEncodingException e) {

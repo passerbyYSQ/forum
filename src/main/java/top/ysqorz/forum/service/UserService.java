@@ -1,6 +1,5 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
@@ -85,7 +84,7 @@ public interface UserService {
     /**
      * 为某一用户添加角色
      */
-    int addRoleForUser(Integer[] roleIds, Integer userId) throws ParameterErrorException;
+    int addRoleForUser(Integer[] roleIds, Integer userId);
 
     /**
      * 查询用户已有角色
@@ -105,12 +104,12 @@ public interface UserService {
     /**
      * gitee授权
      */
-    User oauth2Gitee(String code) throws ParameterErrorException, IOException;
+    User oauth2Gitee(String code) throws IOException;
 
     /**
      * qq授权
      */
-    User oauth2QQ(String code) throws IOException, ParameterErrorException;
+    User oauth2QQ(String code) throws IOException;
 
     /**
      * 清除上一次shiro的认证缓存（实现单点登录）。
@@ -119,4 +118,5 @@ public interface UserService {
      */
     void clearShiroAuthCache(User user);
 
+    SimpleUserDTO getSimpleUser(Integer userId);
 }
