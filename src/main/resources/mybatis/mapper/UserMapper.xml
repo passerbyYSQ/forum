@@ -43,13 +43,9 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="gender" jdbcType="TINYINT" property="gender" />
+        <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
         <result column="photo" jdbcType="VARCHAR" property="photo" />
-        <result column="register_time" jdbcType="TIMESTAMP" property="registerTime" />
-        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
         <result column="black_id" jdbcType="INTEGER" property="blackId" />
-        <collection column="id" ofType="top.ysqorz.forum.po.Role" property="roles"
-                    select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
-        </collection>
     </resultMap>
 
     <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.QueryUserCondition" resultMap="allUserAndRole">
@@ -86,8 +82,7 @@
                username,
                gender,
                photo,
-               last_login_time,
-               register_time,
+               reward_points,
                b.id as black_id
         from user u
         left join blacklist b on

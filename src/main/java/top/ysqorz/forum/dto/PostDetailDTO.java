@@ -16,5 +16,5 @@ public class PostDetailDTO {
     private Integer likeId; // 如果我点过赞，则不为空
     private Integer collectId; // 如果我收藏过，则不为空
 
-    private PageData<CommentDTO> comments;
+    //private PageData<FirstCommentDTO> comments;
 }

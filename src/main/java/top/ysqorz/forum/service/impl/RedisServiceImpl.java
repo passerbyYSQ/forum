@@ -47,4 +47,11 @@ public class RedisServiceImpl implements RedisService {
         redisTemplate.delete(key);
         return salt;
     }
+
+    @Override
+    public boolean tryAddPostVisitIp(String ipAddress, Integer postId) {
+        String key = String.format(Constant.REDIS_PREFIX_POST_VISIT, postId, ipAddress);
+        return redisTemplate.opsForValue()
+                .setIfAbsent(key, "", Constant.DURATION_POST_VISIT);
+    }
 }

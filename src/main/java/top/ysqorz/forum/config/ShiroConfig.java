@@ -85,6 +85,7 @@ public class ShiroConfig {
         chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/comment/*/publish", "noSessionCreation,jwtAuth");
 
         chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
 

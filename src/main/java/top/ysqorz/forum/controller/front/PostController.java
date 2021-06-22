@@ -7,21 +7,22 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ParameterErrorException;
-import top.ysqorz.forum.dto.PublishPostDTO;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.dto.PostDetailDTO;
+import top.ysqorz.forum.dto.PublishPostDTO;
 import top.ysqorz.forum.dto.UpdatePostDTO;
 import top.ysqorz.forum.po.Label;
+import top.ysqorz.forum.po.Like;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.Topic;
-import top.ysqorz.forum.service.LabelService;
-import top.ysqorz.forum.service.PostService;
-import top.ysqorz.forum.service.RedisService;
-import top.ysqorz.forum.service.TopicService;
+import top.ysqorz.forum.service.*;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.utils.IpUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -46,19 +47,27 @@ public class PostController {
     @Resource
     private RedisService redisService;
 
+    @Resource
+    private LikeService likeService;
+
+
     @GetMapping("/detail/{postId}")
-    public String detailPage(@PathVariable Integer postId, Model model) { //  /detail 和 /detail/sdv 都会404
-        // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
-        String token = RandomUtils.generateUUID();
-        model.addAttribute("token", token);
+    public String detailPage(@PathVariable Integer postId,
+                             Model model, HttpServletRequest request) {
+        // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post
+        postService.addVisitCount(IpUtils.getIpAddress(request), postId);
 
         Post post = postService.getPostById(postId);
         if (ObjectUtils.isEmpty(post)) {
             throw new ParameterErrorException("帖子不存在");
         }
 
-        postService.getPostDetailById(post);
+        // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
+        String token = RandomUtils.generateUUID();
+        model.addAttribute("token", token);
 
+        PostDetailDTO postDetailDTO = postService.getPostDetailById(post);
+        model.addAttribute("post", postDetailDTO);
         return "front/jie/detail";
     }
 
@@ -149,6 +158,25 @@ public class PostController {
         // 更新帖子
         postService.updatePostAndLabels(dto);
 
+        return ResultModel.success();
+    }
+
+    @PostMapping("/like")
+    @ResponseBody
+    public ResultModel likePost(@RequestParam Integer postId,
+                                      @RequestParam Boolean isLike) {
+        Integer myId = ShiroUtils.getUserId();
+        Like like = likeService.getLikeByUserIdAndPostId(myId, postId);
+        // like != null && isLike = true ：不要重复点赞
+        // like == null && isLike = false ：不要重复取消
+        if (isLike.equals(!ObjectUtils.isEmpty(like))) { // 勿重复操作
+            return ResultModel.failed(StatusCode.DO_NOT_REPEAT_OPERATE);
+        }
+        if (isLike) {
+            postService.addLike(myId, postId);
+        } else {
+            postService.cancelLike(like.getId(), postId);
+        }
         return ResultModel.success();
     }
 

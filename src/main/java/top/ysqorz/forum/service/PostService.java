@@ -1,9 +1,10 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.dto.PostDTO;
 import top.ysqorz.forum.dto.PostDetailDTO;
 import top.ysqorz.forum.dto.PublishPostDTO;
 import top.ysqorz.forum.dto.QueryPostCondition;
-import top.ysqorz.forum.dto.PostDTO;
+import top.ysqorz.forum.po.Like;
 import top.ysqorz.forum.po.Post;
 
 import java.util.List;
@@ -54,4 +55,19 @@ public interface PostService {
     void updatePostAndLabels(PublishPostDTO vo);
 
     PostDetailDTO getPostDetailById(Post post);
+
+    /**
+     * 帖子访问量 +1。考虑刷访问量
+     * @param ipAddress
+     */
+    void addVisitCount(String ipAddress, Integer postId);
+
+    int addCommentCount(Integer postId, Integer dif);
+
+    //
+    Like addLike(Integer myId, Integer postId);
+
+    int cancelLike(Integer id, Integer postId);
+
+    int addLikeCount(Integer postId, Integer dif);
 }

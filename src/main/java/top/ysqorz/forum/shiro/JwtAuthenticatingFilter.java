@@ -5,7 +5,6 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
@@ -69,7 +68,7 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
                 !httpRequest.getHeader("Accept").contains("text/html")) { // api
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.setContentType("application/json;charset=UTF-8");
-            httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            //httpResponse.setStatus(HttpStatus.FORBIDDEN.value()); // ajax 提示 "请求失败"，无法提示业务失败的提示信息
             PrintWriter writer = response.getWriter();
             String json = JsonUtils.objectToJson(ResultModel.failed(StatusCode.AUTHENTICATION_FAILED));
             writer.print(json);
