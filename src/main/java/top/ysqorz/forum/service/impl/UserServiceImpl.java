@@ -273,7 +273,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SimpleUserDTO getSimpleUser(Integer userId) {
-        return userMapper.selectSimpleUserById(userId);
+        SimpleUserDTO simpleUserDTO = userMapper.selectSimpleUserById(userId);
+        simpleUserDTO.setLevel(0); // TODO 根据积分计算level
+        return simpleUserDTO;
     }
 
     @Override

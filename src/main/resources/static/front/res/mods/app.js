@@ -7,7 +7,13 @@ layui.config({
     tagsInput: 'tagsInput/tagsInput',
     app: 'common'
 }).use(['app'], function () {
-    var app = layui.app;
+    var $ = layui.jquery,
+        app = layui.app;
+
+    var dateTimeElem = $(".datetime");
+    if (app.isNotNull(dateTimeElem)) {
+        dateTimeElem.text(app.formatDateTime(dateTimeElem.text()));
+    }
 
     // 判断url中是否
     // var token = app.getUrlParam('token');

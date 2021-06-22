@@ -18,7 +18,6 @@ public interface RedisService {
      */
     String getCaptcha(String key);
 
-
     /**
      * 第三方授权回调时防止CSRF
      * @param key
@@ -28,4 +27,5 @@ public interface RedisService {
 
     String getOauthState(String key);
 
+    boolean tryAddPostVisitIp(String ipAddress, Integer postId);
 }
