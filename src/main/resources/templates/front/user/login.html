@@ -117,9 +117,9 @@
 
         @font-face {
             font-family: "iconfont"; /* Project id 2609590 */
-            src: url('//at.alicdn.com/t/font_2609590_6n6hgx034i.woff2?t=1623580594326') format('woff2'),
-            url('//at.alicdn.com/t/font_2609590_6n6hgx034i.woff?t=1623580594326') format('woff'),
-            url('//at.alicdn.com/t/font_2609590_6n6hgx034i.ttf?t=1623580594326') format('truetype');
+            src: url('//at.alicdn.com/t/font_2609590_zyubzf6yeve.woff2?t=1624263596202') format('woff2'),
+            url('//at.alicdn.com/t/font_2609590_zyubzf6yeve.woff?t=1624263596202') format('woff'),
+            url('//at.alicdn.com/t/font_2609590_zyubzf6yeve.ttf?t=1624263596202') format('truetype');
         }
 
         .iconfont {
@@ -128,6 +128,10 @@
             font-style: normal;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+        }
+
+        .icon-baiduwangpan:before {
+            content: "\e603";
         }
 
         .icon-QQ:before {
@@ -141,6 +145,7 @@
         .icon-GitHub:before {
             content: "\e600";
         }
+
 
     </style>
 </head>
@@ -223,8 +228,8 @@
                             <a th:href="@{/user/oauth/gitee/authorize}">
                                 <i class="iconfont icon-Gitee" style="color:#ac0719;"></i>
                             </a>&emsp;
-                            <a href="javascript:;">
-                                <i class="iconfont icon-GitHub" style="color:#0f0f10;">
+                            <a th:href="@{/user/oauth/baidu/authorize}">
+                                <i class="iconfont icon-baiduwangpan" style="color:#3492ed;">
                             </i></a>&emsp;
                             <a th:href="@{/user/oauth/qq/authorize}" >
                                 <i class="iconfont icon-QQ" style="color:#3492ed;"></i>

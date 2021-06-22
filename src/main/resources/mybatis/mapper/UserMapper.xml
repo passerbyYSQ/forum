@@ -24,6 +24,7 @@
     <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
     <result column="gitee_id" jdbcType="INTEGER" property="giteeId" />
     <result column="qq_id" jdbcType="VARCHAR" property="qqId" />
+	<result column="baidu_id" jdbcType="INTEGER" property="baiduId" />
   </resultMap>
     <resultMap id="allUserAndRole" type="top.ysqorz.forum.dto.UserDTO">
         <id column="id" jdbcType="INTEGER" property="id" />

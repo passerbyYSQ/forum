@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
 import top.ysqorz.forum.po.User;
@@ -44,7 +45,9 @@ public class UserController {
 
     @Resource
     private QQProvider qqProvider;
-
+	
+	@Resource
+    private BaiduProvider baiduProvider;
 
     @RequiresRoles({"ysq"})
     @RequestMapping("/info")
@@ -191,6 +194,26 @@ public class UserController {
         userService.clearShiroAuthCache(user);
         userService.login(user.getId(), response);
         //redirectAttributes.addAttribute("token", token);
+        return "redirect:" + referer; // 不要加 "/"
+    }
+	
+	@GetMapping("/oauth/baidu/authorize")
+    public void baiduAuthorize(@RequestHeader(defaultValue = "") String referer,
+                               HttpServletResponse response) throws IOException {
+        baiduProvider.redirectAuthorize(referer, response);
+    }
+
+
+    /**
+     * baidu第三方授权回调地址
+     */
+    @GetMapping("/oauth/baidu/callback")
+    public String baiduCallback(@RequestParam(defaultValue = "") String state,
+                                String code, HttpServletResponse response) throws IOException{
+        String referer = baiduProvider.checkState(state);
+        User user = userService.oauth2Baidu(code);
+        userService.clearShiroAuthCache(user);
+        userService.login(user.getId(), response);
         return "redirect:" + referer; // 不要加 "/"
     }
 
