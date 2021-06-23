@@ -18,6 +18,7 @@ public class FirstCommentDTO {
     private SimpleUserDTO creator;
     private String content;
     private Integer floorNum;
+    private Integer secondCommentCount;
     private LocalDateTime createTime;
 
     private Boolean isPostCreator; // 是否是楼主

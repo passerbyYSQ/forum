@@ -67,13 +67,15 @@ public enum StatusCode {
 
     // 话题相关
     TOPIC_NOT_EXIST(6500, "话题不存在"),
+    TOPIC_ARCHIVED(6501, "话题已归档"),
 
     // 帖子相关
     POST_NOT_EXIST(6600, "帖子不存在"),
     POST_LOCKED(6601, "帖子被锁定，无法评论"),
 
     // 评论相关
-    FIRST_COMMENT_NOT_EXIST(6700, "一级评论不存在")
+    FIRST_COMMENT_NOT_EXIST(6700, "一级评论不存在"),
+    SECOND_COMMENT_NOT_EXIST(6701, "二级评论不存在")
     ;
 
 

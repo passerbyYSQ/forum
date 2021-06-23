@@ -12,6 +12,7 @@ import top.ysqorz.forum.dto.PublishFirstCommentDTO;
 import top.ysqorz.forum.dto.SecondCommentDTO;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
+import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
@@ -30,10 +31,8 @@ public class CommentController {
 
     @Resource
     private RedisService redisService;
-
     @Resource
     private CommentService commentService;
-
     @Resource
     private PostService postService;
 
@@ -55,6 +54,26 @@ public class CommentController {
         }
         Integer myId = ShiroUtils.getUserId();
         commentService.publishFirstComment(post, dto.getContent(), myId);
+        return ResultModel.success();
+    }
+
+    @PostMapping("/second/publish")
+    public ResultModel publishSecondComment(@Validated SecondComment comment) {
+        FirstComment firstComment = commentService.getFirstCommentById(comment.getFirstCommentId());
+        if (ObjectUtils.isEmpty(firstComment)) {
+            return ResultModel.failed(StatusCode.FIRST_COMMENT_NOT_EXIST);
+        }
+        Integer quoteId = comment.getQuoteSecondCommentId();
+        SecondComment quoteComment = null;
+        if (!ObjectUtils.isEmpty(quoteId)) {
+            quoteComment = commentService.getSecondCommentById(quoteId);
+            if (ObjectUtils.isEmpty(quoteComment)) {
+                return ResultModel.failed(StatusCode.SECOND_COMMENT_NOT_EXIST);
+            }
+        }
+        Integer myId = ShiroUtils.getUserId();
+        commentService.publishSecondComment(firstComment, quoteComment,
+                comment.getContent(), myId);  // quoteComment 可能为空
         return ResultModel.success();
     }
 
@@ -92,5 +111,4 @@ public class CommentController {
                 commentService.getSecondCommentList(firstComment, page, count);
         return ResultModel.success(secondCommentList);
     }
-
 }

@@ -14,4 +14,6 @@ public interface FirstCommentMapper extends BaseMapper<FirstComment> {
     int addFirstCommentUseGeneratedKeys(FirstComment comment);
 
     List<FirstCommentDTO> selectFirstCommentList(Map<String, Object> params);
+
+    int addSecondCommentCount(Map<String, Object> params);
 }

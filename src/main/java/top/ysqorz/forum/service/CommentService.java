@@ -5,6 +5,7 @@ import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.SecondCommentDTO;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
+import top.ysqorz.forum.po.SecondComment;
 
 /**
  * @author passerbyYSQ
@@ -14,6 +15,10 @@ public interface CommentService {
 
     // 发布一级评论
     void publishFirstComment(Post post, String content, Integer creatorId);
+
+    // 发布二级评论
+    void publishSecondComment(FirstComment firstComment, SecondComment quoteComment,
+                              String content, Integer myId);
 
     /**
      * 某个帖子的一级评论列表
@@ -27,4 +32,8 @@ public interface CommentService {
 
     // 二级评论列表
     PageData<SecondCommentDTO> getSecondCommentList(FirstComment firstComment, Integer page, Integer count);
+
+    SecondComment getSecondCommentById(Integer secondCommentId);
+
+    int addSecondCommentCount(Integer firstCommentId, Integer dif);
 }

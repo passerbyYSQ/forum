@@ -27,6 +27,7 @@
   <resultMap id="firstCommentDTO" type="top.ysqorz.forum.dto.FirstCommentDTO">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="floor_num" jdbcType="INTEGER" property="floorNum" />
+    <result column="second_comment_count" jdbcType="INTEGER" property="secondCommentCount" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
     <!-- 把creator_id传过去 -->
@@ -35,9 +36,14 @@
                  select="top.ysqorz.forum.dao.UserMapper.selectSimpleUserById" />
   </resultMap>
   <select id="selectFirstCommentList" parameterType="map" resultMap="firstCommentDTO">
-        select id, user_id, content, floor_num, create_time
+        select id, user_id, content, floor_num, second_comment_count, create_time
         from first_comment
         where post_id = #{postId}
         order by #{orderByStr}
   </select>
+
+    <update id="addSecondCommentCount" parameterType="map">
+        update first_comment set second_comment_count = second_comment_count + #{dif}
+        where id = #{firstCommentId}
+    </update>
 </mapper>

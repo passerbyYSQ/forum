@@ -12,17 +12,18 @@ import java.io.IOException;
 /**
  * baidu认证登录网络链接
  * https://pan.baidu.com/union/document/entrance#%E6%8E%A5%E5%85%A5%E6%B5%81%E7%A8%8B
+ *
  * @author ligouzi
  * @create 2021-06-21 10:57
  */
 @Component
 @ConfigurationProperties(prefix = "oauth.baidu")
-public class BaiduProvider extends OauthProvider<BaiduUserDTO>{
+public class BaiduProvider extends OauthProvider<BaiduUserDTO> {
 
     @Override
     public String joinAuthorizeUrl(String state, HttpServletResponse response) {
         return String.format("http://openapi.baidu.com/oauth/2.0/authorize" +
-                "?response_type=code&client_id=%s&redirect_uri=%s&scope=basic,netdisk&state=%s&force_login=1",
+                        "?response_type=code&client_id=%s&redirect_uri=%s&scope=basic,netdisk&state=%s",
                 clientId, redirectUri, state);
     }
 

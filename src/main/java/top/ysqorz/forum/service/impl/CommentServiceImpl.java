@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
@@ -14,6 +15,7 @@ import top.ysqorz.forum.dto.SecondCommentDTO;
 import top.ysqorz.forum.po.CommentNotification;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
+import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
 import top.ysqorz.forum.service.PostService;
 
@@ -80,6 +82,53 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Transactional
+    @Override
+    public void publishSecondComment(FirstComment firstComment,
+                                     SecondComment quoteComment,
+                                     String content, Integer myId) {
+        Integer receiverId = firstComment.getUserId();
+        Byte commentType = 1;
+        Integer repliedId = firstComment.getId();
+
+        // 插入二级评论
+        SecondComment comment = new SecondComment();
+        comment.setContent(HtmlUtils.htmlUnescape(content))
+                .setCreateTime(LocalDateTime.now())
+                .setFirstCommentId(firstComment.getId())
+                .setUserId(myId);
+        if (!ObjectUtils.isEmpty(quoteComment)) {
+            comment.setQuoteSecondCommentId(quoteComment.getId());
+            receiverId = quoteComment.getUserId();
+            commentType = 2;
+            repliedId = quoteComment.getId();
+        }
+        secondCommentMapper.insertUseGeneratedKeys(comment);
+
+        // 更新帖子的评论数量
+        postService.addCommentCount(firstComment.getPostId(), 1);
+
+        // 更新一级评论下的二级评论的数量
+        this.addSecondCommentCount(firstComment.getId(), 1);
+
+        // 评论通知
+        if (!myId.equals(receiverId)) {
+            // 插入评论通知
+            CommentNotification notification = new CommentNotification();
+            notification.setSenderId(myId)
+                    .setReceiverId(receiverId)
+                    // 通知类型。0：主题帖被回复，1：一级评论被回复，2：二级评论被回复
+                    .setCommentType(commentType) // 一级评论是回复主题帖的
+                    // 被回复的id（可能是主题帖、一级评论、二级评论，根据评论类型来判断）
+                    .setRepliedId(repliedId)
+                    // 通知来自于哪条评论（可能是一级评论、二级评论）
+                    .setCommentId(comment.getId())
+                    .setCreateTime(LocalDateTime.now())
+                    .setIsRead((byte) 0);
+            commentNotificationMapper.insertUseGeneratedKeys(notification);
+        }
+    }
+
     @Override
     public PageData<FirstCommentDTO> getFirstCommentList(Post post,
                                                          Integer page, Integer count, Boolean isTimeAsc) {
@@ -118,5 +167,18 @@ public class CommentServiceImpl implements CommentService {
         }
         PageInfo<SecondCommentDTO> pageInfo = new PageInfo<>(secondCommentList);
         return new PageData<>(pageInfo, secondCommentList);
+    }
+
+    @Override
+    public SecondComment getSecondCommentById(Integer secondCommentId) {
+        return secondCommentMapper.selectByPrimaryKey(secondCommentId);
+    }
+
+    @Override
+    public int addSecondCommentCount(Integer firstCommentId, Integer dif) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("firstCommentId", firstCommentId);
+        params.put("dif", dif);
+        return firstCommentMapper.addSecondCommentCount(params);
     }
 }

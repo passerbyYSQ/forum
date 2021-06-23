@@ -12,10 +12,7 @@ import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PostDetailDTO;
 import top.ysqorz.forum.dto.PublishPostDTO;
 import top.ysqorz.forum.dto.UpdatePostDTO;
-import top.ysqorz.forum.po.Label;
-import top.ysqorz.forum.po.Like;
-import top.ysqorz.forum.po.Post;
-import top.ysqorz.forum.po.Topic;
+import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.IpUtils;
@@ -37,18 +34,16 @@ public class PostController {
 
     @Resource
     private TopicService topicService;
-
     @Resource
     private PostService postService;
-
     @Resource
     private LabelService labelService;
-
     @Resource
     private RedisService redisService;
-
     @Resource
     private LikeService likeService;
+    @Resource
+    private CollectService collectService;
 
 
     @GetMapping("/detail/{postId}")
@@ -119,15 +114,15 @@ public class PostController {
         if (ObjectUtils.isEmpty(topic)) {
             return ResultModel.failed(StatusCode.TOPIC_NOT_EXIST); // 话题不存在
         }
+        if (topic.getArchive() == 1) {
+            return ResultModel.failed(StatusCode.TOPIC_ARCHIVED); // 话题已归档
+        }
 
         postService.publishPost(dto, ShiroUtils.getUserId());
 
         return ResultModel.success();
     }
 
-    /**
-     * 临时的发帖接口，为了方便往数据库插入数据
-     */
     @ResponseBody
     @PostMapping("/update")
     public ResultModel updatePost(@Validated(PublishPostDTO.Update.class) PublishPostDTO dto) {
@@ -154,6 +149,9 @@ public class PostController {
         if (ObjectUtils.isEmpty(topic)) {
             return ResultModel.failed(StatusCode.TOPIC_NOT_EXIST); // 话题不存在
         }
+        if (topic.getArchive() == 1) {
+            return ResultModel.failed(StatusCode.TOPIC_ARCHIVED); // 话题已归档
+        }
 
         // 更新帖子
         postService.updatePostAndLabels(dto);
@@ -164,7 +162,7 @@ public class PostController {
     @PostMapping("/like")
     @ResponseBody
     public ResultModel likePost(@RequestParam Integer postId,
-                                      @RequestParam Boolean isLike) {
+                                @RequestParam Boolean isLike) {
         Integer myId = ShiroUtils.getUserId();
         Like like = likeService.getLikeByUserIdAndPostId(myId, postId);
         // like != null && isLike = true ：不要重复点赞
@@ -176,6 +174,23 @@ public class PostController {
             postService.addLike(myId, postId);
         } else {
             postService.cancelLike(like.getId(), postId);
+        }
+        return ResultModel.success();
+    }
+
+    @PostMapping("/collect")
+    @ResponseBody
+    public ResultModel collectPost(@RequestParam Integer postId,
+                                   @RequestParam Boolean isCollect) {
+        Integer myId = ShiroUtils.getUserId();
+        Collect collect = collectService.getCollectByUserIdAndPostId(myId, postId);
+        if (isCollect.equals(!ObjectUtils.isEmpty(collect))) {
+            return ResultModel.failed(StatusCode.DO_NOT_REPEAT_OPERATE);
+        }
+        if (isCollect) {
+            collectService.addCollect(myId, postId);
+        } else {
+            collectService.cancelCollect(collect.getId());
         }
         return ResultModel.success();
     }

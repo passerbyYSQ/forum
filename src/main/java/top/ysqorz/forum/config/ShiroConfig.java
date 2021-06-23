@@ -89,8 +89,6 @@ public class ShiroConfig {
 
         chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
 
-
-
         chain.addPathDefinition("/user/**", "noSessionCreation,anon");
         chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
         chain.addPathDefinition("/index", "noSessionCreation,anon");

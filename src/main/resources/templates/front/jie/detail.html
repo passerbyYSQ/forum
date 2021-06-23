@@ -240,11 +240,11 @@
 
                 <div class="post-footer">
                     <span th:if="${post.likeId == null}"
-                          class="layui-icon layui-icon-heart"><i th:text="${post.detail.likeCount}"></i></span>
+                          class="like layui-icon layui-icon-heart"><i th:text="${post.detail.likeCount}"></i></span>
                     <span th:if="${post.likeId}"
-                          class="layui-icon layui-icon-heart-fill" style="color: #f47046;"><i th:text="${post.detail.likeCount}"></i></span>
-                    <span th:if="${post.collectId == null}" class="layui-icon layui-icon-star"><i th:text="${post.detail.collectCount}">123</i></span>
-                    <span th:if="${post.collectId}" class="layui-icon layui-icon-star-fill" style="color: #f47046;"><i th:text="${post.detail.collectCount}">123</i></span>
+                          class="like layui-icon layui-icon-heart-fill" style="color: #f47046;"><i th:text="${post.detail.likeCount}"></i></span>
+                    <span th:if="${post.collectId == null}" class="collect layui-icon layui-icon-star"><i th:text="${post.detail.collectCount}">123</i></span>
+                    <span th:if="${post.collectId}" class="collect layui-icon layui-icon-star-fill" style="color: #f47046;"><i th:text="${post.detail.collectCount}">123</i></span>
 
                     <span class="layui-icon layui-icon-share"><i>分享</i></span>
                 </div>
@@ -383,8 +383,9 @@
 
             <div class="jieda-reply">
                 <div style="float: right;">
-                    <span type="edit" data-expand="false" lay-event="expand">展开评论</span>
-                    <span type="reply">
+                    <span type="edit" data-expand="false" lay-event="expand" style="padding-right: 0;">展开评论</span>
+                    <span>({{d.secondCommentCount}})</span>
+                    <span lay-event="reply" type="reply" >
 <!--                                      <i class="iconfont icon-svgmoban53"></i>-->
                         <i class="layui-icon layui-icon-dialogue"></i>
                          回复
@@ -395,11 +396,36 @@
                 <div style="clear: both;"></div>
             </div>
 
-            <!-- 二级评论列表 -->
+
             <div>
-                <div id="secondCommentList_{{d.id}}" class="layui-row"> <!-- -->
+                <!-- 二级评论列表 -->
+                <div>
+                    <div id="secondCommentList_{{d.id}}" class="layui-row"> <!-- -->
+
+                    </div>
+                </div>
+                <!-- 编辑器 和 按钮-->
+                <div class="layui-row">
+                    <!-- second-reply用于定位 -->
+                    <div class="layui-col-xs-offset1 second-reply layui-hide">
+                        <!-- quote-name用于定位 -->
+                        <div style="margin-bottom: 12px;">回复&nbsp;<span class="quote-name">王小明</span>：</div>
+                        <div>
+                            <textarea id="secondEditor_{{d.id}}" name="content" required
+                                      lay-verify="required" placeholder="请输入内容"
+                                      class="layui-textarea"
+                                      style="height: 120px; margin-bottom: 12px;">
+
+                            </textarea>
+                            <div style="float: right; margin-bottom: 24px;">
+                                <button type="button" lay-event="cancel" class="layui-btn layui-btn-primary layui-btn-sm">取消</button>
+                                <button type="button" lay-event="submit" class="layui-btn layui-btn-sm">回复</button>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
+
             </div>
         </li>
 
@@ -446,7 +472,7 @@
     </div>
     <div class="jieda-reply">
         <div style="float: right;">
-           <span type="reply">
+           <span lay-event="reply" type="reply" >
                <i class="layui-icon layui-icon-dialogue"></i>回复
             </span>
         </div>
@@ -527,12 +553,14 @@
                 //console.log(curr);
                 curPage = curr;
                 dataGridMap.clear();
+                editorMap.clear();
                 //得到数据总量
                 //console.log(count);
             }
         });
 
-        var dataGridMap = new Map();
+        var dataGridMap = new Map(); // 二级评论列表的dataGrid
+        var editorMap = new Map(); // 二级评论的editor
 
         dataGrid.on('tool(commentList)', function (obj) {
             if (obj.event === 'expand') {
@@ -585,18 +613,91 @@
                             };
                         },
                         page: {
-                            limit: 6,
+                            limit: 5,
                             layout: ['prev', 'page', 'next', 'count']
                         }
                     });
+                    var selector = 'tool(secondCommentList_' + firstCommentId + ')';
                     dataGridMap.set(firstCommentId, secondListGrid);
+                    // console.log(firstCommentId);
+                    // console.log("---->");
+                    // console.log(secondListGrid);
+                    dataGrid.on(selector, function (obj) {
+                        if (obj.event === 'reply') {
+                            // 回复二级评论
+                            console.log('回复二级评论');
+                            obj.data.type = "second";
+                            showSecondEditor(firstCommentId, obj.data);
+                        }
+                    });
                 }
 
+            } else  if (obj.event === 'reply') {
+                // 回复一级评论  一级评论id：obj.data.id
+                console.log('回复一级评论');
+                obj.data.type = "first";
+                showSecondEditor(obj.data.id, obj.data);
+            } else if (obj.event === 'cancel') {
+                // 取消回复
+                cancelReply(obj.data.id);
+            } else if (obj.event === 'submit') {
+                // 提交回复
+
+                var comment = editorMap.get(obj.data.id);
+                var content = $('#secondEditor_' + obj.data.id).val();
+                console.log("提交回复。被回复的评论是：");
+                console.log(comment);
+                console.log("回复的内容的是：");
+                console.log(content);
+
+                var params = {
+                    firstCommentId: obj.data.id,
+                    content: content
+                };
+                if ("second" === comment.type) {
+                    params.quoteSecondCommentId = comment.id;
+                }
+
+                app.ajax('/comment/second/publish', params, function (res) {
+                    app.successNotice('回复成功');
+                    // reload
+                    var dataGrid = dataGridMap.get(obj.data.id);
+                    if (app.isNotNull(dataGrid)) {
+                        dataGrid.reload();
+                    }
+
+                    cancelReply(obj.data.id);
+                });
             }
         });
 
+        function cancelReply(firstCommentId) {
+            var selector = '#secondEditor_' + firstCommentId;
+            $(selector).parents('div.second-reply').addClass('layui-hide');
+            $(selector).val('');
+        }
+
+        // 第一个参数可能是一级评论，也可能是二级评论
+        function showSecondEditor(firstCommentId, comment) {
+            var selector = '#secondEditor_' + firstCommentId;
+            var secondReplyDiv = $(selector).parents('div.second-reply');
+            secondReplyDiv.find("span.quote-name").html(comment.creator.username);
+            secondReplyDiv.removeClass('layui-hide');
+
+            if (editorMap.has(firstCommentId)) {
+                console.log('已存在');
+            } else {
+                console.log('第一次创建');
+                var secondEditor = app.layEditor({
+                    elem: selector
+                });
+            }
+            //console.log(secondEditor); // null ！！！
+            editorMap.set(firstCommentId, comment);
+        }
+
         // 点赞
-        $("div.post-footer span.layui-icon").click(function () {
+        $("div.post-footer span.like").click(function () {
             // 如果是红色，表示已经点赞。点击意味着要取消点赞
             var isLike = !app.isNotNull($(this).attr("style"));
             var _this = this;
@@ -614,6 +715,30 @@
                 } else {
                     $(_this).removeClass("layui-icon-heart-fill");
                     $(_this).addClass("layui-icon-heart");
+                    $(_this).removeAttr("style");
+                    iElem.text(num - 1);
+                }
+            });
+        });
+
+        $("div.post-footer span.collect").click(function () {
+            // 如果是红色，表示已经点赞。点击意味着要取消点赞
+            var isCollect = !app.isNotNull($(this).attr("style"));
+            var _this = this;
+            app.ajax("/post/collect", {
+                postId: [[${post.detail.id}]],
+                isCollect: isCollect
+            }, function (res) {
+                var iElem = $(_this).children('i');
+                var num = parseInt(iElem.text());
+                if (isCollect) { // 点赞成功
+                    $(_this).removeClass("layui-icon-star");
+                    $(_this).addClass("layui-icon-star-fill");
+                    $(_this).css({"color":"#f47046"});
+                    iElem.text(num + 1);
+                } else {
+                    $(_this).removeClass("layui-icon-star-fill");
+                    $(_this).addClass("layui-icon-star");
                     $(_this).removeAttr("style");
                     iElem.text(num - 1);
                 }
