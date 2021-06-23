@@ -8,6 +8,7 @@ import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.Topic;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +37,8 @@ public class PostDTO {
     private Integer topWeight; // 置顶权重
 
     private List<Label> labelList;  // 标签
+    private List<String>  imagesList=new ArrayList<>(); //图片列表
+    private LocalDateTime lastCommentTime;
 
     public PostDTO() {
     }
@@ -47,4 +50,9 @@ public class PostDTO {
         this.topic = topic.getTopicName();
         this.labelList = labelList;
     }
+
+
+
+
+
 }

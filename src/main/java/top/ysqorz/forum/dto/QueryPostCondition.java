@@ -19,6 +19,8 @@ public class QueryPostCondition {
     private Integer topicId; // 所属话题的id
     private String creator; // 发帖用户名
     private String title; // 标题
+    private Byte isHighQuality; //高质量
+    private Byte hotDiscussion; //热议
 
     private LocalDateTime startPublishTime; // 发帖时间的范围。起始时间
     private LocalDateTime endPublishTime; // 发帖时间的范围。起始时间

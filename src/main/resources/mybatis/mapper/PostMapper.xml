@@ -42,6 +42,8 @@
         <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
         <result column="is_locked" jdbcType="TINYINT" property="isLocked"/>
         <result column="top_weight" jdbcType="INTEGER" property="topWeight"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="last_comment_time" jdbcType="TIMESTAMP" property="lastCommentTime"/>
         <!-- 把creator_id传过去 -->
         <association property="creator" column="creator_id"
                      javaType="top.ysqorz.forum.dto.SimpleUserDTO"
@@ -64,7 +66,9 @@
                 comment_count,
                 is_high_quality,
                 is_locked,
-                top_weight
+                top_weight,
+                content,
+                last_comment_time
         from post p
         left join user u on p.creator_id = u.id
         left join topic t on p.topic_id = t.id
@@ -82,6 +86,12 @@
             </if>
             <if test="startPublishTime != null and endPublishTime != null">
                 and p.create_time between #{startPublishTime} and #{endPublishTime}
+            </if>
+            <if test="isHighQuality != null and isHighQuality > 0">
+                and is_high_quality>0
+            </if>
+            <if test="hotDiscussion != null and hotDiscussion > 0">
+                and comment_count>100
             </if>
         </where>
         <if test="orderByStr != null and orderByStr != ''">

@@ -15,6 +15,12 @@ import java.util.Date;
  */
 public class DateTimeUtils {
 
+    private static final long ONE_MINUTE = 60;
+    private static final long ONE_HOUR = 3600;
+    private static final long ONE_DAY = 86400;
+    private static final long ONE_MONTH = 2592000;
+    private static final long ONE_YEAR = 31104000;
+
     // Date => LocalDateTime
     public static LocalDateTime toLocalDateTime(Date date) {
         ZonedDateTime zonedDateTime = date.toInstant().atZone(ZoneId.systemDefault());
@@ -31,4 +37,8 @@ public class DateTimeUtils {
     public static long dif(Temporal early, Temporal late, ChronoUnit unit) {
         return unit.between(early, late);
     }
+
+
+
+
 }

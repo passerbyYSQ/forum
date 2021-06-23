@@ -76,8 +76,11 @@ public class PostServiceImpl implements PostService {
                 .setVisibilityType(vo.getVisibilityType() == 3 ? vo.getPoints() : vo.getVisibilityType())
                 .setIsLocked((byte) (vo.getIsLocked() ? 1 : 0))
 
+
                 .setCreateTime(now)
                 .setLastModifyTime(now)
+
+                .setLastCommentTime(now)//默认第一次评论时间等于发布时间！！！
 
                 .setCollectCount(0) // 收藏数
                 .setCommentCount(0) // 评论数（包括一二级评论）
