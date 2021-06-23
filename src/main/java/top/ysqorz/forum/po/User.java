@@ -130,5 +130,5 @@ public class User implements Serializable {
      * baiduid
      */
     @Column(name = "baidu_id")
-    private Integer baiduId;
+    private String baiduId;
 }
