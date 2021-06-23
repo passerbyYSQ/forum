@@ -29,6 +29,7 @@ public enum StatusCode {
     FILE_SIZE_EXCEEDED(6004, "文件大小超出限制"),
     CAPTCHA_INVALID(6005, "验证码错误"),
     CAPTCHA_EXPIRED(6005, "验证码已过期"),
+    DO_NOT_REPEAT_OPERATE(6006, "请勿重复操作"),
 
     // 认证相关
     TOKEN_INVALID(6000, "无效token"),
@@ -66,10 +67,15 @@ public enum StatusCode {
 
     // 话题相关
     TOPIC_NOT_EXIST(6500, "话题不存在"),
+    TOPIC_ARCHIVED(6501, "话题已归档"),
 
     // 帖子相关
-    POST_NOT_EXIST(6600, "帖子不存在")
+    POST_NOT_EXIST(6600, "帖子不存在"),
+    POST_LOCKED(6601, "帖子被锁定，无法评论"),
 
+    // 评论相关
+    FIRST_COMMENT_NOT_EXIST(6700, "一级评论不存在"),
+    SECOND_COMMENT_NOT_EXIST(6701, "二级评论不存在")
     ;
 
 

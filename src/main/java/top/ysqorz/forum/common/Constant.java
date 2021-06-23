@@ -20,13 +20,20 @@ public interface Constant {
     String REDIS_PREFIX_CAPTCHA = "captcha:";
     //
     String REDIS_PREFIX_OAUTH_STATE = "oauth:state:";
+    // post:visit:postId:ip
+    String REDIS_PREFIX_POST_VISIT = "post:visit:%d:%s";
 
     // redis captcha 有效期：5分钟
     Duration DURATION_CAPTCHA = Duration.ofMinutes(5);
     //
     Duration DURATION_OAUTH_STATE = Duration.ofMinutes(3);
 
+    Duration DURATION_POST_VISIT = Duration.ofMinutes(3);
+
     // jwt 的有效期：7天
     Duration DURATION_JWT = Duration.ofDays(7);
+
+    // 每一页的记录数，默认值
+    Integer PAGE_DATA_COUNT = 10;
 
 }

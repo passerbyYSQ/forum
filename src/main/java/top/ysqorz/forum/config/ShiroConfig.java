@@ -85,10 +85,9 @@ public class ShiroConfig {
         chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/comment/*/publish", "noSessionCreation,jwtAuth");
 
         chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
-
-
 
         chain.addPathDefinition("/user/**", "noSessionCreation,anon");
         chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常

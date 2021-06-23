@@ -110,6 +110,11 @@ public interface UserService {
      * qq授权
      */
     User oauth2QQ(String code) throws IOException;
+	
+	/**
+     * 百度授权
+     */
+    User oauth2Baidu(String code) throws IOException;
 
     /**
      * 清除上一次shiro的认证缓存（实现单点登录）。

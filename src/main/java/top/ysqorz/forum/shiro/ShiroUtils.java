@@ -15,4 +15,7 @@ public class ShiroUtils {
         return (Integer) SecurityUtils.getSubject().getPrincipal();
     }
 
+    public static boolean isAuthenticated() {
+        return SecurityUtils.getSubject().isAuthenticated();
+    }
 }

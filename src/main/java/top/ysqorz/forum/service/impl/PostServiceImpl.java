@@ -2,17 +2,20 @@ package top.ysqorz.forum.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
+import top.ysqorz.forum.dao.LikeMapper;
 import top.ysqorz.forum.dao.PostMapper;
 import top.ysqorz.forum.dto.*;
-import top.ysqorz.forum.po.Label;
-import top.ysqorz.forum.po.Post;
-import top.ysqorz.forum.po.Topic;
+import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
+import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author passerbyYSQ
@@ -20,26 +23,29 @@ import java.util.List;
  */
 @Service
 public class PostServiceImpl implements PostService {
-
     @Resource
     private PostMapper postMapper;
-
     @Resource
     private PostLabelService postLabelService;
-
     @Resource
     private TopicService topicService;
-
     @Resource
     private LabelService labelService;
-
     @Resource
     private UserService userService;
+    @Resource
+    private LikeMapper likeMapper;
+    @Resource
+    private LikeService likeService;
+    @Resource
+    private CollectService collectService;
+    @Resource
+    private RedisService redisService;
 
     @Transactional
     @Override
     public void changeHighQuality(Integer userId, Integer postId, Boolean isHighQuality) {
-        // 奖励积分 或者 撤销积分。TODO 到时候需要从配置中读取奖励的积分值
+        // 奖励积分 或者 撤销积分。TODO 到时候需要从配置中读取奖励的积分值，判断每日分值上限
         userService.updateRewardPoints(userId, isHighQuality ? 5 : -5);
         // 更新精品状态
         Post post = new Post();
@@ -138,15 +144,80 @@ public class PostServiceImpl implements PostService {
         List<Label> labelList = labelService.getLabelsByPostId(post.getId());
         PostDTO postDTO = new PostDTO(post, creator, topic, labelList);
 
-        // 我是否已经点赞
-
-        // 我是否已经收藏
-
         PostDetailDTO postDetailDTO = new PostDetailDTO();
         postDetailDTO.setDetail(postDTO);
 
+        if (ShiroUtils.isAuthenticated()) { // 当前主体已登录
+            Integer myId = ShiroUtils.getUserId(); // 当前登录用户的userId
+            // 我是否已经点赞
+            Like like = likeService.getLikeByUserIdAndPostId(myId, post.getId());
+            if (!ObjectUtils.isEmpty(like)) {
+                postDetailDTO.setLikeId(like.getId());
+            }
+            // 我是否已收藏
+            Collect collect = collectService.getCollectByUserIdAndPostId(myId, post.getId());
+            if (!ObjectUtils.isEmpty(collect)) {
+                postDetailDTO.setCollectId(collect.getId());
+            }
+        }
 
-        return null;
+        // 评论列表由前端LayUI请求接口单独拉取
+//        PageData<FirstCommentDTO> commentList = commentService.getCommentListByPostId(
+//                post.getId(), page, count, isTimeAsc);
+//        postDetailDTO.setComments(commentList);
+
+        return postDetailDTO;
+    }
+
+    @Override
+    public void addVisitCount(String ipAddress, Integer postId) {
+        // post:visit:11:ip --> ""   5 minute
+        // 不存在就设置，存在就不设置
+        // 如果设置失败，说明：在5分钟之内，访问了多次，访问量不加1。否则访问量+1
+        if (redisService.tryAddPostVisitIp(ipAddress, postId)) {
+            postMapper.addVisitCount(postId);
+        }
+    }
+
+    @Override
+    public int addCommentCount(Integer postId, Integer dif) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("postId", postId);
+        params.put("dif", dif);
+        return postMapper.addCommentCount(params);
+    }
+
+
+    @Transactional
+    @Override
+    public Like addLike(Integer myId, Integer postId) {
+        Like like = new Like();
+        like.setUserId(myId)
+                .setPostId(postId)
+                .setCreateTime(LocalDateTime.now())
+                .setIsRead((byte) 0);
+        likeMapper.insertUseGeneratedKeys(like);
+
+        // 点赞数 +1
+        this.addLikeCount(postId, 1);
+
+        return like;
+    }
+
+    @Transactional
+    @Override
+    public int cancelLike(Integer likeId, Integer postId) {
+        this.addLikeCount(postId, -1);
+
+        return likeMapper.deleteByPrimaryKey(likeId);
+    }
+
+    @Override
+    public int addLikeCount(Integer postId, Integer dif) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("postId", postId);
+        params.put("dif", dif);
+        return postMapper.addLikeCount(params);
     }
 
 }

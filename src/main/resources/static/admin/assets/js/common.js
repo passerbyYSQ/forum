@@ -14,11 +14,16 @@ layui.config({  // common.js是配置layui扩展模块的目录，每个页面�
     citypicker: 'city-picker/city-picker',
     introJs: 'introJs/introJs',
     zTree: 'zTree/zTree',
-    app: 'common'
-}).use(['layer', 'admin'], function () {
-    var $ = layui.jquery;
-    var layer = layui.layer;
-    var admin = layui.admin;
+    app: 'app',
+    face: 'face'
+}).use(['layer', 'app'], function () {
+    var $ = layui.jquery,
+        app = layui.app;
+
+    var dateTimeElem = $(".datetime");
+    if (app.isNotNull(dateTimeElem)) {
+        dateTimeElem.text(app.formatDateTime(dateTimeElem.text()));
+    }
 
 });
 

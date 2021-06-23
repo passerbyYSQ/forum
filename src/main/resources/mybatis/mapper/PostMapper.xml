@@ -99,5 +99,18 @@
         </if>
     </select>
 
+    <update id="addVisitCount" parameterType="Integer">
+        update post set visit_count = visit_count + 1 where id = #{postId}
+    </update>
+
+    <update id="addLikeCount" parameterType="map">
+        update post set like_count = like_count + #{dif} where id = #{postId}
+    </update>
+
+    <update id="addCommentCount" parameterType="map">
+        update post set comment_count = comment_count + #{dif} where id = #{postId}
+    </update>
+
+
 
 </mapper>

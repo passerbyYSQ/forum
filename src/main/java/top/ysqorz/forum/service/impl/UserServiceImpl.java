@@ -14,6 +14,7 @@ import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dao.UserRoleMapper;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
 import top.ysqorz.forum.po.Blacklist;
@@ -53,6 +54,8 @@ public class UserServiceImpl implements UserService {
     private GiteeProvider giteeProvider;
     @Resource
     private QQProvider qqProvider;
+	@Resource
+    private BaiduProvider baiduProvider;
 
     @Override
     public User getUserByEmail(String email) {
@@ -231,6 +234,30 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+	
+	@Override
+    public User oauth2Baidu(String code) throws IOException {
+        BaiduUserDTO baiduUser = baiduProvider.getUser(code);
+        User user = baiduProvider.getDbUser(baiduUser.getUk());
+        LocalDateTime now = LocalDateTime.now();
+        if (ObjectUtils.isEmpty(user)) {
+            user = new User();
+            user.setBaiduId(baiduUser.getUk())
+                    .setUsername(baiduUser.getBaidu_name())
+                    .setPhoto(baiduUser.getAvatar_url())
+                    .setEmail("")
+                    .setPassword("")
+                    .setRegisterTime(now)
+                    .setModifyTime(now)
+                    .setRewardPoints(0)
+                    .setFansCount(0)
+                    .setGender((byte) 3)
+                    .setJwtSalt("")
+                    .setLoginSalt(RandomUtils.generateStr(8));
+            userMapper.insertUseGeneratedKeys(user);
+        }
+        return user;
+    }
 
     @Override
     public void clearShiroAuthCache(User user) {
@@ -246,7 +273,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SimpleUserDTO getSimpleUser(Integer userId) {
-        return userMapper.selectSimpleUserById(userId);
+        SimpleUserDTO simpleUserDTO = userMapper.selectSimpleUserById(userId);
+        simpleUserDTO.setLevel(0); // TODO 根据积分计算level
+        return simpleUserDTO;
     }
 
     @Override

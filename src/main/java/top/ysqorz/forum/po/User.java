@@ -120,6 +120,15 @@ public class User implements Serializable {
     @Column(name = "gitee_id")
     private Integer giteeId;
 
+	/**
+     * qqid
+     */
     @Column(name = "qq_id")
     private String qqId;
+	
+	/**
+     * baiduid
+     */
+    @Column(name = "baidu_id")
+    private Integer baiduId;
 }
