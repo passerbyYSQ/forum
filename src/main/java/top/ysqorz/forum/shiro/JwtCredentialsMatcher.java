@@ -30,7 +30,7 @@ public class JwtCredentialsMatcher implements CredentialsMatcher {
             JwtUtils.verifyJwt((String) token.getCredentials(), user.getJwtSalt(), claims);
             return true;
         } catch (JWTVerificationException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
 
