@@ -9,6 +9,7 @@ import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ParameterErrorException;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.BlacklistMapper;
 import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.UserMapper;
@@ -189,22 +190,30 @@ public class UserServiceImpl implements UserService {
     public User oauth2Gitee(String code) throws IOException {
         GiteeUserDTO giteeUser = giteeProvider.getUser(code);
         User user = giteeProvider.getDbUser(giteeUser.getId());
-        LocalDateTime now = LocalDateTime.now();
-        if (user == null) {
-            user = new User();
-            user.setGiteeId(giteeUser.getId())
-                    .setUsername(giteeUser.getName())
-                    .setPhoto(giteeUser.getAvatarUrl())
-                    .setEmail(giteeUser.getEmail() != null ? giteeUser.getEmail() : "")
-                    .setPassword("")
-                    .setRegisterTime(now)
-                    .setModifyTime(now)
-                    .setRewardPoints(0)
-                    .setFansCount(0)
-                    .setGender((byte) 3)
-                    .setJwtSalt("")
-                    .setLoginSalt(RandomUtils.generateStr(8));
-            userMapper.insertUseGeneratedKeys(user); // 填充了主键
+        //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
+        if (ObjectUtils.isEmpty(user)) {
+            user = getInfoById(ShiroUtils.getUserId());
+            //第二次判断是否已经有登录用户，若没有则新建一个用户，有登录用户则将第三方授权信息绑定到该用户上
+            if (ObjectUtils.isEmpty(user)) {
+                LocalDateTime now = LocalDateTime.now();
+                user = new User();
+                user.setGiteeId(giteeUser.getId())
+                        .setUsername(giteeUser.getName())
+                        .setPhoto(giteeUser.getAvatarUrl())
+                        .setEmail(giteeUser.getEmail() != null ? giteeUser.getEmail() : "")
+                        .setPassword("")
+                        .setRegisterTime(now)
+                        .setModifyTime(now)
+                        .setRewardPoints(0)
+                        .setFansCount(0)
+                        .setGender((byte) 3)
+                        .setJwtSalt("")
+                        .setLoginSalt(RandomUtils.generateStr(8));
+                userMapper.insertUseGeneratedKeys(user); // 填充了主键
+            } else {
+                user.setGiteeId(giteeUser.getId());
+                userMapper.updateByPrimaryKey(user);
+            }
         }
         return user;
     }
@@ -213,22 +222,30 @@ public class UserServiceImpl implements UserService {
     public User oauth2QQ(String code) throws IOException {
         QQUserDTO qqUser = qqProvider.getUser(code);
         User user = qqProvider.getDbUser(qqUser.getOpenId());
-        LocalDateTime now = LocalDateTime.now();
+        //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
         if (ObjectUtils.isEmpty(user)) {
-            user = new User();
-            user.setQqId(qqUser.getOpenId())
-                    .setUsername(qqUser.getNickname())
-                    .setPhoto(qqUser.getFigureurl_qq_1())
-                    .setEmail("")
-                    .setPassword("")
-                    .setRegisterTime(now)
-                    .setModifyTime(now)
-                    .setRewardPoints(0)
-                    .setFansCount(0)
-                    .setGender((byte) ("男".equals(qqUser.getGender()) ? 0 : 1))
-                    .setJwtSalt("")
-                    .setLoginSalt(RandomUtils.generateStr(8));
-            userMapper.insertUseGeneratedKeys(user);
+            user = getInfoById(ShiroUtils.getUserId());
+            //第二次判断是否已经有登录用户，若没有则新建一个用户，有登录用户则将第三方授权信息绑定到该用户上
+            if (ObjectUtils.isEmpty(user)) {
+                LocalDateTime now = LocalDateTime.now();
+                user = new User();
+                user.setQqId(qqUser.getOpenId())
+                        .setUsername(qqUser.getNickname())
+                        .setPhoto(qqUser.getFigureurl_qq_1())
+                        .setEmail("")
+                        .setPassword("")
+                        .setRegisterTime(now)
+                        .setModifyTime(now)
+                        .setRewardPoints(0)
+                        .setFansCount(0)
+                        .setGender((byte) ("男".equals(qqUser.getGender()) ? 0 : 1))
+                        .setJwtSalt("")
+                        .setLoginSalt(RandomUtils.generateStr(8));
+                userMapper.insertUseGeneratedKeys(user);
+            } else {
+                user.setQqId(qqUser.getOpenId());
+                userMapper.updateByPrimaryKey(user);
+            }
         }
         return user;
     }
@@ -237,22 +254,30 @@ public class UserServiceImpl implements UserService {
     public User oauth2Baidu(String code) throws IOException {
         BaiduUserDTO baiduUser = baiduProvider.getUser(code);
         User user = baiduProvider.getDbUser(baiduUser.getUk());
-        LocalDateTime now = LocalDateTime.now();
+        //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
         if (ObjectUtils.isEmpty(user)) {
-            user = new User();
-            user.setBaiduId(baiduUser.getUk())
-                    .setUsername(baiduUser.getBaidu_name())
-                    .setPhoto(baiduUser.getAvatar_url())
-                    .setEmail("")
-                    .setPassword("")
-                    .setRegisterTime(now)
-                    .setModifyTime(now)
-                    .setRewardPoints(0)
-                    .setFansCount(0)
-                    .setGender((byte) 3)
-                    .setJwtSalt("")
-                    .setLoginSalt(RandomUtils.generateStr(8));
-            userMapper.insertUseGeneratedKeys(user);
+            user = getInfoById(ShiroUtils.getUserId());
+            //第二次判断是否已经有登录用户，若没有则新建一个用户，有登录用户则将第三方授权信息绑定到该用户上
+            if (ObjectUtils.isEmpty(user)) {
+                LocalDateTime now = LocalDateTime.now();
+                user = new User();
+                user.setBaiduId(baiduUser.getUk())
+                        .setUsername(baiduUser.getBaidu_name())
+                        .setPhoto(baiduUser.getAvatar_url())
+                        .setEmail("")
+                        .setPassword("")
+                        .setRegisterTime(now)
+                        .setModifyTime(now)
+                        .setRewardPoints(0)
+                        .setFansCount(0)
+                        .setGender((byte) 3)
+                        .setJwtSalt("")
+                        .setLoginSalt(RandomUtils.generateStr(8));
+                userMapper.insertUseGeneratedKeys(user);
+            } else {
+                user.setBaiduId(baiduUser.getUk());
+                userMapper.updateByPrimaryKey(user);
+            }
         }
         return user;
     }
@@ -345,6 +370,65 @@ public class UserServiceImpl implements UserService {
         return new IndexUserDTO();
     }
 
-
+    /**
+     * @param status:
+     * 1代表手机绑定
+     * 2代表邮箱绑定
+     * 3代表QQ解绑
+     * 4代表Gitee解绑
+     * 5代表百度解绑
+     */
+    @Override
+    public int ChangeUser(CheckUserDTO checkUser, int status) {
+        User user = getUserByEmail(checkUser.getOldEmail());
+        //检查账号密码是否错误、手机号或邮箱是否已经被绑定以及是否为当前用户，无错则绑定新手机号码并返回true
+        if (user != null && user.getId().equals(ShiroUtils.getUserId())) {
+            Md5Hash md5Hash = new Md5Hash(checkUser.getCheckPassword(), user.getLoginSalt(), 1024);
+            if (user.getPassword().equals(md5Hash.toHex())) {
+                User user1 = null;
+                //检验手机号是否已经被绑定
+                Example example = new Example(User.class);
+                if (status == 1 && checkUser.getNewPhone() != null) {
+                    example.createCriteria().andEqualTo("phone", checkUser.getNewPhone());
+                    user1 = userMapper.selectOneByExample(example);
+                    if (user1 == null) {
+                        user.setPhone(checkUser.getNewPhone());
+                        userMapper.updateByPrimaryKey(user);
+                        return StatusCode.SUCCESS.getCode();
+                    } else {
+                        return StatusCode.PHONE_IS_EXIST.getCode();
+                    }
+                }
+                //检验邮箱是否已经被绑定
+                if (status == 2 && checkUser.getNewEmail() != null) {
+                    example.createCriteria().andEqualTo("email", checkUser.getNewEmail());
+                    user1 = userMapper.selectOneByExample(example);
+                    if (user1 == null) {
+                        user.setEmail(checkUser.getNewEmail());
+                        userMapper.updateByPrimaryKey(user);
+                        return StatusCode.SUCCESS.getCode();
+                    } else {
+                        return StatusCode.EMAIL_IS_EXIST.getCode();
+                    }
+                }
+                if (status == 3) {
+                    user.setQqId(null);
+                    userMapper.updateByPrimaryKey(user);
+                    return StatusCode.SUCCESS.getCode();
+                }
+                if (status == 4) {
+                    user.setGiteeId(null);
+                    userMapper.updateByPrimaryKey(user);
+                    return StatusCode.SUCCESS.getCode();
+                }
+                if (status == 5) {
+                    user.setBaiduId(null);
+                    userMapper.updateByPrimaryKey(user);
+                    return StatusCode.SUCCESS.getCode();
+                }
+            }
+        }
+        return StatusCode.ACCOUNT_OR_PASSWORD_INCORRECT.getCode();
+    }
 
 }

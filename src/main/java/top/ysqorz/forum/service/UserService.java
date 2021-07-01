@@ -129,4 +129,9 @@ public interface UserService {
      * 根据shiro获取认证用户信息
      */
     IndexUserDTO getShiroUser();
+
+    /**
+     * 修改用户绑定手机或邮箱
+     */
+    int ChangeUser(CheckUserDTO checkUser, int status);
 }

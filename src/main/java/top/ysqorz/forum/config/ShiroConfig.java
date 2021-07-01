@@ -99,13 +99,15 @@ public class ShiroConfig {
 
         // 除了浏览帖子特殊（不登录也行，只是数据不一样），发帖、修改帖子等其他操作都需要登录
         chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/user/oauth/**/callback", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/user/setting/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/user/**", "noSessionCreation,anon");
         chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/comment/*/publish", "noSessionCreation,jwtAuth");
 
         chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
 
-        chain.addPathDefinition("/user/**", "noSessionCreation,anon");
         chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
         chain.addPathDefinition("/index", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/head", "noSessionCreation,jwtAuth[permissive]");
