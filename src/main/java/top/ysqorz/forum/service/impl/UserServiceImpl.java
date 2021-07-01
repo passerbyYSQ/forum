@@ -234,7 +234,7 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
-	
+
 	@Override
     public User oauth2Baidu(String code) throws IOException {
         BaiduUserDTO baiduUser = baiduProvider.getUser(code);
@@ -332,6 +332,5 @@ public class UserServiceImpl implements UserService {
         record.setLastLoginTime(LocalDateTime.now());
         return userMapper.updateByPrimaryKeySelective(record);
     }
-
 
 }

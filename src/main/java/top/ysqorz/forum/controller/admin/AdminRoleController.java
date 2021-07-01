@@ -112,7 +112,7 @@ public class AdminRoleController {
         // 查询所有权限（用于形成整棵权限树）
         List<Resource> permList = authorityService.getAuthorityList(null);
         // 查询该角色拥有的所有权限的id，用于勾选权限树上对应的已拥有的权限
-        Set<Integer> rolePermIds = roleService.getRoleAllPerms(roleId);
+        Set<Integer> rolePermIds = roleService.getRoleAllPermIds(roleId);
         // 数据转换
         List<PermZTreeNode> nodeList = permList.stream()
                 .map(resource -> new PermZTreeNode(resource, rolePermIds))

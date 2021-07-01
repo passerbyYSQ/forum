@@ -10,4 +10,19 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
+
+  <select id="getRoleByUserId" resultType="top.ysqorz.forum.po.Role">
+    select r.*
+    from user_role ur
+    left join role r on ur.role_id = r.id
+    where ur.user_id = #{userId}
+  </select>
+
+  <select id="getRoleAllPerms" resultType="top.ysqorz.forum.po.Resource">
+    select r.*
+    from role_resource rr
+    left join resource r on rr.resource_id = r.id
+    where rr.role_id = #{roleId}
+  </select>
+
 </mapper>

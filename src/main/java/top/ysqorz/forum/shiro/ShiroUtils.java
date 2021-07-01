@@ -18,4 +18,11 @@ public class ShiroUtils {
     public static boolean isAuthenticated() {
         return SecurityUtils.getSubject().isAuthenticated();
     }
+
+    /**
+     * 是否有权限
+     */
+    public static boolean hasPerm(String perm) {
+        return SecurityUtils.getSubject().isPermitted(perm);
+    }
 }

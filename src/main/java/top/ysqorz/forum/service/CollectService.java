@@ -11,7 +11,7 @@ public interface CollectService {
     // 某用户是否收藏了某个帖子
     Collect getCollectByUserIdAndPostId(Integer userId, Integer postId);
 
-    Collect addCollect(Integer userId, Integer postId);
+    Collect addCollect(Integer postId);
 
-    int cancelCollect(Integer collectId);
+    int cancelCollect(Integer collectId, Integer postId);
 }

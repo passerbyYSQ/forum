@@ -51,20 +51,20 @@ public class IndexController {
         PageHelper.startPage(page, limit);
         //  PageHelper.clearPage(); //不加报错
         List<PostDTO> postList = postService.getPostList(conditions);
-        for(PostDTO post:postList){
+        for (PostDTO post : postList) {
             Document doc = Jsoup.parse(post.getContent());
-            String  content=doc.text();  //获取html文本
-            if(content.length()>=160){
+            String content = doc.text();  //获取html文本
+            if (content.length() >= 160) {
                 String substring = content.substring(0, 160);
-                content=substring+"...";
+                content = substring + "...";
 
             }
             post.setContent(content);
-            Elements jpgs=doc.select("img[src]"); //　查找图片
-            for(int i=0;i<jpgs.size();i++){
-                Element jpg=jpgs.get(i);
+            Elements jpgs = doc.select("img[src]"); //　查找图片
+            for (int i = 0; i < jpgs.size(); i++) {
+                Element jpg = jpgs.get(i);
                 post.getImagesList().add(jpg.toString());
-                if(i==3){
+                if (i == 3) {
                     break;
                 }
             }

@@ -14,7 +14,7 @@ import top.ysqorz.forum.po.SecondComment;
 public interface CommentService {
 
     // 发布一级评论
-    void publishFirstComment(Post post, String content, Integer creatorId);
+    void publishFirstComment(Post post, String content);
 
     // 发布二级评论
     void publishSecondComment(FirstComment firstComment, SecondComment quoteComment,

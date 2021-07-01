@@ -39,20 +39,18 @@ public interface PostService {
     /**
      * 往post表插入数据
      * @param vo            相关参数
-     * @param creatorId     发帖者的id
      */
-    Post addPost(PublishPostDTO vo, Integer creatorId);
+    Post addPost(PublishPostDTO vo);
 
     /**
      * 发布帖子。包含：Post，Label，PostLabel多表操作
      */
-    void publishPost(PublishPostDTO vo, Integer creatorId);
-
+    Post publishPost(PublishPostDTO vo);
 
     /**
      * 更新帖子。包括标签
      */
-    void updatePostAndLabels(PublishPostDTO vo);
+    Post updatePostAndLabels(PublishPostDTO vo);
 
     PostDetailDTO getPostDetailById(Post post);
 
@@ -62,12 +60,12 @@ public interface PostService {
      */
     void addVisitCount(String ipAddress, Integer postId);
 
-    int addCommentCount(Integer postId, Integer dif);
+    int updateCommentCountAndLastTime(Integer postId, Integer dif);
 
     //
-    Like addLike(Integer myId, Integer postId);
+    Like addLike(Integer postId);
 
-    int cancelLike(Integer id, Integer postId);
+    int cancelLike(Integer likeId, Integer postId);
 
     int addLikeCount(Integer postId, Integer dif);
 }

@@ -199,7 +199,9 @@
             minChars: 0,
             width: '',
             height: '',
-            autocomplete: {type: 'get', data: {}},
+            //autocomplete: {type: 'get', data: {}},
+            // 我新增的属性
+            autocomplete_request: undefined,
             hide: true,
             delimiter: ',',
             unique: true,
@@ -274,45 +276,39 @@
                     });
                 }
 
-                if (settings.autocomplete_url != undefined) {
+                if (settings.autocomplete_request != undefined && typeof settings.autocomplete_request === 'function') {
                     $(data.fake_input).on('input', function () {
                         var name = $(this).val();
-                        if (!name) {
+                        if (!name) { // 空
                             $(data.fake_input).parent().find('.tagsinput-tip-list').remove();
                             return;
                         }
-                        settings.autocomplete.data.name = name;
-                        $.ajax({
-                            url: settings.autocomplete_url,
-                            type: settings.autocomplete.type,
-                            data: settings.autocomplete.data,
-                            dataType: 'json',
-                            success: function (res) {
-                                if (res.code == 200) {
-                                    var $tipList = $(data.fake_input).parent().find('.tagsinput-tip-list');
-                                    if (res.data.length == 0) {
-                                        $tipList.remove();
-                                    }
-                                    var htmlStr = '';
-                                    for (var i = 0; i < res.data.length; i++) {
-                                        var item = res.data[i];
-                                        htmlStr += '<li data-value="' + item + '">' + item + '</li>';
-                                    }
-                                    if ($tipList.length <= 0) {
-                                        $(data.fake_input).after('<ul class="tagsinput-tip-list"></ul>');
-                                        $tipList = $(data.fake_input).parent().find('.tagsinput-tip-list');
-                                        $tipList.on('click', '>li', function () {
-                                            var value = $(this).data('value');
-                                            $('#' + id).addTag(value, {focus: true, unique: (settings.unique)});
-                                            $tipList.remove();
-                                        });
-                                    }
-                                    $tipList.html(htmlStr);
-                                } else {
-                                    console.error(res);
-                                }
+
+                        function showSelects(arr) {
+                            var $tipList = $(data.fake_input).parent().find('.tagsinput-tip-list');
+                            if (arr.length == 0) {
+                                $tipList.remove();
+                                return;
                             }
-                        });
+                            console.log(arr);
+                            var htmlStr = '';
+                            for (var i = 0; i < arr.length; i++) {
+                                var item = arr[i];
+                                htmlStr += '<li data-value="' + item + '">' + item + '</li>';
+                            }
+                            if ($tipList.length <= 0) {
+                                $(data.fake_input).after('<ul class="tagsinput-tip-list"></ul>');
+                                $tipList = $(data.fake_input).parent().find('.tagsinput-tip-list');
+                                $tipList.on('click', '>li', function () {
+                                    var value = $(this).data('value');
+                                    $('#' + id).addTag(value, {focus: true, unique: (settings.unique)});
+                                    $tipList.remove();
+                                });
+                            }
+                            $tipList.html(htmlStr);
+                        }
+
+                        settings.autocomplete_request(name, showSelects);
                     });
 
                 } else {

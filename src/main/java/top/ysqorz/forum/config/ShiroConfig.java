@@ -9,13 +9,14 @@ import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.ysqorz.forum.shiro.JwtAuthenticatingFilter;
 import top.ysqorz.forum.shiro.JwtCredentialsMatcher;
-import top.ysqorz.forum.shiro.ShiroCacheManager;
 import top.ysqorz.forum.shiro.JwtRealm;
+import top.ysqorz.forum.shiro.ShiroCacheManager;
 
 import javax.servlet.Filter;
 import java.util.Collections;
@@ -43,6 +44,21 @@ public class ShiroConfig {
     /*
     引入shiro的starter会自动开启注解，详情见：ShiroAnnotationProcessorAutoConfiguration
      */
+
+    /**
+     * 在引入spring aop（比如在controller类上加上@Validaed注解）的情况下
+     * 在@controller注解的类的方法中使用@RequirseRole等权限注解，
+     * 会导致该方法无法映射请求，导致404
+     * 将usePrefix和proxyTargetClass二者任意一值设为true都可以解决无法映射请求的问题
+     * @return
+     */
+    @Bean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator advisor = new DefaultAdvisorAutoProxyCreator();
+        advisor.setUsePrefix(false);
+        advisor.setProxyTargetClass(true);
+        return advisor;
+    }
 
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(

@@ -12,12 +12,14 @@ import top.ysqorz.forum.dao.SecondCommentMapper;
 import top.ysqorz.forum.dto.FirstCommentDTO;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.SecondCommentDTO;
+import top.ysqorz.forum.dto.SimpleUserDTO;
 import top.ysqorz.forum.po.CommentNotification;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
 import top.ysqorz.forum.service.PostService;
+import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -43,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void publishFirstComment(Post post, String content, Integer creatorId) {
+    public void publishFirstComment(Post post, String content) {
         /*
         // 这种方式，先必须查出FloorNum，再插入记录。并发情况下，可能导致FloorNum不正确
         FirstComment comment = new FirstComment();
@@ -54,6 +56,8 @@ public class CommentServiceImpl implements CommentService {
                 .setCreateTime(LocalDateTime.now())
                 .setSecondCommentCount(0);
          */
+        // 当前用户就是一级评论的creator
+        Integer creatorId = ShiroUtils.getUserId();
         // 插入一级评论
         FirstComment comment = new FirstComment();
         comment.setPostId(post.getId())
@@ -63,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
         firstCommentMapper.addFirstCommentUseGeneratedKeys(comment);
 
         // 更新评论数量（包括一级、二级）
-        postService.addCommentCount(post.getId(), 1);
+        postService.updateCommentCountAndLastTime(post.getId(), 1);
 
         if (!creatorId.equals(post.getCreatorId())) {
             // 插入评论通知
@@ -88,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
                                      SecondComment quoteComment,
                                      String content, Integer myId) {
         Integer receiverId = firstComment.getUserId();
-        Byte commentType = 1;
+        byte commentType = 1;
         Integer repliedId = firstComment.getId();
 
         // 插入二级评论
@@ -106,7 +110,7 @@ public class CommentServiceImpl implements CommentService {
         secondCommentMapper.insertUseGeneratedKeys(comment);
 
         // 更新帖子的评论数量
-        postService.addCommentCount(firstComment.getPostId(), 1);
+        postService.updateCommentCountAndLastTime(firstComment.getPostId(), 1);
 
         // 更新一级评论下的二级评论的数量
         this.addSecondCommentCount(firstComment.getId(), 1);
@@ -142,7 +146,7 @@ public class CommentServiceImpl implements CommentService {
         for (FirstCommentDTO firstComment : firstComments) {
             boolean isPostCreator = post.getCreatorId().equals(firstComment.getCreator().getId());
             // TODO 计算level
-            firstComment.getCreator().setLevel(0);
+            firstComment.getCreator().setLevel(6);
             firstComment.setIsPostCreator(isPostCreator);
         }
 
@@ -161,9 +165,12 @@ public class CommentServiceImpl implements CommentService {
                                                            Integer page, Integer count) {
         PageHelper.startPage(page, count); // 里面会做page的越界纠正
         List<SecondCommentDTO> secondCommentList = secondCommentMapper.selectSecondCommentList(firstComment.getId());
+        Post post = postService.getPostById(firstComment.getPostId());
         for (SecondCommentDTO secondComment : secondCommentList) {
             // TODO 计算level，是否是楼主
-            secondComment.getCreator().setLevel(0);
+            SimpleUserDTO secondCreator = secondComment.getCreator();
+            secondCreator.setLevel(6);
+            secondComment.setIsPostCreator(secondCreator.getId().equals(post.getCreatorId()));
         }
         PageInfo<SecondCommentDTO> pageInfo = new PageInfo<>(secondCommentList);
         return new PageData<>(pageInfo, secondCommentList);

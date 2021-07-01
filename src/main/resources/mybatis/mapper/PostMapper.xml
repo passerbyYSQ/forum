@@ -107,8 +107,15 @@
         update post set like_count = like_count + #{dif} where id = #{postId}
     </update>
 
-    <update id="addCommentCount" parameterType="map">
-        update post set comment_count = comment_count + #{dif} where id = #{postId}
+    <update id="addCollectCount" parameterType="map">
+        update post set collect_count = collect_count + #{dif} where id = #{postId}
+    </update>
+
+    <update id="updateCommentCountAndLastTime" parameterType="map">
+        update post
+        set comment_count = comment_count + #{dif},
+            last_comment_time = now()
+        where id = #{postId}
     </update>
 
 

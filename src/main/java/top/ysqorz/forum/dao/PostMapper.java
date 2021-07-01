@@ -17,5 +17,7 @@ public interface PostMapper extends BaseMapper<Post> {
 
     int addLikeCount(Map<String, Object> params);
 
-    int addCommentCount(Map<String, Object> params);
+    int updateCommentCountAndLastTime(Map<String, Object> params);
+
+    int addCollectCount(Map<String, Object> params);
 }

@@ -10,10 +10,16 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.util.ObjectUtils;
+import top.ysqorz.forum.common.TreeBuilder;
+import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.service.AuthorityService;
+import top.ysqorz.forum.service.RoleService;
 import top.ysqorz.forum.service.UserService;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author passerbyYSQ
@@ -23,6 +29,11 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Resource
     private UserService userService;
+    @Resource
+    private RoleService roleService;
+    @Resource
+    private AuthorityService authorityService;
+
     /**
      * 当前Realm支持处理哪些Token
      */
@@ -34,12 +45,23 @@ public class JwtRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         Integer userId = (Integer) principals.getPrimaryPrincipal();
-        // 从数据库查询角色和权限信息
-        // ... 略
+        List<top.ysqorz.forum.po.Resource> resourceList =
+                authorityService.getAuthorityList(null);
+        List<Role> roles = roleService.getRoleByUserId(userId);
+        // 将所有权限形成一棵树
+        TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0);
 
-        // 举例
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        authorizationInfo.addRole("ysq");
+        for (Role role : roles) {
+            authorizationInfo.addRole(role.getRoleName());
+            // 当前角色的所有权限
+            List<String> leafPermList = roleService.getRoleAllPerms(role.getId())
+                    // 只筛选出叶子节点权限
+                    .stream().filter(resource -> builder.isLeaf(resource.getId()))
+                    .map(top.ysqorz.forum.po.Resource::getPermission)
+                    .collect(Collectors.toList());
+            authorizationInfo.addStringPermissions(leafPermList);
+        }
 
         return authorizationInfo;
     }

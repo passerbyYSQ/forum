@@ -60,6 +60,7 @@ public class Resource extends TreeNode<Integer> implements Serializable {
     /**
      * 权限表达式
      */
+    @NotEmpty
     private String permission;
 
     /**

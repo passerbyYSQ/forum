@@ -1,6 +1,7 @@
 package top.ysqorz.forum.controller.front;
 
 import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -20,6 +21,9 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -29,7 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/post")
-@Validated
+@Validated // 与shiro权限注解冲突，导致页面转发404
 public class PostController {
 
     @Resource
@@ -81,9 +85,11 @@ public class PostController {
                 throw new ParameterErrorException("帖子不存在");
             }
             // 不能修改其他人的帖子
-            if (!post.getCreatorId().equals(ShiroUtils.getUserId())) {
+            if (!(post.getCreatorId().equals(ShiroUtils.getUserId())
+                    || ShiroUtils.hasPerm("post:update"))) {
                 throw new AuthorizationException();
             }
+
 
             UpdatePostDTO updatePostDTO = new UpdatePostDTO(post);
             List<Label> labels = labelService.getLabelsByPostId(postId);
@@ -100,7 +106,7 @@ public class PostController {
      */
     @ResponseBody
     @PostMapping("/publish")
-    public ResultModel publish(@Validated(PublishPostDTO.Add.class) PublishPostDTO dto) {
+    public ResultModel<Post> publish(@Validated(PublishPostDTO.Add.class) PublishPostDTO dto) {
         String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
@@ -118,14 +124,13 @@ public class PostController {
             return ResultModel.failed(StatusCode.TOPIC_ARCHIVED); // 话题已归档
         }
 
-        postService.publishPost(dto, ShiroUtils.getUserId());
-
-        return ResultModel.success();
+        Post post = postService.publishPost(dto);
+        return ResultModel.success(post);
     }
 
     @ResponseBody
     @PostMapping("/update")
-    public ResultModel updatePost(@Validated(PublishPostDTO.Update.class) PublishPostDTO dto) {
+    public ResultModel<Post> updatePost(@Validated(PublishPostDTO.Update.class) PublishPostDTO dto) {
         String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
@@ -140,7 +145,8 @@ public class PostController {
             return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
         }
         // 不能修改其他人的帖子
-        if (!post.getCreatorId().equals(ShiroUtils.getUserId())) {
+        if (!(post.getCreatorId().equals(ShiroUtils.getUserId())
+            || ShiroUtils.hasPerm("post:update"))) {
             throw new AuthorizationException();
         }
 
@@ -154,9 +160,9 @@ public class PostController {
         }
 
         // 更新帖子
-        postService.updatePostAndLabels(dto);
+        post = postService.updatePostAndLabels(dto);
 
-        return ResultModel.success();
+        return ResultModel.success(post);
     }
 
     @PostMapping("/like")
@@ -171,9 +177,9 @@ public class PostController {
             return ResultModel.failed(StatusCode.DO_NOT_REPEAT_OPERATE);
         }
         if (isLike) {
-            postService.addLike(myId, postId);
+            postService.addLike(postId);
         } else {
-            postService.cancelLike(like.getId(), postId);
+            postService.cancelLike(like.getId(), postId); // likeId是可靠的
         }
         return ResultModel.success();
     }
@@ -188,11 +194,36 @@ public class PostController {
             return ResultModel.failed(StatusCode.DO_NOT_REPEAT_OPERATE);
         }
         if (isCollect) {
-            collectService.addCollect(myId, postId);
+            collectService.addCollect(postId);
         } else {
-            collectService.cancelCollect(collect.getId());
+            collectService.cancelCollect(collect.getId(), postId); // collectId是可靠的
         }
         return ResultModel.success();
     }
+
+    @RequiresPermissions("post:quality")
+    @PostMapping("/set_quality")
+    @ResponseBody
+    public ResultModel setQuality(@NotNull Integer postId, @NotNull Boolean isHighQuality) {
+        Post post = new Post();
+        post.setId(postId).setIsHighQuality((byte) (isHighQuality ? 1 : 0));
+        int cnt = postService.updatePostById(post);
+        return cnt == 1 ? ResultModel.success()
+                : ResultModel.failed(StatusCode.POST_NOT_EXIST);
+    }
+
+    @RequiresPermissions("post:top")
+    @PostMapping("/top")
+    @ResponseBody
+    public ResultModel top(@NotNull Integer postId,
+            @NotNull @Min(0) @Max(9999) Integer topWeight) {
+        Post post = new Post();
+        post.setId(postId).setTopWeight(topWeight);
+        int cnt = postService.updatePostById(post);
+        return cnt == 1 ? ResultModel.success()
+                : ResultModel.failed(StatusCode.POST_NOT_EXIST);
+    }
+
+
 
 }

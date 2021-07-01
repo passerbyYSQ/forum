@@ -1,459 +1,478 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <title>基于 layui 的极简社区页面模版</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="fly,layui,前端社区">
-  <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
-  <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
-  <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
-  <style>
-    /** 文章列表样式 */
-    .article-list-item {
-      border-bottom: 1px solid #e8e8e8;
-      margin: 16px;
-      position: relative;
-    }
+    <meta charset="utf-8">
+    <title>基于 layui 的极简社区页面模版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="fly,layui,前端社区">
+    <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
+    <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
+    <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
+    <style>
+        /** 文章列表样式 */
+        .article-list-item {
+            border-bottom: 1px solid #e8e8e8;
+            margin: 16px;
+            position: relative;
+        }
 
-    .article-list-item > h2 {
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 12px;
-    }
+        .article-list-item > h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 12px;
+        }
 
-    .article-list-item > .layui-badge-rim {
-      position: absolute;
-      right: 0;
-      top: 0;
-      border: none;
-    }
+        .article-list-item > .layui-badge-rim {
+            position: absolute;
+            right: 0;
+            top: 0;
+            border: none;
+        }
 
-    .article-list-item .layui-badge-list .layui-badge {
-      padding-top: 0;
-      padding-bottom: 0;
-    }
+        .article-list-item .layui-badge-list .layui-badge {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
 
-    .article-list-item .article-list-item-text {
-      margin-bottom: 12px;
-    }
+        .article-list-item .article-list-item-text {
+            margin-bottom: 12px;
+        }
 
-    .article-list-item .article-list-item-img {
-      width: 600px;
-      height: 120px;
+        .article-list-item .article-list-item-img {
+            width: 600px;
+            height: 120px;
 
-    }
+        }
 
-    .article-list-item .article-list-item-img img {
-      width: 150px;
-      height: 100px;
-      object-fit: cover;
-      float: left;
-    }
+        .article-list-item .article-list-item-img img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            float: left;
+        }
 
-    .article-list-item .article-list-item-desc {
-      margin-bottom: 12px;
-    }
+        .article-list-item .article-list-item-desc {
+            margin-bottom: 12px;
+        }
 
-    .article-list-item .article-list-item-desc .head {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-    }
+        .article-list-item .article-list-item-desc .head {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
 
-    .article-list-item .article-list-item-desc > * {
-      vertical-align: middle;
-    }
-    /*lv6等级样式*/
-    .article-list-item .article-list-item-desc .lv {
-      vertical-align: middle;
+        .article-list-item .article-list-item-desc > * {
+            vertical-align: middle;
+        }
 
-      font-weight: bold;
-      font-style: italic;
-      background-image: -webkit-linear-gradient(left, blue, #66ffff 10%, #cc00ff 20%, #CC00CC 30%, #CCCCFF 40%, #00FFFF 50%, #CCCCFF 60%, #CC00CC 70%, #CC00FF 80%, #66FFFF 90%, blue 100%);
-      -webkit-text-fill-color: transparent; /* 将字体设置成透明色 */
-      -webkit-background-clip: text; /* 裁剪背景图，使文字作为裁剪区域向外裁剪 */
-      -webkit-background-size: 200% 100%;
-      -webkit-animation: masked-animation 4s linear infinite;
+        /*lv6等级样式*/
+        .article-list-item .article-list-item-desc .lv {
+            vertical-align: middle;
 
-    }
+            font-weight: bold;
+            font-style: italic;
+            background-image: -webkit-linear-gradient(left, blue, #66ffff 10%, #cc00ff 20%, #CC00CC 30%, #CCCCFF 40%, #00FFFF 50%, #CCCCFF 60%, #CC00CC 70%, #CC00FF 80%, #66FFFF 90%, blue 100%);
+            -webkit-text-fill-color: transparent; /* 将字体设置成透明色 */
+            -webkit-background-clip: text; /* 裁剪背景图，使文字作为裁剪区域向外裁剪 */
+            -webkit-background-size: 200% 100%;
+            -webkit-animation: masked-animation 4s linear infinite;
 
-    @keyframes masked-animation {
-      0% {
-        background-position: 0 0;
-      }
-      100% {
-        background-position: -100% 0;
-      }
-    }
+        }
 
-
-    .article-list-item .article-list-item-tool {
-      color: #666;
-      right: 10px;
-      float: right;
+        @keyframes masked-animation {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: -100% 0;
+            }
+        }
 
 
-    }
-
-    .article-list-item .article-list-item-tool .article-list-item-tool-item {
-      border-right: 1px solid #e8e8e8;
-      padding: 0 15px;
-      cursor: pointer;
-    }
-
-    .article-list-item .article-list-item-tool .article-list-item-tool-item:first-child {
-      padding-left: 0;
-    }
-
-    .article-list-item .article-list-item-tool .article-list-item-tool-item:last-child {
-      border-right: none;
-      padding-right: 0;
-    }
-
-    .article-list-item .article-list-item-tool .article-list-item-tool-item > * {
-      vertical-align: middle;
-    }
-
-    .article-list-item .article-list-item-tool .article-list-item-tool-item.star-active {
-      color: #01AAED;
-    }
-
-    .article-list-item .article-list-item-tool .article-list-item-tool-item.star-active .layui-icon-rate:before {
-      content: "\e67a";
-    }
-    /*title标题样式*/
-    h2.title span.layui-badge-green {
-      top: -2px;
-      height: 24px;
-      line-height: 24px;
-      padding: 0 6px;
-      font-size: 14px;
-      color: #52c41a;
-      background: #f6ffed;
-      border: 1px solid #b7eb8f;
-    }
-    /*大长腿标签样式*/
-    .layui-badge-blue {
-      color: #1890ff;
-      background: #e6f7ff;
-      border: 1px solid #91d5ff;
-      margin: 2px;
-
-    }
+        .article-list-item .article-list-item-tool {
+            color: #666;
+            right: 10px;
+            float: right;
 
 
-  </style>
+        }
+
+        .article-list-item .article-list-item-tool .article-list-item-tool-item {
+            border-right: 1px solid #e8e8e8;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+
+        .article-list-item .article-list-item-tool .article-list-item-tool-item:first-child {
+            padding-left: 0;
+        }
+
+        .article-list-item .article-list-item-tool .article-list-item-tool-item:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .article-list-item .article-list-item-tool .article-list-item-tool-item > * {
+            vertical-align: middle;
+        }
+
+        .article-list-item .article-list-item-tool .article-list-item-tool-item.star-active {
+            color: #01AAED;
+        }
+
+        .article-list-item .article-list-item-tool .article-list-item-tool-item.star-active .layui-icon-rate:before {
+            content: "\e67a";
+        }
+
+        /*title标题样式*/
+        h2.title span.layui-badge-green {
+            top: -2px;
+            height: 24px;
+            line-height: 24px;
+            padding: 0 6px;
+            font-size: 14px;
+            color: #52c41a;
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+        }
+
+        /*大长腿标签样式*/
+        .layui-badge-blue {
+            color: #1890ff;
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            margin: 2px;
+
+        }
+
+
+    </style>
 </head>
 <body>
 
 <div class="fly-header layui-bg-black">
-  <div class="layui-container">
-    <a class="fly-logo" href="/">
-      <img th:src="@{/front/res/images/logo.png}" src="../res/images/logo.png" alt="layui">
-    </a>
-    <ul class="layui-nav fly-nav layui-hide-xs">
-      <li class="layui-nav-item layui-this">
-        <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>
-      </li>
-      <li class="layui-nav-item">
-        <a href="case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>
-      </li>
-      <li class="layui-nav-item">
-        <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
-      </li>
-    </ul>
-
-    <ul class="layui-nav fly-nav-user">
-
-      <!-- 未登入的状态 -->
-      <li class="layui-nav-item">
-        <a class="iconfont icon-touxiang layui-hide-xs" href="user/login.html"></a>
-      </li>
-      <li class="layui-nav-item">
-        <a th:href="@{/user/login}">登入</a>
-      </li>
-      <li class="layui-nav-item">
-        <a th:href="@{/user/reg}">注册</a>
-      </li>
-      <li class="layui-nav-item layui-hide-xs">
-        <a href="/app/qq/" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" title="QQ登入" class="iconfont icon-qq"></a>
-      </li>
-      <li class="layui-nav-item layui-hide-xs">
-        <a href="/app/weibo/" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})" title="微博登入" class="iconfont icon-weibo"></a>
-      </li>
-
-      <!-- 登入后的状态 -->
-      <!--
-      <li class="layui-nav-item">
-        <a class="fly-nav-avatar" href="javascript:;">
-          <cite class="layui-hide-xs">贤心</cite>
-          <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i>
-          <i class="layui-badge fly-badge-vip layui-hide-xs">VIP3</i>
-          <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+    <div class="layui-container">
+        <a class="fly-logo" href="/">
+            <img th:src="@{/front/res/images/logo.png}" src="../res/images/logo.png" alt="layui">
         </a>
-        <dl class="layui-nav-child">
-          <dd><a href="user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>
-          <dd><a href="user/message.html"><i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a></dd>
-          <dd><a href="user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a></dd>
-          <hr style="margin: 5px 0;">
-          <dd><a href="/user/logout/" style="text-align: center;">退出</a></dd>
-        </dl>
-      </li>
-      -->
-    </ul>
-  </div>
+        <ul class="layui-nav fly-nav layui-hide-xs">
+            <li class="layui-nav-item layui-this">
+                <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
+            </li>
+        </ul>
+
+        <ul class="layui-nav fly-nav-user">
+
+            <!-- 未登入的状态 -->
+            <li class="layui-nav-item">
+                <a class="iconfont icon-touxiang layui-hide-xs" href="user/login.html"></a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/user/login}">登入</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/user/reg}">注册</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs">
+                <a href="/app/qq/" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" title="QQ登入"
+                   class="iconfont icon-qq"></a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs">
+                <a href="/app/weibo/" onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})" title="微博登入"
+                   class="iconfont icon-weibo"></a>
+            </li>
+
+            <!-- 登入后的状态 -->
+            <!--
+            <li class="layui-nav-item">
+              <a class="fly-nav-avatar" href="javascript:;">
+                <cite class="layui-hide-xs">贤心</cite>
+                <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i>
+                <i class="layui-badge fly-badge-vip layui-hide-xs">VIP3</i>
+                <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+              </a>
+              <dl class="layui-nav-child">
+                <dd><a href="user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>
+                <dd><a href="user/message.html"><i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a></dd>
+                <dd><a href="user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a></dd>
+                <hr style="margin: 5px 0;">
+                <dd><a href="/user/logout/" style="text-align: center;">退出</a></dd>
+              </dl>
+            </li>
+            -->
+        </ul>
+    </div>
 </div>
 
 <div class="fly-panel fly-column">
-  <div class="layui-container">
-    <ul class="layui-clear">
-      <li class="layui-hide-xs layui-this"><a href="/">首页</a></li>
-      <li><a href="jie/index.html">提问</a></li>
-      <li><a href="jie/index.html">分享<span class="layui-badge-dot"></span></a></li>
-      <li><a href="jie/index.html">讨论</a></li>
-      <li><a href="jie/index.html">建议</a></li>
-      <li><a href="jie/index.html">公告</a></li>
-      <li><a href="jie/index.html">动态</a></li>
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
+    <div class="layui-container">
+        <ul class="layui-clear">
+            <li class="layui-hide-xs layui-this"><a href="/">首页</a></li>
+            <li><a href="jie/index.html">提问</a></li>
+            <li><a href="jie/index.html">分享<span class="layui-badge-dot"></span></a></li>
+            <li><a href="jie/index.html">讨论</a></li>
+            <li><a href="jie/index.html">建议</a></li>
+            <li><a href="jie/index.html">公告</a></li>
+            <li><a href="jie/index.html">动态</a></li>
+            <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
 
-      <!-- 用户登入后显示 -->
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html">我发表的贴</a></li>
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html#collection">我收藏的贴</a></li>
-    </ul>
+            <!-- 用户登入后显示 -->
+            <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html">我发表的贴</a></li>
+            <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html#collection">我收藏的贴</a>
+            </li>
+        </ul>
 
-    <div class="fly-column-right layui-hide-xs">
-      <span class="fly-search"><i class="layui-icon"></i></span>
-      <a href="jie/add.html" class="layui-btn">发表新帖</a>
+        <div class="fly-column-right layui-hide-xs">
+            <span class="fly-search"><i class="layui-icon"></i></span>
+            <a href="jie/add.html" class="layui-btn">发表新帖</a>
+        </div>
+        <div class="layui-hide-sm layui-show-xs-block"
+             style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
+            <a href="jie/add.html" class="layui-btn">发表新帖</a>
+        </div>
     </div>
-    <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
-      <a href="jie/add.html" class="layui-btn">发表新帖</a>
-    </div>
-  </div>
 </div>
 
 <div class="layui-container">
-  <div class="layui-row layui-col-space15">
-    <div class="layui-col-md8">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
 
-      <div class="fly-panel" style="margin-bottom: 0;">
+            <div class="fly-panel" style="margin-bottom: 0;">
 
-        <div class="fly-panel-title fly-filter">
-          <a href="javascript:void(0);" onclick="searchsort(this,1)" class="flag layui-this">综合</a>
-          <span class="fly-mid"></span>
-          <a href="javascript:void(0);" onclick="searchsort(this,2)" class="flag">精品</a>
-          <!--<span class="fly-mid"></span>
-          <a href="">已结</a>
-          <span class="fly-mid"></span>
-          <a href="">精华</a>-->
-          <span class="fly-filter-right layui-hide-xs">
+                <div class="fly-panel-title fly-filter">
+                    <a href="javascript:void(0);" onclick="searchsort(this,1)" class="flag layui-this">综合</a>
+                    <span class="fly-mid"></span>
+                    <a href="javascript:void(0);" onclick="searchsort(this,2)" class="flag">精品</a>
+                    <!--<span class="fly-mid"></span>
+                    <a href="">已结</a>
+                    <span class="fly-mid"></span>
+                    <a href="">精华</a>-->
+                    <span class="fly-filter-right layui-hide-xs">
             <a href="javascript:void(0);" onclick="searchsort(this,3)" class="flag">按最新</a>
             <span class="fly-mid"></span>
             <a href="javascript:void(0);" onclick="searchsort(this,4)" class="flag">按热议</a>
           </span>
+                </div>
+
+                <div id="demoCardList3"></div>
+
+
+            </div>
         </div>
+        <div class="layui-col-md4">
 
-        <div id="demoCardList3"></div>
+            <div class="fly-panel">
+                <h3 class="fly-panel-title">温馨通道</h3>
+                <ul class="fly-panel-main fly-list-static">
+                    <li>
+                        <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云)
+                            仓库，欢迎Star</a>
+                    </li>
+                    <li>
+                        <a href="http://fly.layui.com/jie/5366/" target="_blank">
+                            layui 常见问题的处理和实用干货集锦
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云)
+                            仓库，欢迎Star</a>
+                    </li>
+                    <li>
+                        <a href="http://fly.layui.com/jie/5366/" target="_blank">
+                            layui 常见问题的处理和实用干货集锦
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云)
+                            仓库，欢迎Star</a>
+                    </li>
+                </ul>
+            </div>
 
 
-      </div>
+            <div class="fly-panel fly-signin">
+                <div class="fly-panel-title">
+                    签到
+                    <i class="fly-mid"></i>
+                    <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
+                    <i class="fly-mid"></i>
+                    <a href="javascript:;" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
+                    <span class="fly-signin-days">已连续签到<cite>16</cite>天</span>
+                </div>
+                <div class="fly-panel-main fly-signin-main">
+                    <button class="layui-btn layui-btn-danger" id="LAY_signin">今日签到</button>
+                    <span>可获得<cite>5</cite>飞吻</span>
+
+                    <!-- 已签到状态 -->
+                    <!--
+                    <button class="layui-btn layui-btn-disabled">今日已签到</button>
+                    <span>获得了<cite>20</cite>飞吻</span>
+                    -->
+                </div>
+            </div>
+
+            <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
+                <h3 class="fly-panel-title">回贴周榜</h3>
+                <dl>
+                    <!--<i class="layui-icon fly-loading">&#xe63d;</i>-->
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="user/home.html">
+                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
+                        </a>
+                    </dd>
+                </dl>
+            </div>
+
+            <dl class="fly-panel fly-list-one">
+                <dt class="fly-panel-title">本周热议</dt>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+
+                <!-- 无数据时 -->
+                <!--
+                <div class="fly-none">没有相关数据</div>
+                -->
+            </dl>
+
+            <div class="fly-panel">
+                <div class="fly-panel-title">
+                    这里可作为广告区域
+                </div>
+                <div class="fly-panel-main">
+                    <a href="http://layim.layui.com/?from=fly" target="_blank" class="fly-zanzhu"
+                       time-limit="2017.09.25-2099.01.01" style="background-color: #5FB878;">LayIM 3.0 - layui 旗舰之作</a>
+                </div>
+            </div>
+
+            <div class="fly-panel fly-link">
+                <h3 class="fly-panel-title">友情链接</h3>
+                <dl class="fly-panel-main">
+                    <dd><a href="http://www.layui.com/" target="_blank">layui</a>
+                    <dd>
+                    <dd><a href="http://layim.layui.com/" target="_blank">WebIM</a>
+                    <dd>
+                    <dd><a href="http://layer.layui.com/" target="_blank">layer</a>
+                    <dd>
+                    <dd><a href="http://www.layui.com/laydate/" target="_blank">layDate</a>
+                    <dd>
+                    <dd>
+                        <a href="mailto:xianxin@layui-inc.com?subject=%E7%94%B3%E8%AF%B7Fly%E7%A4%BE%E5%8C%BA%E5%8F%8B%E9%93%BE"
+                           class="fly-link">申请友链</a>
+                    <dd>
+                </dl>
+            </div>
+
+        </div>
     </div>
-    <div class="layui-col-md4">
-
-      <div class="fly-panel">
-        <h3 class="fly-panel-title">温馨通道</h3>
-        <ul class="fly-panel-main fly-list-static">
-          <li>
-            <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a>
-          </li>
-          <li>
-            <a href="http://fly.layui.com/jie/5366/" target="_blank">
-              layui 常见问题的处理和实用干货集锦
-            </a>
-          </li>
-          <li>
-            <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a>
-          </li>
-          <li>
-            <a href="http://fly.layui.com/jie/5366/" target="_blank">
-              layui 常见问题的处理和实用干货集锦
-            </a>
-          </li>
-          <li>
-            <a href="http://fly.layui.com/jie/4281/" target="_blank">layui 的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a>
-          </li>
-        </ul>
-      </div>
-
-
-      <div class="fly-panel fly-signin">
-        <div class="fly-panel-title">
-          签到
-          <i class="fly-mid"></i>
-          <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
-          <i class="fly-mid"></i>
-          <a href="javascript:;" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
-          <span class="fly-signin-days">已连续签到<cite>16</cite>天</span>
-        </div>
-        <div class="fly-panel-main fly-signin-main">
-          <button class="layui-btn layui-btn-danger" id="LAY_signin">今日签到</button>
-          <span>可获得<cite>5</cite>飞吻</span>
-
-          <!-- 已签到状态 -->
-          <!--
-          <button class="layui-btn layui-btn-disabled">今日已签到</button>
-          <span>获得了<cite>20</cite>飞吻</span>
-          -->
-        </div>
-      </div>
-
-      <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
-        <h3 class="fly-panel-title">回贴周榜</h3>
-        <dl>
-          <!--<i class="layui-icon fly-loading">&#xe63d;</i>-->
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-          <dd>
-            <a href="user/home.html">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-            </a>
-          </dd>
-        </dl>
-      </div>
-
-      <dl class="fly-panel fly-list-one">
-        <dt class="fly-panel-title">本周热议</dt>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-        <dd>
-          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-          <span><i class="iconfont icon-pinglun1"></i> 16</span>
-        </dd>
-
-        <!-- 无数据时 -->
-        <!--
-        <div class="fly-none">没有相关数据</div>
-        -->
-      </dl>
-
-      <div class="fly-panel">
-        <div class="fly-panel-title">
-          这里可作为广告区域
-        </div>
-        <div class="fly-panel-main">
-          <a href="http://layim.layui.com/?from=fly" target="_blank" class="fly-zanzhu" time-limit="2017.09.25-2099.01.01" style="background-color: #5FB878;">LayIM 3.0 - layui 旗舰之作</a>
-        </div>
-      </div>
-
-      <div class="fly-panel fly-link">
-        <h3 class="fly-panel-title">友情链接</h3>
-        <dl class="fly-panel-main">
-          <dd><a href="http://www.layui.com/" target="_blank">layui</a><dd>
-          <dd><a href="http://layim.layui.com/" target="_blank">WebIM</a><dd>
-          <dd><a href="http://layer.layui.com/" target="_blank">layer</a><dd>
-          <dd><a href="http://www.layui.com/laydate/" target="_blank">layDate</a><dd>
-          <dd><a href="mailto:xianxin@layui-inc.com?subject=%E7%94%B3%E8%AF%B7Fly%E7%A4%BE%E5%8C%BA%E5%8F%8B%E9%93%BE" class="fly-link">申请友链</a><dd>
-        </dl>
-      </div>
-
-    </div>
-  </div>
 </div>
 
 <div class="fly-footer">
-  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
-  <p>
-    <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
-    <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
-    <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
-  </p>
+    <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/"
+                                                                                target="_blank">layui.com 出品</a></p>
+    <p>
+        <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
+        <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
+        <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
+    </p>
 </div>
 
 <script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
@@ -494,218 +513,222 @@
 </script> -->
 <!-- 文章模板 -->
 <script type="text/html" id="demoCardItem3">
-  <div class="article-list-item">
-    <h2 class="title"><span class="layui-badge layui-badge-green">{{d.topic}}</span>
-      {{d.title}}
-      {{# if(d.isHighQuality != 0){ }}
-      <span class="layui-badge layui-badge-gray"> 精品</span>
-      {{# } }}
-      {{# if(d.topWeight != 0){ }}
-      <span class="layui-badge layui-badge-gray"> 置顶</span>
-      {{# } }}
-    </h2>
+    <div class="article-list-item">
+        <h2 class="title"><span class="layui-badge layui-badge-green">{{d.topic}}</span>
+            {{d.title}}
+            {{# if(d.isHighQuality != 0){ }}
+            <span class="layui-badge layui-badge-gray"> 精品</span>
+            {{# } }}
+            {{# if(d.topWeight != 0){ }}
+            <span class="layui-badge layui-badge-gray"> 置顶</span>
+            {{# } }}
+        </h2>
 
-    <div class="layui-badge-rim">{{d.lastCommentTime}}</div>
-    <!--    <div class="layui-badge-list">-->
+        <div class="layui-badge-rim">{{d.lastCommentTime}}</div>
+        <!--    <div class="layui-badge-list">-->
 
-    <!--      {{# layui.each(d.labelList, function(index, item){ }}-->
-    <!--      {{# if(d.labelList!= 0 ){ }}-->
-    <!--      <span class="layui-badge-blue">{{item.labelName}}</span>-->
-    <!--      {{# }}}-->
-    <!--      {{# }); }}-->
+        <!--      {{# layui.each(d.labelList, function(index, item){ }}-->
+        <!--      {{# if(d.labelList!= 0 ){ }}-->
+        <!--      <span class="layui-badge-blue">{{item.labelName}}</span>-->
+        <!--      {{# }}}-->
+        <!--      {{# }); }}-->
 
-    <!--    </div>-->
-    <div class="article-list-item-text layui-text">
-      {{d.content}}
-    </div>
+        <!--    </div>-->
+        <div class="article-list-item-text layui-text">
+            {{d.content}}
+        </div>
 
-    {{# if(d.imagesList != 0){ }}
-    <div class="article-list-item-img layui-text " id="fff">
-      {{d.imagesList}}
-    </div>
-    {{# } }}
-    <div class="article-list-item-desc layui-text">
-      <img src="{{d.creator.photo}}" class="head">&nbsp;
-      <a href="javascript:;" class="name">{{d.creator.username}}</a>
-      <span class="lv"> lv6</span>
-      <div class="article-list-item-tool">
-<!--            <span class="article-list-item-tool-item {{d.isStar?'star-active':''}}" lay-event="star">-->
-<!--                <i class="layui-icon layui-icon-rate"></i>&nbsp;-->
-<!--                <span>{{d.collectCount}}</span>-->
-<!--            </span>-->
-        <span class="article-list-item-tool-item {{d.isLike?'star-active':''}}" lay-event="like">
+        {{# if(d.imagesList != 0){ }}
+        <div class="article-list-item-img layui-text " id="fff">
+            {{d.imagesList}}
+        </div>
+        {{# } }}
+        <div class="article-list-item-desc layui-text">
+            <img src="{{d.creator.photo}}" class="head">&nbsp;
+            <a href="javascript:;" class="name">{{d.creator.username}}</a>
+            <span class="lv"> lv6</span>
+            <div class="article-list-item-tool">
+                <!--            <span class="article-list-item-tool-item {{d.isStar?'star-active':''}}" lay-event="star">-->
+                <!--                <i class="layui-icon layui-icon-rate"></i>&nbsp;-->
+                <!--                <span>{{d.collectCount}}</span>-->
+                <!--            </span>-->
+                <span class="article-list-item-tool-item {{d.isLike?'star-active':''}}" lay-event="like">
                 <i class="layui-icon layui-icon-praise"></i>&nbsp;
                 <span>{{d.likeCount}}</span>
             </span>
-        <span class="article-list-item-tool-item" lay-event="comment">
+                <span class="article-list-item-tool-item" lay-event="comment">
                 <i class="layui-icon layui-icon-dialogue"></i>&nbsp;
                 <span>{{d.commentCount}}</span>
             </span>
-      </div>
-    </div>
+            </div>
+        </div>
 
-  </div>
+    </div>
 </script>
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
-<script type="text/javascript" th:src="@{/admin/assets/js/common.js?v=318}" src="assets/js/common.js?v=318"></script>
+<script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
-  // function changeSize(id){
-  //   var img = $("#"+id);
-  //
-  //   var oWidth=img.width(); //取得图片的实际宽度
-  //
-  //   var oHeight=img.height(); //取得图片的实际高度
-  //
-  //   $("#"+id).live("click",function(){
-  //     $(this).toggle(function(){
-  //       img.width(oWidth + 300);
-  //
-  //       img.height(oHeight + 300/oWidth*oHeight);
-  //
-  //     }, function(){
-  //       img.width(oWidth);
-  //
-  //       img.height(oHeight);
-  //
-  //     }).trigger('click');
-  //
-  //   });
-  //
-  // }
-  // //日期时间计算
-  // function getBeforeDate(n) {
-  //   var n = n;
-  //   var d = new Date();
-  //   var year = d.getFullYear();
-  //   var mon = d.getMonth() + 1;
-  //   var day = d.getDate();
-  //   if (day <= n) {
-  //     if (mon > 1) {
-  //       mon = mon - 1;
-  //     } else {
-  //       year = year - 1;
-  //       mon = 12;
-  //     }
-  //   }
-  //   d.setDate(d.getDate() - n);
-  //   year = d.getFullYear();
-  //   mon = d.getMonth() + 1;
-  //   day = d.getDate();
-  //   s = year + "-" + (mon < 10 ? ('0' + mon) : mon) + "-" + (day < 10 ? ('0' + day) : day);
-  //   return s;
-  // }
+    // function changeSize(id){
+    //   var img = $("#"+id);
+    //
+    //   var oWidth=img.width(); //取得图片的实际宽度
+    //
+    //   var oHeight=img.height(); //取得图片的实际高度
+    //
+    //   $("#"+id).live("click",function(){
+    //     $(this).toggle(function(){
+    //       img.width(oWidth + 300);
+    //
+    //       img.height(oHeight + 300/oWidth*oHeight);
+    //
+    //     }, function(){
+    //       img.width(oWidth);
+    //
+    //       img.height(oHeight);
+    //
+    //     }).trigger('click');
+    //
+    //   });
+    //
+    // }
+    // //日期时间计算
+    // function getBeforeDate(n) {
+    //   var n = n;
+    //   var d = new Date();
+    //   var year = d.getFullYear();
+    //   var mon = d.getMonth() + 1;
+    //   var day = d.getDate();
+    //   if (day <= n) {
+    //     if (mon > 1) {
+    //       mon = mon - 1;
+    //     } else {
+    //       year = year - 1;
+    //       mon = 12;
+    //     }
+    //   }
+    //   d.setDate(d.getDate() - n);
+    //   year = d.getFullYear();
+    //   mon = d.getMonth() + 1;
+    //   day = d.getDate();
+    //   s = year + "-" + (mon < 10 ? ('0' + mon) : mon) + "-" + (day < 10 ? ('0' + day) : day);
+    //   return s;
+    // }
 
 
-  layui.use(['layer', 'dataGrid', 'element', 'dropdown'], function () {
-    var $ = layui.jquery, app = layui.app;
-    var layer = layui.layer;
-    var dataGrid = layui.dataGrid;
+    layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'app'], function () {
+        var $ = layui.jquery, app = layui.app;
+        var layer = layui.layer;
+        var dataGrid = layui.dataGrid;
 
 
-    window.searchsort = function (dom, params) {
-      var loadIndex = layer.load(2);
-      // var last = getBeforeDate(90) + " 00:00:00";
-      // var time = new Date();
-      // var now = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' ' + time.getHours()
-      //         + ':' + time.getMinutes() + ':' + time.getSeconds();
-      // var d = new Date();
-      // var datestring = d.getFullYear() + "-"
-      //         + ("0" + (d.getMonth() + 1)).slice(-2)
-      //         + "-"  + ("0" + d.getDate()).slice(-2)
-      //         + "T" + ("0" + d.getHours()).slice(-2)
-      //         + ":" + ("0" + d.getMinutes()).slice(-2);
-      // alert(last+"  "+now+" "+datestring);
-      if (params == 1) {
+        window.searchsort = function (dom, params) {
+            var loadIndex = layer.load(2);
+            // var last = getBeforeDate(90) + " 00:00:00";
+            // var time = new Date();
+            // var now = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' ' + time.getHours()
+            //         + ':' + time.getMinutes() + ':' + time.getSeconds();
+            // var d = new Date();
+            // var datestring = d.getFullYear() + "-"
+            //         + ("0" + (d.getMonth() + 1)).slice(-2)
+            //         + "-"  + ("0" + d.getDate()).slice(-2)
+            //         + "T" + ("0" + d.getHours()).slice(-2)
+            //         + ":" + ("0" + d.getMinutes()).slice(-2);
+            // alert(last+"  "+now+" "+datestring);
+            if (params == 1) {
 
-        insTb.reload({
-          where: {hotDiscussion: "0", isHighQuality: "0", orderByStr: 'top_weight desc, last_comment_time desc'},
-          page: {curr: 1}
-        });
-        var collection = $(".flag");
-        $.each(collection, function () {
-          $(this).removeClass("layui-this");
-        });
-        $(dom).addClass("layui-this");
-        layer.close(loadIndex);
-      } else if (params == 2) {
-        insTb.reload({
-          where: {hotDiscussion: "0", isHighQuality: "1", orderByStr: 'last_comment_time desc'},
-          page: {curr: 1}
-        });
-        var collection = $(".flag");
-        $.each(collection, function () {
-          $(this).removeClass("layui-this");
-        });
-        $(dom).addClass("layui-this");
-        layer.close(loadIndex);
-      } else if (params == 3) {
+                insTb.reload({
+                    where: {
+                        hotDiscussion: "0",
+                        isHighQuality: "0",
+                        orderByStr: 'top_weight desc, last_comment_time desc'
+                    },
+                    page: {curr: 1}
+                });
+                var collection = $(".flag");
+                $.each(collection, function () {
+                    $(this).removeClass("layui-this");
+                });
+                $(dom).addClass("layui-this");
+                layer.close(loadIndex);
+            } else if (params == 2) {
+                insTb.reload({
+                    where: {hotDiscussion: "0", isHighQuality: "1", orderByStr: 'last_comment_time desc'},
+                    page: {curr: 1}
+                });
+                var collection = $(".flag");
+                $.each(collection, function () {
+                    $(this).removeClass("layui-this");
+                });
+                $(dom).addClass("layui-this");
+                layer.close(loadIndex);
+            } else if (params == 3) {
 
-        insTb.reload({
-          where: {hotDiscussion: "0", isHighQuality: "0", orderByStr: 'last_comment_time desc'},
-          page: {curr: 1}
-        });
-        var collection = $(".flag");
-        $.each(collection, function () {
-          $(this).removeClass("layui-this");
-        });
-        $(dom).addClass("layui-this");
-        layer.close(loadIndex);
-      } else {
-        insTb.reload({
-          where: {
-            hotDiscussion: "1",
-            isHighQuality: "0",
-            orderByStr: 'comment_count desc,last_comment_time desc'
-          }, page: {curr: 1}
-        });
-        var collection = $(".flag");
-        $.each(collection, function () {
-          $(this).removeClass("layui-this");
-        });
-        $(dom).addClass("layui-this");
-        layer.close(loadIndex);
-      }
-    }
+                insTb.reload({
+                    where: {hotDiscussion: "0", isHighQuality: "0", orderByStr: 'last_comment_time desc'},
+                    page: {curr: 1}
+                });
+                var collection = $(".flag");
+                $.each(collection, function () {
+                    $(this).removeClass("layui-this");
+                });
+                $(dom).addClass("layui-this");
+                layer.close(loadIndex);
+            } else {
+                insTb.reload({
+                    where: {
+                        hotDiscussion: "1",
+                        isHighQuality: "0",
+                        orderByStr: 'comment_count desc,last_comment_time desc'
+                    }, page: {curr: 1}
+                });
+                var collection = $(".flag");
+                $.each(collection, function () {
+                    $(this).removeClass("layui-this");
+                });
+                $(dom).addClass("layui-this");
+                layer.close(loadIndex);
+            }
+        }
 
-    /** 文章 */
-    var insTb = dataGrid.render({
-      elem: '#demoCardList3',
-      templet: '#demoCardItem3',
-      url: '/index/list',
-      response: {
-        statusCode: 2000 //规定成功的状态码，默认：0
+        /** 文章 */
+        var insTb = dataGrid.render({
+            elem: '#demoCardList3',
+            templet: '#demoCardItem3',
+            url: '/index/list',
+            response: {
+                statusCode: 2000 //规定成功的状态码，默认：0
 
-      },
-      where: {orderByStr: 'top_weight desc, last_comment_time desc'},
-      parseData: function (res) { //res 即为原始返回的数据
-        console.log(res);
-        return {
-          "code": res.code, //解析接口状态
-          "msg": res.message, //解析提示文本
-          "count": res.data.total, //解析数据长度
-          "data": res.data.list //解析数据列表
-        };
-      },
-      // where: {token: 'sasasas', id: 123},
-      page: true,
+            },
+            where: {orderByStr: 'top_weight desc, last_comment_time desc'},
+            parseData: function (res) { //res 即为原始返回的数据
+                console.log(res);
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.data.total, //解析数据长度
+                    "data": res.data.list //解析数据列表
+                };
+            },
+            // where: {token: 'sasasas', id: 123},
+            page: true,
+        });
+
+        dataGrid.on('tool(demoCardList3)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'star') {
+                data.isStar = !data.isStar;
+                data.isStar ? data.star++ : data.star--;
+                obj.update(data);
+            } else if (obj.event === 'like') {
+                data.isLike = !data.isLike;
+                data.isLike ? data.like++ : data.like--;
+                obj.update(data);
+            } else if (obj.event === 'comment') {
+                layer.msg('点击了评论');
+            }
+        });
+
     });
-
-    dataGrid.on('tool(demoCardList3)', function (obj) {
-      var data = obj.data;
-      if (obj.event === 'star') {
-        data.isStar = !data.isStar;
-        data.isStar ? data.star++ : data.star--;
-        obj.update(data);
-      } else if (obj.event === 'like') {
-        data.isLike = !data.isLike;
-        data.isLike ? data.like++ : data.like--;
-        obj.update(data);
-      } else if (obj.event === 'comment') {
-        layer.msg('点击了评论');
-      }
-    });
-
-  });
 </script>
 <!--<script>-->
 <!--layui.cache.page = '';-->
@@ -725,7 +748,8 @@
 <!--}).use('fly');-->
 <!--</script>-->
 
-<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_30088308'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D30088308' type='text/javascript'%3E%3C/script%3E"));</script>
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cspan id='cnzz_stat_icon_30088308'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D30088308' type='text/javascript'%3E%3C/script%3E"));</script>
 
 </body>
 </html>

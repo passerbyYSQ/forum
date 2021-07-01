@@ -82,9 +82,10 @@
             </div>
             <div class="layui-col-md6">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">权限标识:</label>
+                    <label class="layui-form-label layui-form-required">权限标识:</label>
                     <div class="layui-input-block">
-                        <input name="permission" placeholder="请输入权限标识" class="layui-input"/>
+                        <input name="permission" placeholder="请输入权限标识" class="layui-input"
+                               lay-verType="tips" lay-verify="required" required/>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -206,7 +207,7 @@
                 }
                 console.log(checkRows);
                 var ids = checkRows.filter(d =>
-                        d.children == null || d.children.length === 0) // 筛选非叶子节点
+                        d.children == null || d.children.length === 0) // 筛选出叶子节点
                     .map(function (d) {
                         return d.id;
                     });

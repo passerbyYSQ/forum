@@ -248,10 +248,13 @@
                 yes: function (dIndex) {
                     var insTree = $.fn.zTree.getZTreeObj('roleAuthTree');
                     var checkedRows = insTree.getCheckedNodes(true);
-                    var ids = [];
-                    for (var i = 0; i < checkedRows.length; i++) {
-                        ids.push(checkedRows[i].id);
-                    }
+                    console.log(checkedRows); // 包含半选的节点
+                    var ids = checkedRows
+                        // .filter(d =>
+                        // d.children == null || d.children.length === 0) // 筛选出叶子节点
+                        .map(function (d) {
+                            return d.id;
+                        });
                     var loadIndex = layer.load(2);
                     $.post('/admin/system/role/assign', {roleId: roleId, permIds: ids}, function (res) {
                         layer.close(loadIndex);

@@ -67,6 +67,15 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                 return null; //返回参数值
             },
 
+            scrollIntoView: function (selector) {
+                document.querySelector(selector).scrollIntoView({
+                    behavior: "smooth", // 定义动画过渡效果， "auto"或 "smooth" 之一。默认为 "auto"
+                    block: "center", // 定义垂直方向的对齐， "start", "center", "end", 或 "nearest"之一。默认为 "start"
+                    inline: "nearest" // 定义水平方向的对齐， "start", "center", "end", 或 "nearest"之一。默认为 "nearest"
+                });
+                console.log(selector);
+            },
+
             // 格式化时间
             formatDateTime: function (dateTimeStr) { // yyyy-MM-dd HH:mm:ss
                 var timestamp = Date.parse(dateTimeStr.replace(/-/gi, "/"));
@@ -179,8 +188,11 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                         notice.destroy();
                         if (type === "timeout") {
                             app.errorNotice('请求超时');
-                        } else if (type === "error") {
-                            app.errorNotice('请求错误');
+                        } else if (type === "error") { // 请求错误
+                            // console.log(xhr);
+                            // console.log(typeof xhr.responseJSON);
+                            var res = xhr.responseJSON;
+                            app.errorNotice(res.code + "：" + res.msg);
                         }
                     }
                 });

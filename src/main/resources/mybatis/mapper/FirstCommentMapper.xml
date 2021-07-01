@@ -39,7 +39,7 @@
         select id, user_id, content, floor_num, second_comment_count, create_time
         from first_comment
         where post_id = #{postId}
-        order by #{orderByStr}
+        order by ${orderByStr}
   </select>
 
     <update id="addSecondCommentCount" parameterType="map">

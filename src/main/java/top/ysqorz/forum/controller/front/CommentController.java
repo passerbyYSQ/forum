@@ -50,10 +50,9 @@ public class CommentController {
             return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
         }
         if (post.getIsLocked() == 1) {
-            return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子锁定
+            return ResultModel.failed(StatusCode.POST_LOCKED); // 帖子锁定，不允许回复
         }
-        Integer myId = ShiroUtils.getUserId();
-        commentService.publishFirstComment(post, dto.getContent(), myId);
+        commentService.publishFirstComment(post, dto.getContent());
         return ResultModel.success();
     }
 

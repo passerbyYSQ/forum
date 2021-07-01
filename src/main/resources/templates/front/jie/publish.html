@@ -307,8 +307,9 @@
                 // 网络请求
                 app.ajax(url, data.field, function (res) {
                     // 业务成功（业务状态码）的回调
-                    console.log("请求成功");
-                    location.reload();
+                    console.log(res);
+                    //location.reload();
+                    location.href = '/post/detail/' + res.data.id;
                 }, "post", function (res) {
                     // 业务失败的回调
                     // 模拟点击，刷新验证码

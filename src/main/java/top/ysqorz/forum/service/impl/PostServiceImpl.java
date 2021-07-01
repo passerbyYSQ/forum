@@ -69,10 +69,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post addPost(PublishPostDTO vo, Integer creatorId) {
+    public Post addPost(PublishPostDTO vo) {
         Post post = new Post();
         LocalDateTime now = LocalDateTime.now();
-        post.setCreatorId(creatorId) // 发帖人id
+        post.setCreatorId(ShiroUtils.getUserId()) // 发帖人id
                 .setTopicId(vo.getTopicId())  // 所属话题的id
                 .setTitle(vo.getTitle()) // 帖子标题
                 // 帖子内容，由于全局XSS防护做了转义，此处需要反转义
@@ -106,16 +106,17 @@ public class PostServiceImpl implements PostService {
 
     @Transactional // 开启事务
     @Override
-    public void publishPost(PublishPostDTO vo, Integer creatorId) {
+    public Post publishPost(PublishPostDTO vo) {
         // 注意要用this对象，否则调用的不是被AOP代理后的对象的方法
-        Post post = this.addPost(vo, creatorId);
+        Post post = this.addPost(vo);
         // 批量插入帖子和标签的映射关系
         postLabelService.addPostLabelList(post.getId(), vo.splitLabels());
+        return post;
     }
 
     @Transactional
     @Override
-    public void updatePostAndLabels(PublishPostDTO vo) {
+    public Post updatePostAndLabels(PublishPostDTO vo) {
         Post post = new Post();
         post.setId(vo.getPostId())
                 .setTopicId(vo.getTopicId())
@@ -132,6 +133,8 @@ public class PostServiceImpl implements PostService {
 
         // 批量插入帖子和标签的映射关系
         postLabelService.addPostLabelList(vo.getPostId(), vo.splitLabels());
+
+        return post;
     }
 
     @Override
@@ -180,19 +183,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public int addCommentCount(Integer postId, Integer dif) {
+    public int updateCommentCountAndLastTime(Integer postId, Integer dif) {
         Map<String, Object> params = new HashMap<>();
         params.put("postId", postId);
         params.put("dif", dif);
-        return postMapper.addCommentCount(params);
+        return postMapper.updateCommentCountAndLastTime(params);
     }
 
 
     @Transactional
     @Override
-    public Like addLike(Integer myId, Integer postId) {
+    public Like addLike(Integer postId) {
         Like like = new Like();
-        like.setUserId(myId)
+        like.setUserId(ShiroUtils.getUserId())
                 .setPostId(postId)
                 .setCreateTime(LocalDateTime.now())
                 .setIsRead((byte) 0);

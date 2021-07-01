@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
+import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.service.RoleService;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dao.RoleMapper;
@@ -70,7 +71,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Set<Integer> getRoleAllPerms(Integer roleId) {
+    public Set<Integer> getRoleAllPermIds(Integer roleId) {
         Example example = new Example(RoleResource.class);
         example.selectProperties("resourceId")
                 .createCriteria().andEqualTo("roleId", roleId);
@@ -93,6 +94,16 @@ public class RoleServiceImpl implements RoleService {
             example.createCriteria().andLike("roleName", "%" + roleName + "%");
         }
         return roleMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<Role> getRoleByUserId(Integer userId) {
+        return roleMapper.getRoleByUserId(userId); // 需要联表查询
+    }
+
+    @Override
+    public List<Resource> getRoleAllPerms(Integer roleId) {
+        return roleMapper.getRoleAllPerms(roleId); // 需要联表查询
     }
 
 }

@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
 
@@ -11,7 +12,6 @@ import java.util.Set;
  * @create 2021-05-13 23:54
  */
 public interface RoleService {
-
     /**
      * 根据id删除角色
      */
@@ -40,7 +40,7 @@ public interface RoleService {
     /**
      * 某个角色拥有的所有权限的id
      */
-    Set<Integer> getRoleAllPerms(Integer roleId);
+    Set<Integer> getRoleAllPermIds(Integer roleId);
 
     /**
      * 根据id查询角色
@@ -52,4 +52,13 @@ public interface RoleService {
      */
     List<Role> getRoleList(String roleName);
 
+    /**
+     * 查询某个用户的所有角色
+     */
+    List<Role> getRoleByUserId(Integer userId);
+
+    /**
+     * 查询某个用户的所有权限
+     */
+    List<Resource> getRoleAllPerms(Integer roleId);
 }
