@@ -1,5 +1,11 @@
 package top.ysqorz.forum.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -221,6 +227,44 @@ public class PostServiceImpl implements PostService {
         params.put("postId", postId);
         params.put("dif", dif);
         return postMapper.addLikeCount(params);
+    }
+
+    @Override
+    public PageData<PostDTO> getIndexPost(Integer page, Integer count,QueryPostCondition conditions) {
+        PageHelper.startPage(page, count);
+        //  PageHelper.clearPage(); //不加报错
+        if (ShiroUtils.isAuthenticated()) { // 当前主体已登录
+            Integer myId = ShiroUtils.getUserId(); // 当前登录用户的userId
+            conditions.setUserId(myId);
+        }
+        List<PostDTO> postList = this.getPostList(conditions);
+        for(PostDTO post:postList){
+            Document doc = Jsoup.parse(post.getContent());
+            String  content=doc.text();  //获取html文本
+            if(content.length()>=100){
+                String substring = content.substring(0, 100);
+                content=substring+"...";
+
+            }
+            post.setContent(content);
+            Elements jpgs=doc.select("img[src]"); //　查找图片
+            for(int i=0;i<jpgs.size();i++){
+                Element jpg=jpgs.get(i);
+                post.getImagesList().add(jpg.toString());
+                if(i==3){
+                    break;
+                }
+            }
+
+        }
+        // List<User> userList = userService.getUserList(conditions);
+        PageInfo<PostDTO> pageInfo = new PageInfo<>(postList);
+        PageData<PostDTO> pageData = new PageData<>();
+        pageData.setList(postList);
+        pageData.setTotal(pageInfo.getTotal());
+        pageData.setPage(pageInfo.getPageNum());
+        pageData.setCount(pageInfo.getPageSize());
+        return pageData;
     }
 
 }

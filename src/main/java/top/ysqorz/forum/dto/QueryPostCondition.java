@@ -26,6 +26,8 @@ public class QueryPostCondition {
     private LocalDateTime endPublishTime; // 发帖时间的范围。起始时间
     //private String labels; // 标签。需要以","作为分隔符
 
+    private Integer userId;//当前登录用户Id
+
     private String field; // 排序字段
     private String order; // 排序方式。 desc asc
     private String orderByStr; //

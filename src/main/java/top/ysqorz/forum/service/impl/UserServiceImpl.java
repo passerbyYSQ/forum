@@ -17,12 +17,10 @@ import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
-import top.ysqorz.forum.po.Blacklist;
-import top.ysqorz.forum.po.Role;
-import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.po.UserRole;
+import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
+import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
@@ -175,13 +173,13 @@ public class UserServiceImpl implements UserService {
         // 第三个参数（hashIterations）：哈希散列的次数
         Md5Hash md5Hash = new Md5Hash(vo.getPassword(), user.getLoginSalt(), 1024);
         // 保存加密后的密码
-        user.setPassword(md5Hash.toHex());
-        user.setRegisterTime(LocalDateTime.now());
-        user.setModifyTime(LocalDateTime.now());
-        user.setRewardPoints(0);
-        user.setFansCount(0);
-        user.setGender((byte) 3); // 性别保密
-        user.setJwtSalt("");
+        user.setPassword(md5Hash.toHex())
+                .setRegisterTime(LocalDateTime.now())
+                .setModifyTime(LocalDateTime.now())
+                .setRewardPoints(0).setFansCount(0)
+                .setGender((byte) 3) // 性别保密
+                .setJwtSalt("")
+                .setPhoto("/admin/assets/images/defaultUserPhoto.jpg");
 
         userMapper.insertSelective(user);
     }
@@ -278,6 +276,7 @@ public class UserServiceImpl implements UserService {
         return simpleUserDTO;
     }
 
+
     @Override
     public String login(Integer userId, HttpServletResponse response) {
         String jwtSecret = RandomUtils.generateStr(8);
@@ -306,6 +305,7 @@ public class UserServiceImpl implements UserService {
         Integer userId = (Integer) subject.getPrincipal();
         this.updateJwtSalt(userId, "");
         subject.logout();
+
     }
 
 
@@ -332,5 +332,19 @@ public class UserServiceImpl implements UserService {
         record.setLastLoginTime(LocalDateTime.now());
         return userMapper.updateByPrimaryKeySelective(record);
     }
+
+
+    @Override
+    public IndexUserDTO getShiroUser() {
+
+        if (ShiroUtils.isAuthenticated()) { // 当前主体已登录
+            Integer myId = ShiroUtils.getUserId(); // 当前登录用户的userId
+            User user = this.getInfoById(myId);
+            return new IndexUserDTO(user);
+        }
+        return new IndexUserDTO();
+    }
+
+
 
 }

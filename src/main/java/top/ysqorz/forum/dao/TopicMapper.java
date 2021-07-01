@@ -16,4 +16,6 @@ public interface TopicMapper extends BaseMapper<Topic> {
     int updatePostCountById(Map<String, Object> params);
 
     List<TopicDTO> getAllTopic(String topicName);
+
+    List<Topic>  getHotTopic();
 }

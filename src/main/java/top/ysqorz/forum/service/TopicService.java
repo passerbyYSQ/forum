@@ -20,6 +20,7 @@ public interface TopicService {
      */
     List<Topic> getAllTopic();
 
+
     /**
      * 根据id获取话题
      */
@@ -47,4 +48,9 @@ public interface TopicService {
      * 是否归档
      */
     int archive(Integer id, Integer state);
+
+    /**
+     * 获取权重最大的五个Topic
+     */
+    List<Topic> getTopicByHot();
 }

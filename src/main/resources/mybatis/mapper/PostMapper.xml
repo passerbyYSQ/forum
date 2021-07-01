@@ -69,9 +69,15 @@
                 top_weight,
                 content,
                 last_comment_time
+        <if test="userId!= null and userId > 0">
+            ,if(l.id!='null',true ,false)as  isLike
+        </if>
         from post p
         left join user u on p.creator_id = u.id
         left join topic t on p.topic_id = t.id
+        <if test="userId!= null and userId > 0">
+            left join `like` l on (p.id=l.post_id and #{userId}=l.user_id)
+        </if>
         <where>
             <if test="topicId != null and topicId > 0">
                 and t.id = #{topicId}

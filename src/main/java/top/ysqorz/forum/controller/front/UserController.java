@@ -20,6 +20,7 @@ import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -146,10 +147,13 @@ public class UserController {
      * 销毁主体的认证信息
      */
     @RequestMapping("/logout")
-    @ResponseBody
-    public ResultModel logout() {
+    public String logout(HttpServletResponse response) {
         userService.logout();
-        return ResultModel.success();
+        Cookie cookie = new Cookie("token", "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/"); // ！！！
+        response.addCookie(cookie);
+        return "redirect:/";
     }
 
     @GetMapping("/oauth/gitee/authorize")

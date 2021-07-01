@@ -1,9 +1,6 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.dto.PostDTO;
-import top.ysqorz.forum.dto.PostDetailDTO;
-import top.ysqorz.forum.dto.PublishPostDTO;
-import top.ysqorz.forum.dto.QueryPostCondition;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Like;
 import top.ysqorz.forum.po.Post;
 
@@ -68,4 +65,9 @@ public interface PostService {
     int cancelLike(Integer likeId, Integer postId);
 
     int addLikeCount(Integer postId, Integer dif);
+
+    /**
+     * index返回的帖子信息
+     */
+    PageData<PostDTO> getIndexPost(Integer page, Integer count, QueryPostCondition conditions);
 }

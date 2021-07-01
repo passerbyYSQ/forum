@@ -42,5 +42,11 @@
     </if>
     order by sort_weight desc
   </select>
+  <select id="getHotTopic" resultType="top.ysqorz.forum.po.Topic">
+    select t.*
+    from topic t
+    order by sort_weight desc
+    limit 0,5
+  </select>
 
 </mapper>

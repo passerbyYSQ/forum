@@ -124,4 +124,9 @@ public interface UserService {
     void clearShiroAuthCache(User user);
 
     SimpleUserDTO getSimpleUser(Integer userId);
+
+    /**
+     * 根据shiro获取认证用户信息
+     */
+    IndexUserDTO getShiroUser();
 }

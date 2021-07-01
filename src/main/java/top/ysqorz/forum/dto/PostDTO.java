@@ -40,6 +40,8 @@ public class PostDTO {
     private List<String>  imagesList=new ArrayList<>(); //图片列表
     private LocalDateTime lastCommentTime;
 
+    private boolean isLike; //当前登录的用户是否点赞 这里是isLike 到前端就变成like了 原因不详
+
     public PostDTO() {
     }
 

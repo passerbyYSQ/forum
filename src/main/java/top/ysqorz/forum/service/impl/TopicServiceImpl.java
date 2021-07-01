@@ -65,6 +65,12 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    public List<Topic> getTopicByHot() {
+
+        return topicMapper.getHotTopic();
+    }
+
+    @Override
     public List<Topic> getAllTopic() {
         Example example = new Example(Topic.class);
         example.createCriteria().andEqualTo("archive", 0);
