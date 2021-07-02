@@ -1,8 +1,7 @@
 package top.ysqorz.forum.utils;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -38,6 +37,16 @@ public class DateTimeUtils {
         return unit.between(early, late);
     }
 
+    // 获取当天格式化后的日期。例：2021-07-02
+    public static String getFormattedDate() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now());
+    }
+
+    // 距离下一天，还有多长时间（可精确到纳秒）
+    public static Duration durationToNextDay() {
+        LocalDateTime now = LocalDateTime.now();
+        return Duration.between(now, now.plusDays(1));
+    }
 
 
 

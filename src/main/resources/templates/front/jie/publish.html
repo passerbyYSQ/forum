@@ -391,7 +391,7 @@
                 var xhr, formData;
                 var file = blobInfo.blob(); //转化为易于理解的file对象
                 xhr = new XMLHttpRequest();
-                xhr.withCredentials = false; // !!!是否携带cookie
+                xhr.withCredentials = true; // !!!是否携带cookie
                 xhr.open('POST', '/upload/image');
                 xhr.onload = function () {
                     var json;

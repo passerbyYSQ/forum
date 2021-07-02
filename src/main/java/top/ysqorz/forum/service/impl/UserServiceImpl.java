@@ -17,7 +17,10 @@ import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
-import top.ysqorz.forum.po.*;
+import top.ysqorz.forum.po.Blacklist;
+import top.ysqorz.forum.po.Role;
+import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.po.UserRole;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -78,11 +81,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User getInfoById(Integer id) {
-        Example example = new Example(User.class);
-        example.createCriteria().andEqualTo("id", id);
-
-        return userMapper.selectOneByExample(example);
+    public User getUserById(Integer userId) {
+        return userMapper.selectByPrimaryKey(userId);
     }
 
     @Override
@@ -147,10 +147,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int delRoleForUser(Integer[] roleIds, Integer userId) {
-        for (int i = 0; i < roleIds.length; i++) {
+        for (Integer roleId : roleIds) {
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)
-                    .andEqualTo("roleId", roleIds[i]);
+                    .andEqualTo("roleId", roleId);
             userRoleMapper.deleteByExample(example);
 
         }
@@ -335,14 +335,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public IndexUserDTO getShiroUser() {
-
+    public SimpleUserDTO getLoginUser() {
         if (ShiroUtils.isAuthenticated()) { // 当前主体已登录
             Integer myId = ShiroUtils.getUserId(); // 当前登录用户的userId
-            User user = this.getInfoById(myId);
-            return new IndexUserDTO(user);
+            return this.getSimpleUser(myId);
         }
-        return new IndexUserDTO();
+        return new SimpleUserDTO();
     }
 
 

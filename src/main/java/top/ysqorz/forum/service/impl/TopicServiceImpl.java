@@ -66,7 +66,6 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<Topic> getTopicByHot() {
-
         return topicMapper.getHotTopic();
     }
 

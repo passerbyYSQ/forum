@@ -4,7 +4,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author passerbyYSQ
@@ -170,6 +171,9 @@ public class PostServiceImpl implements PostService {
             }
         }
 
+        Set<Integer> top5 = redisService.hostPostDayRankTop(5);
+        postDetailDTO.setIsHot(top5.contains(post.getId()));
+
         // 评论列表由前端LayUI请求接口单独拉取
 //        PageData<FirstCommentDTO> commentList = commentService.getCommentListByPostId(
 //                post.getId(), page, count, isTimeAsc);
@@ -182,9 +186,11 @@ public class PostServiceImpl implements PostService {
     public void addVisitCount(String ipAddress, Integer postId) {
         // post:visit:11:ip --> ""   5 minute
         // 不存在就设置，存在就不设置
-        // 如果设置失败，说明：在5分钟之内，访问了多次，访问量不加1。否则访问量+1
+        // 如果设置失败，说明：在5分钟之内，访问了多次，不加访问量。否则访问量+1
         if (redisService.tryAddPostVisitIp(ipAddress, postId)) {
             postMapper.addVisitCount(postId);
+            // 维护 帖子访问量日榜
+            redisService.addHotPostDayRankScore(postId);
         }
     }
 
@@ -230,7 +236,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PageData<PostDTO> getIndexPost(Integer page, Integer count,QueryPostCondition conditions) {
+    public PageData<PostDTO> getIndexPost(Integer page, Integer count, QueryPostCondition conditions) {
         PageHelper.startPage(page, count);
         //  PageHelper.clearPage(); //不加报错
         if (ShiroUtils.isAuthenticated()) { // 当前主体已登录
@@ -238,33 +244,34 @@ public class PostServiceImpl implements PostService {
             conditions.setUserId(myId);
         }
         List<PostDTO> postList = this.getPostList(conditions);
-        for(PostDTO post:postList){
-            Document doc = Jsoup.parse(post.getContent());
-            String  content=doc.text();  //获取html文本
-            if(content.length()>=100){
-                String substring = content.substring(0, 100);
-                content=substring+"...";
 
+        Set<Integer> top5 = redisService.hostPostDayRankTop(5);
+
+        for (PostDTO post : postList) {
+            Document doc = Jsoup.parse(post.getContent());
+            String content = doc.text();  //获取html文本
+            if (content.length() >= 100) {
+                content= content.substring(0, 100);
             }
             post.setContent(content);
-            Elements jpgs=doc.select("img[src]"); //　查找图片
-            for(int i=0;i<jpgs.size();i++){
-                Element jpg=jpgs.get(i);
-                post.getImagesList().add(jpg.toString());
-                if(i==3){
-                    break;
-                }
-            }
+            // 排除表情图片。表情图片有个特点：alt="[xxx]"。排除掉这种情况的图片
+            //Pattern.compile("^((?!\\[\\S+\\]).)*$"); // 正则表达式测试
+            // https://www.jb51.net/article/52491.htm
+            // https://blog.csdn.net/qq_24549805/article/details/52833463
+            Elements images = doc.select("img[src][alt~=^((?!\\[\\S+\\]).)*$]");
+            List<String> imageList = images.stream()
+                    .map(element -> element.attr("src"))
+                    .limit(3)
+                    .collect(Collectors.toList());
 
+            post.setImagesList(imageList);
+
+            // 判断是否是日榜前5
+            post.setIsHot(top5.contains(post.getId()));
         }
         // List<User> userList = userService.getUserList(conditions);
         PageInfo<PostDTO> pageInfo = new PageInfo<>(postList);
-        PageData<PostDTO> pageData = new PageData<>();
-        pageData.setList(postList);
-        pageData.setTotal(pageInfo.getTotal());
-        pageData.setPage(pageInfo.getPageNum());
-        pageData.setCount(pageInfo.getPageSize());
-        return pageData;
+        return new PageData<>(pageInfo, postList);
     }
 
 }

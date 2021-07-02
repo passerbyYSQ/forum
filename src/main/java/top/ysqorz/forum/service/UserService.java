@@ -59,7 +59,7 @@ public interface UserService {
     /**
      * 根据id查询user信息
      */
-    User getInfoById(Integer id);
+    User getUserById(Integer userId);
 
     /**
      * 取消拉黑
@@ -110,7 +110,7 @@ public interface UserService {
      * qq授权
      */
     User oauth2QQ(String code) throws IOException;
-	
+
 	/**
      * 百度授权
      */
@@ -128,5 +128,5 @@ public interface UserService {
     /**
      * 根据shiro获取认证用户信息
      */
-    IndexUserDTO getShiroUser();
+    SimpleUserDTO getLoginUser();
 }

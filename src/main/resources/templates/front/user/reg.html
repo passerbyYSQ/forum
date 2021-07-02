@@ -8,6 +8,7 @@
     <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
     <link rel="stylesheet" th:href="@{/admin/assets/libs/layui/css/layui.css}" href="../res/layui/css/layui.css">
     <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
+    <link rel="stylesheet" th:href="@{/admin/assets/css/iconfont.css}">
     <style>
         .login-wrapper {
             max-width: 400px;
@@ -114,6 +115,10 @@
         .layui-link {
             color: #5FB878 !important;
         }
+
+        .iconfont {
+            font-size: 26px;
+        }
     </style>
 </head>
 <body>
@@ -204,11 +209,16 @@
                             <button class="layui-btn layui-btn-fluid" lay-filter="register" lay-submit>一键注册</button>
                         </div>
                         <div class="layui-form-item login-oauth-group">
-                            <a href="javascript:;"><i class="layui-icon layui-icon-login-qq" style="color:#3492ed;"></i></a>&emsp;
-                            <a href="javascript:;"><i class="layui-icon layui-icon-login-wechat"
-                                                      style="color:#4daf29;"></i></a>&emsp;
-                            <a href="javascript:;"><i class="layui-icon layui-icon-login-weibo"
-                                                      style="color:#CF1900;"></i></a>
+                            <a th:href="@{/user/oauth/gitee/authorize}">
+                                <i class="iconfont icon-Gitee" style="color:#d12f00;"></i>
+                            </a>&emsp;
+
+                            <a th:href="@{/user/oauth/baidu/authorize}">
+                                <i class="iconfont icon-baiduwangpan" style="color:#3492ed;"></i>
+                            </a>&emsp;
+                            <a th:href="@{/user/oauth/qq/authorize}" >
+                                <i class="iconfont icon-QQ" style="color:#3492ed;"></i>
+                            </a>
                         </div>
                     </form>
                 </div>

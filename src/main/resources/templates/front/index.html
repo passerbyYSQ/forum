@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="keywords" content="fly,layui,前端社区">
     <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
-    <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
+    <link rel="stylesheet" th:href="@{/admin/assets/libs/layui/css/layui.css}" href="../res/layui/css/layui.css">
     <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
+    <link rel="stylesheet" th:href="@{/admin/assets/css/iconfont.css}">
     <style>
         /** 文章列表样式 */
         .article-list-item {
@@ -43,16 +44,20 @@
         }
 
         .article-list-item .article-list-item-img {
-            width: 600px;
-            height: 120px;
-
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+            white-space: nowrap;
+            margin-bottom: 16px;
         }
 
         .article-list-item .article-list-item-img img {
-            width: 150px;
-            height: 100px;
+            width: 30%;
+            min-width: 180px;
+            height: 160px;
             object-fit: cover;
-            float: left;
+            margin-right: 16px !important;
+            cursor: pointer;
         }
 
         .article-list-item .article-list-item-desc {
@@ -92,13 +97,10 @@
             }
         }
 
-
         .article-list-item .article-list-item-tool {
             color: #666;
             right: 10px;
             float: right;
-
-
         }
 
         .article-list-item .article-list-item-tool .article-list-item-tool-item {
@@ -133,6 +135,16 @@
             color: #52c41a;
             background: #f6ffed;
             border: 1px solid #b7eb8f;
+            font-size: 13px;
+        }
+
+        h2.title span.layui-badge {
+            top: -2px;
+        }
+
+        h2.title div.layui-badge-rim {
+            float: right;
+            top: 3px;
         }
 
         /*大长腿标签样式*/
@@ -144,6 +156,34 @@
 
         }
 
+        .ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /*  美化滚动条  */
+        .post-list ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+            background-color: #F5F5F5;
+        }
+
+        /*定义滚动条轨道 内阴影+圆角*/
+        .post-list ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        /*定义滑块 内阴影+圆角*/
+        .post-list ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+            background-color: #c8c8c8;
+        }
 
     </style>
 </head>
@@ -223,7 +263,7 @@
             <!--      <li><a href="jie/index.html">提问</a></li>-->
             <!--      <li><a href="jie/index.html">分享<span class="layui-badge-dot"></span></a></li>-->
 
-            <li th:each="topic : ${Topics}">
+            <li th:each="topic : ${topics}">
                 <a href="javascript:void(0);" th:onclick="topicsort(this,[[${topic.id}]])" class="tark"
                    th:text="${topic.topicName}">Onions</a>
             </li>
@@ -239,11 +279,11 @@
 
         <div class="fly-column-right layui-hide-xs">
             <span class="fly-search"><i class="layui-icon"></i></span>
-            <a href="jie/add.html" class="layui-btn">发表新帖</a>
+            <a th:href="@{/post/publish}" target="_blank" href="jie/add.html" class="layui-btn">发表新帖</a>
         </div>
         <div class="layui-hide-sm layui-show-xs-block"
              style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
-            <a href="jie/add.html" class="layui-btn">发表新帖</a>
+            <a th:href="@{/post/publish}" target="_blank" href="jie/add.html" class="layui-btn">发表新帖</a>
 
         </div>
     </div>
@@ -270,7 +310,7 @@
           </span>
                 </div>
 
-                <div id="demoCardList3"></div>
+                <div id="demoCardList3" class="post-list"></div>
 
 
             </div>
@@ -484,53 +524,51 @@
         <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
     </p>
 </div>
-
 <script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
 <script th:src="@{/front/res/mods/app.js(v=318)}"></script>
 <!-- 帖子模板 -->
 <script type="text/html" id="demoCardItem3">
 
     <div class="article-list-item">
-        <h2 class="title"><span class="layui-badge layui-badge-green">{{d.topic}}</span>
-            <a lay-event="checkPost">{{d.title}}</a>
+        <h2 class="title layui-clear">
+            <span class="layui-badge layui-badge-green">{{d.topic}}</span>
+            <a href="/post/detail/{{d.id}}" target="_blank" lay-event="checkPost">{{d.title}}</a>
+            {{# if(d.isLocked == 1){ }}
+            <span class="layui-badge" style="background-color: #999;">锁定</span>
+            {{# } }}
             {{# if(d.topWeight != 0){ }}
-            <span class="layui-badge layui-bg-blue"> 置顶</span>
+            <span class="layui-badge layui-bg-blue">置顶</span>
             {{# } }}
             {{# if(d.isHighQuality != 0){ }}
-            <span class="layui-badge layui-bg-red"> 精贴</span>
+            <span class="layui-badge layui-bg-red">精贴</span>
             {{# } }}
-
+            {{# if(d.isHot){ }}
+            <span class="iconfont icon-remen" style="color: #fc3218; font-size: 22px;"></span>
+            {{# } }}
+            <div class="layui-badge-rim">{{d.lastCommentTime}}</div>
         </h2>
 
-        <div class="layui-badge-rim">{{d.lastCommentTime}}</div>
-        <!--    <div class="layui-badge-list">-->
-
-        <!--      {{# layui.each(d.labelList, function(index, item){ }}-->
-        <!--      {{# if(d.labelList!= 0 ){ }}-->
-        <!--      <span class="layui-badge-blue">{{item.labelName}}</span>-->
-        <!--      {{# }}}-->
-        <!--      {{# }); }}-->
-
-        <!--    </div>-->
-        <div class="article-list-item-text layui-text">
-            {{d.content}}
+        <div class="article-list-item-text layui-text" style="color: #999;">
+            <p class="ellipsis">{{d.content}}</p>
         </div>
 
         {{# if(d.imagesList != 0){ }}
-        <div class="article-list-item-img layui-text " id="fff">
-            {{d.imagesList}}
+        <div id="imageList_{{d.id}}" class="article-list-item-img layui-text">
+            {{# layui.each(d.imagesList, function(index, item){ }}
+            <img src="{{item}}">
+            {{# }); }}
         </div>
         {{# } }}
         <div class="article-list-item-desc layui-text">
             <img src="{{d.creator.photo}}" class="head">&nbsp;
-            <a href="javascript:;" class="name">{{d.creator.username}}</a>
-            <span class="lv"> lv6</span>
+            <a href="javascript:;" class="name" style="margin-right: 12px;">{{d.creator.username}}</a>
+            <span class="lv"> Lv6</span>
             <div class="article-list-item-tool">
                 <!--            <span class="article-list-item-tool-item {{d.isStar?'star-active':''}}" lay-event="star">-->
                 <!--                <i class="layui-icon layui-icon-rate"></i>&nbsp;-->
                 <!--                <span>{{d.collectCount}}</span>-->
                 <!--            </span>-->
-                <span class="article-list-item-tool-item {{d.like?'star-active':''}}" lay-event="like">
+                <span class="article-list-item-tool-item {{d.isLike?'star-active':''}}" lay-event="like">
                 <i class="layui-icon layui-icon-praise"></i>&nbsp;
                 <span>{{d.likeCount}}</span>
             </span>
@@ -547,15 +585,21 @@
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
 
-    layui.use(['layer', 'dataGrid', 'element', 'dropdown'], function () {
-        var $ = layui.jquery, app = layui.app;
+    layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'app'], function () {
+        var $ = layui.jquery;
+        var app = layui.app;
         var layer = layui.layer;
         var dataGrid = layui.dataGrid;
-        var conditon = new Object();
+        var conditon = {};
         conditon.hotDiscussion = "0";
         conditon.orderByStr = "top_weight desc, last_comment_time desc";
         conditon.isHighQuality = "0";
         conditon.topicId = "";
+
+        layer.photos({
+            photos: '#list-test',
+            anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+        });
 
         window.topicsort = function (dom, id) {
 
@@ -576,7 +620,7 @@
             });
             $(dom).parent().addClass("layui-this");
             layer.close(loadIndex);
-        }
+        };
 
         window.searchsort = function (dom, params) {
             var loadIndex = layer.load(2);
@@ -593,10 +637,11 @@
                     },
                     page: {curr: 1}
                 });
-                var collection = $(".flag");
-                $.each(collection, function () {
-                    $(this).removeClass("layui-this");
-                });
+                // var collection = $(".flag");
+                // $.each(collection, function () {
+                //     $(this).removeClass("layui-this");
+                // });
+                $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
                 layer.close(loadIndex);
             } else if (params == 2) {
@@ -612,10 +657,11 @@
                     },
                     page: {curr: 1}
                 });
-                var collection = $(".flag");
-                $.each(collection, function () {
-                    $(this).removeClass("layui-this");
-                });
+                // var collection = $(".flag");
+                // $.each(collection, function () {
+                //     $(this).removeClass("layui-this");
+                // });
+                $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
                 layer.close(loadIndex);
             } else if (params == 3) {
@@ -631,10 +677,11 @@
                     },
                     page: {curr: 1}
                 });
-                var collection = $(".flag");
-                $.each(collection, function () {
-                    $(this).removeClass("layui-this");
-                });
+                // var collection = $(".flag");
+                // $.each(collection, function () {
+                //     $(this).removeClass("layui-this");
+                // });
+                $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
                 layer.close(loadIndex);
             } else {
@@ -653,7 +700,7 @@
                 });
                 layer.close(loadIndex);
             }
-        }
+        };
 
 
         /** 文章 */
@@ -682,6 +729,19 @@
             },
             // where: {token: 'sasasas', id: 123},
             page: true,
+            done: function (res, curr, count) {
+                // 数据渲染完的回调
+                console.log(res);
+                console.log(typeof res);
+                for (var i = 0; i < res.length; i++) {
+                    layer.photos({
+                        photos: '#imageList_' + res[i].id,
+                        //anim: 5, //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                        shade: .1,
+                        closeBtn: true
+                    });
+                }
+            }
         });
 
         dataGrid.on('tool(demoCardList3)', function (obj) {
@@ -696,31 +756,15 @@
                 //   obj.update(data);
                 // } else if (obj.event === 'comment') {
                 //   layer.msg('点击了评论');
-            } else if (obj.event === 'checkPost') {
-                window.location.href = "/post/detail/" + data.id;
             }
+            // else if (obj.event === 'checkPost') {
+            //     window.location.href = "/post/detail/" + data.id;
+            // }
         });
 
     });
 
 </script>
-<!--<script>-->
-<!--layui.cache.page = '';-->
-<!--layui.cache.user = {-->
-<!--  username: '游客'-->
-<!--  ,uid: -1-->
-<!--  ,avatar: '../res/images/avatar/00.jpg'-->
-<!--  ,experience: 83-->
-<!--  ,sex: '男'-->
-<!--};-->
-<!--layui.config({-->
-<!--  version: "3.0.0",-->
-<!--  base: '/front/res/mods/'-->
-<!--  // ,base: '../res/mods/' //这里实际使用时，建议改成绝对路径-->
-<!--}).extend({-->
-<!--  fly: 'index'-->
-<!--}).use('fly');-->
-<!--</script>-->
 
 <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
 document.write(unescape("%3Cspan id='cnzz_stat_icon_30088308'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D30088308' type='text/javascript'%3E%3C/script%3E"));</script>

@@ -18,7 +18,7 @@ public interface CommentService {
 
     // 发布二级评论
     void publishSecondComment(FirstComment firstComment, SecondComment quoteComment,
-                              String content, Integer myId);
+                              String content);
 
     /**
      * 某个帖子的一级评论列表

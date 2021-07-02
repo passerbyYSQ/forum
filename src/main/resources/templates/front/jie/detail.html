@@ -11,6 +11,7 @@
 <!--    <link rel="stylesheet" th:href="@{/admin/assets/module/admin.css(v=318)}" href="admin/module/admin.css?v=318"/>-->
     <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
     <link rel="stylesheet" th:href="@{/admin/assets/libs/tinymce/plugins/codesample/prism.css}"/>
+    <link rel="stylesheet" th:href="@{/admin/assets/css/iconfont.css}">
     <!--    <link rel="stylesheet"-->
     <!--          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css">-->
 
@@ -220,6 +221,7 @@
                     <!-- <span class="layui-badge" style="background-color: #5FB878;">锁定</span> -->
                     <span th:if="${post.detail.topWeight > 0}" class="layui-badge layui-bg-blue">置顶</span>
                     <span th:if="${post.detail.isHighQuality == 1}" class="layui-badge layui-bg-red">精帖</span>
+                    <span th:if="${post.isHot}" class="iconfont icon-remen" style="color: #fc3218; font-size: 26px;"></span>
                 </h1>
                 <div class="fly-detail-info clear-float">
                     <!-- <span class="layui-badge">审核中</span> -->
@@ -656,9 +658,7 @@
                             var list = res.data.list;
                             list.map(item => {
                                 item.createTime = app.formatDateTime(item.createTime);
-                                console.log(item.content);
                                 item.content = app.content(item.content);
-                                console.log(item.content);
                                 return item;
                             });
                             return {
@@ -814,7 +814,7 @@
                     isTimeAsc: isTimeAsc
                 },
                 page: {
-                    curr: curPage // 当前页
+                    curr: 1
                 }
             });
             // 高亮标识当前的排序方式
@@ -949,7 +949,7 @@
                 var xhr, formData;
                 var file = blobInfo.blob(); //转化为易于理解的file对象
                 xhr = new XMLHttpRequest();
-                xhr.withCredentials = false; // !!!是否携带cookie
+                xhr.withCredentials = true; // !!!是否携带cookie
                 xhr.open('POST', '/upload/image');
                 xhr.onload = function () {
                     var json;

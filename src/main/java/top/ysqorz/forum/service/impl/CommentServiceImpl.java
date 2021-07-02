@@ -90,7 +90,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void publishSecondComment(FirstComment firstComment,
                                      SecondComment quoteComment,
-                                     String content, Integer myId) {
+                                     String content) {
+        Integer myId = ShiroUtils.getUserId();
         Integer receiverId = firstComment.getUserId();
         byte commentType = 1;
         Integer repliedId = firstComment.getId();
