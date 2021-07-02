@@ -590,113 +590,73 @@
         var app = layui.app;
         var layer = layui.layer;
         var dataGrid = layui.dataGrid;
-        var conditon = {};
-        conditon.hotDiscussion = "0";
-        conditon.orderByStr = "top_weight desc, last_comment_time desc";
-        conditon.isHighQuality = "0";
-        conditon.topicId = "";
+        var conditon = {
+            hotDiscussion: "0",
+            orderByStr:  "top_weight desc, last_comment_time desc",
+            isHighQuality:  "0",
+            topicId: ""
+        };
 
-        layer.photos({
-            photos: '#list-test',
-            anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
-        });
 
         window.topicsort = function (dom, id) {
 
             conditon.topicId = id;
             var loadIndex = layer.load(2);
             insTb.reload({
-                where: {
-                    hotDiscussion: conditon.hotDiscussion,
-                    isHighQuality: conditon.isHighQuality,
-                    orderByStr: conditon.orderByStr,
-                    topicId: conditon.topicId
-                },
+                where: conditon,
                 page: {curr: 1}
             });
-            var collection = $(".tark");
-            $.each(collection, function () {
-                $(this).parent().removeClass("layui-this");
-            });
+            // var collection = $(".tark");
+            // $.each(collection, function () {
+            //     $(this).parent().removeClass("layui-this");
+            // });
             $(dom).parent().addClass("layui-this");
+            $(dom).parent().siblings("li").removeClass("layui-this");
             layer.close(loadIndex);
         };
 
         window.searchsort = function (dom, params) {
             var loadIndex = layer.load(2);
-            if (params == 1) {
+            if (params == 1) { // 综合
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "top_weight desc, last_comment_time desc";
                 conditon.isHighQuality = "0";
                 insTb.reload({
-                    where: {
-                        hotDiscussion: conditon.hotDiscussion,
-                        isHighQuality: conditon.isHighQuality,
-                        orderByStr: conditon.orderByStr,
-                        topicId: conditon.topicId
-                    },
+                    where: conditon,
                     page: {curr: 1}
                 });
-                // var collection = $(".flag");
-                // $.each(collection, function () {
-                //     $(this).removeClass("layui-this");
-                // });
                 $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
                 layer.close(loadIndex);
-            } else if (params == 2) {
+            } else if (params == 2) { // 精品
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "1";
                 insTb.reload({
-                    where: {
-                        hotDiscussion: conditon.hotDiscussion,
-                        isHighQuality: conditon.isHighQuality,
-                        orderByStr: conditon.orderByStr,
-                        topicId: conditon.topicId
-                    },
+                    where: conditon,
                     page: {curr: 1}
                 });
-                // var collection = $(".flag");
-                // $.each(collection, function () {
-                //     $(this).removeClass("layui-this");
-                // });
                 $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
                 layer.close(loadIndex);
-            } else if (params == 3) {
+            } else if (params == 3) { // 最新
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "0";
                 insTb.reload({
-                    where: {
-                        hotDiscussion: conditon.hotDiscussion,
-                        isHighQuality: conditon.isHighQuality,
-                        orderByStr: conditon.orderByStr,
-                        topicId: conditon.topicId
-                    },
+                    where: conditon,
                     page: {curr: 1}
                 });
-                // var collection = $(".flag");
-                // $.each(collection, function () {
-                //     $(this).removeClass("layui-this");
-                // });
                 $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
                 layer.close(loadIndex);
-            } else {
+            } else { // 热议
                 conditon.hotDiscussion = "1";
                 conditon.orderByStr = "comment_count desc,last_comment_time desc";
                 conditon.isHighQuality = "0";
                 insTb.reload({
-                    where: {
-                        hotDiscussion: conditon.hotDiscussion,
-                        isHighQuality: conditon.isHighQuality,
-                        orderByStr: conditon.orderByStr,
-                        topicId: conditon.topicId
-                    },
+                    where: conditon,
                     page: {curr: 1}
-
                 });
                 layer.close(loadIndex);
             }
@@ -710,7 +670,6 @@
             url: '/index/list',
             response: {
                 statusCode: 2000 //规定成功的状态码，默认：0
-
             },
             where: {orderByStr: 'top_weight desc, last_comment_time desc'},
             parseData: function (res) { //res 即为原始返回的数据
