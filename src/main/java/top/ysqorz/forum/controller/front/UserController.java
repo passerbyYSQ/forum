@@ -1,6 +1,7 @@
 package top.ysqorz.forum.controller.front;
 
 
+import io.netty.util.internal.ObjectUtil;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import top.ysqorz.forum.oauth.QQProvider;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
+import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
@@ -172,6 +174,17 @@ public class UserController {
         String referer = giteeProvider.checkState(state);
         // 检查是否存在现有账号与第三方的账号已绑定
         User user = userService.oauth2Gitee(code);
+        //检查已登录账号和获取的账号是否一致
+        String msg = checkUser(user.getId());
+        //不为空则证明绑定事务有错误信息，若还为指定页面的错误信息则直接返回
+        if (!ObjectUtils.isEmpty(msg) && referer.indexOf("user/setting") > -1){
+            //测试是否已经有带错误信息
+            int check = referer.indexOf("?");
+            if(check > 0) {
+                referer = referer.substring(0, check);
+            }
+            return "redirect:" + referer + "?msg=" + msg;
+        }
         // 清除shiro的认证缓存，实现单点登录
         userService.clearShiroAuthCache(user);
         // 签发我们自己的token
@@ -195,6 +208,14 @@ public class UserController {
                                 String code, HttpServletResponse response) throws IOException {
         String referer = qqProvider.checkState(state);
         User user = userService.oauth2QQ(code);
+        String msg = checkUser(user.getId());
+        if (!ObjectUtils.isEmpty(msg) && referer.indexOf("user/setting") > -1){
+            int check = referer.indexOf("?");
+            if(check > 0) {
+                referer = referer.substring(0, check);
+            }
+            return "redirect:" + referer + "?msg=" + msg;
+        }
         userService.clearShiroAuthCache(user);
         userService.login(user.getId(), response);
         //redirectAttributes.addAttribute("token", token);
@@ -216,9 +237,31 @@ public class UserController {
                                 String code, HttpServletResponse response) throws IOException{
         String referer = baiduProvider.checkState(state);
         User user = userService.oauth2Baidu(code);
+        String msg = checkUser(user.getId());
+        if (!ObjectUtils.isEmpty(msg) && referer.indexOf("user/setting") > -1){
+            int check = referer.indexOf("?");
+            if(check > 0) {
+                referer = referer.substring(0, check);
+            }
+            return "redirect:" + referer + "?msg=" + msg;
+        }
         userService.clearShiroAuthCache(user);
         userService.login(user.getId(), response);
         return "redirect:" + referer; // 不要加 "/"
+    }
+
+    /**
+     * 检查是否是由第三方账号获取的User
+     * 且是否和当前User一致和是否登录
+     */
+    public String checkUser(int id) {
+        if (ShiroUtils.getUserId() == null) {
+            return "6104";
+        }
+        if (id != ShiroUtils.getUserId()) {
+            return "6206";
+        }
+        return "2001";
     }
 
 }

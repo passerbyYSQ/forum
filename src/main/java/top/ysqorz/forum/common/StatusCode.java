@@ -14,6 +14,7 @@ package top.ysqorz.forum.common;
 //@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum StatusCode {
     SUCCESS(2000, "成功"),
+    SUCCESS_BIND(2001, "用户绑定成功"),
 
     // 授权相关
     AUTHORIZATION_FAILED(403, "无权限访问"), // ！！！
@@ -39,12 +40,14 @@ public enum StatusCode {
     AUTHENTICATION_FAILED(6004, "无效token，登录过期或者被挤下线"),
     PASSWORD_NOT_EQUAL(6005,"两次输入密码不一致"),
 
-
     // 用户相关
     USERNAME_IS_EXIST(6101, "用户名已存在"),
     USER_NOT_EXIST(6102, "用户不存在"), // 可能是userId错误
     USER_NOT_BLOCK(6103, "用户当前不处于封禁状态"),
-
+    USER_NOT_LOGIN(6104, "用户未登录"),
+    PHONE_IS_EXIST(6105, "该手机号码已被绑定"),
+    EMAIL_IS_EXIST(6106, "该邮箱已被绑定"),
+    ACCOUNT_OR_PASSWORD_INCORRECT(6107, "用户名或密码错误"),
 
     // 账户相关
     TOKEN_IS_MISSING(6200, "token缺失"),
@@ -54,6 +57,7 @@ public enum StatusCode {
     EMAIL_INCORRECT(6204, "邮箱错误或者邮箱尚未注册"),
     EMAIL_ISEXIST(6204, "邮箱已注册"),
     PASSWORD_INCORRECT(6205, "密码错误"),
+    USER_ISBIND(6206, "该社交账号已被其他账号绑定"),
 
     // 权限相关
     AUTHORITY_NAME_EXIST(6300, "权限名称已存在"),
