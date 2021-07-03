@@ -76,7 +76,7 @@ public class JwtRealm extends AuthorizingRealm {
 
         if (!ObjectUtils.isEmpty(userId)) {
             // 根据token中的username去数据库查询用户信息，并封装成SimpleAuthenticationInfo（认证信息）给Matcher去校验
-            User user = userService.getInfoById(userId);
+            User user = userService.getUserById(userId);
             /*
             注意第一个参数必须是与token.getPrincipal()，否则在remove缓存时的key，会与put的时候的key不一样
             从而导致退出的时候无法remove掉缓存。

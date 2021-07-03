@@ -1,0 +1,44 @@
+{
+  "id": "2609590",
+  "name": "layui-icon-ali",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "14623487",
+      "name": "热门",
+      "font_class": "remen",
+      "unicode": "e6b2",
+      "unicode_decimal": 59058
+    },
+    {
+      "icon_id": "7141056",
+      "name": "百度网盘",
+      "font_class": "baiduwangpan",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "3986858",
+      "name": "icon_QQ",
+      "font_class": "QQ",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "19312082",
+      "name": "Gitee",
+      "font_class": "Gitee",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "20278967",
+      "name": "GitHub",
+      "font_class": "GitHub",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}

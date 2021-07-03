@@ -61,7 +61,7 @@ public class AdminUserController {
      */
     @PostMapping("/resetPsw")
     public ResultModel ResetPsw(@RequestParam("userId") @NotNull Integer userId) {
-        User user = userService.getInfoById(userId);
+        User user = userService.getUserById(userId);
         if (ObjectUtils.isEmpty(user)) {
             ResultModel.failed(StatusCode.USER_NOT_EXIST);
         }
@@ -107,7 +107,7 @@ public class AdminUserController {
     @PostMapping("/addRole")
     public ResultModel addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) throws ParameterErrorException {
-        if (userService.getInfoById(userId) == null) {
+        if (userService.getUserById(userId) == null) {
             return ResultModel.failed(StatusCode.USER_NOT_EXIST);
         }
         int i = userService.addRoleForUser(roleIds, userId);

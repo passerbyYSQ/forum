@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.common.ResultModel;
-import top.ysqorz.forum.dto.IndexUserDTO;
-import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.PostDTO;
-import top.ysqorz.forum.dto.QueryPostCondition;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.TopicService;
@@ -37,17 +34,17 @@ public class IndexController {
     // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
     @GetMapping({"", "/index"})
     public String index(Model model) {
-        IndexUserDTO shiroUser = userService.getShiroUser();
-        model.addAttribute("myUser", shiroUser);
+        SimpleUserDTO loginUser = userService.getLoginUser();
+        model.addAttribute("myUser", loginUser);
         List<Topic> allTopic = topicService.getTopicByHot();
-        model.addAttribute("Topics", allTopic);
+        model.addAttribute("topics", allTopic);
         return "front/index";
     }
 
     @GetMapping("/head")
     public String head(Model model) {
-        IndexUserDTO shiroUser = userService.getShiroUser();
-        model.addAttribute("myUser", shiroUser);
+        SimpleUserDTO loginUser = userService.getLoginUser();
+        model.addAttribute("myUser", loginUser);
         return "front/head";
     }
 
@@ -62,7 +59,6 @@ public class IndexController {
         if (limit <= 0) {
             limit = 10;
         }
-
         PageData<PostDTO> indexPost = postService.getIndexPost(page, limit, conditions);
         return ResultModel.success(indexPost);
     }

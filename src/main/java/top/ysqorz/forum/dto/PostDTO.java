@@ -8,7 +8,6 @@ import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.Topic;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,10 +36,13 @@ public class PostDTO {
     private Integer topWeight; // 置顶权重
 
     private List<Label> labelList;  // 标签
-    private List<String>  imagesList=new ArrayList<>(); //图片列表
+    private List<String>  imagesList; //图片列表
     private LocalDateTime lastCommentTime;
 
-    private boolean isLike; //当前登录的用户是否点赞 这里是isLike 到前端就变成like了 原因不详
+    // 当前登录的用户是否点赞 这里是isLike 到前端就变成like了 原因不详
+    // 因为：PostMapper.xml resultMap 没有做映射
+    private Boolean isLike;
+    private Boolean isHot;
 
     public PostDTO() {
     }

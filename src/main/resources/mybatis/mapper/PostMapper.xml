@@ -41,6 +41,7 @@
         <result column="comment_count" jdbcType="INTEGER" property="commentCount"/>
         <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
         <result column="is_locked" jdbcType="TINYINT" property="isLocked"/>
+        <result column="is_like" jdbcType="BOOLEAN" property="isLike"/>
         <result column="top_weight" jdbcType="INTEGER" property="topWeight"/>
         <result column="content" jdbcType="LONGVARCHAR" property="content"/>
         <result column="last_comment_time" jdbcType="TIMESTAMP" property="lastCommentTime"/>
@@ -51,6 +52,8 @@
         <!-- 把postId传过去 -->
         <collection property="labelList" ofType="top.ysqorz.forum.po.Label" column="id"
                     select="top.ysqorz.forum.dao.LabelMapper.selectLabelsByPostId"/>
+
+
     </resultMap>
 
     <select id="selectListByConditions" resultMap="post"
@@ -70,7 +73,7 @@
                 content,
                 last_comment_time
         <if test="userId!= null and userId > 0">
-            ,if(l.id!='null',true ,false)as  isLike
+            ,if(l.id!='null',true ,false) as is_like
         </if>
         from post p
         left join user u on p.creator_id = u.id

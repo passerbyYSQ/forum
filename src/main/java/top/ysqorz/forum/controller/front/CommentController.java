@@ -16,7 +16,6 @@ import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
-import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
 
@@ -62,6 +61,14 @@ public class CommentController {
         if (ObjectUtils.isEmpty(firstComment)) {
             return ResultModel.failed(StatusCode.FIRST_COMMENT_NOT_EXIST);
         }
+        Post post = postService.getPostById(firstComment.getPostId());
+        if (ObjectUtils.isEmpty(post)) {
+            return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
+        }
+        if (post.getIsLocked() == 1) {
+            return ResultModel.failed(StatusCode.POST_LOCKED); // 帖子锁定，不允许回复
+        }
+
         Integer quoteId = comment.getQuoteSecondCommentId();
         SecondComment quoteComment = null;
         if (!ObjectUtils.isEmpty(quoteId)) {
@@ -70,9 +77,8 @@ public class CommentController {
                 return ResultModel.failed(StatusCode.SECOND_COMMENT_NOT_EXIST);
             }
         }
-        Integer myId = ShiroUtils.getUserId();
         commentService.publishSecondComment(firstComment, quoteComment,
-                comment.getContent(), myId);  // quoteComment 可能为空
+                comment.getContent());  // quoteComment 可能为空
         return ResultModel.success();
     }
 
