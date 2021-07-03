@@ -311,7 +311,7 @@
             <label class="layui-form-label layui-form-required">账号:</label>
             <div class="layui-input-block">
                 <input name="oldEmail" value="" class="layui-input"
-                       lay-verType="tips" lay-verify="required"
+                       lay-verType="tips" lay-verify="required|email"
                        required placeholder="请输入账号"/>
             </div>
         </div>
@@ -344,8 +344,8 @@
             <label class="layui-form-label layui-form-required">账号:</label>
             <div class="layui-input-block">
                 <input name="oldEmail" value="" class="layui-input"
-                       lay-verType="tips" lay-verify="required"
-                       required placeholder="请输入账号"/>
+                       lay-verType="tips" lay-verify="required|email"
+                       required placeholder="请输入登录时候邮箱"/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -378,7 +378,7 @@
             <div class="layui-input-block">
                 <input name="oldEmail" value="" class="layui-input"
                        lay-verType="tips" lay-verify="required"
-                       required placeholder="请输入账号"/>
+                       required placeholder="请输入登录时候邮箱"/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -417,6 +417,9 @@
             if (msg == "2001") {
                 app.successNotice("操作成功");
             }
+            setTimeout(function() {
+                location.href = '/user/setting/set';
+            }, 2000);
         }
 
         $("a[name=bindPhone]").click(function() {
@@ -427,7 +430,7 @@
                 content: $('#PhoneDialog').html(),
                 success: function (layero, dIndex) {
                     form.on('submit(PhoneSubmit)', function (data) {
-					
+
                         var resultData = {};
                         resultData.oldEmail = data.field.oldEmail;
                         resultData.checkPassword = data.field.checkPassword;
@@ -438,7 +441,7 @@
                             app.successNotice(res.msg);
                             setTimeout(function() {
                                 location.href = '/user/setting/set';
-                            }, 1000);
+                            }, 2000);
                         });
                         return false;
                     });
@@ -464,7 +467,7 @@
                             app.successNotice(res.msg);
                             setTimeout(function() {
                                 location.href = '/user/setting/set';
-                            }, 1000);
+                            }, 2000);
                         });
                         return false;
                     });
@@ -488,7 +491,7 @@
                             app.successNotice(res.msg);
                             setTimeout(function() {
                                 location.href = '/user/setting/set';
-                            }, 1000);
+                            }, 2000);
                         });
                         return false;
                     });
@@ -512,7 +515,7 @@
                             app.successNotice(res.msg);
                             setTimeout(function() {
                                 location.href = '/user/setting/set';
-                            }, 1000);
+                            }, 2000);
                         });
                         return false;
                     });
@@ -536,7 +539,7 @@
                             app.successNotice(res.msg);
                             setTimeout(function() {
                                 location.href = '/user/setting/set';
-                            }, 1000);
+                            }, 2000);
                         });
                         return false;
                     });

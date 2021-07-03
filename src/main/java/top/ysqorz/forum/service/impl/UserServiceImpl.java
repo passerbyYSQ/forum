@@ -136,7 +136,6 @@ public class UserServiceImpl implements UserService {
                 userRole.setCreateTime(LocalDateTime.now());
                 userRoleMapper.insert(userRole);
             }
-
         }
         return 1;
     }
@@ -153,7 +152,6 @@ public class UserServiceImpl implements UserService {
             example.createCriteria().andEqualTo("userId", userId)
                     .andEqualTo("roleId", roleId);
             userRoleMapper.deleteByExample(example);
-
         }
         return 1;
     }
@@ -192,11 +190,12 @@ public class UserServiceImpl implements UserService {
         User user = giteeProvider.getDbUser(giteeUser.getId());
         //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
         if (ObjectUtils.isEmpty(user)) {
-            user = getInfoById(ShiroUtils.getUserId());
-            //第二次判断是否已经有登录用户，若没有则新建一个用户，有登录用户则将第三方授权信息绑定到该用户上
-            if (ObjectUtils.isEmpty(user)) {
+            user = new User();
+            if (ShiroUtils.isAuthenticated()) {
+                user.setGiteeId(giteeUser.getId());
+                userMapper.updateByPrimaryKey(user);
+            } else {
                 LocalDateTime now = LocalDateTime.now();
-                user = new User();
                 user.setGiteeId(giteeUser.getId())
                         .setUsername(giteeUser.getName())
                         .setPhoto(giteeUser.getAvatarUrl())
@@ -210,9 +209,6 @@ public class UserServiceImpl implements UserService {
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user); // 填充了主键
-            } else {
-                user.setGiteeId(giteeUser.getId());
-                userMapper.updateByPrimaryKey(user);
             }
         }
         return user;
@@ -222,13 +218,16 @@ public class UserServiceImpl implements UserService {
     public User oauth2QQ(String code) throws IOException {
         QQUserDTO qqUser = qqProvider.getUser(code);
         User user = qqProvider.getDbUser(qqUser.getOpenId());
-        //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
+        //第一次查找是否有该第三方授权绑定的用户，没有则找到则判断当前是否已经登录
         if (ObjectUtils.isEmpty(user)) {
-            user = getInfoById(ShiroUtils.getUserId());
-            //第二次判断是否已经有登录用户，若没有则新建一个用户，有登录用户则将第三方授权信息绑定到该用户上
-            if (ObjectUtils.isEmpty(user)) {
+            user = new User();
+            if (ShiroUtils.isAuthenticated()) {
+                // 已经登录，说明此操作是：绑定第三方账号
+                user.setQqId(qqUser.getOpenId());
+                userMapper.updateByPrimaryKeySelective(user);
+            } else {
+                // 未登录，说明此操作是：通过第三方账号授权注册
                 LocalDateTime now = LocalDateTime.now();
-                user = new User();
                 user.setQqId(qqUser.getOpenId())
                         .setUsername(qqUser.getNickname())
                         .setPhoto(qqUser.getFigureurl_qq_1())
@@ -242,9 +241,6 @@ public class UserServiceImpl implements UserService {
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user);
-            } else {
-                user.setQqId(qqUser.getOpenId());
-                userMapper.updateByPrimaryKey(user);
             }
         }
         return user;
@@ -256,11 +252,12 @@ public class UserServiceImpl implements UserService {
         User user = baiduProvider.getDbUser(baiduUser.getUk());
         //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
         if (ObjectUtils.isEmpty(user)) {
-            user = getInfoById(ShiroUtils.getUserId());
-            //第二次判断是否已经有登录用户，若没有则新建一个用户，有登录用户则将第三方授权信息绑定到该用户上
-            if (ObjectUtils.isEmpty(user)) {
+            user = new User();
+            if (ShiroUtils.isAuthenticated()) {
+                user.setBaiduId(baiduUser.getUk());
+                userMapper.updateByPrimaryKey(user);
+            } else {
                 LocalDateTime now = LocalDateTime.now();
-                user = new User();
                 user.setBaiduId(baiduUser.getUk())
                         .setUsername(baiduUser.getBaidu_name())
                         .setPhoto(baiduUser.getAvatar_url())
@@ -274,9 +271,6 @@ public class UserServiceImpl implements UserService {
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user);
-            } else {
-                user.setBaiduId(baiduUser.getUk());
-                userMapper.updateByPrimaryKey(user);
             }
         }
         return user;
@@ -297,7 +291,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public SimpleUserDTO getSimpleUser(Integer userId) {
         SimpleUserDTO simpleUserDTO = userMapper.selectSimpleUserById(userId);
-        simpleUserDTO.setLevel(0); // TODO 根据积分计算level
+        simpleUserDTO.setLevel(6); // TODO 根据积分计算level
         return simpleUserDTO;
     }
 
@@ -376,7 +370,7 @@ public class UserServiceImpl implements UserService {
      * 5代表百度解绑
      */
     @Override
-    public int ChangeUser(CheckUserDTO checkUser, int status) {
+    public int changeUser(CheckUserDTO checkUser, int status) {
         User user = getUserByEmail(checkUser.getOldEmail());
         //检查账号密码是否错误、手机号或邮箱是否已经被绑定以及是否为当前用户，无错则绑定新手机号码并返回true
         if (user != null && user.getId().equals(ShiroUtils.getUserId())) {

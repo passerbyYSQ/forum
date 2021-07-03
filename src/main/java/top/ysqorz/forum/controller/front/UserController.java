@@ -1,7 +1,6 @@
 package top.ysqorz.forum.controller.front;
 
 
-import io.netty.util.internal.ObjectUtil;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Controller;
@@ -11,7 +10,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.LoginDTO;
+import top.ysqorz.forum.dto.RegisterDTO;
+import top.ysqorz.forum.dto.UserLoginInfo;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
@@ -48,7 +49,7 @@ public class UserController {
 
     @Resource
     private QQProvider qqProvider;
-	
+
 	@Resource
     private BaiduProvider baiduProvider;
 
@@ -178,7 +179,6 @@ public class UserController {
         String msg = checkUser(user.getId());
         //不为空则证明绑定事务有错误信息，若还为指定页面的错误信息则直接返回
         if (!ObjectUtils.isEmpty(msg) && referer.indexOf("user/setting") > -1){
-            //测试是否已经有带错误信息
             int check = referer.indexOf("?");
             if(check > 0) {
                 referer = referer.substring(0, check);
@@ -221,7 +221,7 @@ public class UserController {
         //redirectAttributes.addAttribute("token", token);
         return "redirect:" + referer; // 不要加 "/"
     }
-	
+
 	@GetMapping("/oauth/baidu/authorize")
     public void baiduAuthorize(@RequestHeader(defaultValue = "") String referer,
                                HttpServletResponse response) throws IOException {

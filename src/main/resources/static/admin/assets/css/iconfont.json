@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "14445364",
+      "name": "锁",
+      "font_class": "suo",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "15969342",
+      "name": "邮箱",
+      "font_class": "youxiang",
+      "unicode": "e631",
+      "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "15969501",
+      "name": "手机",
+      "font_class": "lujing141",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "17540918",
+      "name": "会员",
+      "font_class": "huiyuan",
+      "unicode": "edc2",
+      "unicode_decimal": 60866
+    },
+    {
       "icon_id": "14623487",
       "name": "热门",
       "font_class": "remen",
