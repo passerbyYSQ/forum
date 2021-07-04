@@ -17,7 +17,10 @@ public class CheckUserDTO {
     private String oldEmail;
     @NotNull
     private String checkPassword;
+    private String rePassword;
     private String newPhone;
     private String newEmail;
+    private Integer haveEmail;
+    private String poFile;
 
 }

@@ -47,7 +47,8 @@ public enum StatusCode {
     USER_NOT_LOGIN(6104, "用户未登录"),
     PHONE_IS_EXIST(6105, "该手机号码已被绑定"),
     EMAIL_IS_EXIST(6106, "该邮箱已被绑定"),
-    ACCOUNT_OR_PASSWORD_INCORRECT(6107, "用户名或密码错误"),
+    ACCOUNT_OR_PASSWORD_INCORRECT(6107, "账号或密码错误"),
+    PHONE_INCORRECT(6108, "请输入11位的正确手机号码"),
 
     // 账户相关
     TOKEN_IS_MISSING(6200, "token缺失"),

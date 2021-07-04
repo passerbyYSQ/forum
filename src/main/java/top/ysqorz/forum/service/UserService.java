@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
@@ -111,7 +112,7 @@ public interface UserService {
      */
     User oauth2QQ(String code) throws IOException;
 
-	/**
+    /**
      * 百度授权
      */
     User oauth2Baidu(String code) throws IOException;
@@ -125,11 +126,21 @@ public interface UserService {
 
     SimpleUserDTO getSimpleUser(Integer userId);
 
-    /**
-     * 修改用户绑定手机或邮箱
-     */
-    int changeUser(CheckUserDTO checkUser, int status);
-
     SimpleUserDTO getLoginUser();
+
+    /**
+     * 修改用户信息
+     */
+    void changeUser(User user);
+
+    /**
+     * 检查用户账号密码是否正确
+     */
+    StatusCode checkUser(CheckUserDTO checkUser);
+
+    /**
+     * 检查所使用的第三方号码是否已绑定
+     */
+    Boolean checkBind(String bindNum, String property);
 
 }

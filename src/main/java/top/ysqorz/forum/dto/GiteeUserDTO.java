@@ -42,7 +42,7 @@ public class GiteeUserDTO {
 //        "updated_at": "2021-06-11T13:29:14+08:00"
 //        "email": null
 
-    private Integer id;
+    private String id;
     private String login;
     private String name;
     private String email;
