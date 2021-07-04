@@ -175,15 +175,9 @@ public class UserController {
         String referer = giteeProvider.checkState(state);
         // 检查是否存在现有账号与第三方的账号已绑定
         User user = userService.oauth2Gitee(code);
-        //检查已登录账号和获取的账号是否一致
-        String msg = checkUser(user.getId());
-        //不为空则证明绑定事务有错误信息，若还为指定页面的错误信息则直接返回
-        if (!ObjectUtils.isEmpty(msg) && referer.indexOf("user/setting") > -1){
-            int check = referer.indexOf("?");
-            if(check > 0) {
-                referer = referer.substring(0, check);
-            }
-            return "redirect:" + referer + "?msg=" + msg;
+        // 检查是否是绑定页面需要绑定操作
+        if (referer.indexOf("user/setting") > -1){
+            return callbackUrl(referer, user);
         }
         // 清除shiro的认证缓存，实现单点登录
         userService.clearShiroAuthCache(user);
@@ -208,13 +202,8 @@ public class UserController {
                                 String code, HttpServletResponse response) throws IOException {
         String referer = qqProvider.checkState(state);
         User user = userService.oauth2QQ(code);
-        String msg = checkUser(user.getId());
-        if (!ObjectUtils.isEmpty(msg) && referer.indexOf("user/setting") > -1){
-            int check = referer.indexOf("?");
-            if(check > 0) {
-                referer = referer.substring(0, check);
-            }
-            return "redirect:" + referer + "?msg=" + msg;
+        if (referer.indexOf("user/setting") > -1){
+            return callbackUrl(referer, user);
         }
         userService.clearShiroAuthCache(user);
         userService.login(user.getId(), response);
@@ -237,13 +226,8 @@ public class UserController {
                                 String code, HttpServletResponse response) throws IOException{
         String referer = baiduProvider.checkState(state);
         User user = userService.oauth2Baidu(code);
-        String msg = checkUser(user.getId());
-        if (!ObjectUtils.isEmpty(msg) && referer.indexOf("user/setting") > -1){
-            int check = referer.indexOf("?");
-            if(check > 0) {
-                referer = referer.substring(0, check);
-            }
-            return "redirect:" + referer + "?msg=" + msg;
+        if (referer.indexOf("user/setting") > -1){
+            return callbackUrl(referer, user);
         }
         userService.clearShiroAuthCache(user);
         userService.login(user.getId(), response);
@@ -251,17 +235,24 @@ public class UserController {
     }
 
     /**
+     * 第三方接口返回在绑定页面的回调地址
+     */
+    public String callbackUrl(String referer, User user) {
+        // 检查是否是当前用户
+        String msg = checkUser(user.getId());
+        return "redirect:" + referer + "?msg=" + msg;
+    }
+
+    /**
      * 检查是否是由第三方账号获取的User
-     * 且是否和当前User一致和是否登录
+     * 且是否和当前User一致
      */
     public String checkUser(int id) {
-        if (ShiroUtils.getUserId() == null) {
-            return "6104";
+        Integer myId = ShiroUtils.getUserId();
+        if (id != myId) {
+            return StatusCode.USER_ISBIND.getCode().toString();
         }
-        if (id != ShiroUtils.getUserId()) {
-            return "6206";
-        }
-        return "2001";
+        return StatusCode.SUCCESS_BIND.getCode().toString();
     }
 
 }

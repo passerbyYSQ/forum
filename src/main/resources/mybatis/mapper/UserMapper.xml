@@ -24,7 +24,7 @@
     <result column="consecutive_attend_days" jdbcType="INTEGER" property="consecutiveAttendDays" />
     <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
     <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
-    <result column="gitee_id" jdbcType="INTEGER" property="giteeId" />
+    <result column="gitee_id" jdbcType="VARCHAR" property="giteeId" />
     <result column="qq_id" jdbcType="VARCHAR" property="qqId" />
 	<result column="baidu_id" jdbcType="VARCHAR" property="baiduId" />
   </resultMap>

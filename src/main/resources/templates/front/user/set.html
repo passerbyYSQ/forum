@@ -8,36 +8,18 @@
     <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
     <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
     <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
-    <link rel="stylesheet" th:href="@{/admin/assets/module/admin.css(v=318)}" href="admin/module/admin.css?v=318">
+    <link rel="stylesheet" th:href="@{/admin/assets/module/admin.css(v=318)}" href="admin/assets/module/admin.css?v=318">
     <link rel="stylesheet" th:href="@{/front/res/css/userInfo.css}" href="../res/css/userInfo.css">
     <style>
-        @font-face {
-            font-family: "iconfont"; /* Project id 2609590 */
-            src: url('//at.alicdn.com/t/font_2609590_zyubzf6yeve.woff2?t=1624263596202') format('woff2'),
-            url('//at.alicdn.com/t/font_2609590_zyubzf6yeve.woff?t=1624263596202') format('woff'),
-            url('//at.alicdn.com/t/font_2609590_zyubzf6yeve.ttf?t=1624263596202') format('truetype');
-        }
-
-        .iconfont {
-            font-family: "iconfont" !important;
-            font-size: 26px;
-            font-style: normal;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .icon-baiduwangpan:before {
-            content: "\e603";
-        }
-
-        .icon-QQ:before {
-            content: "\e602";
-        }
-
-        .icon-Gitee:before {
-            content: "\e601";
+        .icon {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden;
         }
     </style>
+
 </head>
 <body>
 
@@ -132,9 +114,9 @@
                         <div class="layui-form-item">
                             <label for="L_email" class="layui-form-label">邮箱</label>
                             <div class="layui-input-inline">
-                            <input type="text" id="L_email" name="email" required lay-verify="email" autocomplete="off" value="" class="layui-input">
-                        </div>
-                        <div class="layui-form-mid layui-word-aux">如果您在邮箱已激活的情况下，变更了邮箱，需<a href="activate.html" style="font-size: 12px; color: #4f99cf;">重新验证邮箱</a>。</div>
+                                <input type="text" id="L_email" name="email" required lay-verify="email" autocomplete="off" value="" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">如果您在邮箱已激活的情况下，变更了邮箱，需<a href="activate.html" style="font-size: 12px; color: #4f99cf;">重新验证邮箱</a>。</div>
                         </div>
                         <div class="layui-form-item">
                             <label for="L_username" class="layui-form-label">昵称</label>
@@ -208,31 +190,18 @@
 
                 <div class="layui-form layui-form-pane layui-tab-item layui-show" style="padding-bottom: 20px;">
                     <div class="user-bd-list layui-text">
-                        <div id="phone" class="user-bd-list-item">
-                            <div class="user-bd-list-img">
-                                <i class="iconfont icon-QQ"
-                                   style="color:#3492ed;font-size: 48px;"></i>
-                            </div>
-                            <div th:if="${user.getPhone()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">密保手机</div>
-                                <div class="user-bd-list-text">已绑定手机号码</div>
-                                <a href="javascript:;" class="user-bd-list-oper" name="bindPhone">修改</a>
-                            </div>
-                            <div th:unless="${user.getPhone()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">密保手机</div>
-                                <div class="user-bd-list-text">当前未绑定手机号码</div>
-                                <a href="javascript:;" class="user-bd-list-oper" name="bindPhone">绑定</a>
-                            </div>
-                        </div>
                         <div id="email" class="user-bd-list-item">
                             <div class="user-bd-list-img">
-                                <i class="iconfont icon-QQ"
-                                   style="color:#3492ed;font-size: 48px;"></i>
+                                <i style="color:#3492ed;font-size: 48px;">
+                                    <svg class="icon svg-icon" aria-hidden="true">
+                                        <use xlink:href="#icon-youxiang"></use>
+                                    </svg>
+                                </i>
                             </div>
                             <div th:if="${user.getEmail()}" class="user-bd-list-content">
                                 <div class="user-bd-list-lable">密保邮箱</div>
-                                <div class="user-bd-list-text">已绑定邮箱</div>
-                                <a class="user-bd-list-oper" name="bindEmail">修改</a>
+                                <div class="user-bd-list-text">已绑定邮箱：[[${user.getEmail()}]]</div>
+                                <a class="user-bd-list-oper" name="bindEmail" id="123">修改</a>
                             </div>
                             <div th:unless="${user.getEmail()}" class="user-bd-list-content">
                                 <div class="user-bd-list-lable">密保邮箱</div>
@@ -240,52 +209,82 @@
                                 <a class="user-bd-list-oper" name="bindEmail">绑定</a>
                             </div>
                         </div>
-                        <div id="qq" class="user-bd-list-item">
-                            <div class="user-bd-list-img">
-                                <i class="iconfont icon-QQ"
-                                    style="color:#3492ed;font-size: 48px;"></i>
+                        <div th:if="${user.getEmail()}">
+                            <div id="phone" class="user-bd-list-item">
+                                <div class="user-bd-list-img">
+                                    <i style="color:#3492ed;font-size: 48px;">
+                                        <svg class="icon svg-icon" aria-hidden="true">
+                                            <use xlink:href="#icon-lujing141"></use>
+                                        </svg>
+                                    </i>
+                                </div>
+                                <div th:if="${user.getPhone()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">密保手机</div>
+                                    <div class="user-bd-list-text">已绑定手机号码：[[${user.getPhone()}]]</div>
+                                    <a class="user-bd-list-oper" name="bindPhone">修改</a>
+                                </div>
+                                <div th:unless="${user.getPhone()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">密保手机</div>
+                                    <div class="user-bd-list-text">当前未绑定手机号码</div>
+                                    <a class="user-bd-list-oper" name="bindPhone">绑定</a>
+                                </div>
                             </div>
-                            <div th:if="${user.getQqId()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">绑定QQ</div>
-                                <div class="user-bd-list-text">已绑定QQ账号</div>
-                                <a class="user-bd-list-oper" name="UnbundlingQQ">解绑</a>
+                            <div id="qq" class="user-bd-list-item">
+                                <div class="user-bd-list-img">
+                                    <i style="font-size: 48px;">
+                                        <svg class="icon svg-icon" aria-hidden="true">
+                                            <use xlink:href="#icon-QQ"></use>
+                                        </svg>
+                                    </i>
+                                </div>
+                                <div th:if="${user.getQqId()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">绑定QQ</div>
+                                    <div class="user-bd-list-text">已绑定QQ账号</div>
+                                    <a class="user-bd-list-oper" name="Unbundling" id="UnbundlingQQ">解绑</a>
+                                </div>
+                                <div th:unless="${user.getQqId()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">绑定QQ</div>
+                                    <div class="user-bd-list-text">当前未绑定QQ账号</div>
+                                    <a class="user-bd-list-oper" th:href="@{/user/oauth/qq/authorize}">绑定</a>
+                                </div>
                             </div>
-                            <div th:unless="${user.getQqId()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">绑定QQ</div>
-                                <div class="user-bd-list-text">当前未绑定QQ账号</div>
-                                <a class="user-bd-list-oper" th:href="@{/user/oauth/qq/authorize}">绑定</a>
+                            <div id="gitee" class="user-bd-list-item">
+                                <div class="user-bd-list-img">
+                                    <i style="font-size: 48px;">
+                                        <svg class="icon svg-icon" aria-hidden="true">
+                                            <use xlink:href="#icon-Gitee"></use>
+                                        </svg>
+                                    </i>
+                                </div>
+                                <div th:if="${user.getGiteeId()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">绑定gitee</div>
+                                    <div class="user-bd-list-text">已绑定gitee账号</div>
+                                    <a class="user-bd-list-oper" name="Unbundling" id="UnbundlingGitee">解绑</a>
+                                </div>
+                                <div th:unless="${user.getGiteeId()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">绑定gitee</div>
+                                    <div class="user-bd-list-text">当前未绑定gitee账号</div>
+                                    <a class="user-bd-list-oper" th:href="@{/user/oauth/gitee/authorize}">绑定</a>
+                                </div>
                             </div>
-                        </div>
-                        <div id="gitee" class="user-bd-list-item">
-                            <div class="user-bd-list-img">
-                                <i class="iconfont icon-Gitee"
-                                   style="color:#ac0719;font-size: 48px;"></i>
-                            </div>
-                            <div th:if="${user.getGiteeId()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">绑定gitee</div>
-                                <div class="user-bd-list-text">已绑定gitee账号</div>
-                                <a class="user-bd-list-oper" name="UnbundlingGitee">解绑</a>
-                            </div>
-                            <div th:unless="${user.getGiteeId()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">绑定gitee</div>
-                                <div class="user-bd-list-text">当前未绑定gitee账号</div>
-                                <a class="user-bd-list-oper" th:href="@{/user/oauth/gitee/authorize}">绑定</a>
-                            </div>
-                        </div>
-                        <div id="baidu" class="user-bd-list-item">
-                            <div class="user-bd-list-img">
-                                <i class="iconfont icon-baiduwangpan"
-                                    style="color:#3492ed;font-size: 48px;"></i>
-                            </div>
-                            <div th:if="${user.getBaiduId()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">绑定百度</div>
-                                <div class="user-bd-list-text">已绑定百度账号</div>
-                                <a class="user-bd-list-oper" name="UnbundlingBaidu">解绑</a>
-                            </div>
-                            <div th:unless="${user.getBaiduId()}" class="user-bd-list-content">
-                                <div class="user-bd-list-lable">绑定百度</div>
-                                <div class="user-bd-list-text">当前未绑定绑定百度账号</div>
-                                <a class="user-bd-list-oper" th:href="@{/user/oauth/baidu/authorize}">绑定</a>
+                            <div id="baidu" class="user-bd-list-item">
+                                <div class="user-bd-list-img">
+                                    <i style="font-size: 48px;">
+                                        <svg class="icon svg-icon" aria-hidden="true">
+                                            <use xlink:href="#icon-baiduwangpan"></use>
+                                        </svg>
+                                    </i>
+                                </div>
+                                <div th:if="${user.getBaiduId()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">绑定百度</div>
+                                    <div class="user-bd-list-text">已绑定百度账号</div>
+                                    <a class="user-bd-list-oper" name="Unbundling" id="UnbundlingBaidu">解绑</a>
+                                </div>
+                                <div th:unless="${user.getBaiduId()}" class="user-bd-list-content">
+                                    <div class="user-bd-list-lable">绑定百度</div>
+                                    <div class="user-bd-list-text">当前未绑定百度账号</div>
+                                    <a class="user-bd-list-oper" th:href="@{/user/oauth/baidu/authorize}">绑定</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -345,7 +344,7 @@
             <div class="layui-input-block">
                 <input name="oldEmail" value="" class="layui-input"
                        lay-verType="tips" lay-verify="required|email"
-                       required placeholder="请输入登录时候邮箱"/>
+                       required placeholder="请输入账号"/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -365,7 +364,40 @@
             </div>
         </div>
         <div class="layui-form-item text-center">
-            <button class="layui-btn" lay-filter="PhoneSubmit" lay-submit>确定</button>
+            <button class="layui-btn" lay-filter="EmailSubmit" lay-submit>确定</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+<!-- 第一次设置邮箱密码弹窗 -->
+<script type="text/html" id="FirstSetDialog">
+    <form id="FirstSetForm" lay-filter="FirstSetForm" class="layui-form model-form" autocomplete="off">
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">邮箱:</label>
+            <div class="layui-input-block">
+                <input name="oldEmail" value="" class="layui-input"
+                       lay-verType="tips" lay-verify="required|email"
+                       required placeholder="请输入邮箱"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">密码:</label>
+            <div class="layui-input-block">
+                <input name="checkPassword" value="" class="layui-input" type="password"
+                       lay-verType="tips" lay-verify="required"
+                       required placeholder="请输入密码"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">确认密码:</label>
+            <div class="layui-input-block">
+                <input name="rePassword" value="" class="layui-input" type="password"
+                       lay-verType="tips" lay-verify="required"
+                       required placeholder="请输入确认密码"/>
+            </div>
+        </div>
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" lay-filter="EmailSubmit" lay-submit>确定</button>
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
         </div>
     </form>
@@ -378,7 +410,7 @@
             <div class="layui-input-block">
                 <input name="oldEmail" value="" class="layui-input"
                        lay-verType="tips" lay-verify="required"
-                       required placeholder="请输入登录时候邮箱"/>
+                       required placeholder="请输入账号"/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -397,7 +429,7 @@
 </script>
 <script src="admin/libs/layui/layui.all.js" th:src="@{/admin/assets/libs/layui/layui.all.js}"></script>
 <script src="admin/js/common.js?v=318" th:src="@{/admin/assets/js/common.js(v=318)}"></script>
-
+<script src="admin/assets/css/iconfont.js" th:src="@{/admin/assets/css/iconfont.js}"></script>
 <script th:inline="javascript">
     layui.use(['layer', 'form', 'admin', 'app'], function () {
         var $ = layui.jquery;
@@ -405,12 +437,9 @@
         var form = layui.form;
         var admin = layui.admin;
         var app = layui.app;
-
+        //后端返回的提示码msg，显示信息两秒后刷新去除url中的信息
         var msg = app.getUrlParam("msg");
         if (app.isNotBlank(msg)) {
-            if (msg == "6104") {
-                app.errorNotice("用户未登录");
-            }
             if (msg == "6206") {
                 app.errorNotice("该社交账号已被其他账号绑定");
             }
@@ -421,7 +450,7 @@
                 location.href = '/user/setting/set';
             }, 2000);
         }
-
+        //手机绑定或修改操作
         $("a[name=bindPhone]").click(function() {
             admin.open({
                 type: 1,
@@ -448,19 +477,34 @@
                 },
             });
         });
+        //邮箱绑定或第一次设置操作
         $("a[name=bindEmail]").click(function() {
+            var email = [[${user.getEmail()}]]
+            var haveEmail = 0;
+            var dialog = $('#EmailDialog');
+            //判断是否已经绑定邮箱
+            //haveEmail：0代表未绑定邮箱，1代表已经绑定邮箱
+            if (app.isNotBlank(email)) {
+                haveEmail = 1;
+            }
+            if (haveEmail == 0) {
+                dialog = $('#FirstSetDialog');
+                app.infoNotice("请设置新邮箱密码");
+            }
             admin.open({
                 type: 1,
                 title: '绑定邮箱',
                 area: "600px",
-                content: $('#EmailDialog').html(),
+                content: dialog.html(),
                 success: function (layero, dIndex) {
-                    form.on('submit(PhoneSubmit)', function (data) {
+                    form.on('submit(EmailSubmit)', function (data) {
 
                         var resultData = {};
                         resultData.oldEmail = data.field.oldEmail;
                         resultData.checkPassword = data.field.checkPassword;
+                        resultData.rePassword = data.field.rePassword;
                         resultData.newEmail = data.field.newEmail;
+                        console.log(resultData);
 
                         var url = '/user/setting/changeUserEmail';
                         app.ajax(url, resultData, function (res) {
@@ -474,10 +518,25 @@
                 },
             });
         });
-        $("a[name=UnbundlingQQ]").click(function() {
+        //第三方账号解绑操作
+        $("a[name=Unbundling]").click(function() {
+            var id = $(this).attr('id');
+            app.infoNotice("请谨慎解绑账号");
+            var title = '';
+            var poFileId = "";
+            if (id == "UnbundlingQQ") {
+                title = '解绑QQ账号';
+                poFile = "qq";
+            } else if (id == "UnbundlingGitee") {
+                title = '解绑Gitee账号';
+                poFile = "gitee";
+            } else {
+                title = '解绑百度账号';
+                poFile = "baidu";
+            }
             admin.open({
                 type: 1,
-                title: '解绑QQ账号',
+                title: title,
                 area: "600px",
                 content: $('#UnbundlingDialog').html(),
                 success: function (layero, dIndex) {
@@ -485,56 +544,8 @@
                         var resultData = {};
                         resultData.oldEmail = data.field.oldEmail;
                         resultData.checkPassword = data.field.checkPassword;
-
-                        var url = '/user/setting/UnbundlingQQ';
-                        app.ajax(url, resultData, function (res) {
-                            app.successNotice(res.msg);
-                            setTimeout(function() {
-                                location.href = '/user/setting/set';
-                            }, 2000);
-                        });
-                        return false;
-                    });
-                },
-            });
-        });
-        $("a[name=UnbundlingGitee]").click(function() {
-            admin.open({
-                type: 1,
-                title: '解绑Gitee账号',
-                area: "600px",
-                content: $('#UnbundlingDialog').html(),
-                success: function (layero, dIndex) {
-                    form.on('submit(UnbundlingSubmit)', function (data) {
-                        var resultData = {};
-                        resultData.oldEmail = data.field.oldEmail;
-                        resultData.checkPassword = data.field.checkPassword;
-
-                        var url = '/user/setting/UnbundlingGitee';
-                        app.ajax(url, resultData, function (res) {
-                            app.successNotice(res.msg);
-                            setTimeout(function() {
-                                location.href = '/user/setting/set';
-                            }, 2000);
-                        });
-                        return false;
-                    });
-                },
-            });
-        });
-        $("a[name=UnbundlingBaidu]").click(function() {
-            admin.open({
-                type: 1,
-                title: '解绑百度账号',
-                area: "600px",
-                content: $('#UnbundlingDialog').html(),
-                success: function (layero, dIndex) {
-                    form.on('submit(UnbundlingSubmit)', function (data) {
-                        var resultData = {};
-                        resultData.oldEmail = data.field.oldEmail;
-                        resultData.checkPassword = data.field.checkPassword;
-
-                        var url = '/user/setting/UnbundlingBaidu';
+                        resultData.poFile = poFile;
+                        var url = '/user/setting/Unbundling';
                         app.ajax(url, resultData, function (res) {
                             app.successNotice(res.msg);
                             setTimeout(function() {

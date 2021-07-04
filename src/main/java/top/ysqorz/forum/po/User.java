@@ -130,7 +130,7 @@ public class User implements Serializable {
      * giteeid
      */
     @Column(name = "gitee_id")
-    private Integer giteeId;
+    private String giteeId;
 
 	/**
      * qqid
