@@ -20,6 +20,8 @@
     <result column="register_time" jdbcType="TIMESTAMP" property="registerTime" />
     <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
     <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+    <result column="last_attend_time" jdbcType="TIMESTAMP" property="lastAttendTime" />
+    <result column="consecutive_attend_days" jdbcType="INTEGER" property="consecutiveAttendDays" />
     <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
     <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
     <result column="gitee_id" jdbcType="INTEGER" property="giteeId" />
@@ -47,6 +49,8 @@
         <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
         <result column="photo" jdbcType="VARCHAR" property="photo" />
         <result column="black_id" jdbcType="INTEGER" property="blackId" />
+        <result column="last_attend_time" jdbcType="TIMESTAMP" property="lastAttendTime" />
+        <result column="consecutive_attend_days" jdbcType="INTEGER" property="consecutiveAttendDays" />
     </resultMap>
 
     <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.QueryUserCondition" resultMap="allUserAndRole">
@@ -84,7 +88,9 @@
                gender,
                photo,
                reward_points,
-               b.id as black_id
+               b.id as black_id,
+               consecutive_attend_days,
+               last_attend_time
         from user u
         left join blacklist b on
             (u.id = b.user_id and #{now} between b.start_time and b.end_time)

@@ -4,9 +4,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.service.RedisService;
+import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.DateTimeUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -76,6 +78,5 @@ public class RedisServiceImpl implements RedisService {
         // 全局配置了二级key的序列化为string。集合内的类型不一样，不能直接强转，只能先抹除泛型
         return (Set) topPostIds;
     }
-
 
 }

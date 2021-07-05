@@ -278,7 +278,7 @@ body .layui-edit-face  .layui-layer-content{padding:0; background-color:#fff; co
 .fly-signin cite{padding: 0 5px; color: #FF5722; font-style: normal;}
 .fly-signin .layui-badge-dot{top: -7px; margin-left: 0px;}
 .fly-signin-list{padding: 0; line-height: 30px;}
-.fly-signin-list .layui-tab-item{padding: 10px; height: 320px; overflow-x: hidden; overflow-y: auto;}
+.fly-signin-list .layui-tab-item{padding: 10px; height: 360px; overflow-x: hidden; overflow-y: auto;}
 .fly-signin-list li{margin-top: 5px; padding-bottom: 5px; border-bottom: 1px dotted #e2e2e2; white-space: nowrap;}
 .fly-signin-list li:first-child{margin-top: 0;}
 .fly-signin-list li:last-child{border: none 0;}

@@ -39,7 +39,7 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://localhost:3306/forum?characterEncoding=utf-8&amp;useSSL=false"
                         userId="root"
-                        password="87654321">
+                        password="ysqJYKL2010">
         </jdbcConnection>
 
         <javaTypeResolver>
@@ -114,7 +114,7 @@
 <!--        <table tableName="system_notification" />-->
 <!--        <table tableName="topic" />-->
 <!--        <table tableName="user" />-->
-        <table tableName="user" />
+        <table tableName="attendance" />
 
     </context>
 

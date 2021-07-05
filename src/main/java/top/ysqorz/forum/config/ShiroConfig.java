@@ -46,11 +46,11 @@ public class ShiroConfig {
      */
 
     /**
+     * https://zhuanlan.zhihu.com/p/143126919
      * 在引入spring aop（比如在controller类上加上@Validaed注解）的情况下
      * 在@controller注解的类的方法中使用@RequirseRole等权限注解，
      * 会导致该方法无法映射请求，导致404
      * 将usePrefix和proxyTargetClass二者任意一值设为true都可以解决无法映射请求的问题
-     * @return
      */
     @Bean
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
@@ -100,17 +100,13 @@ public class ShiroConfig {
         // 除了浏览帖子特殊（不登录也行，只是数据不一样），发帖、修改帖子等其他操作都需要登录
         chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/user/oauth/**/callback", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/attend", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/setting/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/**", "noSessionCreation,anon");
         chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/comment/*/publish", "noSessionCreation,jwtAuth");
 
-
-        chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
-
-
-        chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
         chain.addPathDefinition("/index", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/head", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/index/list", "noSessionCreation,jwtAuth[permissive]");
@@ -119,7 +115,8 @@ public class ShiroConfig {
         // 放行静态资源。但是admin也把后台给放行了。之后再做修正
         chain.addPathDefinition("/front/**", "noSessionCreation,anon");
         chain.addPathDefinition("/admin/**", "noSessionCreation,anon");
-
+        chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
+        chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
 
 //        // 注意第2个参数的"jwtAuth"需要与上面的 filters.put("jwtAuth", new JwtAuthenticatingFilter()); 一致
 //        // 做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误

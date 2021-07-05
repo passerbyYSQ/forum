@@ -163,14 +163,14 @@
         }
 
         /*  美化滚动条  */
-        .post-list ::-webkit-scrollbar {
+        .pretty-scroll ::-webkit-scrollbar {
             width: 7px;
             height: 7px;
             background-color: #F5F5F5;
         }
 
         /*定义滚动条轨道 内阴影+圆角*/
-        .post-list ::-webkit-scrollbar-track {
+        .pretty-scroll ::-webkit-scrollbar-track {
             box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
             -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
             border-radius: 10px;
@@ -178,14 +178,25 @@
         }
 
         /*定义滑块 内阴影+圆角*/
-        .post-list ::-webkit-scrollbar-thumb {
+        .pretty-scroll ::-webkit-scrollbar-thumb {
             border-radius: 10px;
             box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
             -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
             background-color: #c8c8c8;
         }
+        .fly-signin-list .layui-tab-item {
+            padding: 10px 16px 0 16px;
+        }
+        .fly-signin-list .layui-tab-item span.layui-badge {
+            padding: 0 6px;
+            margin-right: 12px;
+        }
+        .fly-signin-list ul li {
+            margin-top: 10px;
+            padding-bottom: 10px;
+        }
 
-    </style>
+       </style>
 </head>
 <body style="margin:0">
 <div style="height:62px;">
@@ -310,7 +321,7 @@
           </span>
                 </div>
 
-                <div id="demoCardList3" class="post-list"></div>
+                <div id="demoCardList3" class="pretty-scroll"></div>
 
 
             </div>
@@ -352,18 +363,16 @@
                     <i class="fly-mid"></i>
                     <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
                     <i class="fly-mid"></i>
-                    <a href="javascript:;" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
-                    <span class="fly-signin-days">已连续签到<cite>16</cite>天</span>
+                    <a href="javascript:showRankDialog();" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
+                    <span th:if="${myUser.id}" class="fly-signin-days">已连续签到
+                        <cite id="consecutiveAttendDays" th:text="${myUser.consecutiveAttendDays}">16</cite>天
+                    </span>
                 </div>
                 <div class="fly-panel-main fly-signin-main">
-                    <button class="layui-btn layui-btn-danger" id="LAY_signin">今日签到</button>
-                    <span>可获得<cite>5</cite>飞吻</span>
-
+                    <button th:if="${!isAttendToady}" class="layui-btn layui-btn-danger" onclick="attend(this)" id="LAY_signin">今日签到</button>
                     <!-- 已签到状态 -->
-                    <!--
-                    <button class="layui-btn layui-btn-disabled">今日已签到</button>
-                    <span>获得了<cite>20</cite>飞吻</span>
-                    -->
+                    <button th:if="${isAttendToady}" class="layui-btn layui-btn-disabled">今日第 [[${attendRank}]] 个签到</button>
+                    <span>今日已有<cite>[[${attendCount}]]</cite>个人签到</span>
                 </div>
             </div>
 
@@ -581,15 +590,68 @@
 
     </div>
 </script>
+
+<!-- 签到记录的模板 -->
+<script type="text/html" id="rankDialog">
+    <div class="layui-tab layui-tab-brief" style="margin: 5px 0 0;">
+        <ul class="layui-tab-title">
+            <li class="layui-this">今日最快</li>
+            <li>总签到榜</li>
+            <li>最新签到</li>
+        </ul>
+        <div class="layui-tab-content fly-signin-list pretty-scroll" id="LAY_signin_list">
+            <!-- 今日最快签到榜 -->
+            <ul id="fastRankList" class="layui-tab-item layui-show">1</ul>
+            <!-- 连续签到的天数的排行榜 -->
+            <ul id="consecutiveRankList" class="layui-tab-item">2</ul>
+            <ul class="layui-tab-item">3</ul>
+        </div>
+    </div>
+</script>
+
+<!-- rank item  -->
+<script type="text/html" id="rankItem">
+    <li>
+        {{#
+            var color;
+            if (d.rank == 1) {
+                color = '#FE2D46';
+            } else if (d.rank == 2) {
+                color = '#F60';
+            } else if (d.rank == 3) {
+                color = '#FAA90E';
+            }
+        }}
+        {{# if (d.rank <= 3) { }}
+        <span class="layui-badge" style="background: {{color}};">{{d.rank}}</span>
+        {{# } else { }}
+        <span class="layui-badge layui-bg-gray">{{d.rank}}</span>
+        {{# } }}
+        <a href="javascript:;" target="_blank">
+            <img src="{{d.photo}}">
+            <cite class="fly-link">{{d.username}}</cite>
+        </a>
+        {{# if (d.attendTime) { }}
+        <span style="float: right;" class="fly-grey">{{d.attendTime}}</span>
+        {{# } }}
+        {{# if (d.consecutiveAttendDays) { }}
+        <span style="float: right;" class="fly-grey">已连续签到 <i>{{d.consecutiveAttendDays}}</i> 天</span>
+        {{# } }}
+    </li>
+
+<!--    <li class="fly-none fly-grey">暂无记录</li>-->
+</script>
+
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
 
-    layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'app'], function () {
+    layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'admin', 'app'], function () {
         var $ = layui.jquery;
         var app = layui.app;
         var layer = layui.layer;
         var dataGrid = layui.dataGrid;
+        var admin = layui.admin;
         var conditon = {
             hotDiscussion: "0",
             orderByStr:  "top_weight desc, last_comment_time desc",
@@ -597,19 +659,89 @@
             topicId: ""
         };
 
+        // rank dialog
+        window.showRankDialog = function () {
+            var dataGridMap = new Map();
+
+            admin.open({
+                type: 1,
+                area: '360px',
+                offset: 'auto',
+                title: '签到活跃榜 Top20',
+                content: $('#rankDialog').html(),
+                success: function (layero, dIndex) {
+                    // 增加点击事件
+                    $("ul.layui-tab-title > li").click(function () {
+                        //console.log($(this).index()); // 从0开始
+                        var idx =  $(this).index();
+                        loadRank(idx);
+                    });
+
+                    loadRank(0);
+
+                    // 弹窗不出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                }
+            });
+
+            function loadRank(idx) {
+                var elems = ['#fastRankList', '#consecutiveRankList'];
+                var urls = ['/attend/rank', '/attend/consecutive/rank'];
+                if (!dataGridMap.has(elems[idx])) {
+                    var grid = dataGrid.render({
+                        elem: elems[idx],
+                        templet: '#rankItem',
+                        url: urls[idx],
+                        // 浏览器调试dataGrid的源码发现，在不分页的情况下，该配置不起作用，导致无法渲染
+                        // response: {
+                        //     statusCode: 2000 //规定成功的状态码，默认：0。
+                        // },
+                        // request: {
+                        //     limitName: 'count' //每页数据量的参数名，默认：limit
+                        // },
+                        where: {
+                            count: 20
+                        },
+                        parseData: function (res) { //res 即为原始返回的数据
+                            //console.log(res);
+                            return {
+                                "code": res.code === 2000 ? 0 : 1, //解析接口状态
+                                "msg": res.msg, //解析提示文本
+                                "count": res.data.length, //解析数据长度
+                                "data": res.data //解析数据列表
+                            };
+                        },
+                        page: false,
+                        done: function (res, curr, count) {
+                            // 数据渲染完的回调
+                            console.log(res);
+                            console.log("--------");
+                        }
+                    });
+                    dataGridMap.set(elems[idx], grid);
+                }
+            }
+        };
+
+        // 签到
+        window.attend = function (obj) {
+            app.ajax('/attend', {}, function (res) {
+                console.log(res);
+                app.successNotice('签到成功，今日第 ' + res.data.rank + ' 个签到');
+                $(obj).text('今日第' + res.data.rank + '个签到');
+                $(obj).removeClass('layui-btn-danger');
+                $(obj).addClass('layui-btn-disabled');
+                $('#consecutiveAttendDays').text(res.data.consecutiveAttendDays);
+            });
+        };
 
         window.topicsort = function (dom, id) {
-
             conditon.topicId = id;
             var loadIndex = layer.load(2);
             insTb.reload({
                 where: conditon,
                 page: {curr: 1}
             });
-            // var collection = $(".tark");
-            // $.each(collection, function () {
-            //     $(this).parent().removeClass("layui-this");
-            // });
             $(dom).parent().addClass("layui-this");
             $(dom).parent().siblings("li").removeClass("layui-this");
             layer.close(loadIndex);
@@ -621,45 +753,30 @@
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "top_weight desc, last_comment_time desc";
                 conditon.isHighQuality = "0";
-                insTb.reload({
-                    where: conditon,
-                    page: {curr: 1}
-                });
                 $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
-                layer.close(loadIndex);
             } else if (params == 2) { // 精品
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "1";
-                insTb.reload({
-                    where: conditon,
-                    page: {curr: 1}
-                });
                 $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
-                layer.close(loadIndex);
             } else if (params == 3) { // 最新
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "0";
-                insTb.reload({
-                    where: conditon,
-                    page: {curr: 1}
-                });
                 $(dom).siblings(".flag").removeClass("layui-this");
                 $(dom).addClass("layui-this");
-                layer.close(loadIndex);
             } else { // 热议
                 conditon.hotDiscussion = "1";
                 conditon.orderByStr = "comment_count desc,last_comment_time desc";
                 conditon.isHighQuality = "0";
-                insTb.reload({
-                    where: conditon,
-                    page: {curr: 1}
-                });
-                layer.close(loadIndex);
             }
+            insTb.reload({
+                where: conditon,
+                page: {curr: 1}
+            });
+            layer.close(loadIndex);
         };
 
 

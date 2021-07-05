@@ -57,6 +57,11 @@ public interface UserService {
     int updatePsw(Integer userId);
 
     /**
+     * 修改用户
+     */
+    int updateUserById(User user);
+
+    /**
      * 根据id查询user信息
      */
     User getUserById(Integer userId);

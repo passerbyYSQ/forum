@@ -80,6 +80,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.updateByPrimaryKeySelective(record);
     }
 
+    @Override
+    public int updateUserById(User user) {
+        return userMapper.updateByPrimaryKeySelective(user);
+    }
+
 
     @Override
     public User getUserById(Integer userId) {
@@ -175,7 +180,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(md5Hash.toHex())
                 .setRegisterTime(LocalDateTime.now())
                 .setModifyTime(LocalDateTime.now())
-                .setRewardPoints(0).setFansCount(0)
+                .setConsecutiveAttendDays(0)
+                .setRewardPoints(0)
+                .setFansCount(0)
                 .setGender((byte) 3) // 性别保密
                 .setJwtSalt("")
                 .setPhoto("/admin/assets/images/defaultUserPhoto.jpg");
@@ -203,6 +210,7 @@ public class UserServiceImpl implements UserService {
                         .setPassword("")
                         .setRegisterTime(now)
                         .setModifyTime(now)
+                        .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
                         .setGender((byte) 3)
@@ -235,6 +243,7 @@ public class UserServiceImpl implements UserService {
                         .setPassword("")
                         .setRegisterTime(now)
                         .setModifyTime(now)
+                        .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
                         .setGender((byte) ("男".equals(qqUser.getGender()) ? 0 : 1))
@@ -265,6 +274,7 @@ public class UserServiceImpl implements UserService {
                         .setPassword("")
                         .setRegisterTime(now)
                         .setModifyTime(now)
+                        .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
                         .setGender((byte) 3)

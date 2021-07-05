@@ -205,11 +205,12 @@ public class PostController {
     @PostMapping("/set_quality")
     @ResponseBody
     public ResultModel setQuality(@NotNull Integer postId, @NotNull Boolean isHighQuality) {
-        Post post = new Post();
-        post.setId(postId).setIsHighQuality((byte) (isHighQuality ? 1 : 0));
-        int cnt = postService.updatePostById(post);
-        return cnt == 1 ? ResultModel.success()
-                : ResultModel.failed(StatusCode.POST_NOT_EXIST);
+        Post post = postService.getPostById(postId);
+        if (ObjectUtils.isEmpty(post)) {
+            return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
+        }
+        postService.changeHighQuality(ShiroUtils.getUserId(), postId, isHighQuality);
+        return ResultModel.success();
     }
 
     @RequiresPermissions("post:top")

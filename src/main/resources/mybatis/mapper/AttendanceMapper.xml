@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ysqorz.forum.dao.AttendanceMapper">
+  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.Attendance">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="attend_date" jdbcType="DATE" property="attendDate" />
+    <result column="attend_time" jdbcType="TIME" property="attendTime" />
+  </resultMap>
+
+  <select id="attendRankNum" parameterType="map" resultType="Integer">
+    select count(*) + 1
+    from attendance
+    where attend_date = #{attendDate} and
+          user_id != #{userId} and
+          attend_time <![CDATA[<]]> #{attendTime}
+  </select>
+
+    <select id="attendedCount" parameterType="map" resultType="Integer">
+        select count(*)
+        from attendance
+        where attend_date = #{attendDate} and
+            attend_time <![CDATA[<=]]> #{attendTime}
+    </select>
+
+    <!--
+    with toady_rank_ids as (
+        select user_id,
+               attend_date,
+               attend_time
+        from attendance
+        where attend_date = #{toady}
+        order by attend_time
+        limit #{count})
+    select tri.*,
+           u.username,
+           u.photo,
+           (select count(*) + 1
+            from toady_rank_ids tri2
+            where tri2.user_id != tri.user_id and
+                  tri2.attend_time &lt; tri.attend_time) as `rank`
+    from toady_rank_ids tri
+    left join user u on tri.user_id = u.id
+    -->
+  <select id="rankList" parameterType="Integer" resultType="top.ysqorz.forum.dto.AttendDTO">
+      select user_id, username, photo, attend_time,
+              (select count(*) + 1
+                from attendance a2
+                where attend_date = #{today} and
+                    a2.user_id != a1.user_id and
+                    a2.attend_time &lt; a1.attend_time) as `rank`
+      from attendance a1
+      left join user u on a1.user_id = u.id
+      where attend_date = #{today}
+      order by attend_time
+      limit ${count}
+  </select>
+
+    <!--
+    with consecutive_rank_ids as (
+        select id as user_id,
+               username,
+               photo,
+               consecutive_attend_days
+        from user
+        where last_attend_time = #{yesterday}
+            or last_attend_time = #{today}
+        order by consecutive_attend_days desc
+        limit #{count})
+    select cri.*,
+           (select count(*) + 1
+           from consecutive_rank_ids cri2
+            where cri2.user_id != cri.user_id
+              and cri2.consecutive_attend_days > cri.consecutive_attend_days) as `rank`
+    from consecutive_rank_ids cri
+    -->
+  <select id="consecutiveDaysRankList" parameterType="map"
+          resultType="top.ysqorz.forum.dto.AttendDTO">
+      select id as user_id, username, photo,
+             consecutive_attend_days,
+             (select count(*) + 1
+              from user u2
+              where (date_format(u2.last_attend_time, '%Y-%m-%d') = #{yesterday}
+                  or date_format(u2.last_attend_time, '%Y-%m-%d') = #{today})
+                and u2.id != u1.id
+                and u2.consecutive_attend_days > u1.consecutive_attend_days) as `rank`
+      from user u1
+      where date_format(last_attend_time, '%Y-%m-%d') = #{yesterday}
+         or date_format(last_attend_time, '%Y-%m-%d') = #{today}
+      order by consecutive_attend_days desc
+      limit ${count}
+  </select>
+
+</mapper>

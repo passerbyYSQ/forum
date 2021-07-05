@@ -10,8 +10,9 @@ public interface RedisService {
 
     /**
      * 保存验证码
+     *
      * @param key
-     * @param captcha   验证码字符串
+     * @param captcha 验证码字符串
      */
     void saveCaptcha(String key, String captcha);
 
@@ -22,6 +23,7 @@ public interface RedisService {
 
     /**
      * 第三方授权回调时防止CSRF
+     *
      * @param key
      * @param state
      */
@@ -35,5 +37,6 @@ public interface RedisService {
     // 往热帖排行榜上对应的帖子增加访问量
     void addHotPostDayRankScore(Integer postId);
 
+    // 获取热帖日榜的前count个帖子id
     Set<Integer> hostPostDayRankTop(Integer count);
 }

@@ -103,6 +103,18 @@ public class User implements Serializable {
     private LocalDateTime lastLoginTime;
 
     /**
+     * 上一次签到的时间
+     */
+    @Column(name = "last_attend_time")
+    private LocalDateTime lastAttendTime;
+
+    /**
+     * 最近一次连续签到的天数
+     */
+    @Column(name = "consecutive_attend_days")
+    private Integer consecutiveAttendDays;
+
+    /**
      * 积分
      */
     @Column(name = "reward_points")
@@ -125,7 +137,7 @@ public class User implements Serializable {
      */
     @Column(name = "qq_id")
     private String qqId;
-	
+
 	/**
      * baiduid
      */
