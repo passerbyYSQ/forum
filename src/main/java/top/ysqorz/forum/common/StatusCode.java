@@ -56,9 +56,10 @@ public enum StatusCode {
     TOKEN_IS_EXPIRED(6202, "token已过期，请重新登录"),
     TOKEN_IS_INVALID(6203, "无效token"),
     EMAIL_INCORRECT(6204, "邮箱错误或者邮箱尚未注册"),
-    EMAIL_ISEXIST(6204, "邮箱已注册"),
     PASSWORD_INCORRECT(6205, "密码错误"),
-    USER_ISBIND(6206, "该社交账号已被其他账号绑定"),
+    ACCOUNT_IS_BOUND(6206, "该社交账号已被其他账号绑定"),
+    EMAIL_NOT_SET(6206, "请先绑定邮箱"),
+    //REFERER_ERROR(6207, "referer错误"),
 
     // 权限相关
     AUTHORITY_NAME_EXIST(6300, "权限名称已存在"),

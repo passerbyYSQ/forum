@@ -26,6 +26,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * 通过注解实现权限控制
@@ -50,7 +52,7 @@ public class UserController {
     @Resource
     private QQProvider qqProvider;
 
-	@Resource
+    @Resource
     private BaiduProvider baiduProvider;
 
     @RequiresRoles({"ysq"})
@@ -79,7 +81,7 @@ public class UserController {
 
         User user = userService.getUserByEmail(dto.getEmail());
         if (!ObjectUtils.isEmpty(user)) {
-            return ResultModel.failed(StatusCode.EMAIL_ISEXIST); // 该邮箱已注册
+            return ResultModel.failed(StatusCode.EMAIL_IS_EXIST); // 该邮箱已注册
         }
 
         userService.register(dto);
@@ -175,17 +177,7 @@ public class UserController {
         String referer = giteeProvider.checkState(state);
         // 检查是否存在现有账号与第三方的账号已绑定
         User user = userService.oauth2Gitee(code);
-        // 检查是否是绑定页面需要绑定操作
-        if (referer.indexOf("user/setting") > -1){
-            return callbackUrl(referer, user);
-        }
-        // 清除shiro的认证缓存，实现单点登录
-        userService.clearShiroAuthCache(user);
-        // 签发我们自己的token
-        userService.login(user.getId(), response);
-        // 重定向携带token
-        //redirectAttributes.addAttribute("token", token);
-        return "redirect:" + referer; // 不要加 "/"
+        return oauthCallbackRedirect(referer, user, response);
     }
 
     @GetMapping("/oauth/qq/authorize")
@@ -199,60 +191,50 @@ public class UserController {
      */
     @GetMapping("/oauth/qq/callback")
     public String qqCallback(@RequestParam(defaultValue = "") String state,
-                                String code, HttpServletResponse response) throws IOException {
+                             String code, HttpServletResponse response) throws IOException {
         String referer = qqProvider.checkState(state);
         User user = userService.oauth2QQ(code);
-        if (referer.indexOf("user/setting") > -1){
-            return callbackUrl(referer, user);
-        }
-        userService.clearShiroAuthCache(user);
-        userService.login(user.getId(), response);
-        //redirectAttributes.addAttribute("token", token);
-        return "redirect:" + referer; // 不要加 "/"
+        return oauthCallbackRedirect(referer, user, response);
     }
 
-	@GetMapping("/oauth/baidu/authorize")
+    @GetMapping("/oauth/baidu/authorize")
     public void baiduAuthorize(@RequestHeader(defaultValue = "") String referer,
                                HttpServletResponse response) throws IOException {
         baiduProvider.redirectAuthorize(referer, response);
     }
-
 
     /**
      * baidu第三方授权回调地址
      */
     @GetMapping("/oauth/baidu/callback")
     public String baiduCallback(@RequestParam(defaultValue = "") String state,
-                                String code, HttpServletResponse response) throws IOException{
+                                String code, HttpServletResponse response) throws IOException {
         String referer = baiduProvider.checkState(state);
         User user = userService.oauth2Baidu(code);
-        if (referer.indexOf("user/setting") > -1){
-            return callbackUrl(referer, user);
+        return oauthCallbackRedirect(referer, user, response);
+    }
+
+    private String oauthCallbackRedirect(String referer, User user, HttpServletResponse response)
+            throws UnsupportedEncodingException {
+        StatusCode code = StatusCode.SUCCESS;
+        // 如果是从绑定界面过来
+        if (!ObjectUtils.isEmpty(referer) && referer.contains("user/center/set")) {
+            if (!ShiroUtils.getUserId().equals(user.getId())) { // 说明已经被其他账号绑定了
+                code = StatusCode.ACCOUNT_IS_BOUND;
+            } else if (ObjectUtils.isEmpty(user.getEmail())) { // 尚未设置邮箱，不能进行绑定或解绑操作
+                code = StatusCode.EMAIL_NOT_SET;
+            }
         }
-        userService.clearShiroAuthCache(user);
-        userService.login(user.getId(), response);
-        return "redirect:" + referer; // 不要加 "/"
-    }
-
-    /**
-     * 第三方接口返回在绑定页面的回调地址
-     */
-    public String callbackUrl(String referer, User user) {
-        // 检查是否是当前用户
-        String msg = checkUser(user.getId());
-        return "redirect:" + referer + "?msg=" + msg;
-    }
-
-    /**
-     * 检查是否是由第三方账号获取的User
-     * 且是否和当前User一致
-     */
-    public String checkUser(int id) {
-        Integer myId = ShiroUtils.getUserId();
-        if (id != myId) {
-            return StatusCode.USER_ISBIND.getCode().toString();
+        if (StatusCode.SUCCESS.equals(code)) { // 成功
+            // 清除shiro的认证缓存，实现单点登录
+            userService.clearShiroAuthCache(user);
+            // 签发我们自己的token
+            userService.login(user.getId(), response);
+            // 重定向携带token
+            //redirectAttributes.addAttribute("token", token);
+            // redirect:后不要加 "/"
         }
-        return StatusCode.SUCCESS_BIND.getCode().toString();
+        return String.format("redirect:%s?code=%d&msg=%s", referer, code.getCode(),
+                URLEncoder.encode(code.getMsg(), "utf-8"));
     }
-
 }

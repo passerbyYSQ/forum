@@ -198,18 +198,18 @@
                                     </svg>
                                 </i>
                             </div>
-                            <div th:if="${user.getEmail()}" class="user-bd-list-content">
+                            <div th:if="${!#strings.isEmpty(user.email)}" class="user-bd-list-content">
                                 <div class="user-bd-list-lable">密保邮箱</div>
-                                <div class="user-bd-list-text">已绑定邮箱：[[${user.getEmail()}]]</div>
+                                <div class="user-bd-list-text">已绑定邮箱：[[${user.email}]]</div>
                                 <a class="user-bd-list-oper" name="bindEmail" id="123">修改</a>
                             </div>
-                            <div th:unless="${user.getEmail()}" class="user-bd-list-content">
+                            <div th:if="${#strings.isEmpty(user.email)}" class="user-bd-list-content">
                                 <div class="user-bd-list-lable">密保邮箱</div>
-                                <div class="user-bd-list-text">当前未绑定邮箱</div>
+                                <div class="user-bd-list-text">当前未绑定邮箱。只有绑定邮箱后才可以绑定或解绑第三方账号！</div>
                                 <a class="user-bd-list-oper" name="bindEmail">绑定</a>
                             </div>
                         </div>
-                        <div th:if="${user.getEmail()}">
+                        <div th:if="${!#strings.isEmpty(user.email)}">
                             <div id="phone" class="user-bd-list-item">
                                 <div class="user-bd-list-img">
                                     <i style="color:#3492ed;font-size: 48px;">
@@ -218,12 +218,12 @@
                                         </svg>
                                     </i>
                                 </div>
-                                <div th:if="${user.getPhone()}" class="user-bd-list-content">
+                                <div th:if="${!#strings.isEmpty(user.phone)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">密保手机</div>
-                                    <div class="user-bd-list-text">已绑定手机号码：[[${user.getPhone()}]]</div>
+                                    <div class="user-bd-list-text">已绑定手机号码：[[${user.phone}]]</div>
                                     <a class="user-bd-list-oper" name="bindPhone">修改</a>
                                 </div>
-                                <div th:unless="${user.getPhone()}" class="user-bd-list-content">
+                                <div th:if="${#strings.isEmpty(user.phone)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">密保手机</div>
                                     <div class="user-bd-list-text">当前未绑定手机号码</div>
                                     <a class="user-bd-list-oper" name="bindPhone">绑定</a>
@@ -237,12 +237,12 @@
                                         </svg>
                                     </i>
                                 </div>
-                                <div th:if="${user.getQqId()}" class="user-bd-list-content">
+                                <div th:if="${!#strings.isEmpty(user.qqId)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">绑定QQ</div>
                                     <div class="user-bd-list-text">已绑定QQ账号</div>
                                     <a class="user-bd-list-oper" name="Unbundling" id="UnbundlingQQ">解绑</a>
                                 </div>
-                                <div th:unless="${user.getQqId()}" class="user-bd-list-content">
+                                <div th:if="${#strings.isEmpty(user.qqId)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">绑定QQ</div>
                                     <div class="user-bd-list-text">当前未绑定QQ账号</div>
                                     <a class="user-bd-list-oper" th:href="@{/user/oauth/qq/authorize}">绑定</a>
@@ -256,12 +256,12 @@
                                         </svg>
                                     </i>
                                 </div>
-                                <div th:if="${user.getGiteeId()}" class="user-bd-list-content">
+                                <div th:if="${!#strings.isEmpty(user.giteeId)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">绑定gitee</div>
                                     <div class="user-bd-list-text">已绑定gitee账号</div>
                                     <a class="user-bd-list-oper" name="Unbundling" id="UnbundlingGitee">解绑</a>
                                 </div>
-                                <div th:unless="${user.getGiteeId()}" class="user-bd-list-content">
+                                <div th:if="${#strings.isEmpty(user.giteeId)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">绑定gitee</div>
                                     <div class="user-bd-list-text">当前未绑定gitee账号</div>
                                     <a class="user-bd-list-oper" th:href="@{/user/oauth/gitee/authorize}">绑定</a>
@@ -275,12 +275,12 @@
                                         </svg>
                                     </i>
                                 </div>
-                                <div th:if="${user.getBaiduId()}" class="user-bd-list-content">
+                                <div th:if="${!#strings.isEmpty(user.baiduId)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">绑定百度</div>
                                     <div class="user-bd-list-text">已绑定百度账号</div>
                                     <a class="user-bd-list-oper" name="Unbundling" id="UnbundlingBaidu">解绑</a>
                                 </div>
-                                <div th:unless="${user.getBaiduId()}" class="user-bd-list-content">
+                                <div th:if="${#strings.isEmpty(user.baiduId)}" class="user-bd-list-content">
                                     <div class="user-bd-list-lable">绑定百度</div>
                                     <div class="user-bd-list-text">当前未绑定百度账号</div>
                                     <a class="user-bd-list-oper" th:href="@{/user/oauth/baidu/authorize}">绑定</a>
@@ -330,13 +330,13 @@
                        required placeholder="请输入手机号"/>
             </div>
         </div>
-        <div class="layui-form-item text-center">
-            <button class="layui-btn" lay-filter="PhoneSubmit" lay-submit>确定</button>
+        <div class="layui-form-item" style="float: right;">
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            <button class="layui-btn" lay-filter="PhoneSubmit" lay-submit>确定</button>
         </div>
     </form>
 </script>
-<!-- 绑定手机弹窗 -->
+<!-- 绑定邮箱弹窗 -->
 <script type="text/html" id="EmailDialog">
     <form id="EmailForm" lay-filter="EmailForm" class="layui-form model-form" autocomplete="off">
         <div class="layui-form-item">
@@ -363,9 +363,9 @@
                        required placeholder="请输入邮箱"/>
             </div>
         </div>
-        <div class="layui-form-item text-center">
-            <button class="layui-btn" lay-filter="EmailSubmit" lay-submit>确定</button>
+        <div class="layui-form-item" style="float: right;">
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            <button class="layui-btn" lay-filter="EmailSubmit" lay-submit>确定</button>
         </div>
     </form>
 </script>
@@ -396,9 +396,9 @@
                        required placeholder="请输入确认密码"/>
             </div>
         </div>
-        <div class="layui-form-item text-center">
-            <button class="layui-btn" lay-filter="EmailSubmit" lay-submit>确定</button>
+        <div class="layui-form-item" style="float: right;">
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            <button class="layui-btn" lay-filter="EmailSubmit" lay-submit>确定</button>
         </div>
     </form>
 </script>
@@ -421,9 +421,9 @@
                        required placeholder="请输入密码"/>
             </div>
         </div>
-        <div class="layui-form-item text-center">
-            <button class="layui-btn" lay-filter="UnbundlingSubmit" lay-submit>确定</button>
+        <div class="layui-form-item" style="float: right;">
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            <button class="layui-btn" lay-filter="UnbundlingSubmit" lay-submit>确定</button>
         </div>
     </form>
 </script>
@@ -438,16 +438,18 @@
         var admin = layui.admin;
         var app = layui.app;
         //后端返回的提示码msg，显示信息两秒后刷新去除url中的信息
+        var code = app.getUrlParam("code");
         var msg = app.getUrlParam("msg");
-        if (app.isNotBlank(msg)) {
-            if (msg == "6206") {
-                app.errorNotice("该社交账号已被其他账号绑定");
-            }
-            if (msg == "2001") {
-                app.successNotice("操作成功");
+        var oldUrl = '/user/center/set';
+
+        if (code && msg) {
+            if (code === '2000') {
+                app.successNotice('绑定成功');
+            } else {
+                app.errorNotice(msg);
             }
             setTimeout(function() {
-                location.href = '/user/setting/set';
+                location.href = oldUrl;
             }, 2000);
         }
         //手机绑定或修改操作
@@ -455,7 +457,8 @@
             admin.open({
                 type: 1,
                 title: '绑定手机号码',
-                area: "600px",
+                area: "400px",
+                offset: 'auto',
                 content: $('#PhoneDialog').html(),
                 success: function (layero, dIndex) {
                     form.on('submit(PhoneSubmit)', function (data) {
@@ -465,11 +468,11 @@
                         resultData.checkPassword = data.field.checkPassword;
                         resultData.newPhone = data.field.newPhone;
 
-                        var url = '/user/setting/changeUserPhone';
+                        var url = '/user/center/changeUserPhone';
                         app.ajax(url, resultData, function (res) {
                             app.successNotice(res.msg);
                             setTimeout(function() {
-                                location.href = '/user/setting/set';
+                                location.href = oldUrl;
                             }, 2000);
                         });
                         return false;
@@ -479,38 +482,38 @@
         });
         //邮箱绑定或第一次设置操作
         $("a[name=bindEmail]").click(function() {
-            var email = [[${user.getEmail()}]]
-            var haveEmail = 0;
-            var dialog = $('#EmailDialog');
-            //判断是否已经绑定邮箱
-            //haveEmail：0代表未绑定邮箱，1代表已经绑定邮箱
+            var email = [[${user.email}]];
+            var dialog;
+            var title;
             if (app.isNotBlank(email)) {
-                haveEmail = 1;
-            }
-            if (haveEmail == 0) {
-                dialog = $('#FirstSetDialog');
-                app.infoNotice("请设置新邮箱密码");
+                dialog = $('#EmailDialog'); // 修改邮箱 oldEmail checkPassword newEmail
+                title = "修改邮箱";
+            } else {
+                dialog = $('#FirstSetDialog'); // 第一次设置邮箱和密码 oldEmail  checkPassword rePassword
+                title = "设置邮箱和密码";
+                app.infoNotice("请设置邮箱和密码");
             }
             admin.open({
                 type: 1,
-                title: '绑定邮箱',
-                area: "600px",
+                title: title,
+                area: "400px",
+                offset: 'auto',
                 content: dialog.html(),
                 success: function (layero, dIndex) {
                     form.on('submit(EmailSubmit)', function (data) {
 
-                        var resultData = {};
-                        resultData.oldEmail = data.field.oldEmail;
-                        resultData.checkPassword = data.field.checkPassword;
-                        resultData.rePassword = data.field.rePassword;
-                        resultData.newEmail = data.field.newEmail;
-                        console.log(resultData);
+                        // var resultData = {};
+                        // resultData.oldEmail = data.field.oldEmail;
+                        // resultData.checkPassword = data.field.checkPassword;
+                        // resultData.rePassword = data.field.rePassword;
+                        // resultData.newEmail = data.field.newEmail;
+                        // console.log(data.field);
 
-                        var url = '/user/setting/changeUserEmail';
-                        app.ajax(url, resultData, function (res) {
+                        var url = '/user/center/changeUserEmail';
+                        app.ajax(url, data.field, function (res) {
                             app.successNotice(res.msg);
                             setTimeout(function() {
-                                location.href = '/user/setting/set';
+                                location.href = oldUrl;
                             }, 2000);
                         });
                         return false;
@@ -518,6 +521,7 @@
                 },
             });
         });
+
         //第三方账号解绑操作
         $("a[name=Unbundling]").click(function() {
             var id = $(this).attr('id');
@@ -537,7 +541,8 @@
             admin.open({
                 type: 1,
                 title: title,
-                area: "600px",
+                area: "400px",
+                offset: 'auto',
                 content: $('#UnbundlingDialog').html(),
                 success: function (layero, dIndex) {
                     form.on('submit(UnbundlingSubmit)', function (data) {
@@ -545,11 +550,11 @@
                         resultData.oldEmail = data.field.oldEmail;
                         resultData.checkPassword = data.field.checkPassword;
                         resultData.poFile = poFile;
-                        var url = '/user/setting/Unbundling';
+                        var url = '/user/center/Unbundling';
                         app.ajax(url, resultData, function (res) {
                             app.successNotice(res.msg);
                             setTimeout(function() {
-                                location.href = '/user/setting/set';
+                                location.href = oldUrl;
                             }, 2000);
                         });
                         return false;

@@ -3,7 +3,13 @@ package top.ysqorz.forum.controller.front;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.CheckUserDTO;
@@ -21,7 +27,7 @@ import javax.annotation.Resource;
  * @create 2021-06-30 13:12
  */
 @Controller
-@RequestMapping("/user/setting")
+@RequestMapping("/user/center")
 public class UserSettingController {
 
     @Resource
@@ -44,60 +50,31 @@ public class UserSettingController {
     }
 
     /**
-     * 跳转到基本设置
+     * 跳转到第三方账号绑定页面，此页面必须登录才能进
      */
     @GetMapping("/set")
-    public String setPage(Model model) {
-        User user = alterUser();
+    public String bindOauthAccountPage(Model model) {
+        User user = userService.getUserById(ShiroUtils.getUserId());
+        user.setEmail(encryption(user.getEmail()));
+        user.setPhone(encryption(user.getPhone()));
         model.addAttribute("user", user);
         return "front/user/set";
     }
 
     /**
-     * 跳转到基本设置前的User数据处理
-     */
-    public User alterUser() {
-        int myId = ShiroUtils.getUserId();
-        User user = userService.getUserById(myId);
-        if (user.getEmail().equals("")) {
-            user.setEmail(null);
-        } else {
-            int len1 = user.getEmail().length();
-            String email = encryption(user.getEmail(), len1);
-            user.setEmail(email);
-        }
-        if (user.getPhone() != null) {
-            int len2 = user.getPhone().length();
-            String phone = encryption(user.getPhone(), len2);
-            user.setPhone(phone);
-        }
-        if (user.getQqId() != null && user.getQqId().equals("")) {
-            user.setQqId(null);
-        }
-        if (user.getGiteeId() != null && user.getGiteeId().equals("")) {
-            user.setGiteeId(null);
-        }
-        if (user.getBaiduId() != null && user.getBaiduId().equals("")) {
-            user.setBaiduId(null);
-        }
-        return user;
-    }
-
-
-    /**
      * 邮箱、手机加密显示
      */
-    public String encryption(String str, int len) {
-        StringBuffer str1 = new StringBuffer();
-        if (len > 6) {
-            str1.append(str.substring(0, 3));
-            for (int i = 0; i < len - 6; i++) {
-                str1.append("*");
-            }
-            str1.append(str.substring(len - 3, len));
-            return str1.toString();
+    private String encryption(String str) {
+        int len;
+        if (ObjectUtils.isEmpty(str) || (len = str.length()) < 6) {
+            return str;
         }
-        return str;
+        StringBuilder sbd = new StringBuilder(str);
+        StringBuilder mid = new StringBuilder();
+        for (int i = 0; i < len - 6; i++) {
+            mid.append("*");
+        }
+        return sbd.replace(3, len - 3, mid.toString()).toString();
     }
 
     /**
@@ -113,23 +90,24 @@ public class UserSettingController {
      */
     @ResponseBody
     @PostMapping("changeUserPhone")
-    public ResultModel changeUserPhone(CheckUserDTO checkUser) {
+    public ResultModel changeUserPhone(@Validated CheckUserDTO checkUser) {
         //检查用户账号密码是否正确
         StatusCode check = userService.checkUser(checkUser);
         if (!check.equals(StatusCode.SUCCESS)) {
             return ResultModel.failed(check);
         }
-        //确认是11位的正确手机号码
-        if (checkUser.getNewPhone().length() != 11) {
+        //手机格式不正确
+        if (!checkUser.getNewPhone().matches(Constant.REGEX_PHONE)) {
             return ResultModel.failed(StatusCode.PHONE_INCORRECT);
         }
         //检查手机是否已被绑定
         if (userService.checkBind(checkUser.getNewPhone(), "phone")) {
             return ResultModel.failed(StatusCode.PHONE_IS_EXIST);
         }
-        User user = userService.getUserByEmail(checkUser.getOldEmail());
-        user.setPhone(checkUser.getNewPhone());
-        userService.changeUser(user);
+        User record = new User();
+        record.setId(ShiroUtils.getUserId())
+            .setPhone(checkUser.getNewPhone());
+        userService.updateUserById(record);
         return ResultModel.success();
     }
 
@@ -138,11 +116,13 @@ public class UserSettingController {
      */
     @ResponseBody
     @PostMapping("changeUserEmail")
-    public ResultModel changeUserEmail(CheckUserDTO checkUser) {
+    public ResultModel changeUserEmail(@Validated CheckUserDTO checkUser) {
         int myId = ShiroUtils.getUserId();
-        User user = userService.getUserById(myId);
-        //判断用户是否已经有邮箱绑定，0代表没有
-        if (userService.getUserById(myId).getEmail().equals("")) {
+        User me = userService.getUserById(myId);
+        User record = new User();
+        record.setId(myId); // ！！
+        //判断用户是否已经有邮箱绑定
+        if (ObjectUtils.isEmpty(me.getEmail())) { // 设置邮箱和密码
             //检查两次输入的密码是否一致
             if (!checkUser.getCheckPassword().equals(checkUser.getRePassword())) {
                 return ResultModel.failed(StatusCode.PASSWORD_NOT_EQUAL);
@@ -151,23 +131,24 @@ public class UserSettingController {
             if (userService.checkBind(checkUser.getOldEmail(), "email")) {
                 return ResultModel.failed(StatusCode.EMAIL_IS_EXIST);
             }
-            Md5Hash md5Hash = new Md5Hash(checkUser.getCheckPassword(), user.getLoginSalt(), 1024);
-            user.setEmail(checkUser.getOldEmail())
+            Md5Hash md5Hash = new Md5Hash(checkUser.getCheckPassword(),
+                    me.getLoginSalt(), 1024);
+            record.setEmail(checkUser.getOldEmail())
                     .setPassword(md5Hash.toHex());
 
-        } else {
+        } else { // 修改邮箱
             //检查用户账号密码是否正确
-            StatusCode check = userService.checkUser(checkUser);
-            if (!check.equals(StatusCode.SUCCESS)) {
-                return ResultModel.failed(check);
+            StatusCode code = userService.checkUser(checkUser);
+            if (!code.equals(StatusCode.SUCCESS)) {
+                return ResultModel.failed(code);
             }
             //检查邮箱是否已被绑定
             if (userService.checkBind(checkUser.getNewEmail(), "email")) {
                 return ResultModel.failed(StatusCode.EMAIL_IS_EXIST);
             }
-            user.setEmail(checkUser.getNewEmail());
+            record.setEmail(checkUser.getNewEmail());
         }
-        userService.changeUser(user);
+        userService.updateUserById(record);
         return ResultModel.success();
     }
 
@@ -176,24 +157,22 @@ public class UserSettingController {
      */
     @ResponseBody
     @PostMapping("Unbundling")
-    public ResultModel Unbundling(CheckUserDTO checkUser) {
+    public ResultModel unbind(@Validated CheckUserDTO checkUser) {
         //检查用户账号密码是否正确
         StatusCode check = userService.checkUser(checkUser);
         if (!check.equals(StatusCode.SUCCESS)) {
             return ResultModel.failed(check);
         }
-        User user = userService.getUserByEmail(checkUser.getOldEmail());
-        if (checkUser.getPoFile().equals("qq")) {
-            user.setQqId("");
+        User record = new User();
+        record.setId(ShiroUtils.getUserId());
+        if (checkUser.getPoFile() != null) {
+            switch (checkUser.getPoFile()) {
+                case "qq":      record.setQqId("");     break;
+                case "gitee":   record.setGiteeId("");  break;
+                case "baidu":   record.setBaiduId("");  break;
+            }
+            userService.updateUserById(record);
         }
-        if (checkUser.getPoFile().equals("gitee")) {
-            user.setGiteeId("");
-        }
-        if (checkUser.getPoFile().equals("baidu")) {
-            user.setBaiduId("");
-        }
-        userService.changeUser(user);
-        User user1 = userService.getUserByEmail(checkUser.getOldEmail());
         return ResultModel.success();
     }
 

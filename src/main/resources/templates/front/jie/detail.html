@@ -569,6 +569,30 @@
         var curPage; // 评论列表的当前页
         var postId = [[${post.detail.id}]];
 
+        var imgList = [];
+        // 将主题帖内容所包含的图片制成相册
+        $("div.detail-body img[src]").each(function (index, elem) {
+            $(elem).data('index', index);
+            imgList.push({
+                alt: elem.alt || '暂无描述',
+                src: elem.src
+            });
+        });
+
+        $("div.detail-body img[src]").click(function () {
+            console.log(this);
+            layer.photos({
+                photos: {
+                    data: imgList,
+                    start: $(this).data('index')
+                },
+                //anim: 5, //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                shade: .1,
+                closeBtn: true
+            });
+        });
+
+
 
         /* 渲染评论列表 */
         var commentList = dataGrid.render({

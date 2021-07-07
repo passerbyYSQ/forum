@@ -134,11 +134,6 @@ public interface UserService {
     SimpleUserDTO getLoginUser();
 
     /**
-     * 修改用户信息
-     */
-    void changeUser(User user);
-
-    /**
      * 检查用户账号密码是否正确
      */
     StatusCode checkUser(CheckUserDTO checkUser);

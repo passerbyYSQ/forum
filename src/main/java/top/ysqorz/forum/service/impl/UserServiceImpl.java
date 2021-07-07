@@ -197,9 +197,11 @@ public class UserServiceImpl implements UserService {
         User user = giteeProvider.getDbUser(giteeUser.getId());
         if (ObjectUtils.isEmpty(user)) {
             if (ShiroUtils.isAuthenticated()) {
-                user = getUserById(ShiroUtils.getUserId());
-                user.setGiteeId(giteeUser.getId());
-                userMapper.updateByPrimaryKeySelective(user);
+                user = this.getUserById(ShiroUtils.getUserId());
+                if (!ObjectUtils.isEmpty(user.getEmail())) { // 未绑定邮箱不允许操作
+                    user.setGiteeId(giteeUser.getId());
+                    userMapper.updateByPrimaryKeySelective(user);
+                }
             } else {
                 LocalDateTime now = LocalDateTime.now();
                 user = new User();
@@ -232,9 +234,11 @@ public class UserServiceImpl implements UserService {
             // 第二次判断是已登录用户还是要注册用户
             if (ShiroUtils.isAuthenticated()) {
                 // 已登录，说明此操作是：绑定第三方账号
-                user = getUserById(ShiroUtils.getUserId());
-                user.setQqId(qqUser.getOpenId());
-                userMapper.updateByPrimaryKeySelective(user);
+                user = this.getUserById(ShiroUtils.getUserId());
+                if (!ObjectUtils.isEmpty(user.getEmail())) {
+                    user.setQqId(qqUser.getOpenId());
+                    userMapper.updateByPrimaryKeySelective(user);
+                }
             } else {
                 // 未登录，说明此操作是：通过第三方账号授权注册
                 LocalDateTime now = LocalDateTime.now();
@@ -265,9 +269,11 @@ public class UserServiceImpl implements UserService {
         //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
         if (ObjectUtils.isEmpty(user)) {
             if (ShiroUtils.isAuthenticated()) {
-                user = getUserById(ShiroUtils.getUserId());
-                user.setBaiduId(baiduUser.getUk());
-                userMapper.updateByPrimaryKeySelective(user);
+                user = this.getUserById(ShiroUtils.getUserId());
+                if (!ObjectUtils.isEmpty(user.getEmail())) {
+                    user.setBaiduId(baiduUser.getUk());
+                    userMapper.updateByPrimaryKeySelective(user);
+                }
             } else {
                 LocalDateTime now = LocalDateTime.now();
                 user = new User();
@@ -375,18 +381,14 @@ public class UserServiceImpl implements UserService {
         return new SimpleUserDTO();
     }
 
-    @Override
-    public void changeUser(User user) {
-        userMapper.updateByPrimaryKeySelective(user);
-    }
 
     @Override
     public StatusCode checkUser(CheckUserDTO checkUser) {
-        User user = getUserByEmail(checkUser.getOldEmail());
-        //检查账号是否正确
-        if (user != null && user.getId().equals(ShiroUtils.getUserId())) {
-            Md5Hash md5Hash = new Md5Hash(checkUser.getCheckPassword(), user.getLoginSalt(), 1024);
-            //检查密码是否正确
+        User user = this.getUserByEmail(checkUser.getOldEmail());
+        // 验证登录身份
+        if (!ObjectUtils.isEmpty(user) && user.getId().equals(ShiroUtils.getUserId())) {
+            Md5Hash md5Hash = new Md5Hash(checkUser.getCheckPassword(),
+                    user.getLoginSalt(), 1024);
             if (user.getPassword().equals(md5Hash.toHex())) {
                 return StatusCode.SUCCESS;
             }

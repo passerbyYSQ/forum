@@ -1,9 +1,8 @@
 package top.ysqorz.forum.dto;
 
 import lombok.Data;
-import top.ysqorz.forum.po.Blacklist;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 用于在改绑时检验用户
@@ -13,14 +12,16 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CheckUserDTO {
 
-    @NotNull
+    @NotBlank
     private String oldEmail;
-    @NotNull
+    @NotBlank
     private String checkPassword;
+
     private String rePassword;
-    private String newPhone;
     private String newEmail;
-    private Integer haveEmail;
-    private String poFile;
+
+    private String newPhone;
+
+    private String poFile; // 第三方账号的类型
 
 }
