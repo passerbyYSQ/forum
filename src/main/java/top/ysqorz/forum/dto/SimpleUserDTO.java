@@ -20,6 +20,10 @@ public class SimpleUserDTO {
     private Integer rewardPoints; // 积分
     private Integer level; // 等级
     private String photo; // 以后增加 缩略图和原图
+    private String registerTime;//注册时间
+    private Integer fansCount; //粉丝数
+    private String description; //个性签名
+    private String position; //位置
 
     private Integer blackId; // 当前是否处于封禁
     private Integer consecutiveAttendDays; // 最近一次连续签到的天数

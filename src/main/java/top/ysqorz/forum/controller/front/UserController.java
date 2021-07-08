@@ -8,11 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.LoginDTO;
-import top.ysqorz.forum.dto.RegisterDTO;
-import top.ysqorz.forum.dto.UserLoginInfo;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
@@ -24,6 +23,7 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -236,5 +236,62 @@ public class UserController {
         }
         return String.format("redirect:%s?code=%d&msg=%s", referer, code.getCode(),
                 URLEncoder.encode(code.getMsg(), "utf-8"));
+    }
+
+    /**
+     * 个人主页界面
+     * 获取用户登录页面状态
+     * 获取个人信息
+     * 获取主页信息
+     */
+    @GetMapping("/home/{visitId}")
+    public String personalHomePage(@PathVariable Integer visitId, Model model) {
+        User user = userService.getUserById(visitId);
+        //确认用户是否存在
+        if (ObjectUtils.isEmpty(user)) {
+            throw new ParameterErrorException("用户不存在");
+        }
+        SimpleUserDTO information = userService.getHomeInformationById(visitId);
+        model.addAttribute("information", information);
+        //判断进入用户界面状态，1：未登录， 2：已登录，身份为本人， 3：已登录，身份为访客
+        boolean isLogin = ShiroUtils.isAuthenticated();
+        boolean isMyself = isLogin && ShiroUtils.getUserId().equals(visitId);
+        model.addAttribute("isLogin", isLogin);
+        model.addAttribute("isMyself", isMyself);
+        boolean isFocus = userService.isFocusOn(visitId);
+        model.addAttribute("isFocusOn", isFocus);
+        return "front/user/home";
+    }
+
+    /**
+     * 关注和取关方法
+     */
+    @PostMapping("/home/{visitId}/changeFocus")
+    @ResponseBody
+    public ResultModel changeFollowOther(boolean isFocusOn, @PathVariable Integer visitId) {
+        if (userService.isFocusOn(visitId) == isFocusOn) {
+            return ResultModel.failed(StatusCode.DO_NOT_REPEAT_OPERATE);
+        }
+        if (isFocusOn) {
+            userService.addFollow(visitId);
+        } else {
+            userService.deleteFollow(visitId);
+        }
+        return ResultModel.success();
+    }
+
+    /**
+     * 帖子分页
+     */
+    @ResponseBody
+    @GetMapping("/home/{visitId}/detail")
+    public ResultModel<PageData<PostDTO>> getPostList(@RequestParam(defaultValue = "10") Integer limit,
+                                                      @RequestParam(defaultValue = "1") Integer page,
+                                                      @PathVariable Integer visitId){
+        if(limit <= 0){
+            limit = 10;
+        }
+        PageData<PostDTO> indexPost = userService.getIndexPost(visitId, page, limit);
+        return ResultModel.success(indexPost);
     }
 }

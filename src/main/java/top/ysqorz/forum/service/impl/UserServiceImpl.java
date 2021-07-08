@@ -1,8 +1,16 @@
 package top.ysqorz.forum.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -10,21 +18,16 @@ import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dao.BlacklistMapper;
-import top.ysqorz.forum.dao.RoleMapper;
-import top.ysqorz.forum.dao.UserMapper;
-import top.ysqorz.forum.dao.UserRoleMapper;
+import top.ysqorz.forum.dao.*;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
-import top.ysqorz.forum.po.Blacklist;
-import top.ysqorz.forum.po.Role;
-import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.po.UserRole;
+import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
@@ -32,10 +35,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 阿灿
@@ -58,6 +61,10 @@ public class UserServiceImpl implements UserService {
     private QQProvider qqProvider;
     @Resource
     private BaiduProvider baiduProvider;
+    @Resource
+    private FollowMapper followMapper;
+    @Resource
+    private PostMapper postMapper;
 
     @Override
     public User getUserByEmail(String email) {
@@ -315,6 +322,94 @@ public class UserServiceImpl implements UserService {
         return simpleUserDTO;
     }
 
+    @Override
+    public SimpleUserDTO getHomeInformationById(Integer visitId) {
+        SimpleUserDTO information = userMapper.selectHomeInformationById(visitId);
+        information.setId(visitId);
+        information.setLevel(0); // 根据积分计算level
+        return information;
+    }
+
+    @Override
+    public Boolean isFocusOn(Integer visitId) {
+        Example example = new Example(Follow.class);
+        example.createCriteria()
+                .andEqualTo("fromUserId", ShiroUtils.getUserId())
+                .andEqualTo("toUserId", visitId);
+        Follow follow = followMapper.selectOneByExample(example);
+        return follow != null;
+    }
+
+    @Transactional
+    @Override
+    public void addFollow(Integer visitId) {
+        Integer myId = ShiroUtils.getUserId();
+        //user表对应数据+1粉丝数
+        userMapper.updateAndAddFansCount(visitId);
+        //follow表添加数据
+        Follow follow = new Follow();
+        follow.setFromUserId(myId);
+        follow.setToUserId(visitId);
+        follow.setCreateTime(DateTimeUtils.getFormattedTime());
+        followMapper.insert(follow);
+    }
+
+    @Transactional
+    @Override
+    public void deleteFollow(Integer visitId) {
+        Integer myId = ShiroUtils.getUserId();
+        //user表对应数据-1粉丝数
+        userMapper.updateAndReduceFansCount(visitId);
+        //follow表删除数据
+        Example example = new Example(Follow.class);
+        example.createCriteria()
+                .andEqualTo("fromUserId", myId)
+                .andEqualTo("toUserId", visitId);
+        followMapper.deleteByExample(example);
+    }
+
+    @Override
+    public List<PostDTO> getPostInformation(Integer visitId) {
+        List<PostDTO> postDTOList = postMapper.selectListByCreatorId(visitId);
+        for(PostDTO postDTO:postDTOList){
+            Duration duration = Duration.between(postDTO.getCreateTime(), LocalDateTime.now());
+//          计算时间差
+            Long timeDifferenceL = duration.toMinutes();
+            String timeDifferenceS;
+            if(timeDifferenceL<1){
+                timeDifferenceS = "刚刚";
+            }
+            else if(timeDifferenceL >= 1 && timeDifferenceL < 60){
+                timeDifferenceS = timeDifferenceL + "分钟前";
+            }
+            else if(timeDifferenceL >= 60 && timeDifferenceL < 1440){
+                timeDifferenceL = timeDifferenceL / 60;
+                timeDifferenceS = timeDifferenceL + "小时前";
+            }
+            else if(timeDifferenceL >= 1440 && timeDifferenceL < 43200){
+                timeDifferenceL = timeDifferenceL / 1440;
+                timeDifferenceS = timeDifferenceL + "天前";
+            }
+            else if(timeDifferenceL >= 43200 && timeDifferenceL < 15768000){
+                timeDifferenceL = timeDifferenceL / 43200;
+                timeDifferenceS = timeDifferenceL + "月前";
+            }
+            else{
+                timeDifferenceL = timeDifferenceL / 15768000;
+                timeDifferenceS = timeDifferenceL + "年前";
+            }
+            postDTO.setTimeDifference(timeDifferenceS);
+        }
+        return postDTOList;
+    }
+
+    @Override
+    public PageData<PostDTO> getIndexPost(Integer visitId, Integer page, Integer count) {
+        PageHelper.startPage(page, count);
+        List<PostDTO> postDTOList = this.getPostInformation(visitId);
+        PageInfo<PostDTO> pageInfo = new PageInfo<>(postDTOList);
+        return new PageData<>(pageInfo, postDTOList);
+    }
 
     @Override
     public String login(Integer userId, HttpServletResponse response) {

@@ -48,6 +48,9 @@ public class DateTimeUtils {
         return Duration.between(now, now.plusDays(1));
     }
 
-
+    // 获取当天格式化后的日期(精确到秒)。例：2021-07-04 20:17:20
+    public static String getFormattedTime(){
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+    }
 
 }
