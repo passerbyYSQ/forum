@@ -19,4 +19,12 @@
     where post_id = #{postId}
   </select>
 
+  <select id="selectMaxIdFromLabels" resultType="Integer">
+    select max(id) from label
+  </select>
+
+  <select id="selectCountOfLabels" resultType="Integer">
+    select count(*) from label
+  </select>
+
 </mapper>

@@ -1,11 +1,13 @@
 package top.ysqorz.forum.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 后台帖子列表的查询条件
@@ -21,7 +23,8 @@ public class QueryPostCondition {
     private String title; // 标题
     private Byte isHighQuality; //高质量
     private Byte hotDiscussion; //热议
-
+    private String labelsId; //所选所有标签的id
+    private List<String> labelList; //labelsId分解出来的id数组
     private LocalDateTime startPublishTime; // 发帖时间的范围。起始时间
     private LocalDateTime endPublishTime; // 发帖时间的范围。起始时间
     //private String labels; // 标签。需要以","作为分隔符

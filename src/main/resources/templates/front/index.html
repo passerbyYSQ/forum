@@ -315,10 +315,10 @@
                     <span class="fly-mid"></span>
                     <a href="">精华</a>-->
                     <span class="fly-filter-right layui-hide-xs">
-            <a href="javascript:void(0);" onclick="searchsort(this,3)" class="flag">按最新</a>
-            <span class="fly-mid"></span>
-            <a href="javascript:void(0);" onclick="searchsort(this,4)" class="flag">按热议</a>
-          </span>
+                        <a href="javascript:void(0);" onclick="searchsort(this,3)" class="flag">按最新</a>
+                        <span class="fly-mid"></span>
+                        <a href="javascript:void(0);" onclick="searchsort(this,4)" class="flag">按热议</a>
+                    </span>
                 </div>
 
                 <div id="demoCardList3" class="pretty-scroll"></div>
@@ -327,6 +327,20 @@
             </div>
         </div>
         <div class="layui-col-md4">
+
+            <div class="fly-panel">
+                <div class="fly-panel-title">
+                    标签
+                    <!-- 刷新 -->
+                    <i id="btnRefreshGird" class="layui-icon layui-icon-refresh pull-right"
+                       style="cursor: pointer;"></i>
+                </div>
+                <form class="layui-form">
+                    <div id="demoLabelList" class="fly-panel-main layui-form-item"></div>
+                    <button id="label-button" lay-submit lay-filter="labelButton" hidden>提交</button>
+                </form>
+
+            </div>
 
             <div class="fly-panel">
                 <h3 class="fly-panel-title">温馨通道</h3>
@@ -642,21 +656,35 @@
 <!--    <li class="fly-none fly-grey">暂无记录</li>-->
 </script>
 
+<!-- 标签模板 -->
+<script type="text/html" id="demoLabelItem">
+    <input id="label_{{d.id}}" name="labelsId[]" value="{{d.id}}" title="{{d.labelName}}" type="checkbox" lay-skin="primary" lay-filter="label" lay-submit>
+<!--    <div id="{{d.id}}" name="labelCheckbox" class="layui-unselect layui-form-checkbox" lay-skin="primary">-->
+<!--        <span>{{d.labelName}}</span>-->
+<!--        <i class="layui-icon layui-icon-ok"></i>-->
+<!--    </div>-->
+</script>
+
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
+<script type="text/javascript" th:src="@{/admin/assets/libs/echarts/echarts.min.js}" src="assets/libs/echarts/echarts.min.js"></script>
+<script type="text/javascript" th:src="@{/admin/assets/libs/echarts/china.js}" src="assets/libs/echarts/china.js"></script>
+<script type="text/javascript" th:src="@{/admin/assets/libs/echarts/echarts-wordcloud.min.js}" src="assets/libs/echarts/echarts-wordcloud.min.js"></script>
 <script>
 
-    layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'admin', 'app'], function () {
+    layui.use(['layer', 'form', 'dataGrid', 'element', 'dropdown', 'admin', 'app'], function () {
         var $ = layui.jquery;
         var app = layui.app;
         var layer = layui.layer;
+        var form = layui.form;
         var dataGrid = layui.dataGrid;
         var admin = layui.admin;
         var conditon = {
             hotDiscussion: "0",
             orderByStr:  "top_weight desc, last_comment_time desc",
             isHighQuality:  "0",
-            topicId: ""
+            topicId: "",
+            labelsId: ""
         };
 
         // rank dialog
@@ -836,6 +864,48 @@
             // else if (obj.event === 'checkPost') {
             //     window.location.href = "/post/detail/" + data.id;
             // }
+        });
+
+        /* 标签 */
+        var label = dataGrid.render({
+            elem: '#demoLabelList',
+            templet: '#demoLabelItem',
+            url: '/index/label',
+            page: false,
+            parseData: function (res) {
+                // console.log(res);
+                return {
+                    "code": res.code === 2000 ? 0 : 1, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.data.length, //解析数据长度
+                    "data": res.data //解析数据列表
+                };
+            },
+            done: function (res, curr, count) {
+                form.render('checkbox');
+            }
+        });
+
+        $("#btnRefreshGird").click(function () {
+            label.reload();
+        });
+
+        form.on('checkbox(label)', function (data) {
+            $('#label-button').click();
+        });
+
+        form.on('submit(labelButton)', function (data) {
+            // console.log(data.field);
+            conditon.labelsId="";
+            for (let i in data.field) {
+                conditon.labelsId = conditon.labelsId + "," + data.field[i];
+            }
+            console.log(conditon);
+            insTb.reload({
+                where: conditon,
+                page: {curr: 1}
+            });
+            return false;
         });
 
     });
