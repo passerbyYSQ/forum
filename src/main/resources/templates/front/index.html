@@ -184,6 +184,7 @@
             -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
             background-color: #c8c8c8;
         }
+
         .fly-signin-list .layui-tab-item {
             padding: 10px 16px 0 16px;
         }
@@ -204,67 +205,6 @@
             style="width:100%;height:100%;"></iframe>
 
 </div>
-<!--<div class="fly-header layui-bg-black">-->
-<!--  <div class="layui-container">-->
-<!--    <a class="fly-logo" href="/">-->
-<!--      <img th:src="@{/front/res/images/logo.png}" src="../res/images/logo.png" alt="layui">-->
-<!--    </a>-->
-<!--    <ul class="layui-nav fly-nav layui-hide-xs">-->
-<!--      <li class="layui-nav-item layui-this">-->
-<!--        <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item">-->
-<!--        <a href="case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item">-->
-<!--        <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>-->
-<!--      </li>-->
-<!--    </ul>-->
-
-<!--    <ul class="layui-nav fly-nav-user">-->
-
-
-<!--      &lt;!&ndash; 登入后的状态 &ndash;&gt;-->
-
-<!--      <li  th:if="${myUser.id!=null}" class="layui-nav-item">-->
-<!--        <a class="fly-nav-avatar" href="javascript:;">-->
-<!--          <cite class="layui-hide-xs" th:text="${myUser.username}">贤心</cite>-->
-<!--          <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i>-->
-<!--          <i class="layui-badge fly-badge-vip layui-hide-xs">VIP3</i>-->
-<!--          <img th:src="${myUser.photo}" >-->
-<!--        </a>-->
-<!--        <dl class="layui-nav-child">-->
-<!--          <dd><a href="user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>-->
-<!--          <dd><a href="user/message.html"><i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a></dd>-->
-<!--          <dd><a href="user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a></dd>-->
-<!--          <hr style="margin: 5px 0;">-->
-<!--          <dd><a href="/user/logout/" style="text-align: center;">退出</a></dd>-->
-<!--        </dl>-->
-<!--      </li>-->
-
-<!--    <div  th:if="${myUser.id==null}">-->
-<!--      &lt;!&ndash; 未登入的状态 &ndash;&gt;-->
-
-<!--      <li class="layui-nav-item">-->
-<!--        <a th:href="@{/user/login}">登入</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item">-->
-<!--        <a th:href="@{/user/reg}">注册</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item layui-hide-xs">-->
-<!--        <a  th:href="@{/user/oauth/qq/authorize}" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" title="QQ登入"-->
-<!--           class="iconfont icon-QQ"></a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item layui-hide-xs">-->
-<!--        <a th:href="@{/user/oauth/gitee/authorize}" onclick="layer.msg('正在通过Gitee登入', {icon:16, shade: 0.1, time:0})" title="微博登入"-->
-<!--           class="iconfont icon-Gitee"></a>-->
-<!--      </li>-->
-<!--    </div>-->
-
-
-<!--    </ul>-->
-<!--  </div>-->
-<!--</div>-->
 
 <div class="fly-panel fly-column">
 
@@ -340,6 +280,25 @@
                     <button id="label-button" lay-submit lay-filter="labelButton" hidden>提交</button>
                 </form>
             </div>
+            <div class="fly-panel fly-signin">
+                <div class="fly-panel-title">
+                    签到
+                    <i class="fly-mid"></i>
+                    <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
+                    <i class="fly-mid"></i>
+                    <a href="javascript:showRankDialog();" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
+                    <span th:if="${myUser.id}" class="fly-signin-days">已连续签到
+                        <cite id="consecutiveAttendDays" th:text="${myUser.consecutiveAttendDays}">16</cite>天
+                    </span>
+                </div>
+                <div class="fly-panel-main fly-signin-main">
+                    <button th:if="${!isAttendToady}" class="layui-btn layui-btn-danger" onclick="attend(this)" id="LAY_signin">今日签到</button>
+                    <!-- 已签到状态 -->
+                    <button th:if="${isAttendToady}" class="layui-btn layui-btn-disabled">今日第 [[${attendRank}]] 个签到</button>
+                    <span>今日已有<cite>[[${attendCount}]]</cite>个人签到</span>
+                </div>
+            </div>
+
             <div class="fly-panel">
                 <h3 class="fly-panel-title">温馨通道</h3>
                 <ul class="fly-panel-main fly-list-static">
@@ -366,26 +325,6 @@
                             仓库，欢迎Star</a>
                     </li>
                 </ul>
-            </div>
-
-
-            <div class="fly-panel fly-signin">
-                <div class="fly-panel-title">
-                    签到
-                    <i class="fly-mid"></i>
-                    <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
-                    <i class="fly-mid"></i>
-                    <a href="javascript:showRankDialog();" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
-                    <span th:if="${myUser.id}" class="fly-signin-days">已连续签到
-                        <cite id="consecutiveAttendDays" th:text="${myUser.consecutiveAttendDays}">16</cite>天
-                    </span>
-                </div>
-                <div class="fly-panel-main fly-signin-main">
-                    <button th:if="${!isAttendToady}" class="layui-btn layui-btn-danger" onclick="attend(this)" id="LAY_signin">今日签到</button>
-                    <!-- 已签到状态 -->
-                    <button th:if="${isAttendToady}" class="layui-btn layui-btn-disabled">今日第 [[${attendRank}]] 个签到</button>
-                    <span>今日已有<cite>[[${attendCount}]]</cite>个人签到</span>
-                </div>
             </div>
 
             <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
@@ -557,7 +496,7 @@
             {{# if(d.isLocked == 1){ }}
             <span class="layui-badge" style="background-color: #999;">锁定</span>
             {{# } }}
-            {{# if(d.topWeight != 0){ }}
+            {{# if(d.topWeight > 0){ }}
             <span class="layui-badge layui-bg-blue">置顶</span>
             {{# } }}
             {{# if(d.isHighQuality != 0){ }}

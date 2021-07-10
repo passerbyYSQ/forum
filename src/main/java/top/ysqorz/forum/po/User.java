@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -60,7 +61,7 @@ public class User implements Serializable {
     private String jwtSalt;
 
     /**
-     * 性别。0：男；1：女；3：保密
+     * 性别。0：男；1：女；2：保密
      */
     private Byte gender;
 
@@ -77,6 +78,7 @@ public class User implements Serializable {
     /**
      * 生日
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
     /**

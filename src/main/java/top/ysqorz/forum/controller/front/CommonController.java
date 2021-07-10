@@ -30,7 +30,6 @@ public class CommonController {
 
     @Resource
     private RedisService redisService;
-
     // 为了方便不同组员开发，使用阿里云OSS
     @Resource
     private UploadRepository aliyunOssRepository;

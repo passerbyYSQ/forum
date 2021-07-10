@@ -13,11 +13,16 @@ import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.CheckUserDTO;
+import top.ysqorz.forum.dto.UploadResult;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.upload.UploadRepository;
+import top.ysqorz.forum.upload.uploader.ImageUploader;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
+import java.io.IOException;
 
 /**
  *
@@ -28,10 +33,14 @@ import javax.annotation.Resource;
  */
 @Controller
 @RequestMapping("/user/center")
+@Validated
 public class UserSettingController {
 
     @Resource
     private UserService userService;
+    // 为了方便不同组员开发，使用阿里云OSS
+    @Resource
+    private UploadRepository aliyunOssRepository;
 
     /**
      * 跳转到我的主页
@@ -59,6 +68,27 @@ public class UserSettingController {
         user.setPhone(encryption(user.getPhone()));
         model.addAttribute("user", user);
         return "front/user/set";
+    }
+
+    @PostMapping("/updateInfo")
+    @ResponseBody
+    public ResultModel updatePersonalInfo(User user) {
+        user.setId(ShiroUtils.getUserId());
+        int cnt = userService.updateUserById(user);
+        return cnt == 1 ? ResultModel.success() :
+                ResultModel.failed(StatusCode.INFO_UPDATE_FAILED);
+    }
+
+    @PostMapping("/uploadFaceImage")
+    @ResponseBody
+    public ResultModel uploadFaceImage(@NotBlank String imageBase64) throws IOException {
+        ImageUploader imageUploader = new ImageUploader(imageBase64, aliyunOssRepository);
+        UploadResult uploadResult = imageUploader.uploadBase64();
+        User record = new User();
+        record.setId(ShiroUtils.getUserId())
+                .setPhoto(uploadResult.getUrl()[0]);
+        userService.updateUserById(record);
+        return ResultModel.success(uploadResult);
     }
 
     /**

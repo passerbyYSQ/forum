@@ -105,10 +105,10 @@
             <if test="hotDiscussion != null and hotDiscussion > 0">
                 and comment_count>100
             </if>
-            <if test="labelList != null">
-                and
-                <foreach collection="labelList" item="item" open="(" separator="or" close=")">
-                    pl.label_id = #{item}
+            <if test="labelList != null and labelList.size > 0">
+                and pl.label_id in
+                <foreach collection="labelList" item="item" open="(" separator="," close=")">
+                     #{item}
                 </foreach>
             </if>
         </where>

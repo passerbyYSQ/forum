@@ -3,7 +3,10 @@ package top.ysqorz.forum.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.annotation.Resource;
 
 /**
  * @author passerbyYSQ
@@ -11,6 +14,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+
+    @Resource
+    private ApiAccessLimitInterceptor apiAccessLimitInterceptor;
+    @Resource
+    private EscapeStringConverter escapeStringConverter;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(apiAccessLimitInterceptor) // 不要用new ApiAccessLimitInterceptor()
+                .addPathPatterns("/**")
+                .excludePathPatterns("/error");
+    }
 
     /**
      * 前后端分离需要解决跨域问题
@@ -32,8 +47,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new EscapeStringConverter());
-        //registry.addFormatter(new LocalDateTimeFormatter());
+        registry.addConverter(escapeStringConverter);
 
     }
 }

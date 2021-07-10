@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
                 .setConsecutiveAttendDays(0)
                 .setRewardPoints(0)
                 .setFansCount(0)
-                .setGender((byte) 3) // 性别保密
+                .setGender((byte) 2) // 性别保密
                 .setJwtSalt("")
                 .setPhoto("/admin/assets/images/defaultUserPhoto.jpg");
 
@@ -215,7 +215,7 @@ public class UserServiceImpl implements UserService {
                         .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
-                        .setGender((byte) 3)
+                        .setGender((byte) 2)
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user); // 填充了主键
@@ -287,7 +287,7 @@ public class UserServiceImpl implements UserService {
                         .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
-                        .setGender((byte) 3)
+                        .setGender((byte) 2)
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user);

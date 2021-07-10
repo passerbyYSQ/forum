@@ -295,7 +295,7 @@
             },
             // 标签联想
             autocomplete_request: function (keyword, callback) {
-                app.ajax('/label/like', {
+                app.ajax('/post/label/like', {
                     name: keyword,
                     maxCount: 5
                 }, function (res) {

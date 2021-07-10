@@ -9,6 +9,7 @@ import top.ysqorz.forum.dto.AttendDTO;
 import top.ysqorz.forum.po.Attendance;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.AttendService;
+import top.ysqorz.forum.service.RewardPointsAction;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
 
@@ -30,7 +31,8 @@ public class AttendServiceImpl implements AttendService {
     private AttendanceMapper attendanceMapper;
     @Resource
     private UserService userService;
-
+    @Resource
+    private RewardPointsAction rewardPointsAction;
 
     @Override
     public Attendance getMyAttendToday() {
@@ -65,10 +67,13 @@ public class AttendServiceImpl implements AttendService {
             days += user.getConsecutiveAttendDays();
         }
         record.setId(myId)
-                .setConsecutiveAttendDays(days)
-                .setLastAttendTime(now) // 更新最后一次签到的时间
-                .setRewardPoints(user.getRewardPoints() + 2); // TODO 积分奖励规则和积分记录之后再说
+                .setConsecutiveAttendDays(days) // 更新连续签到的天数
+                .setLastAttendTime(now); // 更新最后一次签到的时间
+                //.setRewardPoints(user.getRewardPoints() + 2); // TODO 积分奖励规则和积分记录之后再说
         userService.updateUserById(record);
+
+        // 奖励积分
+        rewardPointsAction.attend(days);
 
         // 今天第几个签到。一定要放在 insert 和 update 之后
         Integer rank = this.attendRankNum(myId, now);

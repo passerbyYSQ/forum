@@ -48,16 +48,22 @@ public class PostServiceImpl implements PostService {
     private CollectService collectService;
     @Resource
     private RedisService redisService;
+    @Resource
+    private RewardPointsAction rewardPointsAction;
 
     @Transactional
     @Override
     public void changeHighQuality(Integer userId, Integer postId, Boolean isHighQuality) {
-        // 奖励积分 或者 撤销积分。TODO 到时候需要从配置中读取奖励的积分值，判断每日分值上限
-        userService.updateRewardPoints(userId, isHighQuality ? 5 : -5);
         // 更新精品状态
         Post post = new Post();
         post.setId(postId).setIsHighQuality((byte) (isHighQuality ? 1 : 0));
         this.updatePostById(post);
+
+        // 奖励积分 或者 撤销积分。TODO 到时候需要从配置中读取奖励的积分值，判断每日分值上限
+        //userService.updateRewardPoints(userId, isHighQuality ? 5 : -5);
+        if (isHighQuality) {
+            rewardPointsAction.highQualityPost(userId);
+        }
     }
 
     @Override
@@ -118,6 +124,8 @@ public class PostServiceImpl implements PostService {
         Post post = this.addPost(vo);
         // 批量插入帖子和标签的映射关系
         postLabelService.addPostLabelList(post.getId(), vo.splitLabels());
+        // 奖励积分
+        rewardPointsAction.publishPost();
         return post;
     }
 
@@ -183,15 +191,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void addVisitCount(String ipAddress, Integer postId) {
+    public Post addVisitCount(String ipAddress, Post post) {
         // post:visit:11:ip --> ""   5 minute
         // 不存在就设置，存在就不设置
         // 如果设置失败，说明：在5分钟之内，访问了多次，不加访问量。否则访问量+1
-        if (redisService.tryAddPostVisitIp(ipAddress, postId)) {
-            postMapper.addVisitCount(postId);
+        if (redisService.tryAddPostVisitIp(ipAddress, post.getId())) {
+            postMapper.addVisitCount(post.getId());
+            post.setVisitCount(post.getVisitCount() + 1); // ！！！
             // 维护 帖子访问量日榜
-            redisService.addHotPostDayRankScore(postId);
+            redisService.addHotPostDayRankScore(post.getId());
+            // 判断是否增加积分
+            rewardPointsAction.visitCountAdded(post.getCreatorId(), post.getVisitCount()); // ！！
         }
+        return post;
     }
 
     @Override

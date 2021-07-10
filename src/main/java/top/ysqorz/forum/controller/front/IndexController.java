@@ -23,7 +23,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -91,15 +90,7 @@ public class IndexController {
         if (limit <= 0) {
             limit = 10;
         }
-        if (conditions.getLabelsId() != null) {
-            String labelsId = conditions.getLabelsId();
-            String[] labelIds = labelsId.split(",");
-            List<String> list = new ArrayList<>();
-            for (int i = 1; i < labelIds.length; i++) {
-                list.add(labelIds[i]);
-            }
-            conditions.setLabelList(list);
-        }
+        conditions.splitLabelsStr();
         PageData<PostDTO> indexPost = postService.getIndexPost(page, limit, conditions);
         return ResultModel.success(indexPost);
     }

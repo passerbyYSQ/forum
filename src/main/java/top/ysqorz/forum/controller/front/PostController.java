@@ -53,13 +53,13 @@ public class PostController {
     @GetMapping("/detail/{postId}")
     public String detailPage(@PathVariable Integer postId,
                              Model model, HttpServletRequest request) {
-        // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post
-        postService.addVisitCount(IpUtils.getIpAddress(request), postId);
-
         Post post = postService.getPostById(postId);
         if (ObjectUtils.isEmpty(post)) {
             throw new ParameterErrorException("帖子不存在");
         }
+
+        // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post的访问量
+        post = postService.addVisitCount(IpUtils.getIpAddress(request), post);
 
         // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
         String token = RandomUtils.generateUUID();
@@ -226,5 +226,13 @@ public class PostController {
     }
 
 
+    /**
+     * 根据标签名模糊匹配标签s，不分页
+     */
+    @GetMapping("/label/like")
+    public ResultModel<List<Label>> getLabelsLikeName(String name,  // 可以不传，在service层判断了
+                                                      @RequestParam(defaultValue = "1") Integer maxCount) { // 可以不传，有默认值
 
+        return ResultModel.success(labelService.getLabelsLikeName(name, maxCount));
+    }
 }

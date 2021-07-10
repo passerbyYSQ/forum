@@ -44,8 +44,9 @@ public class DateTimeUtils {
 
     // 距离下一天，还有多长时间（可精确到纳秒）
     public static Duration durationToNextDay() {
-        LocalDateTime now = LocalDateTime.now();
-        return Duration.between(now, now.plusDays(1));
+        // 当前距离次日凌晨的时长
+        return Duration.between(LocalDateTime.now(),
+                LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIN)); // !!!
     }
 
 

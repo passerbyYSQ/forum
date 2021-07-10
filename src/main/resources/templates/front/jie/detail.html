@@ -71,12 +71,6 @@
             font-size: 16px;
         }
 
-        /* 清除浮动，放在标签上 */
-        .clear-float {
-            overflow: hidden;
-            *zoom: 1;
-        }
-
         .post-footer {
             text-align: center;
             margin-top: 36px;
@@ -112,6 +106,29 @@
 
         pre {
             border-left: none;
+        }
+
+        /*  美化滚动条  */
+        .pretty-scroll ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+            background-color: #F5F5F5;
+        }
+
+        /*定义滚动条轨道 内阴影+圆角*/
+        .pretty-scroll ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        /*定义滑块 内阴影+圆角*/
+        .pretty-scroll ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+            background-color: #c8c8c8;
         }
     </style>
 </head>
@@ -170,7 +187,7 @@
                     <span th:if="${post.detail.isHighQuality == 1}" class="layui-badge layui-bg-red">精帖</span>
                     <span th:if="${post.isHot}" class="iconfont icon-remen" style="color: #fc3218; font-size: 26px;"></span>
                 </h1>
-                <div class="fly-detail-info clear-float">
+                <div class="fly-detail-info layui-clear">
                     <!-- <span class="layui-badge">审核中</span> -->
                     <!-- <span class="layui-badge layui-bg-green fly-detail-column">编辑</span> -->
                     <a th:href="@{/post/publish(postId=${post.detail.id})}" href="">编辑</a>
@@ -211,7 +228,7 @@
                               class="layui-badge layui-badge-blue">标签1</span>
                     </div>
                 </div>
-                <div class="detail-body photos" th:utext="${post.detail.content}">
+                <div class="detail-body photos pretty-scroll" th:utext="${post.detail.content}">
                     内容
                 </div>
 
@@ -362,7 +379,7 @@
 
             </div>
             <!-- 评论的内容，fly-editor-content用于定位  -->
-            <div class="detail-body jieda-body photos">
+            <div class="detail-body jieda-body photos pretty-scroll">
                 {{d.content}}
             </div>
 
@@ -454,7 +471,7 @@
                 </div>
             </div>
         </div>
-        <div class="detail-body jieda-body photos">
+        <div class="detail-body jieda-body photos pretty-scroll">
             {{d.content}}
         </div>
         <div class="jieda-reply">
