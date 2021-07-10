@@ -1,17 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.CommentNotificationMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.CommentNotification">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
-    <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
-    <result column="comment_type" jdbcType="TINYINT" property="commentType" />
-    <result column="replied_id" jdbcType="INTEGER" property="repliedId" />
-    <result column="comment_id" jdbcType="INTEGER" property="commentId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="is_read" jdbcType="TINYINT" property="isRead" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.CommentNotification">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="sender_id" jdbcType="INTEGER" property="senderId"/>
+        <result column="receiver_id" jdbcType="INTEGER" property="receiverId"/>
+        <result column="comment_type" jdbcType="TINYINT" property="commentType"/>
+        <result column="replied_id" jdbcType="INTEGER" property="repliedId"/>
+        <result column="comment_id" jdbcType="INTEGER" property="commentId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_read" jdbcType="TINYINT" property="isRead"/>
+    </resultMap>
+
+    <select id="getMegList" resultType="top.ysqorz.forum.dto.MessageListDTO">
+        select u.username,
+               u.photo,
+               c.create_time createTime,
+               p.title,
+               p.id          postID,
+               f1.content as hisContent,
+               f1.id      as firstConId
+        from comment_notification c
+                 join user u on u.id = c.sender_id
+                 join post p on (p.id = c.replied_id and c.comment_type = 0)
+                 join first_comment f1 on f1.id = c.comment_id
+        where c.receiver_id = #{id}
+          and c.sender_id!=#{id}
+          and is_read = 0
+        order by c.create_time desc
+    </select>
+    <select id="getMegReply" resultType="top.ysqorz.forum.dto.MessageListDTO">
+        select u.username,
+               u.photo,
+               c.create_time                                 as createTime,
+               c.comment_type,
+               c.replied_id,
+               if(c.comment_type = 1, f.content, s.content)  as myContent,
+               if(c.comment_type = 1, f.post_id, f1.post_id) as postID,
+               if(c.comment_type = 1, f.id, f1.id)           as firstConId,
+               s2.content                                    as hisContent,
+               s2.id                                         as secondConId
+
+        from comment_notification c
+                 left join user u on u.id = c.sender_id
+                 left join first_comment f on (f.id = c.replied_id and c.comment_type = 1)
+                 left join second_comment s on (s.id = c.replied_id and c.comment_type = 2)
+                 left join second_comment s2 on s2.id = c.comment_id
+                 left join first_comment f1 on f1.id = s.first_comment_id
+
+        where c.receiver_id = #{id}
+          and c.sender_id!=#{id}
+          and c.comment_type != 0
+          and is_read=0
+        order by c.create_time desc
+
+    </select>
 </mapper>

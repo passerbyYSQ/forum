@@ -10,18 +10,12 @@ import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dao.BlacklistMapper;
-import top.ysqorz.forum.dao.RoleMapper;
-import top.ysqorz.forum.dao.UserMapper;
-import top.ysqorz.forum.dao.UserRoleMapper;
+import top.ysqorz.forum.dao.*;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
-import top.ysqorz.forum.po.Blacklist;
-import top.ysqorz.forum.po.Role;
-import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.po.UserRole;
+import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -58,6 +52,8 @@ public class UserServiceImpl implements UserService {
     private QQProvider qqProvider;
     @Resource
     private BaiduProvider baiduProvider;
+    @Resource
+    private CommentNotificationMapper commentNotificationMapper;
 
     @Override
     public User getUserByEmail(String email) {
@@ -312,6 +308,9 @@ public class UserServiceImpl implements UserService {
     public SimpleUserDTO getSimpleUser(Integer userId) {
         SimpleUserDTO simpleUserDTO = userMapper.selectSimpleUserById(userId);
         simpleUserDTO.setLevel(6); // TODO 根据积分计算level
+        Example example=new Example(CommentNotification.class);
+        example.createCriteria().andEqualTo("receiverId",userId).andEqualTo("isRead",0);
+        simpleUserDTO.setNewMeg(commentNotificationMapper.selectCountByExample(example));
         return simpleUserDTO;
     }
 

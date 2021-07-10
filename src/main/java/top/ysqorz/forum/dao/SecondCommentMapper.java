@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface SecondCommentMapper extends BaseMapper<SecondComment> {
     List<SecondCommentDTO> selectSecondCommentList(Integer firstCommentId);
+
+    Integer getSecondPage(Integer firstMegId,Integer secondMegId);
 }

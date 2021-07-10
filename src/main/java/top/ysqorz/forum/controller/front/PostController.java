@@ -197,31 +197,6 @@ public class PostController {
         return ResultModel.success();
     }
 
-//    @RequiresPermissions("post:quality")
-//    @PostMapping("/set_quality")
-//    @ResponseBody
-//    public ResultModel setQuality(@NotNull Integer postId, @NotNull Boolean isHighQuality) {
-//        Post post = postService.getPostById(postId);
-//        if (ObjectUtils.isEmpty(post)) {
-//            return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
-//        }
-//        postService.changeHighQuality(ShiroUtils.getUserId(), postId, isHighQuality);
-//        return ResultModel.success();
-//    }
-
-//    @RequiresPermissions("post:top")
-//    @PostMapping("/top")
-//    @ResponseBody
-//    public ResultModel top(@NotNull Integer postId,
-//            @NotNull @Min(0) @Max(9999) Integer topWeight) {
-//        Post post = new Post();
-//        post.setId(postId).setTopWeight(topWeight);
-//        int cnt = postService.updatePostById(post);
-//        return cnt == 1 ? ResultModel.success()
-//                : ResultModel.failed(StatusCode.POST_NOT_EXIST);
-//    }
-
-
     /**
      * 根据标签名模糊匹配标签s，不分页
      */
