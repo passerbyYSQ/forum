@@ -38,6 +38,7 @@ public class QueryPostCondition {
     private String order; // 排序方式。 desc asc
     private String orderByStr; //
 
+
     public void generateOrderByStr() {
         // 前端传过来是驼峰命名法，而数据库中的字段是下划线命名法，需要转换成下划线命名
         field = SpringUtils.snakeCaseFormat(field);

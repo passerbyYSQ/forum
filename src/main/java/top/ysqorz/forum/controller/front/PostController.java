@@ -213,6 +213,7 @@ public class PostController {
         return ResultModel.success();
     }
 
+
     @RequiresPermissions("post:top")
     @PostMapping("/top")
     @ResponseBody

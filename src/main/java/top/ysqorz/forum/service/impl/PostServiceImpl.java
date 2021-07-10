@@ -270,8 +270,13 @@ public class PostServiceImpl implements PostService {
             //Pattern.compile("^((?!\\[\\S+\\]).)*$"); // 正则表达式测试
             // https://www.jb51.net/article/52491.htm
             // https://blog.csdn.net/qq_24549805/article/details/52833463
-            Elements images = doc.select("img[src][alt~=^((?!\\[\\S+\\]).)*$]");
+            Elements images = doc.select("img[src]"); //[alt~=^((?!\[\S+\]).)*$]
             List<String> imageList = images.stream()
+                    .filter(element -> {
+                        String alt = element.attr("alt");
+                        return ObjectUtils.isEmpty(alt) ||
+                                !(alt.charAt(0) == '[' && alt.charAt(alt.length() - 1) == ']');
+                    })
                     .map(element -> element.attr("src"))
                     .limit(3)
                     .collect(Collectors.toList());

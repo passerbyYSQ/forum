@@ -1,12 +1,12 @@
 @font-face {
-  font-family: "iconfont"; /* Project id 2609590 */
-  src: url('iconfont.woff2?t=1625286172975') format('woff2'),
-       url('iconfont.woff?t=1625286172975') format('woff'),
-       url('iconfont.ttf?t=1625286172975') format('truetype');
+  font-family: "myiconfont"; /* Project id 2609590 */
+  src: url('//at.alicdn.com/t/font_2609590_eekqd51oiyo.woff2?t=1625301065870') format('woff2'),
+  url('//at.alicdn.com/t/font_2609590_eekqd51oiyo.woff?t=1625301065870') format('woff'),
+  url('//at.alicdn.com/t/font_2609590_eekqd51oiyo.ttf?t=1625301065870') format('truetype');
 }
 
-.iconfont {
-  font-family: "iconfont" !important;
+.myiconfont {
+  font-family: "myiconfont" !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
@@ -48,4 +48,3 @@
 .icon-GitHub:before {
   content: "\e600";
 }
-

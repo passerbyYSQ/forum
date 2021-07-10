@@ -74,28 +74,7 @@
             vertical-align: middle;
         }
 
-        /*lv6等级样式*/
-        .article-list-item .article-list-item-desc .lv {
-            vertical-align: middle;
 
-            font-weight: bold;
-            font-style: italic;
-            background-image: -webkit-linear-gradient(left, blue, #66ffff 10%, #cc00ff 20%, #CC00CC 30%, #CCCCFF 40%, #00FFFF 50%, #CCCCFF 60%, #CC00CC 70%, #CC00FF 80%, #66FFFF 90%, blue 100%);
-            -webkit-text-fill-color: transparent; /* 将字体设置成透明色 */
-            -webkit-background-clip: text; /* 裁剪背景图，使文字作为裁剪区域向外裁剪 */
-            -webkit-background-size: 200% 100%;
-            -webkit-animation: masked-animation 4s linear infinite;
-
-        }
-
-        @keyframes masked-animation {
-            0% {
-                background-position: 0 0;
-            }
-            100% {
-                background-position: -100% 0;
-            }
-        }
 
         .article-list-item .article-list-item-tool {
             color: #666;
@@ -503,7 +482,7 @@
             <span class="layui-badge layui-bg-red">精贴</span>
             {{# } }}
             {{# if(d.isHot){ }}
-            <span class="iconfont icon-remen" style="color: #fc3218; font-size: 22px;"></span>
+            <span class="myiconfont icon-remen" style="color: #fc3218; font-size: 22px;"></span>
             {{# } }}
             <div class="layui-badge-rim">{{d.lastCommentTime}}</div>
         </h2>
@@ -611,9 +590,9 @@
         var admin = layui.admin;
         var conditon = {
             hotDiscussion: "0",
-            orderByStr:  "top_weight desc, last_comment_time desc",
-            isHighQuality:  "0",
-            topicId: ""
+            orderByStr: "top_weight desc, last_comment_time desc",
+            isHighQuality: "0",
+            topicId: "",
         };
 
         // rank dialog
