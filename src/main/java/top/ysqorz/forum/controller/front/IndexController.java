@@ -12,11 +12,9 @@ import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Attendance;
+import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.po.Topic;
-import top.ysqorz.forum.service.AttendService;
-import top.ysqorz.forum.service.PostService;
-import top.ysqorz.forum.service.TopicService;
-import top.ysqorz.forum.service.UserService;
+import top.ysqorz.forum.service.*;
 import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
@@ -25,6 +23,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +42,8 @@ public class IndexController {
     private TopicService topicService;
     @Resource
     private AttendService attendService;
+    @Resource
+    private LabelService labelService;
 
     // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
     @GetMapping({"", "/index"})
@@ -90,6 +91,15 @@ public class IndexController {
         if (limit <= 0) {
             limit = 10;
         }
+        if (conditions.getLabelsId() != null) {
+            String labelsId = conditions.getLabelsId();
+            String[] labelIds = labelsId.split(",");
+            List<String> list = new ArrayList<>();
+            for (int i = 1; i < labelIds.length; i++) {
+                list.add(labelIds[i]);
+            }
+            conditions.setLabelList(list);
+        }
         PageData<PostDTO> indexPost = postService.getIndexPost(page, limit, conditions);
         return ResultModel.success(indexPost);
     }
@@ -131,4 +141,14 @@ public class IndexController {
         return ResultModel.success(rankList);
     }
 
+    /**
+     * 随机获取指定数量个标签
+     */
+    @GetMapping("/index/label")
+    @ResponseBody
+    public ResultModel achieveRandomLabels() {
+        Integer total = 10;
+        List<Label> labelList = labelService.achieveRandomLabels(total);
+        return ResultModel.success(labelList);
+    }
 }

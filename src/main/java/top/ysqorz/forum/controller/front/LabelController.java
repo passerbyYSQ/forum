@@ -10,6 +10,7 @@ import top.ysqorz.forum.service.LabelService;
 import top.ysqorz.forum.common.ResultModel;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**

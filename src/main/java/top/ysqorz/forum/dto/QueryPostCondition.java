@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 后台帖子列表的查询条件
@@ -21,6 +22,8 @@ public class QueryPostCondition {
     private String title; // 标题
     private Byte isHighQuality; //高质量
     private Byte hotDiscussion; //热议
+    private String labelsId; //从前台主页获取的标签id拼接
+    private List<String> labelList; //从labelsId分解出来的list
 
     private LocalDateTime startPublishTime; // 发帖时间的范围。起始时间
     private LocalDateTime endPublishTime; // 发帖时间的范围。起始时间

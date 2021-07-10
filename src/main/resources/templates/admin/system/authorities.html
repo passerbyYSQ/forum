@@ -115,7 +115,7 @@
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}"
         src="../../assets/js/common.js?v=318"></script>
 <script th:inline="none">
-    layui.use(['layer', 'form', 'admin', 'treeTable', 'util', 'xmSelect'], function () {
+    layui.use(['layer', 'form', 'admin', 'treeTable', 'util', 'xmSelect', 'app', 'notice'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var form = layui.form;
@@ -124,6 +124,7 @@
         var util = layui.util;
         var xmSelect = layui.xmSelect;
         var tbDataList = []; // 已形成树形结构
+        var app = layui.app;
 
         //var dataList = []; // 后端返回的数据，尚未形成树形结构
         // var conditions = {}; // 筛选条件
@@ -165,14 +166,21 @@
             ]],
             reqData: function (data, callback) {
                 // 在这里写ajax请求，通过callback方法回调数据
-                $.get('/admin/system/authorities/tree', {}, function (res) {
-                    if (res.code === 2000) {
-                        dataList = res.data;
-                        console.log(res.data);
-                        callback(res.data);
-                    }
-                    else callback(res.msg);
+                app.ajax('/admin/system/authorities/tree', {}, function (res) {
+                    dataList = res.data;
+                    console.log(res.data);
+                    callback(res.data);
+                }, "get", function (res) {
+                    callback(res.msg);
                 });
+                // $.get('/admin/system/authorities/tree', {}, function (res) {
+                //     if (res.code === 2000) {
+                //         dataList = res.data;
+                //         console.log(res.data);
+                //         callback(res.data);
+                //     }
+                //     else callback(res.msg);
+                // });
             },
             done: function (data) { // 表格渲染完回调
                 // 我们的响应数据被组件处理成树形数据（此处的data）
@@ -284,7 +292,7 @@
                     form.on('submit(authoritiesEditSubmit)', function (data) {
                         console.log(data.field);
                         data.field.parentId = insXmSel.getValue('valueStr');
-                        var loadIndex = layer.load(2);
+                        // var loadIndex = layer.load(2);
                         // data.field 提交的表单数据
                         /*
                         authority: ""    // 权限标识
@@ -298,16 +306,21 @@
                         select: ""      // select 那一项的value值
                          */
                         var url = '/admin/system/authorities/' + (mData ? 'update' : 'add')
-                        $.post(url, data.field, function (res) {
-                            layer.close(loadIndex);
-                            if (res.code === 2000) {
-                                layer.close(dIndex);
-                                layer.msg(res.msg, {icon: 1});
-                                insTb.refresh();
-                            } else {
-                                layer.msg(res.msg, {icon: 2});
-                            }
-                        }, 'json');
+                        app.ajax(url, data.field, function (res) {
+                            layer.close(dIndex);
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.refresh();
+                        });
+                        // $.post(url, data.field, function (res) {
+                        //     layer.close(loadIndex);
+                        //     if (res.code === 2000) {
+                        //         layer.close(dIndex);
+                        //         layer.msg(res.msg, {icon: 1});
+                        //         insTb.refresh();
+                        //     } else {
+                        //         layer.msg(res.msg, {icon: 2});
+                        //     }
+                        // }, 'json');
                         return false;
                     });
                     // 渲染下拉树
@@ -343,18 +356,24 @@
                 shade: .1
             }, function (i) {
                 layer.close(i);
-                var loadIndex = layer.load(2);
-                $.post('/admin/system/authorities/del',
+                // var loadIndex = layer.load(2);
+                app.ajax('/admin/system/authorities/del',
                     {authorityIds: obj.data ? [obj.data.id] : obj.ids},
                     function (res) {
-                    layer.close(loadIndex);
-                    if (res.code === 2000) {
                         layer.msg(res.msg, {icon: 1});
                         insTb.refresh();
-                    } else {
-                        layer.msg(res.msg, {icon: 2});
-                    }
-                }, 'json');
+                    });
+                // $.post('/admin/system/authorities/del',
+                //     {authorityIds: obj.data ? [obj.data.id] : obj.ids},
+                //     function (res) {
+                //     layer.close(loadIndex);
+                //     if (res.code === 2000) {
+                //         layer.msg(res.msg, {icon: 1});
+                //         insTb.refresh();
+                //     } else {
+                //         layer.msg(res.msg, {icon: 2});
+                //     }
+                // }, 'json');
             });
         }
 

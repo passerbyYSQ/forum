@@ -2,6 +2,7 @@ package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,6 @@ public class AdminTopicController {
     /**
      * 获取Topic数据
      */
-
     @GetMapping("/table")
     public ResultModel<PageData<TopicDTO>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
                                                           @RequestParam(defaultValue = "1") Integer page,
@@ -53,6 +53,7 @@ public class AdminTopicController {
     /**
      * 添加话题
      */
+    @RequiresPermissions("topic:add")
     @PostMapping("/add")
     public ResultModel<Topic> addTopic(@Validated(Topic.Add.class) Topic topic) {
         return ResultModel.success(topicService.addTopic(topic));
@@ -61,6 +62,7 @@ public class AdminTopicController {
     /**
      * 修改话题
      */
+    @RequiresPermissions("topic:update")
     @PostMapping("/update")
     public ResultModel updateTopic(@Validated(Topic.Update.class) Topic topic) {
         int cnt = topicService.updateTopic(topic);
@@ -75,6 +77,7 @@ public class AdminTopicController {
      * @param state
      * @return
      */
+    @RequiresPermissions("topic:file")
     @PostMapping("/archive")
     public ResultModel archive(@NotNull Integer id, @NotNull Integer state) {
         int cnt = topicService.archive(id, state);

@@ -197,7 +197,7 @@
 <script type="text/javascript" src="admin/libs/layui/layui.js" th:src="@{/admin/assets/libs/layui/layui.js}"></script>
 <script type="text/javascript" src="admin/js/common.js?v=318" th:src="@{/admin/assets/js/common.js(v=318)}"></script>
 <script th:inline="none">
-    layui.use(['layer', 'form', 'table', 'util', 'admin', 'laydate', 'xmSelect'], function () {
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'laydate', 'xmSelect', 'app'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var form = layui.form;
@@ -206,7 +206,7 @@
         var admin = layui.admin;
         var xmSelect = layui.xmSelect;
         var laydate = layui.laydate;
-
+        var app = layui.app;
 
         /* 渲染表格 */
         var insTb = table.render({
@@ -393,20 +393,30 @@
                                     return d.id; // 角色id
                                 });
                                 console.log(ids);
-                                $.post('/admin/system/user/addRole', {
+                                app.ajax('/admin/system/user/addRole', {
                                     roleIds: ids,
                                     userId: id
                                 }, function (res) {
-                                    if (2000 === res.code) {
-                                        layer.msg(res.msg, {icon: 1});
-                                        layer.close(dIndex);
-                                        insTb.reload({page: {curr: 1}});
-                                    } else {
-                                        layer.msg(res.msg, {icon: 2});
-                                        layer.close(dIndex);
-                                    }
-
-                                }, 'json');
+                                    layer.close(dIndex);
+                                    app.successNotice(res.msg);
+                                    insTb.reload({page: {curr: 1}});
+                                }, "post", function (res) {
+                                    layer.close(dIndex);
+                                });
+                                // $.post('/admin/system/user/addRole', {
+                                //     roleIds: ids,
+                                //     userId: id
+                                // }, function (res) {
+                                //     if (2000 === res.code) {
+                                //         layer.msg(res.msg, {icon: 1});
+                                //         layer.close(dIndex);
+                                //         insTb.reload({page: {curr: 1}});
+                                //     } else {
+                                //         layer.msg(res.msg, {icon: 2});
+                                //         layer.close(dIndex);
+                                //     }
+                                //
+                                // }, 'json');
                             }
                         });
                     }
@@ -471,20 +481,30 @@
                                     return d.id; // 角色id
                                 });
                                 console.log(ids);
-                                $.post('/admin/system/user/delRole', {
+                                app.ajax('/admin/system/user/delRole', {
                                     roleIds: ids,
                                     userId: id
                                 }, function (res) {
-                                    if (2000 === res.code) {
-                                        layer.msg(res.msg, {icon: 1});
-                                        layer.close(dIndex);
-                                        insTb.reload({page: {curr: 1}});
-                                    } else {
-                                        layer.msg(res.msg, {icon: 2});
-                                        layer.close(dIndex);
-                                    }
-
-                                }, 'json');
+                                    layer.close(dIndex);
+                                    app.successNotice(res.msg);
+                                    insTb.reload({page: {curr: 1}});
+                                }, "post", function (res) {
+                                    layer.close(dIndex);
+                                });
+                                // $.post('/admin/system/user/delRole', {
+                                //     roleIds: ids,
+                                //     userId: id
+                                // }, function (res) {
+                                //     if (2000 === res.code) {
+                                //         layer.msg(res.msg, {icon: 1});
+                                //         layer.close(dIndex);
+                                //         insTb.reload({page: {curr: 1}});
+                                //     } else {
+                                //         layer.msg(res.msg, {icon: 2});
+                                //         layer.close(dIndex);
+                                //     }
+                                //
+                                // }, 'json');
                             }
                         });
                     }
@@ -509,7 +529,7 @@
                     // 表单提交事件
                     form.on('submit(userEditSubmit)', function (data) {
                         // console.log(data.field);
-                        var loadIndex = layer.load(2);
+                        // var loadIndex = layer.load(2);
 
                         var resultData = {};
                         resultData.adminId = data.field.adminId;
@@ -521,16 +541,20 @@
 
                         console.log(resultData);
                         var url = '/admin/system/user/block';
-                        $.post(url, resultData, function (res) {
-                            layer.close(loadIndex);
-                            if (res.code === 2000) {
-                                layer.close(dIndex);
-                                layer.msg(res.msg, {icon: 1});
-                                // insTb.refresh();
-                            } else {
-                                layer.msg(res.msg, {icon: 2});
-                            }
-                        }, 'json');
+                        app.ajax(url, resultData, function (res) {
+                            layer.close(dIndex);
+                            ap.successNotice(res.msg);
+                        });
+                        // $.post(url, resultData, function (res) {
+                        //     layer.close(loadIndex);
+                        //     if (res.code === 2000) {
+                        //         layer.close(dIndex);
+                        //         layer.msg(res.msg, {icon: 1});
+                        //         // insTb.refresh();
+                        //     } else {
+                        //         layer.msg(res.msg, {icon: 2});
+                        //     }
+                        // }, 'json');
                         return false;
                     });
                     var timestamp = Date.parse(new Date());  //当前时间时间戳
@@ -574,40 +598,52 @@
                     area: "600px",
                     content: $('#userEditDialog2').html(),
                     success: function (layero, dIndex) {
-
-                        $.get('/admin/system/user/getBlockInfo', {
+                        app.ajax('/admin/system/user/getBlockInfo', {
                             userId: q
                         }, function (res) {
-                            // layer.close(loadIndex);
-                            if (res.code === 2000) {
-                                console.log(res.data);
-                                // 回显表单数据
-                                res.data.data = res.data.startTime + '-' + res.data.endTime;
-                                form.val('userEditForm2', res.data);
-
-                            } else {
-                                layer.msg(res.msg, {icon: 2});
-                            }
-                        }, 'json');
+                            console.log(res.data);
+                            // 回显表单数据
+                            res.data.data = res.data.startTime + '-' + res.data.endTime;
+                            form.val('userEditForm2', res.data);
+                        }, "get");
+                        // $.get('/admin/system/user/getBlockInfo', {
+                        //     userId: q
+                        // }, function (res) {
+                        //     // layer.close(loadIndex);
+                        //     if (res.code === 2000) {
+                        //         console.log(res.data);
+                        //         // 回显表单数据
+                        //         res.data.data = res.data.startTime + '-' + res.data.endTime;
+                        //         form.val('userEditForm2', res.data);
+                        //
+                        //     } else {
+                        //         layer.msg(res.msg, {icon: 2});
+                        //     }
+                        // }, 'json');
 
 
                         //表单提交事件
                         form.on('submit(userEditSubmit2)', function (data) {
                             // console.log(data.field);
 
-                            var loadIndex = layer.load(2);
-                            $.post('/admin/system/user/cancelBlock', {
+                            // var loadIndex = layer.load(2);
+                            app.ajax('/admin/system/user/cancelBlock', {
                                 userId: q
                             }, function (res) {
-                                layer.close(loadIndex);
-                                if (res.code === 2000) {
-                                    layer.msg(res.msg, {icon: 1});
-
-                                    //insTb.refresh();
-                                } else {
-                                    layer.msg(res.msg, {icon: 2});
-                                }
-                            }, 'json');
+                                app.successNotice(res.msg);
+                            });
+                            // $.post('/admin/system/user/cancelBlock', {
+                            //     userId: q
+                            // }, function (res) {
+                            //     layer.close(loadIndex);
+                            //     if (res.code === 2000) {
+                            //         layer.msg(res.msg, {icon: 1});
+                            //
+                            //         //insTb.refresh();
+                            //     } else {
+                            //         layer.msg(res.msg, {icon: 2});
+                            //     }
+                            // }, 'json');
                             //  return false;
                         });
 
@@ -668,17 +704,22 @@
                 shade: .1
             }, function (i) {
                 layer.close(i);
-                var loadIndex = layer.load(2);
-                $.post('/admin/system/user/resetPsw', {
+                // var loadIndex = layer.load(2);
+                app.ajax('/admin/system/user/resetPsw', {
                     userId: obj.data.id
                 }, function (res) {
-                    layer.close(loadIndex);
-                    if (res.code === 2000) {
-                        layer.msg(res.msg, {icon: 1});
-                    } else {
-                        layer.msg(res.msg, {icon: 2});
-                    }
-                }, 'json');
+                    app.successNotice(res.msg);
+                });
+                // $.post('/admin/system/user/resetPsw', {
+                //     userId: obj.data.id
+                // }, function (res) {
+                //     layer.close(loadIndex);
+                //     if (res.code === 2000) {
+                //         layer.msg(res.msg, {icon: 1});
+                //     } else {
+                //         layer.msg(res.msg, {icon: 2});
+                //     }
+                // }, 'json');
             });
         }
 

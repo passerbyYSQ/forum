@@ -87,14 +87,14 @@
 <script src="admin/libs/layui/layui.js" th:src="@{/admin/assets/libs/layui/layui.js}" type="text/javascript"></script>
 <script src="admin/js/common.js?v=318" th:src="@{/admin/assets/js/common.js(v=318)}" type="text/javascript"></script>
 <script th:inline="none">
-    layui.use(['layer', 'form', 'table', 'util', 'admin', 'laydate', 'xmSelect'], function () {
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'laydate', 'xmSelect', 'app'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var form = layui.form;
         var table = layui.table;
         var util = layui.util;
         var admin = layui.admin;
-
+        var app = layui.app;
 
         /* 渲染表格 */
         var insTb = table.render({
@@ -187,18 +187,25 @@
                     shade: .1
                 }, function (i) {
                     layer.close(i);
-                    var loadIndex = layer.load(2);
-                    $.post('/admin/system/topic/archive', {
+                    // var loadIndex = layer.load(2);
+                    app.ajax('/admin/system/topic/archive', {
                         id: q, state: 1
                     }, function (res) {
-                        layer.close(loadIndex);
-                        if (2000 === res.code) {
-                            layer.msg(res.msg, {icon: 1});
-                            insTb.reload({page: {curr: 1}});
-                        } else {
-                            layer.msg(res.msg, {icon: 2});
-                        }
-                    }, 'json');
+                        layer.close(dIndex);
+                        app.successNotice(res.msg);
+                        insTb.reload({page: {curr: 1}});
+                    });
+                    // $.post('/admin/system/topic/archive', {
+                    //     id: q, state: 1
+                    // }, function (res) {
+                    //     layer.close(loadIndex);
+                    //     if (2000 === res.code) {
+                    //         layer.msg(res.msg, {icon: 1});
+                    //         insTb.reload({page: {curr: 1}});
+                    //     } else {
+                    //         layer.msg(res.msg, {icon: 2});
+                    //     }
+                    // }, 'json');
                 }, function () { // 取消
                     console.log("----");
                     obj.elem.checked = !obj.elem.checked;
@@ -212,18 +219,24 @@
                     shade: .1
                 }, function (i) {
                     layer.close(i);
-                    var loadIndex = layer.load(2);
-                    $.post('/admin/system/topic/archive', {
+                    // var loadIndex = layer.load(2);
+                    app.ajax('/admin/system/topic/archive', {
                         id: q, state: 0
                     }, function (res) {
-                        layer.close(loadIndex);
-                        if (2000 === res.code) {
-                            layer.msg(res.msg, {icon: 1});
-                            insTb.reload({page: {curr: 1}});
-                        } else {
-                            layer.msg(res.msg, {icon: 2});
-                        }
-                    }, 'json');
+                        app.successNotice(res.msg);
+                        insTb.reload({page: {curr: 1}});
+                    });
+                    // $.post('/admin/system/topic/archive', {
+                    //     id: q, state: 0
+                    // }, function (res) {
+                    //     layer.close(loadIndex);
+                    //     if (2000 === res.code) {
+                    //         layer.msg(res.msg, {icon: 1});
+                    //         insTb.reload({page: {curr: 1}});
+                    //     } else {
+                    //         layer.msg(res.msg, {icon: 2});
+                    //     }
+                    // }, 'json');
                 }, function () {
                     obj.elem.checked = !obj.elem.checked;
                     form.render('checkbox');
@@ -244,22 +257,27 @@
                     form.val('topicEditForm', mData);
                     // 表单提交事件
                     form.on('submit(topicEditSubmit)', function (data) {
-                        var loadIndex = layer.load(2);
+                        // var loadIndex = layer.load(2);
                         var url = '/admin/system/topic/' + (mData ? 'update' : 'add');
                         if (mData) {
                             data.field.id = mData.id;
                             data.field.archive = mData.archive;
                         }
-                        $.post(url, data.field, function (res) {
-                            layer.close(loadIndex);
-                            if (2000 === res.code) {
-                                layer.close(dIndex);
-                                layer.msg(res.msg, {icon: 1});
-                                insTb.reload({page: {curr: 1}});
-                            } else {
-                                layer.msg(res.msg, {icon: 2});
-                            }
-                        }, 'json');
+                        app.ajax(url, data.field, function (res) {
+                            layer.close(dIndex);
+                            app.successNotice(res.msg);
+                            insTb.reload({page: {curr: 1}});
+                        });
+                        // $.post(url, data.field, function (res) {
+                        //     layer.close(loadIndex);
+                        //     if (2000 === res.code) {
+                        //         layer.close(dIndex);
+                        //         layer.msg(res.msg, {icon: 1});
+                        //         insTb.reload({page: {curr: 1}});
+                        //     } else {
+                        //         layer.msg(res.msg, {icon: 2});
+                        //     }
+                        // }, 'json');
                         return false;
                     });
                 }
@@ -275,18 +293,24 @@
                 shade: .1
             }, function (i) {
                 layer.close(i);
-                var loadIndex = layer.load(2);
-                $.post('/admin/system/topic/del', {
+                // var loadIndex = layer.load(2);
+                app.ajax('/admin/system/topic/del', {
                     topicIds: obj.data ? [obj.data.id] : obj.ids
                 }, function (res) {
-                    layer.close(loadIndex);
-                    if (2000 === res.code) {
-                        layer.msg(res.msg, {icon: 1});
-                        insTb.reload({page: {curr: 1}});
-                    } else {
-                        layer.msg(res.msg, {icon: 2});
-                    }
-                }, 'json');
+                    app.successNotice(res.msg);
+                    insTb.reload({page: {curr: 1}});
+                });
+                // $.post('/admin/system/topic/del', {
+                //     topicIds: obj.data ? [obj.data.id] : obj.ids
+                // }, function (res) {
+                //     layer.close(loadIndex);
+                //     if (2000 === res.code) {
+                //         layer.msg(res.msg, {icon: 1});
+                //         insTb.reload({page: {curr: 1}});
+                //     } else {
+                //         layer.msg(res.msg, {icon: 2});
+                //     }
+                // }, 'json');
             });
         }
 

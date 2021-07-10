@@ -372,19 +372,26 @@
                 shade: .1
             }, function (i) {
                 layer.close(i);
-                var loadIndex = layer.load(2);
-                $.get('../../json/ok.json', {
-                    id: obj.data ? obj.data.userId : '',
-                    ids: obj.ids ? obj.ids.join(',') : ''
-                }, function (res) {
-                    layer.close(loadIndex);
-                    if (res.code === 200) {
-                        layer.msg(res.msg, {icon: 1});
+                // var loadIndex = layer.load(2);
+                app.ajax('../../json/ok.json', {
+                        id: obj.data ? obj.data.userId : '',
+                        ids: obj.ids ? obj.ids.join(',') : ''
+                    }, function (res) {
+                        app.successNotice(res.msg);
                         insTb.reload({page: {curr: 1}});
-                    } else {
-                        layer.msg(res.msg, {icon: 2});
-                    }
-                }, 'json');
+                    }, "get");
+                // $.get('../../json/ok.json', {
+                //     id: obj.data ? obj.data.userId : '',
+                //     ids: obj.ids ? obj.ids.join(',') : ''
+                // }, function (res) {
+                //     layer.close(loadIndex);
+                //     if (res.code === 2000) {
+                //         layer.msg(res.msg, {icon: 1});
+                //         insTb.reload({page: {curr: 1}});
+                //     } else {
+                //         layer.msg(res.msg, {icon: 2});
+                //     }
+                // }, 'json');
             });
         }
 

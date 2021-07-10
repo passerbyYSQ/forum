@@ -8,4 +8,8 @@ import java.util.List;
 public interface LabelMapper extends BaseMapper<Label> {
 
     List<Label> selectLabelsByPostId(Integer postId);
+
+    Integer selectCountOfLabels();
+
+    Integer selectLastIdOfLabels();
 }
