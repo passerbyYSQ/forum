@@ -2,6 +2,7 @@ package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,7 @@ public class AdminPostController {
     /**
      * 修改置顶权重
      */
+    @RequiresPermissions("post:top")
     @PostMapping("/top")
     public ResultModel updateTopWeight(@RequestParam("id") Integer postId,
                                        @RequestParam(defaultValue = "0") Integer topWeight) {
@@ -58,6 +60,7 @@ public class AdminPostController {
     /**
      * 锁定和解锁帖子
      */
+    @RequiresPermissions("post:lock")
     @PostMapping("/lock")
     public ResultModel lock(@RequestParam Integer postId, @RequestParam Boolean isLock) {
         Post post = new Post();
@@ -70,6 +73,7 @@ public class AdminPostController {
     /**
      * 加精品、取消精品
      */
+    @RequiresPermissions("post:quality")
     @PostMapping("/highQuality")
     public ResultModel highQuality(@RequestParam Integer postId,
                                    @RequestParam Boolean isHighQuality) {

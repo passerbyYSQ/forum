@@ -2,6 +2,7 @@ package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
@@ -42,6 +43,7 @@ public class AdminRoleController {
     @Autowired
     private AuthorityService authorityService;
 
+    @RequiresPermissions("role:del")
     @PostMapping("/del")
     public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds) {
         roleService.delRoleWithPerms(roleIds);
@@ -51,6 +53,7 @@ public class AdminRoleController {
     /**
      * 修改角色
      */
+    @RequiresPermissions("role:update")
     @PostMapping("/update")
     public ResultModel updateRole(@Validated(Role.Update.class) Role role) {
         int cnt = roleService.updateRoleById(role);
@@ -61,6 +64,7 @@ public class AdminRoleController {
     /**
      * 添加角色（没有任何权限）
      */
+    @RequiresPermissions("role:add")
     @PostMapping("/add")
     public ResultModel<Role> addRole(@Validated(Role.Add.class) Role role) {
         return ResultModel.success(roleService.addRole(role));
@@ -69,6 +73,7 @@ public class AdminRoleController {
     /**
      * 分配权限
      */
+    @RequiresPermissions("role:allot")
     @PostMapping("/assign")
     public ResultModel assignPerms(@NotNull Integer roleId,
            @RequestParam(value = "permIds[]", defaultValue = "") Integer[] permIds) {
@@ -102,6 +107,7 @@ public class AdminRoleController {
     /**
      * 某个角色的权限树
      */
+    @RequiresPermissions("role:allot")
     @GetMapping("/perm")
     public ResultModel<List<PermZTreeNode>> rolePermList(@NotNull Integer roleId) {
         Role role = roleService.getRoleById(roleId);
