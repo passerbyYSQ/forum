@@ -102,12 +102,12 @@
 <!-- 表单弹窗 -->
 <script type="text/html" id="topDialog">
     <form id="topForm" lay-filter="topForm" class="layui-form model-form">
-        <input name="id" type="hidden"/> <!-- postId -->
+        <input name="postId" type="hidden"/> <!-- postId -->
         <div class="layui-form-item">
             <label class="layui-form-label layui-form-required">置顶权重:</label>
             <div class="layui-input-block">
                 <input name="topWeight" placeholder="请输入账号" class="layui-input"
-                       type="number" lay-verType="tips" lay-verify="required" required/>
+                       max="9999" min="0" type="number" lay-verType="tips" lay-verify="required" required/>
             </div>
         </div>
         <div class="layui-form-item text-right">
@@ -338,6 +338,7 @@
                     form.on('submit(topSubmit)', function (data) {
                         console.log(data);
                         app.ajax("/admin/system/post/top", data.field);
+                        return false;
                     });
                     // 禁止弹窗出现滚动条
                     $(layero).children('.layui-layer-content').css('overflow', 'visible');
@@ -425,13 +426,13 @@
 
         /* 修改精品状态 */
         form.on('switch(highQualityStateCk)', function (obj) {
-            var msg = obj.elem.checked ? '作者已获得对应的积分奖励' : '已撤销对作者的积分奖励';
+            //var msg = obj.elem.checked ? '作者已获得对应的积分奖励' : '已撤销对作者的积分奖励';
             app.ajax("/admin/system/post/highQuality", {
                 postId: obj.elem.value,
                 // checked : true（精品） => isHighQuality: true
                 isHighQuality: obj.elem.checked
             }, function (res) {
-                app.successNotice(msg);
+                app.successNotice('操作成功');
             });
         });
     });

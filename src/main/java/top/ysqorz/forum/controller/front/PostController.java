@@ -1,7 +1,6 @@
 package top.ysqorz.forum.controller.front;
 
 import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -21,9 +20,6 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -201,29 +197,29 @@ public class PostController {
         return ResultModel.success();
     }
 
-    @RequiresPermissions("post:quality")
-    @PostMapping("/set_quality")
-    @ResponseBody
-    public ResultModel setQuality(@NotNull Integer postId, @NotNull Boolean isHighQuality) {
-        Post post = postService.getPostById(postId);
-        if (ObjectUtils.isEmpty(post)) {
-            return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
-        }
-        postService.changeHighQuality(ShiroUtils.getUserId(), postId, isHighQuality);
-        return ResultModel.success();
-    }
+//    @RequiresPermissions("post:quality")
+//    @PostMapping("/set_quality")
+//    @ResponseBody
+//    public ResultModel setQuality(@NotNull Integer postId, @NotNull Boolean isHighQuality) {
+//        Post post = postService.getPostById(postId);
+//        if (ObjectUtils.isEmpty(post)) {
+//            return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
+//        }
+//        postService.changeHighQuality(ShiroUtils.getUserId(), postId, isHighQuality);
+//        return ResultModel.success();
+//    }
 
-    @RequiresPermissions("post:top")
-    @PostMapping("/top")
-    @ResponseBody
-    public ResultModel top(@NotNull Integer postId,
-            @NotNull @Min(0) @Max(9999) Integer topWeight) {
-        Post post = new Post();
-        post.setId(postId).setTopWeight(topWeight);
-        int cnt = postService.updatePostById(post);
-        return cnt == 1 ? ResultModel.success()
-                : ResultModel.failed(StatusCode.POST_NOT_EXIST);
-    }
+//    @RequiresPermissions("post:top")
+//    @PostMapping("/top")
+//    @ResponseBody
+//    public ResultModel top(@NotNull Integer postId,
+//            @NotNull @Min(0) @Max(9999) Integer topWeight) {
+//        Post post = new Post();
+//        post.setId(postId).setTopWeight(topWeight);
+//        int cnt = postService.updatePostById(post);
+//        return cnt == 1 ? ResultModel.success()
+//                : ResultModel.failed(StatusCode.POST_NOT_EXIST);
+//    }
 
 
     /**

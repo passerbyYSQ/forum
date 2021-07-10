@@ -15,23 +15,30 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Setter
 public class RegisterDTO {
-    @NotEmpty
+    // 分组校验
+    public interface Register {} // 注册
+    public interface UpdatePassword {} // 更改密码
+
+    @NotEmpty(groups = Register.class)
     private String token;
 
-    @NotEmpty
+    @NotEmpty(groups = Register.class)
     private String username;
 
-    @NotEmpty
-    @Email
+    @NotEmpty(groups = Register.class)
+    private String captcha;
+
+    @NotEmpty(groups = Register.class)
+    @Email(groups = Register.class)
     private String email;
 
     @NotEmpty
-    private String password;
+    private String password; // 公用
 
     @NotEmpty
-    private String rePassword;
+    private String rePassword; // 公用
 
-    @NotEmpty
-    private String captcha;
+    @NotEmpty(groups = UpdatePassword.class)
+    private String newPassword;
 }
 

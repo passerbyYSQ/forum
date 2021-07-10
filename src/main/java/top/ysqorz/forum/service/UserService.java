@@ -18,6 +18,13 @@ import java.util.List;
 public interface UserService {
 
     /**
+     * 加密登录密码
+     * @param originPwd     原视密码
+     * @param salt          加密的盐
+     */
+    String encryptLoginPwd(String originPwd, String salt);
+
+    /**
      * 加减积分。注意自增和自减，只能自己写SQL语句，没办法使用tk
      */
     int updateRewardPoints(Integer userId, Integer num);

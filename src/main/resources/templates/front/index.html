@@ -162,29 +162,6 @@
             text-overflow: ellipsis;
         }
 
-        /*  美化滚动条  */
-        .pretty-scroll ::-webkit-scrollbar {
-            width: 7px;
-            height: 7px;
-            background-color: #F5F5F5;
-        }
-
-        /*定义滚动条轨道 内阴影+圆角*/
-        .pretty-scroll ::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            background-color: #F5F5F5;
-        }
-
-        /*定义滑块 内阴影+圆角*/
-        .pretty-scroll ::-webkit-scrollbar-thumb {
-            border-radius: 10px;
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
-            background-color: #c8c8c8;
-        }
-
         .fly-signin-list .layui-tab-item {
             padding: 10px 16px 0 16px;
         }
@@ -261,7 +238,7 @@
           </span>
                 </div>
 
-                <div id="demoCardList3" class="pretty-scroll"></div>
+                <div id="demoCardList3" ></div>
 
 
             </div>
@@ -550,7 +527,7 @@
             <li>总签到榜</li>
             <li>最新签到</li>
         </ul>
-        <div class="layui-tab-content fly-signin-list pretty-scroll" id="LAY_signin_list">
+        <div class="layui-tab-content fly-signin-list" id="LAY_signin_list">
             <!-- 今日最快签到榜 -->
             <ul id="fastRankList" class="layui-tab-item layui-show">1</ul>
             <!-- 连续签到的天数的排行榜 -->
@@ -710,20 +687,14 @@
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "top_weight desc, last_comment_time desc";
                 conditon.isHighQuality = "0";
-                $(dom).siblings(".flag").removeClass("layui-this");
-                $(dom).addClass("layui-this");
             } else if (params == 2) { // 精品
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "1";
-                $(dom).siblings(".flag").removeClass("layui-this");
-                $(dom).addClass("layui-this");
             } else if (params == 3) { // 最新
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "0";
-                $(dom).siblings(".flag").removeClass("layui-this");
-                $(dom).addClass("layui-this");
             } else { // 热议
                 conditon.hotDiscussion = "1";
                 conditon.orderByStr = "comment_count desc,last_comment_time desc";
@@ -734,6 +705,8 @@
                 page: {curr: 1}
             });
             layer.close(loadIndex);
+            $(".flag").removeClass("layui-this");
+            $(dom).addClass("layui-this");
         };
 
 

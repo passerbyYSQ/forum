@@ -261,7 +261,7 @@ public class PostServiceImpl implements PostService {
 
         for (PostDTO post : postList) {
             Document doc = Jsoup.parse(post.getContent());
-            String content = doc.text();  //获取html文本
+            String content = doc.text();  //获取文本。不包括html标签
             if (content.length() >= 100) {
                 content= content.substring(0, 100);
             }

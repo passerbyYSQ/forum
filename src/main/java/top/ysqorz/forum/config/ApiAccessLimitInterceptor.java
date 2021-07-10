@@ -1,5 +1,6 @@
 package top.ysqorz.forum.config;
 
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -7,7 +8,6 @@ import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.IpUtils;
 
 import javax.annotation.Resource;
-import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
@@ -35,7 +35,7 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
         String blackListKey = "blackList:" + DateTimeUtils.getFormattedDate();
         if (stringRedisTemplate.opsForSet().isMember(blackListKey, ip)) { // 黑名单(set)不存在也会返回false
             // 如果在黑名单中，直接拦截
-            throw new AuthenticationException("当前IP已被列入黑名单，5分钟后请重试");
+            throw new AuthorizationException("当前IP已被列入黑名单，5分钟后请重试");
         }
 
         String accessKey = "API:" + request.getServletPath() + ":" + ip;

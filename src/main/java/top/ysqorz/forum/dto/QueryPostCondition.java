@@ -56,6 +56,7 @@ public class QueryPostCondition {
         if (!ObjectUtils.isEmpty(labelsId)) { // null 或者 空串 都不处理
             String[] labelIds = labelsId.split(",");
             this.labelList = Arrays.stream(labelIds)
+                    .filter(s -> !ObjectUtils.isEmpty(s))
                     .map(Integer::valueOf)
                     .collect(Collectors.toList());
         }

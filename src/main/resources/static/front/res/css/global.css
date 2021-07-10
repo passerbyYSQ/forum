@@ -13,6 +13,45 @@ html body{margin-top: 61px;}
 html{background-color: #F2F2F2;}
 i{font-style: normal;}
 
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent
+}
+
+::-webkit-scrollbar-track {
+  background: transparent
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #c1c1c1
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a8a8
+}
+
+.mini-bar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px
+}
+
+.mini-bar::-webkit-scrollbar-thumb {
+  border-radius: 3px
+}
+
+@media screen and (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 0
+  }
+}
+
 /* 图标 */
 
 @font-face {font-family: "layui-icon-fly";

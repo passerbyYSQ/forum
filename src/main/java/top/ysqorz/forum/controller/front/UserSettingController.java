@@ -1,6 +1,5 @@
 package top.ysqorz.forum.controller.front;
 
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -13,6 +12,7 @@ import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.CheckUserDTO;
+import top.ysqorz.forum.dto.RegisterDTO;
 import top.ysqorz.forum.dto.UploadResult;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
@@ -26,7 +26,7 @@ import java.io.IOException;
 
 /**
  *
- * 用户信息管理的API
+ * 用户个人信息修改
  *
  * @author ligouzi
  * @create 2021-06-30 13:12
@@ -68,6 +68,30 @@ public class UserSettingController {
         user.setPhone(encryption(user.getPhone()));
         model.addAttribute("user", user);
         return "front/user/set";
+    }
+
+    @PostMapping("/updatePassword")
+    @ResponseBody
+    public ResultModel updatePassword(@Validated(RegisterDTO.UpdatePassword.class)
+                                                  RegisterDTO dto) {
+        if (!dto.getNewPassword().equals(dto.getRePassword())) {
+            return ResultModel.failed(StatusCode.PASSWORD_NOT_EQUAL); // 两次密码不一致
+        }
+        User me = userService.getUserById(ShiroUtils.getUserId());
+
+        String salt = me.getLoginSalt();
+        String encryptPwd = userService.encryptLoginPwd(dto.getPassword(), salt);
+        if (!me.getEmail().equals(dto.getEmail()) ||
+                !me.getPassword().equals(encryptPwd)) {
+            return ResultModel.failed(StatusCode.ACCOUNT_OR_PASSWORD_INCORRECT); // 邮箱或密码错误
+        }
+
+        String newEncryptPwd = userService.encryptLoginPwd(dto.getNewPassword(), salt);
+        User record = new User();
+        record.setId(me.getId())
+                .setPassword(newEncryptPwd);
+        userService.updateUserById(record);
+        return ResultModel.success();
     }
 
     @PostMapping("/updateInfo")
@@ -161,10 +185,9 @@ public class UserSettingController {
             if (userService.checkBind(checkUser.getOldEmail(), "email")) {
                 return ResultModel.failed(StatusCode.EMAIL_IS_EXIST);
             }
-            Md5Hash md5Hash = new Md5Hash(checkUser.getCheckPassword(),
-                    me.getLoginSalt(), 1024);
             record.setEmail(checkUser.getOldEmail())
-                    .setPassword(md5Hash.toHex());
+                    .setPassword(userService.encryptLoginPwd(
+                            checkUser.getCheckPassword(),  me.getLoginSalt()));
 
         } else { // 修改邮箱
             //检查用户账号密码是否正确

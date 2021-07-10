@@ -8,11 +8,16 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.PostDTO;
+import top.ysqorz.forum.dto.QueryPostCondition;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.service.PostService;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -48,8 +53,8 @@ public class AdminPostController {
      */
     @RequiresPermissions("post:top")
     @PostMapping("/top")
-    public ResultModel updateTopWeight(@RequestParam("id") Integer postId,
-                                       @RequestParam(defaultValue = "0") Integer topWeight) {
+    public ResultModel updateTopWeight(@NotNull Integer postId,
+                                       @NotNull @Min(0) @Max(9999) Integer topWeight) {
         Post post = new Post();
         post.setId(postId).setTopWeight(topWeight);
         int cnt = postService.updatePostById(post);
