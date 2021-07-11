@@ -42,6 +42,21 @@
         order by ${orderByStr}
   </select>
 
+    <resultMap id="HomeFirstComment" type="top.ysqorz.forum.dto.FirstCommentDTO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="content" jdbcType="LONGVARCHAR" property="content" />
+        <result column="post_id" jdbcType="INTEGER" property="postId"/>
+        <result column="post_title" jdbcType="VARCHAR" property="postTitle"/>
+    </resultMap>
+    <select id="selectFirstCommentListByUserId" parameterType="Integer" resultMap="HomeFirstComment">
+        select fc.id id, fc.create_time create_time,
+        fc.content content, p.id post_id, p.title post_title
+        from first_comment as fc, post as p
+        where fc.user_id = ${userId} and p.id = fc.post_id
+        order by create_time DESC
+    </select>
+
     <update id="addSecondCommentCount" parameterType="map">
         update first_comment set second_comment_count = second_comment_count + #{dif}
         where id = #{firstCommentId}

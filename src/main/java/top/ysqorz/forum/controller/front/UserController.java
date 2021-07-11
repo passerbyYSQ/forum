@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * 通过注解实现权限控制
@@ -293,5 +294,21 @@ public class UserController {
         }
         PageData<PostDTO> indexPost = userService.getIndexPost(visitId, page, limit);
         return ResultModel.success(indexPost);
+    }
+
+    /**
+     * 帖子分页
+     */
+    @ResponseBody
+    @GetMapping("/home/{visitId}/comment")
+    public ResultModel<PageData<FirstCommentDTO>> getFirstCommentList(@RequestParam(defaultValue = "3") Integer limit,
+                                                              @RequestParam(defaultValue = "1") Integer page,
+                                                              @PathVariable Integer visitId){
+        if(limit <= 0){
+            limit = 3;
+        }
+        System.out.println("limit=" + limit);
+        PageData<FirstCommentDTO> indexFirstComment = userService.getIndexFirstComment(visitId, page, limit);
+        return ResultModel.success(indexFirstComment);
     }
 }

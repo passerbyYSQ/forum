@@ -172,4 +172,9 @@ public interface UserService {
      * 用户主页返回的信息
      */
     PageData<PostDTO> getIndexPost(Integer visitId,Integer page, Integer count);
+
+    /**
+     * 获取回复信息
+     */
+    PageData<FirstCommentDTO> getIndexFirstComment(Integer visitId, Integer page, Integer count);
 }
