@@ -200,6 +200,8 @@ public class PostServiceImpl implements PostService {
             post.setVisitCount(post.getVisitCount() + 1); // ！！！
             // 维护 帖子访问量日榜
             redisService.addHotPostDayRankScore(post.getId());
+            // 维护 帖子访问量周榜
+            redisService.addHotPostWeekRankScore(post.getId());
             // 判断是否增加积分
             rewardPointsAction.visitCountAdded(post.getCreatorId(), post.getVisitCount()); // ！！
         }
