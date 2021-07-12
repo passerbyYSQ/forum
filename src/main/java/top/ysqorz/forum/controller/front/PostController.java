@@ -11,6 +11,7 @@ import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PostDetailDTO;
 import top.ysqorz.forum.dto.PublishPostDTO;
+import top.ysqorz.forum.dto.SimpleUserDTO;
 import top.ysqorz.forum.dto.UpdatePostDTO;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
@@ -44,6 +45,8 @@ public class PostController {
     private LikeService likeService;
     @Resource
     private CollectService collectService;
+    @Resource
+    private UserService userService;
 
 
     @GetMapping("/detail/{postId}")
@@ -60,6 +63,19 @@ public class PostController {
         // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
         String token = RandomUtils.generateUUID();
         model.addAttribute("token", token);
+
+        //获取用户信息
+        SimpleUserDTO user = postService.getUserByPostId(postId);
+        model.addAttribute("user", user);
+
+        //用于检验用户是否登录
+        //判断进入用户界面状态，1：未登录， 2：已登录，身份为本人， 3：已登录，身份为访客
+        boolean isLogin = ShiroUtils.isAuthenticated();
+        boolean isMyself = isLogin && ShiroUtils.getUserId().equals(user.getId());
+        model.addAttribute("isLogin", isLogin);
+        model.addAttribute("isMyself", isMyself);
+        boolean isFocus = userService.isFocusOn(user.getId());
+        model.addAttribute("isFocusOn", isFocus);
 
         PostDetailDTO postDetailDTO = postService.getPostDetailById(post);
         model.addAttribute("post", postDetailDTO);

@@ -16,4 +16,18 @@ public interface UserMapper extends BaseMapper<User> {
     int updateRewardPoints(Map<String, Object> param);
 
     SimpleUserDTO selectSimpleUserById(Integer userId);
+
+    SimpleUserDTO selectHomeInformationById(Integer visitId);
+
+    /**
+     * 增加user表中数据的粉丝数
+     * @param id
+     */
+    void updateAndAddFansCount(Integer id);
+
+    /**
+     * 减少user表中数据粉丝数
+     * @param id
+     */
+    void updateAndReduceFansCount(Integer id);
 }

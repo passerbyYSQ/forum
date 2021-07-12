@@ -96,5 +96,30 @@
             (u.id = b.user_id and #{now} between b.start_time and b.end_time)
         where u.id = ${userId}
     </select>
+
+    <resultMap id = "HomeInformation" type="top.ysqorz.forum.dto.SimpleUserDTO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="photo" jdbcType="VARCHAR" property="photo"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="reward_points" jdbcType="INTEGER" property="rewardPoints"/>
+        <result column="register_time" jdbcType="DATE" property="registerTime"/>
+        <result column="position" jdbcType="VARCHAR" property="position"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="fans_count" jdbcType="INTEGER" property="fansCount"/>
+    </resultMap>
+
+    <select id="selectHomeInformationById" parameterType="Integer" resultMap="HomeInformation">
+        select id, photo, username, gender, reward_points, register_time, position, description, fans_count
+        from user where id = ${visitId}
+    </select>
+
+    <update id="updateAndAddFansCount" parameterType="Integer">
+        update user set fans_count = fans_count + 1 where id = ${id};
+    </update>
+
+    <update id="updateAndReduceFansCount" parameterType="Integer">
+        update user set fans_count = fans_count - 1 where id = ${id};
+    </update>
 </mapper>
 

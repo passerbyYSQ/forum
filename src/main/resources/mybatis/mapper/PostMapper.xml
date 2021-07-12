@@ -117,6 +117,21 @@
         </if>
     </select>
 
+    <resultMap id="homePost" type="top.ysqorz.forum.dto.PostDTO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="visit_count" jdbcType="INTEGER" property="visitCount"/>
+        <result column="comment_count" jdbcType="INTEGER" property="commentCount"/>
+        <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
+    </resultMap>
+
+    <select id="selectListByCreatorId" resultType="top.ysqorz.forum.dto.PostDTO" parameterType="Integer">
+        select id, title, create_time, visit_count, comment_count, is_high_quality
+        from post where creator_id = ${creatorId}
+        order by is_high_quality desc,create_time desc
+    </select>
+
     <update id="addVisitCount" parameterType="Integer">
         update post set visit_count = visit_count + 1 where id = #{postId}
     </update>

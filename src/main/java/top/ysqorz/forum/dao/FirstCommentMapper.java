@@ -16,4 +16,9 @@ public interface FirstCommentMapper extends BaseMapper<FirstComment> {
     List<FirstCommentDTO> selectFirstCommentList(Map<String, Object> params);
 
     int addSecondCommentCount(Map<String, Object> params);
+
+    /**
+     *  获取个人主页需要的帖子内容
+     */
+    List<FirstCommentDTO> selectFirstCommentListByUserId(Integer userId);
 }
