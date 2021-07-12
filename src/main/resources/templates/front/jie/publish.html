@@ -295,13 +295,14 @@
             },
             // 标签联想
             autocomplete_request: function (keyword, callback) {
-                app.ajax('/post/label/like', {
+                // 不要使用 app.ajax() 因为由于加载图标频繁显示的问题
+                $.get('/post/label/like', {
                     name: keyword,
                     maxCount: 5
                 }, function (res) {
                     var labels = res.data.map(label => label.labelName);
                     callback(labels);
-                }, "get");
+                });
             }
         });
 

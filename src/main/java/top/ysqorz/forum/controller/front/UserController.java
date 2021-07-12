@@ -22,12 +22,10 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
 
 /**
  * 通过注解实现权限控制
@@ -256,9 +254,9 @@ public class UserController {
         //判断进入用户界面状态，1：未登录， 2：已登录，身份为本人， 3：已登录，身份为访客
         boolean isLogin = ShiroUtils.isAuthenticated();
         boolean isMyself = isLogin && ShiroUtils.getUserId().equals(visitId);
+        boolean isFocus = userService.isFocusOn(visitId);
         model.addAttribute("isLogin", isLogin);
         model.addAttribute("isMyself", isMyself);
-        boolean isFocus = userService.isFocusOn(visitId);
         model.addAttribute("isFocusOn", isFocus);
         return "front/user/home";
     }

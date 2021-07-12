@@ -5,12 +5,10 @@ import com.github.pagehelper.PageInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
-import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.dao.LikeMapper;
 import top.ysqorz.forum.dao.PostMapper;
 import top.ysqorz.forum.dao.UserMapper;
@@ -21,7 +19,6 @@ import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -295,22 +292,6 @@ public class PostServiceImpl implements PostService {
         // List<User> userList = userService.getUserList(conditions);
         PageInfo<PostDTO> pageInfo = new PageInfo<>(postList);
         return new PageData<>(pageInfo, postList);
-    }
-
-    @Override
-    public SimpleUserDTO getUserByPostId(Integer postId) {
-        Example example = new Example(Post.class);
-        example.createCriteria()
-                .andEqualTo("id", postId);
-        Post post = postMapper.selectOneByExample(example);
-        Example userExample = new Example(User.class);
-        userExample.createCriteria()
-                .andEqualTo("id", post.getCreatorId());
-        User user = userMapper.selectOneByExample(example);
-        SimpleUserDTO simpleUserDTO = new SimpleUserDTO();
-        BeanUtils.copyProperties(user, simpleUserDTO);
-        simpleUserDTO.setAfterFormattingLastLoginTime(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(user.getLastLoginTime()));
-        return simpleUserDTO;
     }
 
 }

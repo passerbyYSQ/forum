@@ -71,8 +71,4 @@ public interface PostService {
      */
     PageData<PostDTO> getIndexPost(Integer page, Integer count, QueryPostCondition conditions);
 
-    /**
-     * 根据帖子Id查询创建用户信息
-     */
-    SimpleUserDTO getUserByPostId(Integer postId);
 }
