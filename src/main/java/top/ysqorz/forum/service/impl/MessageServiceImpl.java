@@ -64,8 +64,13 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Integer getFirstMegPage(Integer firstMegId) {
+
         FirstComment firstComment = firstCommentMapper.selectByPrimaryKey(firstMegId);
-        return firstComment.getFloorNum()-1;
+        Example example=new Example(FirstComment.class);
+        example.createCriteria().andEqualTo("postId",firstComment.getPostId())
+                .andLessThan("createTime",firstComment.getCreateTime());
+
+        return firstCommentMapper.selectCountByExample(example);
     }
 
 

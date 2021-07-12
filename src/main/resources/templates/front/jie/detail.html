@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+>
 <head>
     <meta charset="utf-8">
     <title>Fly Template v3.0，基于 layui 的极简社区页面模版</title>
@@ -413,8 +413,8 @@
 
 <!-- 一级评论 模板 -->
 <script type="text/html" id="firstCommentItem">
-    <ul class="jieda" id="jieda">
-        <li data-id="111" class="jieda-daan">
+    <ul class="jieda" id="jieda" data-id="fcid-{{d.id}}">
+        <li class="jieda-daan">
             <div class="detail-about detail-about-reply">
                 <a class="fly-avatar" href="">
                     <img src="{{d.creator.photo}}" alt="{{d.creator.username}}">
@@ -457,7 +457,8 @@
 
             <div class="jieda-reply">
                 <div style="float: right;">
-                    <span type="edit" data-expand="false" lay-event="expand" style="padding-right: 0;">展开评论</span>
+                    <span type="edit" id="expend-fcid-{{d.id}}" data-expand="false" lay-event="expand"
+                          style="padding-right: 0;">展开评论</span>
                     <span id="secondCount_{{d.id}}">({{d.secondCommentCount}})</span>
                     <span lay-event="reply" type="reply">
 <!--                                      <i class="iconfont icon-svgmoban53"></i>-->
@@ -510,9 +511,9 @@
         <!-- <li class="fly-none">消灭零回复</li> -->
     </ul>
 </script>
-<!-- 二级评论 模板 -->
+<!-- 二级评论 模板 -->s
 <script type="text/html" id="secondCommentItem">
-    <div class="layui-col-xs-offset1">
+    <div class="layui-col-xs-offset1" data-id="scid-{{d.id}}">
         <div class="detail-about detail-about-reply">
             <a class="fly-avatar" href="">
                 <img src="{{d.creator.photo}}" alt="{{d.creator.username}}">
@@ -521,7 +522,7 @@
                 <a href="" class="fly-link">
                     <cite>{{d.creator.username}}</cite>
                     <i class="iconfont icon-renzheng" title="认证信息：XXX"></i>
-                    <i class="layui-badge fly-badge-vip"
+                    <i class="lv"
                        title="积分数：{{d.creator.rewardPoints}}">Lv {{d.creator.level}}</i>
                 </a>
                 {{# if (d.isPostCreator) { }}
@@ -583,7 +584,9 @@
 <script th:src="@{/admin/assets/libs/tinymce/plugins/codesample/prism.js}"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>-->
 
+
 <script th:inline="javascript">
+
     // 验证码图片的点击事件
     function onCaptchaImageClicked(obj) {
         console.log(obj);
@@ -605,8 +608,15 @@
         var curPage; // 评论列表的当前页
         var postId = [[${post.detail.id}]];
         var userId = [[${creator.id}]];//用户ID
-        var url = '/user/home/'+userId+'/changeFocus';
+        var url = '/user/home/' + userId + '/changeFocus';
         var isFocus = [[${isFocusOn}]];
+
+        checkPage();
+        var page1;  //一级评论页码
+        var page2;  //二级评论页码
+        var fcid;  //一级定位id
+        var scid;  //二级定位id
+
 
         var imgList = [];
         // 将主题帖内容所包含的图片制成相册
@@ -616,7 +626,9 @@
                 alt: elem.alt || '暂无描述',
                 src: elem.src
             });
+
         });
+
 
         $("div.detail-body img[src]").click(function () {
             console.log(this);
@@ -632,7 +644,6 @@
         });
 
 
-
         /* 渲染评论列表 */
         var commentList = dataGrid.render({
             elem: '#commentList',
@@ -644,9 +655,9 @@
             request: {
                 limitName: 'count' //每页数据量的参数名，默认：limit
             },
-            response: {
-                statusCode: 2000 //规定成功的状态码，默认：0
-            },
+            // response: {
+            //     statusCode: 2000 //规定成功的状态码，默认：0
+            // },
             parseData: function (res) { //res 即为原始返回的数据
                 var list = res.data.list;
                 list.map(item => {
@@ -654,7 +665,7 @@
                     return item;
                 });
                 return {
-                    "code": res.code, //解析接口状态
+                    "code": res.code === 2000 ? 0 : -1, //解析接口状态
                     "msg": res.msg, //解析提示文本
                     "count": res.data.total, //解析数据长度
                     "data": list //解析数据列表
@@ -667,7 +678,6 @@
             done: function (res, curr, count) {
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                //console.log(res);
 
                 //得到当前页码
                 //console.log(curr);
@@ -675,11 +685,28 @@
                 dataGridMap.clear();
                 editorMap.clear();
                 //得到数据总量
-                //console.log(count);
+                // console.log(curr);
+                // console.log("11111111111");
+                if (page1) {
+                    if (curr != page1) {
+                        commentList.reload({page: {curr: page1}});
+                    } else {
+                        if (page2) {
+                            var e = document.createEvent("MouseEvents");
+                            e.initEvent("click", true, true);
+                            document.getElementById("expend-fcid-" + fcid).dispatchEvent(e); //只要id 就好
+                        } else {
+                            app.scrollIntoView("ul[data-id=fcid-" + fcid + "]");
+                        }
 
+                        page1 = null;
+                    }
+                }
                 Prism.highlightAll();
+
             }
         });
+
 
         var dataGridMap = new Map(); // 二级评论列表的dataGrid
         var editorMap = new Map(); // 二级评论的editor
@@ -734,6 +761,31 @@
                         page: {
                             limit: 5,
                             layout: ['page', 'count']
+                        },
+                        done: function (res, curr, count) {
+                            //如果是异步请求数据方式，res即为你接口返回的信息。
+                            //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+
+                            //得到当前页码
+                            //console.log(curr);
+                            curPage = curr;
+                            dataGridMap.clear();
+                            editorMap.clear();
+                            //得到数据总量
+                            console.log(curr);
+                            console.log("11111111111");
+                            if (page2) {
+                                if (curr != page2) {
+                                    secondListGrid.reload({page: {curr: page2}});
+
+                                } else {
+                                    app.scrollIntoView("div[data-id=scid-" + scid + "]");
+                                    page2 = null;
+                                }
+                            }
+
+                            Prism.highlightAll();
+
                         }
                     });
                     var selector = 'tool(secondCommentList_' + firstCommentId + ')';
@@ -1031,7 +1083,7 @@
             });
 
             //关注按钮事件
-            $(document).on('click', "[name='isFollow']", function(){
+        $(document).on('click', "[name='isFollow']", function(){
             <!--  isFocus:true:未关注状态，关注行为  !isFocus:已关注状态，取关行为，-->
                 app.ajax(url, {isFocusOn: !isFocus}, function(){
                 if(!isFocus){
@@ -1052,8 +1104,30 @@
                     $("a[name='isFollow']").html("关注");
                     isFocus = false;
                 }
+                });
             });
-        });
+
+        function checkPage() {
+            fcid = app.getUrlParam("fcid");
+            scid = app.getUrlParam("scid");
+
+            if (fcid) {
+                // 计算page1
+                app.ajax('/comment/first/page', {firstId: fcid}, function (res) {
+                    console.log(res);
+
+                    page1 = Math.floor(res.data / 6) + 1;
+                }, "get");
+                if (scid) {
+                    app.ajax('/comment/second/page', {firstId: fcid, secondId: scid}, function (res) {
+                        console.log(res);
+                        page2 = Math.floor(res.data / 5) + 1;
+                    }, "get");
+
+                }
+
+            }
+        }
     });
 </script>
 

@@ -4,17 +4,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.CheckUserDTO;
-import top.ysqorz.forum.dto.RegisterDTO;
-import top.ysqorz.forum.dto.UploadResult;
+import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.service.MessageService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.upload.UploadRepository;
@@ -34,7 +30,7 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/user/center")
 @Validated
-public class UserSettingController {
+public class UserCenterController {
 
     @Resource
     private UserService userService;
@@ -42,12 +38,16 @@ public class UserSettingController {
     @Resource
     private UploadRepository aliyunOssRepository;
 
+    @Resource
+    private MessageService messageService;
+
     /**
      * 跳转到我的主页
      */
     @GetMapping("/home")
-    public String homePage() {
-        return "front/user/home";
+    public String personalHomePage() {
+
+        return "forward:/user/home/" + ShiroUtils.getUserId();
     }
 
     /**
@@ -138,6 +138,39 @@ public class UserSettingController {
     public String messagePage() {
         return "front/user/message";
     }
+
+
+    /**
+     * 获取消息列表
+     *
+     * @param limit
+     * @param page
+     * @param conditions
+     */
+    @ResponseBody
+    @GetMapping("/message/list")
+    public ResultModel<PageData<MessageListDTO>> megList(@RequestParam(defaultValue = "3") Integer limit,
+                                                         @RequestParam(defaultValue = "1") Integer page,
+                                                         Integer conditions) {
+        if (limit <= 0) {
+            limit = 3;
+        }
+
+        PageData<MessageListDTO> megList = messageService.getMegList(page, limit, conditions);
+        return ResultModel.success(megList);
+    }
+
+    /**
+     * 清空所有消息
+     */
+    @ResponseBody
+    @GetMapping("/message/clearAll")
+    public ResultModel clearAllMeg() {
+
+        int i = messageService.clearAllMeg();
+        return i >= 0 ? ResultModel.success() : ResultModel.failed(StatusCode.UNKNOWN_ERROR);
+    }
+
 
     /**
      * 手机绑定检验

@@ -14,6 +14,7 @@ import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
+import top.ysqorz.forum.service.MessageService;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 
@@ -34,6 +35,8 @@ public class CommentController {
     private CommentService commentService;
     @Resource
     private PostService postService;
+    @Resource
+    private MessageService messageService;
 
     @PostMapping("/first/publish")
     public ResultModel publishFirstComment(@Validated PublishFirstCommentDTO dto) {
@@ -115,5 +118,25 @@ public class CommentController {
         PageData<SecondCommentDTO> secondCommentList =
                 commentService.getSecondCommentList(firstComment, page, count);
         return ResultModel.success(secondCommentList);
+    }
+
+    /**
+     * 一级评论分页数
+     */
+    @GetMapping("/first/page")
+    public ResultModel firstPage(Integer firstId){
+        Integer firstMegPage = messageService.getFirstMegPage(firstId);
+
+        return ResultModel.success(firstMegPage);
+    }
+
+
+    /**
+     * 二级评论分页数
+     */
+    @GetMapping("/second/page")
+    public ResultModel secondPage(Integer firstId,Integer secondId){
+        Integer secondMegPage = messageService.getSecondMegPage(firstId, secondId);
+        return ResultModel.success(secondMegPage);
     }
 }
