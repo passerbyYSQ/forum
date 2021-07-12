@@ -6,11 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="keywords" content="fly,layui,前端社区">
     <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
-    <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
-    <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
+    <link rel="stylesheet" th:href="@{/admin/assets/libs/layui/css/layui.css}" href="../res/layui/css/layui.css">
     <link rel="stylesheet" th:href="@{/admin/assets/module/admin.css(v=318)}" href="admin/assets/module/admin.css?v=318">
-    <link rel="stylesheet" th:href="@{/front/res/css/userInfo.css}" href="../res/css/userInfo.css">
+    <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
+<!--    <link rel="stylesheet" th:href="@{/front/res/css/userInfo.css}" href="../res/css/userInfo.css">-->
     <style>
+        body {
+            background: unset;
+        }
+
         .icon {
             width: 1em;
             height: 1em;
@@ -18,47 +22,114 @@
             fill: currentColor;
             overflow: hidden;
         }
+
+        /* 用户信息 */
+        .user-info-head {
+            width: 120px;
+            height: 120px;
+            line-height: 120px;
+            position: relative;
+            /*display: inline-block;*/
+            border-radius: 100%;
+            border: 4px solid #fff;
+            box-shadow: 0 0 12px #bababa;
+            overflow: hidden;
+            cursor: pointer;
+            margin: 0 auto 16px;
+        }
+        .user-info-head img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .user-info-head:hover:after {
+            content: '\e681';
+            position: absolute;
+            text-align: center;
+            line-height: 120px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.3);
+            background-size: 100% 100%;
+            font-size: 28px;
+            padding-top: 2px;
+            font-style: normal;
+            font-family: layui-icon;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .user-info-list-item {
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .user-info-list-item > .layui-icon {
+            position: absolute;
+        }
+
+        .user-info-list-item > p {
+            padding-left: 30px;
+        }
+
+        .layui-line-dash {
+            border-bottom: 1px dashed #ccc;
+            margin: 15px 0;
+        }
+
+        /* 基本信息 */
+        #userInfoForm .layui-form-item {
+            margin-bottom: 25px;
+        }
+
+        /* 账号绑定 */
+        .user-bd-list-item {
+            padding: 14px 60px 14px 10px;
+            border-bottom: 1px solid #e8e8e8;
+            position: relative;
+        }
+
+        .user-bd-list-item .user-bd-list-lable {
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .user-bd-list-item .user-bd-list-oper {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            margin-top: -8px;
+            cursor: pointer;
+        }
+
+        .user-bd-list-item .user-bd-list-img {
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            margin-top: -24px;
+        }
+
+        .user-bd-list-item .user-bd-list-img + .user-bd-list-content {
+            margin-left: 68px;
+        }
+        .layui-form-item .layui-input-inline {
+            width: auto;
+        }
     </style>
 
 </head>
-<body>
+<body style="margin:0">
 
-<div class="fly-header layui-bg-black">
-    <div class="layui-container">
-        <a class="fly-logo" href="/">
-            <img src="../res/images/logo.png" alt="layui">
-        </a>
-        <ul class="layui-nav fly-nav layui-hide-xs">
-            <li class="layui-nav-item layui-this">
-                <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>
-            </li>
-            <li class="layui-nav-item">
-                <a href="../case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>
-            </li>
-            <li class="layui-nav-item">
-                <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
-            </li>
-        </ul>
+<div style="height:62px;">
+    <iframe scrolling="no" id="main" name="main" frameborder="0" th:src="@{/head}"
+            style="width:100%;height:100%;"></iframe>
 
-        <ul class="layui-nav fly-nav-user">
-            <!-- 登入后的状态 -->
-            <li class="layui-nav-item">
-                <a class="fly-nav-avatar" href="javascript:;">
-                    <cite class="layui-hide-xs">贤心</cite>
-                    <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i>
-                    <i class="layui-badge fly-badge-vip layui-hide-xs">VIP3</i>
-                    <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
-                </a>
-                <dl class="layui-nav-child">
-                    <dd><a href="../user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>
-                    <dd><a href="../user/message.html"><i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a></dd>
-                    <dd><a href="../user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a></dd>
-                    <hr style="margin: 5px 0;">
-                    <dd><a href="" style="text-align: center;">退出</a></dd>
-                </dl>
-            </li>
-        </ul>
-    </div>
 </div>
 
 <div class="layui-container fly-marginTop fly-user-main">
@@ -103,95 +174,127 @@
     <div class="fly-panel fly-panel-user" pad20>
         <div class="layui-tab layui-tab-brief" lay-filter="user">
             <ul class="layui-tab-title" id="LAY_mine">
-                <li lay-id="info">我的资料</li>
+                <li lay-id="info" class="layui-this" >我的资料</li>
                 <li lay-id="avatar">头像</li>
                 <li lay-id="pass">密码</li>
-                <li class="layui-this" lay-id="bind">帐号绑定</li>
+                <li lay-id="bind">帐号绑定</li>
             </ul>
             <div class="layui-tab-content" style="padding: 20px 0;">
-                <div class="layui-form layui-form-pane layui-tab-item">
+                <!-- 修改个人信息的选项卡 -->
+                <div class="layui-form layui-form-pane layui-tab-item  layui-show">
                     <form method="post">
                         <div class="layui-form-item">
-                            <label for="L_email" class="layui-form-label">邮箱</label>
+                            <label for="username" class="layui-form-label">用户名</label>
                             <div class="layui-input-inline">
-                                <input type="text" id="L_email" name="email" required lay-verify="email" autocomplete="off" value="" class="layui-input">
-                            </div>
-                            <div class="layui-form-mid layui-word-aux">如果您在邮箱已激活的情况下，变更了邮箱，需<a href="activate.html" style="font-size: 12px; color: #4f99cf;">重新验证邮箱</a>。</div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label for="L_username" class="layui-form-label">昵称</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="L_username" name="username" required lay-verify="required" autocomplete="off" value="" class="layui-input">
-                            </div>
-                            <div class="layui-inline">
-                                <div class="layui-input-inline">
-                                    <input type="radio" name="sex" value="0" checked title="男">
-                                    <input type="radio" name="sex" value="1" title="女">
-                                </div>
+                                <input type="text" id="username" name="username" maxlength="16"
+                                       required lay-verify="required" autocomplete="off" value="王小明"
+                                       class="layui-input" th:value="${user.username}">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label for="L_city" class="layui-form-label">城市</label>
+                            <label class="layui-form-label" style="margin-right: 16px;">性别</label>
+                            <div class="layui-input-inline" style="max-width: 280px;">
+                                <input th:checked="${user.gender == 0}" type="radio" name="gender" value="0" checked title="男">
+                                <input th:checked="${user.gender == 1}" type="radio" name="gender" value="1" title="女">
+                                <input th:checked="${user.gender == 2}" type="radio" name="gender" value="2" title="保密">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="position" class="layui-form-label">位置</label>
                             <div class="layui-input-inline">
-                                <input type="text" id="L_city" name="city" autocomplete="off" value="" class="layui-input">
+                                <input class="layui-input" placeholder="请选择城市" th:value="${user.position}" value="广东省/肇庆市/封开县"
+                                       name="position"  id="position" data-toggle="city-picker" style="max-width: 20%;"/>
+                            </div>
+                            <!-- 一定要加 type="button"，否则会提交表单 -->
+                            <button type="button" class="layui-btn layui-btn-primary" onclick="resetPosition()" >重置</button>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="birth" class="layui-form-label">生日</label>
+                            <div class="layui-input-inline">
+                                <input id="birth" name="birth" th:value="${user.birth}" type="text" class="layui-input" />
                             </div>
                         </div>
                         <div class="layui-form-item layui-form-text">
-                            <label for="L_sign" class="layui-form-label">签名</label>
+                            <label for="description" class="layui-form-label">签名</label>
                             <div class="layui-input-block">
-                                <textarea placeholder="随便写些什么刷下存在感" id="L_sign"  name="sign" autocomplete="off" class="layui-textarea" style="height: 80px;"></textarea>
+                                <textarea th:text="${user.description}"
+                                        placeholder="随便写些什么刷下存在感" id="description" name="description"
+                                          autocomplete="off" class="layui-textarea" style="height: 120px;"></textarea>
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit>确认修改</button>
+                            <button class="layui-btn" key="set-mine" lay-filter="updateInfo" lay-submit>确认修改</button>
                         </div>
                     </form>
                 </div>
 
-                <div class="layui-form layui-form-pane layui-tab-item">
+                <!-- 修改头像的选项卡 -->
+                <div class="layui-form layui-form-pane layui-tab-item" >
                     <div class="layui-form-item">
-                        <div class="avatar-add">
-                            <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
-                            <button type="button" class="layui-btn upload-img">
-                                <i class="layui-icon">&#xe67c;</i>上传头像
-                            </button>
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
-                            <span class="loading"></span>
+                        <div class="user-info-head layui-circle" id="userInfoHead">
+<!--                            <img th:src="@{/admin/assets/images/bg-login.jpg}" alt="用户头像"/>-->
+                            <img th:src="${user.photo}"
+                                 src="https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/e5914597f0d24ef9a3399cda535518a8.png?timestamp=1625211664578" alt="用户头像"/>
                         </div>
+                        <p class="text-center">建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
+<!--                        <div class="avatar-add">-->
+<!--                            <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>-->
+<!--                            <button type="button" class="layui-btn upload-img">-->
+<!--                                <i class="layui-icon">&#xe67c;</i>上传头像-->
+<!--                            </button>-->
+<!--                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">-->
+<!--                            <span class="loading"></span>-->
+<!--                        </div>-->
                     </div>
                 </div>
 
+                <!-- 修改密码的选项卡 -->
                 <div class="layui-form layui-form-pane layui-tab-item">
                     <form action="/user/repass" method="post">
                         <div class="layui-form-item">
-                            <label for="L_nowpass" class="layui-form-label">当前密码</label>
+                            <label for="emailAccount" class="layui-form-label">邮箱</label>
                             <div class="layui-input-inline">
-                                <input type="password" id="L_nowpass" name="nowpass" required lay-verify="required" autocomplete="off" class="layui-input">
+                                <input type="text" id="emailAccount" name="email" required
+                                       lay-verify="required|email" autocomplete="off"
+                                       class="layui-input layui-form-required">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label for="L_pass" class="layui-form-label">新密码</label>
+                            <label for="oldPassword" class="layui-form-label">当前密码</label>
                             <div class="layui-input-inline">
-                                <input type="password" id="L_pass" name="pass" required lay-verify="required" autocomplete="off" class="layui-input">
+                                <input type="password" id="oldPassword" name="password" required
+                                       lay-verify="required" autocomplete="off" class="layui-input layui-form-required">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">6到16个字符</div>
+                            <div class="layui-form-mid layui-word-aux">忘记密码请联系管理员重置，暂不支持邮箱验证修改</div>
                         </div>
                         <div class="layui-form-item">
-                            <label for="L_repass" class="layui-form-label">确认密码</label>
+                            <label for="newPassword" class="layui-form-label">新密码</label>
                             <div class="layui-input-inline">
-                                <input type="password" id="L_repass" name="repass" required lay-verify="required" autocomplete="off" class="layui-input">
+                                <input type="password" id="newPassword" name="newPassword" required
+                                       lay-verify="required|newPassword" autocomplete="off" class="layui-input layui-form-required">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">密码必须3到12个字符，且不能出现空格</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="confirmPassword" class="layui-form-label">确认密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="confirmPassword" name="rePassword"
+                                       required lay-verify="required|rePassword" autocomplete="off"
+                                       class="layui-input layui-form-required">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit>确认修改</button>
+                            <button class="layui-btn" key="set-mine" lay-filter="updatePassword" lay-submit>确认修改</button>
                         </div>
                     </form>
                 </div>
 
-                <div class="layui-form layui-form-pane layui-tab-item layui-show" style="padding-bottom: 20px;">
+                <!-- 账号绑定的选项卡 -->
+                <div class="layui-form layui-form-pane layui-tab-item" style="padding-bottom: 20px;">
                     <div class="user-bd-list layui-text">
                         <div id="email" class="user-bd-list-item">
                             <div class="user-bd-list-img">
+                                <i class=""></i>
                                 <i style="color:#3492ed;font-size: 48px;">
                                     <svg class="icon svg-icon" aria-hidden="true">
                                         <use xlink:href="#icon-youxiang"></use>
@@ -430,13 +533,16 @@
 <script src="admin/libs/layui/layui.all.js" th:src="@{/admin/assets/libs/layui/layui.all.js}"></script>
 <script src="admin/js/common.js?v=318" th:src="@{/admin/assets/js/common.js(v=318)}"></script>
 <script src="admin/assets/css/iconfont.js" th:src="@{/admin/assets/css/iconfont.js}"></script>
+<script th:src="@{/admin/assets/module/cascader/citys-data.js}" src="../../../assets/module/cascader/citys-data.js"></script>
 <script th:inline="javascript">
-    layui.use(['layer', 'form', 'admin', 'app'], function () {
+    layui.use(['layer', 'form', 'admin', 'citypicker','app'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var form = layui.form;
         var admin = layui.admin;
         var app = layui.app;
+        var citypicker = layui.citypicker;
+        var laydate = layui.laydate;
         //后端返回的提示码msg，显示信息两秒后刷新去除url中的信息
         var code = app.getUrlParam("code");
         var msg = app.getUrlParam("msg");
@@ -452,6 +558,70 @@
                 location.href = oldUrl;
             }, 2000);
         }
+
+        // 监听个人信息修改的表单提交
+        form.on("submit(updateInfo)", function (obj) {
+           console.log(obj);
+           app.ajax('/user/center/updateInfo', obj.field, function (res) {
+               app.successNotice('修改个人信息成功');
+           });
+           return false;
+        });
+
+
+        form.verify({
+            newPassword: [
+                /^[\S]{3,12}$/
+                ,'密码必须3到12位，且不能出现空格'
+            ],
+            rePassword: function(value, item) { //value：表单的值、item：表单的DOM对象
+                if (value !== $("input[name=newPassword]").val()) {
+                    return '新秘密和确认密码不一致';
+                }
+            }
+        });
+        // 监听秘密修改的表单的提交
+        form.on("submit(updatePassword)", function (obj) {
+            console.log(obj);
+            app.ajax('/user/center/updatePassword', obj.field, function (res) {
+                app.successNotice('修改密码成功');
+                obj.form.reset();$(obj.elem)
+            });
+            return false;
+        });
+
+        // 重置省市区
+        window.resetPosition = function () {
+            $('#position').citypicker('reset');
+            console.log("-------");
+            return false;
+        };
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#birth', //指定元素
+            max: 0
+        });
+
+        $('#userInfoHead').click(function () {
+            admin.cropImg({
+                imgSrc: $('#userInfoHead>img').attr('src'),
+                checkCrossOrigin: false,
+                onCrop: function (res) {
+                    // base64
+                    console.log(res); //https://www.zhihu.com/question/60593079/answer/247418738
+                    $('#userInfoHead>img').attr('src', res);
+                    $('.layui-layout-admin>.layui-header .layui-nav img.layui-nav-img').attr('src', res);
+
+                    app.ajax('/user/center/uploadFaceImage', {
+                        imageBase64: res
+                    }, function (res) {
+                       app.successNotice('上传头像成功');
+                    });
+                }
+            });
+        });
+
         //手机绑定或修改操作
         $("a[name=bindPhone]").click(function() {
             admin.open({
@@ -480,6 +650,7 @@
                 },
             });
         });
+
         //邮箱绑定或第一次设置操作
         $("a[name=bindEmail]").click(function() {
             var email = [[${user.email}]];

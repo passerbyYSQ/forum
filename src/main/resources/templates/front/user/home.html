@@ -28,7 +28,12 @@
     }
   </style>
 </head>
-<body style="margin-top: 65px;">
+<body style="margin:0">
+
+<div style="height:62px;">
+  <iframe scrolling="no" id="main" name="main" frameborder="0" th:src="@{/head}"
+          style="width:100%;height:100%;"></iframe>
+
 
 <div class="fly-header layui-bg-black">
   <div class="layui-container">
@@ -171,7 +176,7 @@
 <script th:src="@{/admin/assets/js/common.js(v=318)}" src="admin/js/common.js?v=318"></script>
 <script th:src="@{/admin/assets/css/iconfont.js}" src="/admin/assets/css/iconfont.js"></script>
 <script th:inline="javascript">
-layui.cache.page = 'user';
+
 layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'app'], function(){
   var app=layui.app, $=layui.jquery;
   var dataGrid = layui.dataGrid;
@@ -248,13 +253,6 @@ layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'app'], function(){
   });
 });
 
-layui.cache.user = {
-  username: '游客'
-  ,uid: -1
-  ,avatar: '@{/front/res/images/avatar/00.jpg}'
-  ,experience: 83
-  ,sex: '男'
-};
 </script>
 
 </body>

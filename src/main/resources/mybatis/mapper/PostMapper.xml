@@ -58,7 +58,7 @@
 
     <select id="selectListByConditions" resultMap="post"
             parameterType="top.ysqorz.forum.dto.QueryPostCondition">
-        select p.id, title,
+        select distinct p.id, title,
                 topic_name topic,
                 creator_id,
                 t.id topicId,
@@ -81,6 +81,9 @@
         <if test="userId!= null and userId > 0">
             left join `like` l on (p.id=l.post_id and #{userId}=l.user_id)
         </if>
+        <if test="labelList != null">
+            left join `post_label` pl on p.id = pl.post_id
+        </if>
         <where>
             <if test="topicId != null and topicId > 0">
                 and t.id = #{topicId}
@@ -101,6 +104,12 @@
             </if>
             <if test="hotDiscussion != null and hotDiscussion > 0">
                 and comment_count>100
+            </if>
+            <if test="labelList != null and labelList.size > 0">
+                and pl.label_id in
+                <foreach collection="labelList" item="item" open="(" separator="," close=")">
+                     #{item}
+                </foreach>
             </if>
         </where>
         <if test="orderByStr != null and orderByStr != ''">

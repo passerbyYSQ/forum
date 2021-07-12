@@ -2,7 +2,6 @@ package top.ysqorz.forum.controller.front;
 
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -68,7 +67,7 @@ public class UserController {
      */
     @PostMapping("/reg")
     @ResponseBody
-    public ResultModel register(@Validated RegisterDTO dto) {
+    public ResultModel register(@Validated(RegisterDTO.Register.class) RegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getRePassword())) {
             return ResultModel.failed(StatusCode.PASSWORD_NOT_EQUAL); // 两次输入密码不一致
         }
@@ -132,8 +131,8 @@ public class UserController {
         }
 
         // 以注册时的相同规则，加密用户输入的密码
-        Md5Hash md5Hash = new Md5Hash(dto.getPassword(), user.getLoginSalt(), 1024);
-        if (!user.getPassword().equals(md5Hash.toHex())) {
+        String encryptPwd = userService.encryptLoginPwd(dto.getPassword(), user.getLoginSalt());
+        if (!user.getPassword().equals(encryptPwd)) {
             return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
 

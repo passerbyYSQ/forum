@@ -13,6 +13,45 @@ html body{margin-top: 61px;}
 html{background-color: #F2F2F2;}
 i{font-style: normal;}
 
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent
+}
+
+::-webkit-scrollbar-track {
+  background: transparent
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #c1c1c1
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a8a8
+}
+
+.mini-bar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px
+}
+
+.mini-bar::-webkit-scrollbar-thumb {
+  border-radius: 3px
+}
+
+@media screen and (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 0
+  }
+}
+
 /* 图标 */
 
 @font-face {font-family: "layui-icon-fly";
@@ -89,6 +128,7 @@ i{font-style: normal;}
 .icon-pinglun2:before{content:"\e62c"}
 .icon-jiaoliu:before{content:"\e6b7"}
 .icon-renzheng:before{content:"\e62e"}
+
 
 
 /* 辅助 */
@@ -560,4 +600,27 @@ body .fly-user-main{position: relative; min-height: 600px;}
   .site-mobile .site-tree-mobile{display: none !important;}
   .site-mobile .fly-user-main>.layui-nav{left: 0;}
   .site-mobile .site-mobile-shade{content: ''; position: fixed; top: 0; bottom: 0; left: 0; right: 0; background-color: rgba(0,0,0,.9); z-index: 999;}
+}
+
+/*lv6等级样式*/
+.lv {
+  vertical-align: middle;
+
+  font-weight: bold;
+  font-style: italic;
+  background-image: -webkit-linear-gradient(left, blue, #66ffff 10%, #cc00ff 20%, #CC00CC 30%, #CCCCFF 40%, #00FFFF 50%, #CCCCFF 60%, #CC00CC 70%, #CC00FF 80%, #66FFFF 90%, blue 100%);
+  -webkit-text-fill-color: transparent; /* 将字体设置成透明色 */
+  -webkit-background-clip: text; /* 裁剪背景图，使文字作为裁剪区域向外裁剪 */
+  -webkit-background-size: 200% 100%;
+  -webkit-animation: masked-animation 4s linear infinite;
+
+}
+
+@keyframes masked-animation {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
 }

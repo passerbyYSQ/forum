@@ -1,81 +1,128 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <title>我的消息</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="keywords" content="fly,layui,前端社区">
   <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
-  <link rel="stylesheet" href="../../res/layui/css/layui.css">
-  <link rel="stylesheet" href="../../res/css/global.css">
-</head>
-<body>
+  <link rel="stylesheet" th:href="@{/front/res/layui/css/layui.css}" href="../res/layui/css/layui.css">
+  <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
 
-<div class="fly-header layui-bg-black">
-  <div class="layui-container">
-    <a class="fly-logo" href="/">
-      <img src="../../res/images/logo.png" alt="layui">
-    </a>
-    <ul class="layui-nav fly-nav layui-hide-xs">
-      <li class="layui-nav-item layui-this">
-        <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>
-      </li>
-      <li class="layui-nav-item">
-        <a href="../case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>
-      </li>
-      <li class="layui-nav-item">
-        <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
-      </li>
-    </ul>
-    
-    <ul class="layui-nav fly-nav-user">
-      <!-- 登入后的状态 -->
-      <li class="layui-nav-item">
-        <a class="fly-nav-avatar" href="javascript:;">
-          <cite class="layui-hide-xs">贤心</cite>
-          <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i>
-          <i class="layui-badge fly-badge-vip layui-hide-xs">VIP3</i>
-          <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
-        </a>
-        <dl class="layui-nav-child">
-          <dd><a href="../user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>
-          <dd><a href="../user/message.html"><i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a></dd>
-          <dd><a href="../user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a></dd>
-          <hr style="margin: 5px 0;">
-          <dd><a href="" style="text-align: center;">退出</a></dd>
-        </dl>
-      </li>
-    </ul>
-  </div>
+  <style>
+    .qeuotesty {
+      isplay: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+      flex-direction: row;
+    }
+
+    .touxiang {
+      display: block;
+      margin-right: 10px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-image: url(https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg);
+    }
+
+    .content {
+      color: #505050;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: row;
+      flex-direction: row;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      font-size: 14px;
+      line-height: 15px;
+    }
+
+    .boot {
+      isplay: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+      flex-direction: row;
+      -webkit-box-pack: start;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      color: #999;
+      font-size: 12px;
+      line-height: 22px;
+    }
+
+    .mytent {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+  </style>
+</head>
+<body style="margin:0">
+
+<div style="height:62px;">
+  <iframe scrolling="no" id="main" name="main" frameborder="0" th:src="@{/head}"
+          style="width:100%;height:100%;"></iframe>
+
 </div>
+
 
 <div class="layui-container fly-marginTop fly-user-main">
   <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
     <li class="layui-nav-item">
-      <a href="home.html">
+      <a href="home">
         <i class="layui-icon">&#xe609;</i>
         我的主页
       </a>
     </li>
     <li class="layui-nav-item">
-      <a href="index.html">
+      <a href="index">
         <i class="layui-icon">&#xe612;</i>
         用户中心
       </a>
     </li>
     <li class="layui-nav-item">
-      <a href="set.html">
+      <a href="set">
         <i class="layui-icon">&#xe620;</i>
         基本设置
       </a>
     </li>
-    <li class="layui-nav-item layui-this">
-      <a href="message.html">
-        <i class="layui-icon">&#xe611;</i>
-        我的消息
-      </a>
+
+    <li class="layui-nav-item layui-nav-itemed">
+      <a><i class="layui-icon">&#xe611;</i>我的消息</a>
+      <dl class="layui-nav-child">
+        <dd class="layui-this"><a href="javascript:void(0);" onclick="searchff(this,0)">评论</a></dd>
+        <dd><a href="javascript:void(0);" onclick="searchff(this,1)">回复我的</a></dd>
+        <dd><a href="javascript:void(0);" onclick="searchff(this,2)">点赞</a></dd>
+        <dd><a href="javascript:void(0);" onclick="searchff(this,3)">系统通知</a></dd>
+        <dd><a href="javascript:void(0);" onclick="searchff(this,4)">消息设置</a></dd>
+      </dl>
+
+
     </li>
+
   </ul>
 
   <div class="site-tree-mobile layui-hide">
@@ -87,36 +134,24 @@
     <i class="layui-icon">&#xe602;</i>
   </div>
   <div class="site-mobile-shade"></div>
-  
-  
+
+
   <div class="fly-panel fly-panel-user" pad20>
-	  <div class="layui-tab layui-tab-brief" lay-filter="user" id="LAY_msg" style="margin-top: 15px;">
-	    <button class="layui-btn layui-btn-danger" id="LAY_delallmsg">清空全部消息</button>
-	    <div  id="LAY_minemsg" style="margin-top: 10px;">
+    <div class="layui-tab layui-tab-brief" lay-filter="user" id="LAY_msg" style="margin-top: 15px;">
+      <button class="layui-btn layui-btn-danger" id="LAY_delallmsg" onclick="clearAll()">清空全部消息</button>
+      <div id="messagediv" style="margin-top: 10px;">
         <!--<div class="fly-none">您暂时没有最新消息</div>-->
-        <ul class="mine-msg">
-          <li data-id="123">
-            <blockquote class="layui-elem-quote">
-              <a href="/jump?username=Absolutely" target="_blank"><cite>Absolutely</cite></a>回答了您的求解<a target="_blank" href="/jie/8153.html/page/0/#item-1489505778669"><cite>layui后台框架</cite></a>
-            </blockquote>
-            <p><span>1小时前</span><a href="javascript:;" class="layui-btn layui-btn-small layui-btn-danger fly-delete">删除</a></p>
-          </li>
-          <li data-id="123">
-            <blockquote class="layui-elem-quote">
-              系统消息：欢迎使用 layui
-            </blockquote>
-            <p><span>1小时前</span><a href="javascript:;" class="layui-btn layui-btn-small layui-btn-danger fly-delete">删除</a></p>
-          </li>
-        </ul>
+
       </div>
-	  </div>
-	</div>
+    </div>
+  </div>
 
 </div>
 
 
 <div class="fly-footer">
-  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
+  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/"
+                                                                              target="_blank">layui.com 出品</a></p>
   <p>
     <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
     <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
@@ -124,22 +159,170 @@
   </p>
 </div>
 
-<script src="../../res/layui/layui.js"></script>
+
+<script type="text/html" id="messtext">
+
+  <ul class="mine-msg">
+    <li data-id="123">
+
+      <blockquote class="layui-elem-quote qeuotesty">
+        <div class="fly-nav-avatar" style="
+      display: block;
+      margin-right: 10px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-image: url({{d.photo}});
+    "></div>
+        <div class="content">
+          <div style="margin-bottom: 10px;" class="mytent">
+
+            <a href="/jump?username=Absolutely" target="_blank"><cite>{{d.username}}</cite></a>
+
+            {{# if(d.title != null){ }}
+            评论了您的帖子
+            <a target="_blank" href="/post/detail/{{d.postID}}"><cite>{{d.title}}</cite>
+            </a>
+            {{# } }}
+
+            {{# if(d.myContent != null){ }}
+            回复了您
+            <a target="_blank"
+               href="/post/detail/{{d.postID}}"><cite>{{d.myContent}}</cite>
+            </a>
+            {{# } }}
+
+            <!--            <span style="float: right;margin-right: 10px;">未读</span>-->
+          </div>
+          <div>
+
+            {{# if(d.secondConId != null){ }}
+            <a target="_blank"
+               href="/post/detail/{{d.postID}}?fcid={{d.firstConId}}&scid={{d.secondConId}}">{{d.hisContent}}
+            </a>
+            {{# }else{ }}
+            <a target="_blank"
+               href="/post/detail/{{d.postID}}?fcid={{d.firstConId}}">{{d.hisContent}}
+            </a>
+            {{# } }}
+          </div>
+        </div>
+
+      </blockquote>
+
+      <div class="boot"><span style=" margin: 0 15px 0 0">{{d.createTime}}</span>
+
+
+      </div>
+
+
+      </div>
+    </li>
+  </ul>
+</script>
+<script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
+<script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
+<script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
+
 <script>
-layui.cache.page = 'user';
-layui.cache.user = {
-  username: '游客'
-  ,uid: -1
-  ,avatar: '../../res/images/avatar/00.jpg'
-  ,experience: 83
-  ,sex: '男'
-};
-layui.config({
-  version: "3.0.0"
-  ,base: '../../res/mods/'
-}).extend({
-  fly: 'index'
-}).use('fly');
+
+  layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'app'], function () {
+    var $ = layui.jquery;
+    var app = layui.app;
+    var layer = layui.layer;
+    var dataGrid = layui.dataGrid;
+
+
+    window.clearAll = function () {
+
+      layer.confirm('确定要清空所有消息吗？', {
+        skin: 'layui-layer-admin',
+        shade: .1
+      }, function (i) {
+        layer.close(i);
+        var loadIndex = layer.load(2);
+        $.get('/meg/clearAll', function (res) {
+          layer.close(loadIndex);
+          if (res.code === 2000) {
+            layer.msg(res.msg, {icon: 1});
+            location.reload();
+          } else {
+            layer.msg(res.msg, {icon: 2});
+          }
+        }, 'json');
+      });
+
+
+    };
+
+    window.searchff = function (dom, params) {
+
+      if (params == 0) { // 评论
+        insTb.reload({
+          where: {conditions: 0},
+          page: {curr: 1}
+        });
+
+      } else if (params == 1) { //回复 包括一级和二级
+
+        insTb.reload({
+          where: {conditions: 1},
+          page: {curr: 1}
+        });
+
+
+      } else if (params == 2) { //
+
+        insTb.reload({
+          where: {conditions: 2},
+          page: {curr: 1}
+        });
+
+
+      } else { // 热议
+        insTb.reload({
+          where: {conditions: 3},
+          page: {curr: 1}
+        });
+
+      }
+    };
+
+    /** 文章 */
+    var insTb = dataGrid.render({
+      elem: '#messagediv',
+      templet: '#messtext',
+      url: '/meg/list',
+      response: {
+        statusCode: 2000 //规定成功的状态码，默认：0
+
+      },
+      where: {conditions: 0},
+      parseData: function (res) { //res 即为原始返回的数据
+        console.log(res);
+        var list = res.data.list;
+        list.map(item => {
+          item.createTime = app.formatDateTime(item.createTime);
+          return item;
+        });
+        return {
+          "code": res.code, //解析接口状态
+          "msg": res.message, //解析提示文本
+          "count": res.data.total, //解析数据长度
+          "data": res.data.list //解析数据列表
+        };
+      },
+      // where: {token: 'sasasas', id: 123},
+      page: {limit: 3, limits: [3, 5, 10, 20, 30, 40]}
+    });
+
+
+  });
 </script>
 
 </body>

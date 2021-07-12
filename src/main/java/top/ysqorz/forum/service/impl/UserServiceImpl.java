@@ -70,6 +70,9 @@ public class UserServiceImpl implements UserService {
     @Resource
     private FirstCommentMapper firstCommentMapper;
 
+    private CommentNotificationMapper commentNotificationMapper;
+
+
     @Override
     public User getUserByEmail(String email) {
         Example example = new Example(User.class);
@@ -173,11 +176,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(RegisterDTO vo) {
+    public void register(RegisterDTO dto) {
 
         User user = new User();
-        user.setEmail(vo.getEmail());
-        user.setUsername(vo.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setUsername(dto.getUsername());
 
         // 8个字符的随机字符串，作为加密登录的随机盐。
         String salt = RandomUtils.generateStr(8);
@@ -186,15 +189,15 @@ public class UserServiceImpl implements UserService {
 
         // Md5Hash默认将随机盐拼接到源字符串的前面，然后使用md5加密，再经过x次的哈希散列
         // 第三个参数（hashIterations）：哈希散列的次数
-        Md5Hash md5Hash = new Md5Hash(vo.getPassword(), user.getLoginSalt(), 1024);
+        String encryptPwd = this.encryptLoginPwd(dto.getPassword(), user.getLoginSalt());
         // 保存加密后的密码
-        user.setPassword(md5Hash.toHex())
+        user.setPassword(encryptPwd)
                 .setRegisterTime(LocalDateTime.now())
                 .setModifyTime(LocalDateTime.now())
                 .setConsecutiveAttendDays(0)
                 .setRewardPoints(0)
                 .setFansCount(0)
-                .setGender((byte) 3) // 性别保密
+                .setGender((byte) 2) // 性别保密
                 .setJwtSalt("")
                 .setPhoto("/admin/assets/images/defaultUserPhoto.jpg");
 
@@ -226,7 +229,7 @@ public class UserServiceImpl implements UserService {
                         .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
-                        .setGender((byte) 3)
+                        .setGender((byte) 2)
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user); // 填充了主键
@@ -298,7 +301,7 @@ public class UserServiceImpl implements UserService {
                         .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
-                        .setGender((byte) 3)
+                        .setGender((byte) 2)
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user);
@@ -323,6 +326,9 @@ public class UserServiceImpl implements UserService {
     public SimpleUserDTO getSimpleUser(Integer userId) {
         SimpleUserDTO simpleUserDTO = userMapper.selectSimpleUserById(userId);
         simpleUserDTO.setLevel(6); // TODO 根据积分计算level
+        Example example=new Example(CommentNotification.class);
+        example.createCriteria().andEqualTo("receiverId",userId).andEqualTo("isRead",0);
+        simpleUserDTO.setNewMeg(commentNotificationMapper.selectCountByExample(example));
         return simpleUserDTO;
     }
 
@@ -449,6 +455,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String encryptLoginPwd(String originPwd, String salt) {
+        return new Md5Hash(originPwd, salt, 1024).toHex();
+    }
+
+    @Override
     public int updateRewardPoints(Integer userId, Integer num) {
         Map<String, Object> param = new HashMap<>();
         param.put("userId", userId);
@@ -480,9 +491,9 @@ public class UserServiceImpl implements UserService {
         User user = this.getUserByEmail(checkUser.getOldEmail());
         // 验证登录身份
         if (!ObjectUtils.isEmpty(user) && user.getId().equals(ShiroUtils.getUserId())) {
-            Md5Hash md5Hash = new Md5Hash(checkUser.getCheckPassword(),
-                    user.getLoginSalt(), 1024);
-            if (user.getPassword().equals(md5Hash.toHex())) {
+            String encryptPwd = this.encryptLoginPwd(
+                    checkUser.getCheckPassword(), user.getLoginSalt());
+            if (user.getPassword().equals(encryptPwd)) {
                 return StatusCode.SUCCESS;
             }
         }

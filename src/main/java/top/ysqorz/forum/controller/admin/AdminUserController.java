@@ -2,6 +2,7 @@ package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
@@ -59,6 +60,7 @@ public class AdminUserController {
     /**
      * 重置密码
      */
+    @RequiresPermissions("user:reset")
     @PostMapping("/resetPsw")
     public ResultModel ResetPsw(@RequestParam("userId") @NotNull Integer userId) {
         User user = userService.getUserById(userId);
@@ -72,6 +74,7 @@ public class AdminUserController {
     /**
      * 取消拉黑
      */
+    @RequiresPermissions("user:blacklist")
     @PostMapping("/cancelBlock")
     public ResultModel cancelBlock(@RequestParam("userId") @NotNull Integer userId) {
         int i = userService.cancelBlock(userId);
@@ -82,6 +85,7 @@ public class AdminUserController {
     /**
      * 拉黑
      */
+    @RequiresPermissions("user:blacklist")
     @PostMapping("/block")
     public ResultModel block(@Validated(Blacklist.Add.class) Blacklist blacklist) {
         //System.out.println(blacklist);
@@ -94,6 +98,7 @@ public class AdminUserController {
     /**
      * 取消封禁时拉取封禁信息
      */
+    @RequiresPermissions("user:blacklist")
     @GetMapping("/getBlockInfo")
     public ResultModel<BlackInfoDTO> getBlockInfo(@RequestParam("userId") @NotNull Integer userId) {
         BlackInfoDTO blackInfo = userService.getBlackInfo(userId);
@@ -104,6 +109,7 @@ public class AdminUserController {
     /**
      * 添加角色
      */
+    @RequiresPermissions("user:allot")
     @PostMapping("/addRole")
     public ResultModel addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) throws ParameterErrorException {
@@ -142,6 +148,7 @@ public class AdminUserController {
     /**
      * 删除角色
      */
+    @RequiresPermissions("user:del")
     @PostMapping("/delRole")
     public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) {

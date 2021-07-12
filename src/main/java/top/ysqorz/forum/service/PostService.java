@@ -55,7 +55,7 @@ public interface PostService {
      * 帖子访问量 +1。考虑刷访问量
      * @param ipAddress
      */
-    void addVisitCount(String ipAddress, Integer postId);
+    Post addVisitCount(String ipAddress, Post post);
 
     int updateCommentCountAndLastTime(Integer postId, Integer dif);
 

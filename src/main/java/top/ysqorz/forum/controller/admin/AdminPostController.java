@@ -2,16 +2,22 @@ package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.PostDTO;
+import top.ysqorz.forum.dto.QueryPostCondition;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.service.PostService;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -45,9 +51,10 @@ public class AdminPostController {
     /**
      * 修改置顶权重
      */
+    @RequiresPermissions("post:top")
     @PostMapping("/top")
-    public ResultModel updateTopWeight(@RequestParam("id") Integer postId,
-                                       @RequestParam(defaultValue = "0") Integer topWeight) {
+    public ResultModel updateTopWeight(@NotNull Integer postId,
+                                       @NotNull @Min(0) @Max(9999) Integer topWeight) {
         Post post = new Post();
         post.setId(postId).setTopWeight(topWeight);
         int cnt = postService.updatePostById(post);
@@ -58,6 +65,7 @@ public class AdminPostController {
     /**
      * 锁定和解锁帖子
      */
+    @RequiresPermissions("post:lock")
     @PostMapping("/lock")
     public ResultModel lock(@RequestParam Integer postId, @RequestParam Boolean isLock) {
         Post post = new Post();
@@ -70,6 +78,7 @@ public class AdminPostController {
     /**
      * 加精品、取消精品
      */
+    @RequiresPermissions("post:quality")
     @PostMapping("/highQuality")
     public ResultModel highQuality(@RequestParam Integer postId,
                                    @RequestParam Boolean isHighQuality) {

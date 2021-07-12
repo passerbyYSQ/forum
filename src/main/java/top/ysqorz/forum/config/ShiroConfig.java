@@ -106,16 +106,21 @@ public class ShiroConfig {
         chain.addPathDefinition("/user/**", "noSessionCreation,anon");
         chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/meg/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/comment/*/publish", "noSessionCreation,jwtAuth");
 
         chain.addPathDefinition("/index", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/head", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/index/list", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/admin/assets/**", "noSessionCreation,anon");
+        chain.addPathDefinition("/admin", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/admin/index", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/admin/console/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/admin/system/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/", "noSessionCreation,jwtAuth[permissive]");
 
         // 放行静态资源。但是admin也把后台给放行了。之后再做修正
         chain.addPathDefinition("/front/**", "noSessionCreation,anon");
-        chain.addPathDefinition("/admin/**", "noSessionCreation,anon");
         chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
         chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
 

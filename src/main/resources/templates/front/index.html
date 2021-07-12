@@ -74,28 +74,7 @@
             vertical-align: middle;
         }
 
-        /*lv6等级样式*/
-        .article-list-item .article-list-item-desc .lv {
-            vertical-align: middle;
 
-            font-weight: bold;
-            font-style: italic;
-            background-image: -webkit-linear-gradient(left, blue, #66ffff 10%, #cc00ff 20%, #CC00CC 30%, #CCCCFF 40%, #00FFFF 50%, #CCCCFF 60%, #CC00CC 70%, #CC00FF 80%, #66FFFF 90%, blue 100%);
-            -webkit-text-fill-color: transparent; /* 将字体设置成透明色 */
-            -webkit-background-clip: text; /* 裁剪背景图，使文字作为裁剪区域向外裁剪 */
-            -webkit-background-size: 200% 100%;
-            -webkit-animation: masked-animation 4s linear infinite;
-
-        }
-
-        @keyframes masked-animation {
-            0% {
-                background-position: 0 0;
-            }
-            100% {
-                background-position: -100% 0;
-            }
-        }
 
         .article-list-item .article-list-item-tool {
             color: #666;
@@ -162,28 +141,6 @@
             text-overflow: ellipsis;
         }
 
-        /*  美化滚动条  */
-        .pretty-scroll ::-webkit-scrollbar {
-            width: 7px;
-            height: 7px;
-            background-color: #F5F5F5;
-        }
-
-        /*定义滚动条轨道 内阴影+圆角*/
-        .pretty-scroll ::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            background-color: #F5F5F5;
-        }
-
-        /*定义滑块 内阴影+圆角*/
-        .pretty-scroll ::-webkit-scrollbar-thumb {
-            border-radius: 10px;
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
-            background-color: #c8c8c8;
-        }
         .fly-signin-list .layui-tab-item {
             padding: 10px 16px 0 16px;
         }
@@ -204,67 +161,6 @@
             style="width:100%;height:100%;"></iframe>
 
 </div>
-<!--<div class="fly-header layui-bg-black">-->
-<!--  <div class="layui-container">-->
-<!--    <a class="fly-logo" href="/">-->
-<!--      <img th:src="@{/front/res/images/logo.png}" src="../res/images/logo.png" alt="layui">-->
-<!--    </a>-->
-<!--    <ul class="layui-nav fly-nav layui-hide-xs">-->
-<!--      <li class="layui-nav-item layui-this">-->
-<!--        <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item">-->
-<!--        <a href="case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item">-->
-<!--        <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>-->
-<!--      </li>-->
-<!--    </ul>-->
-
-<!--    <ul class="layui-nav fly-nav-user">-->
-
-
-<!--      &lt;!&ndash; 登入后的状态 &ndash;&gt;-->
-
-<!--      <li  th:if="${myUser.id!=null}" class="layui-nav-item">-->
-<!--        <a class="fly-nav-avatar" href="javascript:;">-->
-<!--          <cite class="layui-hide-xs" th:text="${myUser.username}">贤心</cite>-->
-<!--          <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i>-->
-<!--          <i class="layui-badge fly-badge-vip layui-hide-xs">VIP3</i>-->
-<!--          <img th:src="${myUser.photo}" >-->
-<!--        </a>-->
-<!--        <dl class="layui-nav-child">-->
-<!--          <dd><a href="user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a></dd>-->
-<!--          <dd><a href="user/message.html"><i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息</a></dd>-->
-<!--          <dd><a href="user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a></dd>-->
-<!--          <hr style="margin: 5px 0;">-->
-<!--          <dd><a href="/user/logout/" style="text-align: center;">退出</a></dd>-->
-<!--        </dl>-->
-<!--      </li>-->
-
-<!--    <div  th:if="${myUser.id==null}">-->
-<!--      &lt;!&ndash; 未登入的状态 &ndash;&gt;-->
-
-<!--      <li class="layui-nav-item">-->
-<!--        <a th:href="@{/user/login}">登入</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item">-->
-<!--        <a th:href="@{/user/reg}">注册</a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item layui-hide-xs">-->
-<!--        <a  th:href="@{/user/oauth/qq/authorize}" onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})" title="QQ登入"-->
-<!--           class="iconfont icon-QQ"></a>-->
-<!--      </li>-->
-<!--      <li class="layui-nav-item layui-hide-xs">-->
-<!--        <a th:href="@{/user/oauth/gitee/authorize}" onclick="layer.msg('正在通过Gitee登入', {icon:16, shade: 0.1, time:0})" title="微博登入"-->
-<!--           class="iconfont icon-Gitee"></a>-->
-<!--      </li>-->
-<!--    </div>-->
-
-
-<!--    </ul>-->
-<!--  </div>-->
-<!--</div>-->
 
 <div class="fly-panel fly-column">
 
@@ -321,12 +217,43 @@
           </span>
                 </div>
 
-                <div id="demoCardList3" class="pretty-scroll"></div>
+                <div id="demoCardList3" ></div>
 
 
             </div>
         </div>
         <div class="layui-col-md4">
+            <div class="fly-panel">
+                <div class="fly-panel-title">
+                    标签
+                    <!-- 刷新 -->
+                    <i id="btnRefreshGird" class="layui-icon layui-icon-refresh pull-right" style="cursor: pointer;"></i>
+                </div>
+                <form class="layui-form">
+
+                    <div id="demoLabelList" class="fly-panel-main layui-form-item"></div>
+
+                    <button id="label-button" lay-submit lay-filter="labelButton" hidden>提交</button>
+                </form>
+            </div>
+            <div class="fly-panel fly-signin">
+                <div class="fly-panel-title">
+                    签到
+                    <i class="fly-mid"></i>
+                    <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
+                    <i class="fly-mid"></i>
+                    <a href="javascript:showRankDialog();" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
+                    <span th:if="${myUser.id}" class="fly-signin-days">已连续签到
+                        <cite id="consecutiveAttendDays" th:text="${myUser.consecutiveAttendDays}">16</cite>天
+                    </span>
+                </div>
+                <div class="fly-panel-main fly-signin-main">
+                    <button th:if="${!isAttendToady}" class="layui-btn layui-btn-danger" onclick="attend(this)" id="LAY_signin">今日签到</button>
+                    <!-- 已签到状态 -->
+                    <button th:if="${isAttendToady}" class="layui-btn layui-btn-disabled">今日第 [[${attendRank}]] 个签到</button>
+                    <span>今日已有<cite>[[${attendCount}]]</cite>个人签到</span>
+                </div>
+            </div>
 
             <div class="fly-panel">
                 <h3 class="fly-panel-title">温馨通道</h3>
@@ -354,26 +281,6 @@
                             仓库，欢迎Star</a>
                     </li>
                 </ul>
-            </div>
-
-
-            <div class="fly-panel fly-signin">
-                <div class="fly-panel-title">
-                    签到
-                    <i class="fly-mid"></i>
-                    <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
-                    <i class="fly-mid"></i>
-                    <a href="javascript:showRankDialog();" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
-                    <span th:if="${myUser.id}" class="fly-signin-days">已连续签到
-                        <cite id="consecutiveAttendDays" th:text="${myUser.consecutiveAttendDays}">16</cite>天
-                    </span>
-                </div>
-                <div class="fly-panel-main fly-signin-main">
-                    <button th:if="${!isAttendToady}" class="layui-btn layui-btn-danger" onclick="attend(this)" id="LAY_signin">今日签到</button>
-                    <!-- 已签到状态 -->
-                    <button th:if="${isAttendToady}" class="layui-btn layui-btn-disabled">今日第 [[${attendRank}]] 个签到</button>
-                    <span>今日已有<cite>[[${attendCount}]]</cite>个人签到</span>
-                </div>
             </div>
 
             <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
@@ -545,14 +452,14 @@
             {{# if(d.isLocked == 1){ }}
             <span class="layui-badge" style="background-color: #999;">锁定</span>
             {{# } }}
-            {{# if(d.topWeight != 0){ }}
+            {{# if(d.topWeight > 0){ }}
             <span class="layui-badge layui-bg-blue">置顶</span>
             {{# } }}
             {{# if(d.isHighQuality != 0){ }}
             <span class="layui-badge layui-bg-red">精贴</span>
             {{# } }}
             {{# if(d.isHot){ }}
-            <span class="iconfont icon-remen" style="color: #fc3218; font-size: 22px;"></span>
+            <span class="myiconfont icon-remen" style="color: #fc3218; font-size: 22px;"></span>
             {{# } }}
             <div class="layui-badge-rim">{{d.lastCommentTime}}</div>
         </h2>
@@ -599,7 +506,7 @@
             <li>总签到榜</li>
             <li>最新签到</li>
         </ul>
-        <div class="layui-tab-content fly-signin-list pretty-scroll" id="LAY_signin_list">
+        <div class="layui-tab-content fly-signin-list" id="LAY_signin_list">
             <!-- 今日最快签到榜 -->
             <ul id="fastRankList" class="layui-tab-item layui-show">1</ul>
             <!-- 连续签到的天数的排行榜 -->
@@ -642,21 +549,27 @@
 <!--    <li class="fly-none fly-grey">暂无记录</li>-->
 </script>
 
+<!-- 标签模板 -->
+<script type="text/html" id="demoLabelItem">
+    <input id="label_{{d.id}}" name="labelsId[]" value="{{d.id}}" title="{{d.labelName}}" type="checkbox" lay-skin="primary" lay-filter="label">
+</script>
+
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
 
-    layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'admin', 'app'], function () {
+    layui.use(['layer', 'form', 'dataGrid', 'element', 'dropdown', 'admin', 'app'], function () {
         var $ = layui.jquery;
         var app = layui.app;
         var layer = layui.layer;
+        var form = layui.form;
         var dataGrid = layui.dataGrid;
         var admin = layui.admin;
         var conditon = {
             hotDiscussion: "0",
-            orderByStr:  "top_weight desc, last_comment_time desc",
-            isHighQuality:  "0",
-            topicId: ""
+            orderByStr: "top_weight desc, last_comment_time desc",
+            isHighQuality: "0",
+            topicId: "",
         };
 
         // rank dialog
@@ -753,20 +666,14 @@
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "top_weight desc, last_comment_time desc";
                 conditon.isHighQuality = "0";
-                $(dom).siblings(".flag").removeClass("layui-this");
-                $(dom).addClass("layui-this");
             } else if (params == 2) { // 精品
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "1";
-                $(dom).siblings(".flag").removeClass("layui-this");
-                $(dom).addClass("layui-this");
             } else if (params == 3) { // 最新
                 conditon.hotDiscussion = "0";
                 conditon.orderByStr = "last_comment_time desc";
                 conditon.isHighQuality = "0";
-                $(dom).siblings(".flag").removeClass("layui-this");
-                $(dom).addClass("layui-this");
             } else { // 热议
                 conditon.hotDiscussion = "1";
                 conditon.orderByStr = "comment_count desc,last_comment_time desc";
@@ -777,6 +684,8 @@
                 page: {curr: 1}
             });
             layer.close(loadIndex);
+            $(".flag").removeClass("layui-this");
+            $(dom).addClass("layui-this");
         };
 
 
@@ -836,6 +745,48 @@
             // else if (obj.event === 'checkPost') {
             //     window.location.href = "/post/detail/" + data.id;
             // }
+        });
+
+        /* 标签 */
+        var label = dataGrid.render({
+            elem: '#demoLabelList',
+            templet: '#demoLabelItem',
+            url: '/index/label',
+            page: false,
+            parseData: function (res) {
+                // console.log(res);
+                return {
+                    "code": res.code === 2000 ? 0 : 1, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.data.length, //解析数据长度
+                    "data": res.data //解析数据列表
+                };
+            },
+            done: function (res, curr, count) {
+                form.render('checkbox');
+            }
+        });
+
+        $("#btnRefreshGird").click(function () {
+            label.reload();
+        });
+
+        form.on('checkbox(label)', function (data) {
+            $('#label-button').click();
+        });
+
+        form.on('submit(labelButton)', function (data) {
+            // console.log(data.field);
+            conditon.labelsId="";
+            for (let i in data.field) {
+                conditon.labelsId = conditon.labelsId + "," + data.field[i];
+            }
+            console.log(conditon);
+            insTb.reload({
+                where: conditon,
+                page: {curr: 1}
+            });
+            return false;
         });
 
     });

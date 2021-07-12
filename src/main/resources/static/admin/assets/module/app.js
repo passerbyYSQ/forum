@@ -59,6 +59,16 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                 return len;
             },
 
+            // base64 转 blob
+            base64ToBlob: function () {
+                var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                return new File([u8arr], filename, {type:mime});
+            },
+
             // 取出url参数
             getUrlParam: function (name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
@@ -67,6 +77,7 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                 return null; //返回参数值
             },
 
+            // 滚动到指定位置
             scrollIntoView: function (selector) {
                 document.querySelector(selector).scrollIntoView({
                     behavior: "smooth", // 定义动画过渡效果， "auto"或 "smooth" 之一。默认为 "auto"

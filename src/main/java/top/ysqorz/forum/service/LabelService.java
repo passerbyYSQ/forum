@@ -29,4 +29,9 @@ public interface LabelService {
      * 添加一个标签
      */
     Label addLabel(String labelName);
+
+    /**
+     * 随机获取指定数量个标签
+     */
+    List<Label> achieveRandomLabels(Integer total);
 }

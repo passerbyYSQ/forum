@@ -26,18 +26,24 @@
   </resultMap>
 
   <select id="selectSecondCommentList" parameterType="Integer" resultMap="secondComment">
-    select sc1.id,
-           sc1.user_id,
-           sc1.content,
-           sc1.quote_second_comment_id,
-           u.id repliedCreatorId,
-           u.username repliedCreator,
-           sc1.create_time
-    from second_comment sc1
-    left join second_comment sc2 on sc2.id = sc1.quote_second_comment_id
-    left join user u on sc2.user_id = u.id
-    where sc1.first_comment_id = #{firstCommentId}
-    order by sc1.create_time desc
+      select sc1.id,
+             sc1.user_id,
+             sc1.content,
+             sc1.quote_second_comment_id,
+             u.id       repliedCreatorId,
+             u.username repliedCreator,
+             sc1.create_time
+      from second_comment sc1
+               left join second_comment sc2 on sc2.id = sc1.quote_second_comment_id
+               left join user u on sc2.user_id = u.id
+      where sc1.first_comment_id = #{firstCommentId}
+      order by sc1.create_time desc
   </select>
+    <select id="getSecondPage" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM `second_comment`
+        where first_comment_id = #{firstMegId}
+          and create_time > (select create_time from second_comment where id = #{secondMegId})
+    </select>
 
 </mapper>

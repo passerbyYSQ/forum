@@ -1,11 +1,14 @@
 package top.ysqorz.forum.po;
 
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -23,10 +26,14 @@ public class PointsRecord {
     private Integer userId;
 
     /**
-     * 类型id
+     * 积分变化的值
      */
-    @Column(name = "points_type_id")
-    private Integer pointsTypeId;
+    private Integer dif;
+
+    /**
+     * 积分变化的描述
+     */
+    private String description;
 
     /**
      * 创建时间

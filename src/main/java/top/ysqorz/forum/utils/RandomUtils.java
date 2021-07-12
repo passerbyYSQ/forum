@@ -36,7 +36,6 @@ public class RandomUtils {
         return sbd.toString();
     }
 
-
     /**
      * 生成一个uuid
      */

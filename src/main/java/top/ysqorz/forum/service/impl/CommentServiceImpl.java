@@ -19,6 +19,7 @@ import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
 import top.ysqorz.forum.service.PostService;
+import top.ysqorz.forum.service.RewardPointsAction;
 import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
@@ -42,6 +43,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentNotificationMapper commentNotificationMapper;
     @Resource
     private PostService postService;
+    @Resource
+    private RewardPointsAction rewardPointsAction;
 
     @Transactional
     @Override
@@ -83,6 +86,9 @@ public class CommentServiceImpl implements CommentService {
                     .setCreateTime(LocalDateTime.now())
                     .setIsRead((byte) 0);
             commentNotificationMapper.insertUseGeneratedKeys(notification);
+
+            // 奖励积分
+            rewardPointsAction.publishComment();
         }
     }
 
@@ -131,6 +137,9 @@ public class CommentServiceImpl implements CommentService {
                     .setCreateTime(LocalDateTime.now())
                     .setIsRead((byte) 0);
             commentNotificationMapper.insertUseGeneratedKeys(notification);
+
+            // 奖励积分
+            rewardPointsAction.publishComment();
         }
     }
 

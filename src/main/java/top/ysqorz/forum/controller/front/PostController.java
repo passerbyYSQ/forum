@@ -1,7 +1,6 @@
 package top.ysqorz.forum.controller.front;
 
 import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -22,9 +21,6 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -56,13 +52,13 @@ public class PostController {
     @GetMapping("/detail/{postId}")
     public String detailPage(@PathVariable Integer postId,
                              Model model, HttpServletRequest request) {
-        // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post
-        postService.addVisitCount(IpUtils.getIpAddress(request), postId);
-
         Post post = postService.getPostById(postId);
         if (ObjectUtils.isEmpty(post)) {
             throw new ParameterErrorException("帖子不存在");
         }
+
+        // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post的访问量
+        post = postService.addVisitCount(IpUtils.getIpAddress(request), post);
 
         // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
         String token = RandomUtils.generateUUID();
@@ -217,30 +213,13 @@ public class PostController {
         return ResultModel.success();
     }
 
-    @RequiresPermissions("post:quality")
-    @PostMapping("/set_quality")
-    @ResponseBody
-    public ResultModel setQuality(@NotNull Integer postId, @NotNull Boolean isHighQuality) {
-        Post post = postService.getPostById(postId);
-        if (ObjectUtils.isEmpty(post)) {
-            return ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
-        }
-        postService.changeHighQuality(ShiroUtils.getUserId(), postId, isHighQuality);
-        return ResultModel.success();
+    /**
+     * 根据标签名模糊匹配标签s，不分页
+     */
+    @GetMapping("/label/like")
+    public ResultModel<List<Label>> getLabelsLikeName(String name,  // 可以不传，在service层判断了
+                                                      @RequestParam(defaultValue = "1") Integer maxCount) { // 可以不传，有默认值
+
+        return ResultModel.success(labelService.getLabelsLikeName(name, maxCount));
     }
-
-    @RequiresPermissions("post:top")
-    @PostMapping("/top")
-    @ResponseBody
-    public ResultModel top(@NotNull Integer postId,
-            @NotNull @Min(0) @Max(9999) Integer topWeight) {
-        Post post = new Post();
-        post.setId(postId).setTopWeight(topWeight);
-        int cnt = postService.updatePostById(post);
-        return cnt == 1 ? ResultModel.success()
-                : ResultModel.failed(StatusCode.POST_NOT_EXIST);
-    }
-
-
-
 }
