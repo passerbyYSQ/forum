@@ -1,18 +1,12 @@
 package top.ysqorz.forum.service.impl;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import top.ysqorz.forum.common.Constant;
-import top.ysqorz.forum.dto.WeekTopPostDTO;
-import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.DateTimeUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,8 +18,6 @@ public class RedisServiceImpl implements RedisService {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
-    @Resource
-    private PostService postService;
 
     @Override
     public void saveCaptcha(String key, String captcha) {
@@ -83,47 +75,6 @@ public class RedisServiceImpl implements RedisService {
                 .reverseRange(key, 0, count - 1);
         // 全局配置了二级key的序列化为string。集合内的类型不一样，不能直接强转，只能先抹除泛型
         return (Set) topPostIds;
-    }
-
-    @Override
-    public void addHotPostWeekRankScore(Integer postId) {
-        // 帖子访问量的周榜。key：post:hot_rank:2020-28
-        String key = "post:hot_rank:" + DateTimeUtils.getFormattedWeek();
-        // 如果没有 zset，会先创建
-        redisTemplate.opsForZSet().incrementScore(key, postId, 1);
-        if (redisTemplate.getExpire(key) == -1) { // 秒数。-1：不过期
-            redisTemplate.expire(key, DateTimeUtils.durationToNextWeek());
-        }
-    }
-
-    @Override
-    public List<WeekTopPostDTO> hostPostWeekRankTop(Integer count) {
-        // Redis Zset使用方法：https://blog.csdn.net/weixin_45216439/article/details/91390743
-        String key = "post:hot_rank:" + DateTimeUtils.getFormattedWeek();
-        Set<ZSetOperations.TypedTuple<Object>> typedTupleSet =
-                redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, count - 1);
-        Iterator<ZSetOperations.TypedTuple<Object>> iterator =
-                typedTupleSet.iterator();
-        List<WeekTopPostDTO> list = new ArrayList<>();
-        while (iterator.hasNext()) {
-            ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();
-            // 全局配置了二级key的序列化为string。集合内的类型不一样，不能直接强转，只能先抹除泛型
-            Object value = typedTuple.getValue();
-            Integer score = typedTuple.getScore().intValue();
-            WeekTopPostDTO post = new WeekTopPostDTO();
-            post.setPostId((Integer) value);
-            post.setViews(score);
-            post.setTitle(postService.getPostById(post.getPostId()).getTitle());
-            list.add(post);
-        }
-        return list;
-    }
-
-    @Override
-    public Boolean isHaveWeekHotPost() {
-        String key = "post:hot_rank:" + DateTimeUtils.getFormattedWeek();
-        Set<Object> set = redisTemplate.opsForZSet().range(key, 0, 1);
-        return set != null && set.size() != 0;
     }
 
 }
