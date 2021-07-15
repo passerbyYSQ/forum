@@ -4,7 +4,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 
@@ -72,6 +71,7 @@ public class DateTimeUtils {
         // 下周一凌晨的时间，LocalDateTime.of(日期, 时间)
         LocalDateTime nextWeek = LocalDateTime.of(nextMonday, LocalTime.MIN);
         return Duration.between(LocalDateTime.now(), nextWeek);
+    }
 
     // 获取当天格式化后的日期(精确到秒)。例：2021-07-04 20:17:20
     public static String getFormattedTime(){
