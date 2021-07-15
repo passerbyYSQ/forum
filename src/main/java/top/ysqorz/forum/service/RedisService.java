@@ -1,5 +1,8 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.dto.WeekTopPostDTO;
+
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,4 +42,13 @@ public interface RedisService {
 
     // 获取热帖日榜的前count个帖子id
     Set<Integer> hostPostDayRankTop(Integer count);
+
+    // 往热帖排行周榜上对应的帖子增加访问量
+    void addHotPostWeekRankScore(Integer postId);
+
+    // 获取热帖周榜的前count个帖子信息
+    List<WeekTopPostDTO> hostPostWeekRankTop(Integer count);
+
+    // 获取热帖周榜是否有信息
+    Boolean isHaveWeekHotPost();
 }
