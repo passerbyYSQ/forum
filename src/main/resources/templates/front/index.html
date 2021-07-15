@@ -223,7 +223,6 @@
             </div>
         </div>
         <div class="layui-col-md4">
-
             <div class="fly-panel">
                 <div class="fly-panel-title">
                     标签
@@ -237,7 +236,6 @@
                     <button id="label-button" lay-submit lay-filter="labelButton" hidden>提交</button>
                 </form>
             </div>
-
             <div class="fly-panel fly-signin">
                 <div class="fly-panel-title">
                     签到
@@ -256,13 +254,6 @@
                     <span>今日已有<cite>[[${attendCount}]]</cite>个人签到</span>
                 </div>
             </div>
-
-            <dl class="fly-panel fly-list-one">
-                <dt class="fly-panel-title">本周热议</dt>
-                <div th:if="${isHaveWeekHotPost}" id="demoWeekHotPostList"></div>
-                <!-- 无数据时 -->
-                <div th:if="${!isHaveWeekHotPost}" class="fly-panel-main">没有相关数据</div>
-            </dl>
 
             <div class="fly-panel">
                 <h3 class="fly-panel-title">温馨通道</h3>
@@ -358,6 +349,55 @@
                     </dd>
                 </dl>
             </div>
+
+            <dl class="fly-panel fly-list-one">
+                <dt class="fly-panel-title">本周热议</dt>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+                <dd>
+                    <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+                    <span><i class="iconfont icon-pinglun1"></i> 16</span>
+                </dd>
+
+                <!-- 无数据时 -->
+                <!--
+                <div class="fly-none">没有相关数据</div>
+                -->
+            </dl>
 
             <div class="fly-panel">
                 <div class="fly-panel-title">
@@ -512,14 +552,6 @@
 <!-- 标签模板 -->
 <script type="text/html" id="demoLabelItem">
     <input id="label_{{d.id}}" name="labelsId[]" value="{{d.id}}" title="{{d.labelName}}" type="checkbox" lay-skin="primary" lay-filter="label">
-</script>
-
-<!-- 帖子热议周榜 -->
-<script type="text/html" id="demoWeekHotPostItem">
-    <dd>
-        <a id="weekHot{{d.postId}}" href="/post/detail/{{d.postId}}">{{d.title}}</a>
-        <span><i class="iconfont" title="访问量">&#xe60b;</i> {{d.views}}</span>
-    </dd>
 </script>
 
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
@@ -755,23 +787,6 @@
                 page: {curr: 1}
             });
             return false;
-        });
-
-        /* 每周热议帖子榜 */
-        dataGrid.render({
-            elem: '#demoWeekHotPostList',
-            templet: '#demoWeekHotPostItem',
-            url: '/index/week/post',
-            page: false,
-            parseData: function (res) {
-                // console.log(res);
-                return {
-                    "code": res.code === 2000 ? 0 : 1, //解析接口状态
-                    "msg": res.msg, //解析提示文本
-                    "count": res.data.length, //解析数据长度
-                    "data": res.data //解析数据列表
-                };
-            }
         });
 
     });

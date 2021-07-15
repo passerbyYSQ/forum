@@ -43,8 +43,6 @@ public class IndexController {
     private AttendService attendService;
     @Resource
     private LabelService labelService;
-    @Resource
-    private RedisService redisService;
 
     // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
     @GetMapping({"", "/index"})
@@ -71,10 +69,6 @@ public class IndexController {
         // 话题
         List<Topic> allTopic = topicService.getTopicByHot();
         model.addAttribute("topics", allTopic);
-
-        // 热议周榜是否有信息
-        Boolean isHaveWeekHotPost = redisService.isHaveWeekHotPost();
-        model.addAttribute("isHaveWeekHotPost" ,isHaveWeekHotPost);
         return "front/index";
     }
 
@@ -148,13 +142,4 @@ public class IndexController {
         List<Label> labelList = labelService.achieveRandomLabels(total);
         return ResultModel.success(labelList);
     }
-
-    @GetMapping("/index/week/post")
-    @ResponseBody
-    public ResultModel getWeekTopPostList() {
-        Integer count = 5;
-        List<WeekTopPostDTO> postList = redisService.hostPostWeekRankTop(count);
-        return ResultModel.success(postList);
-    }
-
 }
