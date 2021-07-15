@@ -11,6 +11,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.dao.LikeMapper;
 import top.ysqorz.forum.dao.PostMapper;
+import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     @Resource
     private PostMapper postMapper;
+    @Resource
+    private UserMapper userMapper;
     @Resource
     private PostLabelService postLabelService;
     @Resource

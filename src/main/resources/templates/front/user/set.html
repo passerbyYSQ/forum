@@ -178,6 +178,7 @@
                 <li lay-id="avatar">头像</li>
                 <li lay-id="pass">密码</li>
                 <li lay-id="bind">帐号绑定</li>
+                <li>退出登录</li>
             </ul>
             <div class="layui-tab-content" style="padding: 20px 0;">
                 <!-- 修改个人信息的选项卡 -->
@@ -392,6 +393,17 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 退出登录的选项卡 -->
+                <div class="layui-form layui-form-pane layui-tab-item">
+
+                    <div class="layui-form-item">
+                        <button class="layui-btn" onclick="window.location.href = '/user/logout'">退出登录</button>
+                    </div>
+
+                </div>
+
+
             </div>
 
         </div>

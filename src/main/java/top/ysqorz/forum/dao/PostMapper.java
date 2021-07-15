@@ -20,4 +20,6 @@ public interface PostMapper extends BaseMapper<Post> {
     int updateCommentCountAndLastTime(Map<String, Object> params);
 
     int addCollectCount(Map<String, Object> params);
+
+    List<PostDTO> selectListByCreatorId(Integer creatorId);
 }

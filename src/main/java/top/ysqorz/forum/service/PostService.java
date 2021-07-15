@@ -70,4 +70,5 @@ public interface PostService {
      * index返回的帖子信息
      */
     PageData<PostDTO> getIndexPost(Integer page, Integer count, QueryPostCondition conditions);
+
 }

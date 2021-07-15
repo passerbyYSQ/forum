@@ -246,7 +246,7 @@
       }, function (i) {
         layer.close(i);
         var loadIndex = layer.load(2);
-        $.get('/meg/clearAll', function (res) {
+        $.get('/user/center/message/clearAll', function (res) {
           layer.close(loadIndex);
           if (res.code === 2000) {
             layer.msg(res.msg, {icon: 1});
@@ -297,7 +297,7 @@
     var insTb = dataGrid.render({
       elem: '#messagediv',
       templet: '#messtext',
-      url: '/meg/list',
+      url: '/user/center/message/list',
       response: {
         statusCode: 2000 //规定成功的状态码，默认：0
 

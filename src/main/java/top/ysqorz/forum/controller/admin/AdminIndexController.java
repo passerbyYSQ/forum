@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminIndexController {
 
     // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
-    @RequiresPermissions("admin:access")
+   // @RequiresPermissions("admin:access")
     @GetMapping({"", "/index"})
     public String indexPage() {
         return "admin/index";

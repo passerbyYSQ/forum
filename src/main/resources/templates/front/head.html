@@ -16,7 +16,7 @@
 <div class="fly-header layui-bg-black">
 
     <div class="layui-container">
-        <a class="fly-logo" href="/">
+        <a class="fly-logo" href="/" target="_parent">
             <img th:src="@{/front/res/images/logo.png}" src="../res/images/logo.png" alt="layui">
         </a>
         <!--    <ul class="layui-nav fly-nav layui-hide-xs">-->
@@ -37,7 +37,7 @@
             <!-- 登入后的状态 -->
 
             <li th:if="${myUser.id!=null}" class="layui-nav-item">
-                <a class="fly-nav-avatar" href="/user/logout/" target="_parent">
+                <a class="fly-nav-avatar" href="/user/center/set" target="_parent">
                     <cite class="layui-hide-xs" th:text="${myUser.username}">贤心</cite>
                     <i class="lv">lv3</i>
                     <img th:src="${myUser.photo}">
@@ -51,7 +51,7 @@
                 <!--          <dd><a href="/user/logout/"  style="text-align: center;">退出</a></dd>-->
                 <!--        </dl>-->
             </li>
-            <li th:if="${myUser.id!=null}" class="layui-nav-item"><a href="/meg" target="_parent">通知<span
+            <li th:if="${myUser.id!=null}" class="layui-nav-item"><a href="/user/center/message" target="_parent">通知<span
                     th:if="${myUser.newMeg!=0}" class="layui-badge-dot"></span></a></li>
 
             <div th:if="${myUser.id==null}">

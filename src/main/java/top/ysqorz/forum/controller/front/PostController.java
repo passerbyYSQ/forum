@@ -44,6 +44,8 @@ public class PostController {
     private LikeService likeService;
     @Resource
     private CollectService collectService;
+    @Resource
+    private UserService userService;
 
 
     @GetMapping("/detail/{postId}")
@@ -63,6 +65,20 @@ public class PostController {
 
         PostDetailDTO postDetailDTO = postService.getPostDetailById(post);
         model.addAttribute("post", postDetailDTO);
+
+        //获取用户信息
+        User creator = userService.getUserById(post.getCreatorId());
+        model.addAttribute("creator", creator);
+
+        //用于检验用户是否登录
+        //判断进入用户界面状态，1：未登录， 2：已登录，身份为本人， 3：已登录，身份为访客
+        boolean isLogin = ShiroUtils.isAuthenticated();
+        boolean isMyself = isLogin && ShiroUtils.getUserId().equals(creator.getId());
+        model.addAttribute("isLogin", isLogin);
+        model.addAttribute("isMyself", isMyself);
+        boolean isFocus = userService.isFocusOn(creator.getId());
+        model.addAttribute("isFocusOn", isFocus);
+
         return "front/jie/detail";
     }
 
@@ -201,6 +217,7 @@ public class PostController {
      * 根据标签名模糊匹配标签s，不分页
      */
     @GetMapping("/label/like")
+    @ResponseBody
     public ResultModel<List<Label>> getLabelsLikeName(String name,  // 可以不传，在service层判断了
                                                       @RequestParam(defaultValue = "1") Integer maxCount) { // 可以不传，有默认值
 

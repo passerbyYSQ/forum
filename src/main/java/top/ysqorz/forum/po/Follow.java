@@ -32,5 +32,5 @@ public class Follow {
      * 创建时间
      */
     @Column(name = "create_time")
-    private LocalDateTime createTime;
+    private String createTime;
 }

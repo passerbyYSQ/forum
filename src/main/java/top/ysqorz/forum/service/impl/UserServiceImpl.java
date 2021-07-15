@@ -1,8 +1,12 @@
 package top.ysqorz.forum.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -19,6 +23,7 @@ import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
@@ -26,7 +31,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +60,14 @@ public class UserServiceImpl implements UserService {
     @Resource
     private BaiduProvider baiduProvider;
     @Resource
+    private FollowMapper followMapper;
+    @Resource
+    private PostMapper postMapper;
+    @Resource
+    private FirstCommentMapper firstCommentMapper;
+    @Resource
     private CommentNotificationMapper commentNotificationMapper;
+
 
     @Override
     public User getUserByEmail(String email) {
@@ -308,12 +322,91 @@ public class UserServiceImpl implements UserService {
     public SimpleUserDTO getSimpleUser(Integer userId) {
         SimpleUserDTO simpleUserDTO = userMapper.selectSimpleUserById(userId);
         simpleUserDTO.setLevel(6); // TODO 根据积分计算level
-        Example example=new Example(CommentNotification.class);
-        example.createCriteria().andEqualTo("receiverId",userId).andEqualTo("isRead",0);
+        Example example = new Example(CommentNotification.class);
+        example.createCriteria().andEqualTo("receiverId", userId).andEqualTo("isRead", 0);
         simpleUserDTO.setNewMeg(commentNotificationMapper.selectCountByExample(example));
         return simpleUserDTO;
     }
 
+    @Override
+    public SimpleUserDTO getHomeInformationById(Integer visitId) {
+        SimpleUserDTO information = userMapper.selectHomeInformationById(visitId);
+        information.setId(visitId);
+        information.setLevel(6); // TODO 根据积分计算level
+        return information;
+    }
+
+    @Override
+    public Boolean isFocusOn(Integer visitId) {
+        Example example = new Example(Follow.class);
+        example.createCriteria()
+                .andEqualTo("fromUserId", ShiroUtils.getUserId())
+                .andEqualTo("toUserId", visitId);
+        Follow follow = followMapper.selectOneByExample(example);
+        return follow != null;
+    }
+
+    @Transactional
+    @Override
+    public void addFollow(Integer visitId) {
+        Integer myId = ShiroUtils.getUserId();
+        //user表对应数据+1粉丝数
+        userMapper.updateAndAddFansCount(visitId);
+        //follow表添加数据
+        Follow follow = new Follow();
+        follow.setFromUserId(myId);
+        follow.setToUserId(visitId);
+        follow.setCreateTime(DateTimeUtils.getFormattedTime());
+        followMapper.insert(follow);
+    }
+
+    @Transactional
+    @Override
+    public void deleteFollow(Integer visitId) {
+        Integer myId = ShiroUtils.getUserId();
+        //user表对应数据-1粉丝数
+        userMapper.updateAndReduceFansCount(visitId);
+        //follow表删除数据
+        Example example = new Example(Follow.class);
+        example.createCriteria()
+                .andEqualTo("fromUserId", myId)
+                .andEqualTo("toUserId", visitId);
+        followMapper.deleteByExample(example);
+    }
+
+    @Override
+    public List<PostDTO> getPostInformation(Integer visitId) {
+        List<PostDTO> postDTOList = postMapper.selectListByCreatorId(visitId);
+        for (PostDTO postDTO : postDTOList) {
+            postDTO.setTimeDifference(timeDifferenceCalculate(postDTO.getCreateTime()));
+        }
+        return postDTOList;
+    }
+
+    @Override
+    public PageData<PostDTO> getIndexPost(Integer visitId, Integer page, Integer count) {
+        PageHelper.startPage(page, count);
+        List<PostDTO> postDTOList = this.getPostInformation(visitId);
+        PageInfo<PostDTO> pageInfo = new PageInfo<>(postDTOList);
+        return new PageData<>(pageInfo, postDTOList);
+    }
+
+    @Override
+    public PageData<FirstCommentDTO> getIndexFirstComment(Integer visitId, Integer page, Integer count) {
+        PageHelper.startPage(page, count);
+        List<FirstCommentDTO> firstCommentDTOList = firstCommentMapper.selectFirstCommentListByUserId(visitId);
+        for (FirstCommentDTO firstCommentDTO : firstCommentDTOList) {
+            Document doc = Jsoup.parse(firstCommentDTO.getContent());
+            String content = doc.text();
+            if (content.length() >= 100) {
+                content = content.substring(0, 100);
+            }
+            firstCommentDTO.setContent(content);
+            firstCommentDTO.setTimeDifference(timeDifferenceCalculate(firstCommentDTO.getCreateTime()));
+        }
+        PageInfo<FirstCommentDTO> commentInfo = new PageInfo<>(firstCommentDTOList);
+        return new PageData<>(commentInfo, firstCommentDTOList);
+    }
 
     @Override
     public String login(Integer userId, HttpServletResponse response) {
@@ -401,7 +494,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @param bindNum 指手机邮箱这类绑定号码
+     * @param bindNum  指手机邮箱这类绑定号码
      * @param property 指明检查的第三方账号类型，举例：phone、email
      * @return true代表已有用户绑定，false代表没有用户绑定
      */
@@ -413,4 +506,27 @@ public class UserServiceImpl implements UserService {
         return user != null;
     }
 
+    //      计算时间差
+    private String timeDifferenceCalculate(LocalDateTime createTime) {
+        Duration duration = Duration.between(createTime, LocalDateTime.now());
+        Long timeDifference = duration.toMinutes();
+        String timeDifferenceS;
+        if (timeDifference < 1) {
+            timeDifferenceS = "刚刚";
+        } else if (timeDifference >= 1 && timeDifference < 60) {
+            timeDifferenceS = timeDifference + "分钟前";
+        } else if (timeDifference >= 60 && timeDifference < 1440) {
+            timeDifference = timeDifference / 60;
+            timeDifferenceS = timeDifference + "小时前";
+        } else if (timeDifference >= 1440 && timeDifference < 43200) {
+            timeDifference = timeDifference / 1440;
+            timeDifferenceS = timeDifference + "天前";
+        } else if (timeDifference >= 43200 && timeDifference < 15768000) {
+            timeDifference = timeDifference / 43200;
+            timeDifferenceS = timeDifference + "月前";
+        } else {
+            timeDifferenceS = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(createTime);
+        }
+        return timeDifferenceS;
+    }
 }

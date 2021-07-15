@@ -26,7 +26,7 @@ public class PostDTO {
     private SimpleUserDTO creator; // 发布者的用户名
     private String topic; // 所属话题
     private Integer topicId;
-    private LocalDateTime createTime;
+    private LocalDateTime createTime;//创建时间
     private Integer visitCount; // 访问量
     private Integer likeCount; // 点赞数
     private Integer collectCount; // 收藏数
@@ -34,6 +34,7 @@ public class PostDTO {
     private Byte isHighQuality; // 是否精品帖
     private Byte isLocked; // 是否锁定
     private Integer topWeight; // 置顶权重
+    private String timeDifference; //当前时间与创建时间的时间差
 
     private List<Label> labelList;  // 标签
     private List<String>  imagesList; //图片列表
@@ -55,6 +56,9 @@ public class PostDTO {
         this.labelList = labelList;
     }
 
+    public PostDTO(Post post){
+        BeanUtils.copyProperties(post, this);
+    }
 
 
 

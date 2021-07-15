@@ -150,4 +150,38 @@ public interface UserService {
      */
     Boolean checkBind(String bindNum, String property);
 
+    /**
+     * 获取主页信息
+     */
+    SimpleUserDTO getHomeInformationById(Integer visitId);
+
+    /**
+     * 判断是否关注
+     */
+    Boolean isFocusOn(Integer visitId);
+
+    /**
+     * 添加关注
+     */
+    void addFollow(Integer visitId);
+
+    /**
+     * 删除关注
+     */
+    void deleteFollow(Integer visitId);
+
+    /**
+     * 查找用户下属帖子信息
+     */
+    List<PostDTO> getPostInformation(Integer visitId);
+
+    /**
+     * 用户主页返回的信息
+     */
+    PageData<PostDTO> getIndexPost(Integer visitId,Integer page, Integer count);
+
+    /**
+     * 获取回复信息
+     */
+    PageData<FirstCommentDTO> getIndexFirstComment(Integer visitId, Integer page, Integer count);
 }
