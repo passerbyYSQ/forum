@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link href="admin/images/favicon.ico" rel="icon">
-    <title>EasyWeb后台管理模板</title>
+    <title>码缘社区后台管理系统</title>
     <link rel="stylesheet" href="admin/libs/layui/css/layui.css" th:href="@{/admin/assets/libs/layui/css/layui.css}"/>
     <link rel="stylesheet" href="admin/module/admin.css?v=318" th:href="@{/admin/assets/module/admin.css(v=318)}"/>
     <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <!-- 头部 -->
     <div class="layui-header">
         <div class="layui-logo">
-            <img src="admin/images/logo.png" th:src="@{/admin/assets/images/logo.png}"/>
-            <cite>&nbsp;EasyWeb iframe</cite>
+            <img src="admin/images/logo.png" th:src="@{/front/res/images/logo3.png}"/>
+<!--            <cite>&nbsp;fly社区后台管理系统</cite>-->
         </div>
         <ul class="layui-nav layui-layout-left">
             <li class="layui-nav-item" lay-unselect>
@@ -67,14 +67,14 @@
     <div class="layui-side">
         <div class="layui-side-scroll">
             <ul class="layui-nav layui-nav-tree arrow2" lay-filter="admin-side-nav" lay-shrink="_all">
-                <li class="layui-nav-item">
-                    <a><i class="layui-icon layui-icon-home"></i>&emsp;<cite>Dashboard</cite></a>
-                    <dl class="layui-nav-child">
-                        <dd><a lay-href="/admin/console/workplace">工作台</a></dd>
-                        <dd><a lay-href="page/console/console.html">控制台</a></dd>
-                        <dd><a lay-href="page/console/dashboard.html">分析页</a></dd>
-                    </dl>
-                </li>
+<!--                <li class="layui-nav-item">-->
+<!--                    <a><i class="layui-icon layui-icon-home"></i>&emsp;<cite>Dashboard</cite></a>-->
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd><a lay-href="/admin/console/workplace">工作台</a></dd>-->
+<!--                        <dd><a lay-href="page/console/console.html">控制台</a></dd>-->
+<!--                        <dd><a lay-href="page/console/dashboard.html">分析页</a></dd>-->
+<!--                    </dl>-->
+<!--                </li>-->
                 <li class="layui-nav-item">
                     <a><i class="layui-icon layui-icon-set"></i>&emsp;<cite>系统管理</cite></a>
                     <dl class="layui-nav-child">
@@ -85,134 +85,134 @@
                         <dd><a lay-href="/admin/system/post">帖子管理</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item">
-                    <a><i class="layui-icon layui-icon-template"></i>&emsp;<cite>模板页面</cite></a>
-                    <dl class="layui-nav-child">
-                        <dd>
-                            <a>表单页</a>
-                            <dl class="layui-nav-child">
-                                <dd><a lay-href="page/template/form/form-basic.html">基础表单</a></dd>
-                                <dd><a lay-href="page/template/form/form-advance.html">复杂表单</a></dd>
-                                <dd><a lay-href="page/template/form/form-step.html">分步表单</a></dd>
-                            </dl>
-                        </dd>
-                        <dd>
-                            <a>列表页</a>
-                            <dl class="layui-nav-child">
-                                <dd><a lay-href="page/template/table/table-basic.html">数据表格</a></dd>
-                                <dd><a lay-href="page/template/table/table-advance.html">复杂表格</a></dd>
-                                <dd><a lay-href="page/template/table/table-img.html">图片表格</a></dd>
-                                <dd><a lay-href="page/template/table/table-card.html">卡片列表</a></dd>
-                            </dl>
-                        </dd>
-                        <dd>
-                            <a>错误页</a>
-                            <dl class="layui-nav-child">
-                                <dd><a lay-href="page/template/error/error-500.html">500</a></dd>
-                                <dd><a lay-href="page/template/error/error-404.html">404</a></dd>
-                                <dd><a lay-href="page/template/error/error-403.html">403</a></dd>
-                            </dl>
-                        </dd>
-                        <dd>
-                            <a>登录页</a>
-                            <dl class="layui-nav-child">
-                                <dd><a href="page/template/login/login.html" target="_blank">登录页</a></dd>
-                                <dd><a href="page/template/login/reg.html" target="_blank">注册页</a></dd>
-                                <dd><a href="page/template/login/forget.html" target="_blank">忘记密码</a></dd>
-                            </dl>
-                        </dd>
-                        <dd><a lay-href="page/template/user-info.html">个人中心</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a><i class="layui-icon layui-icon-component"></i>&emsp;<cite>扩展组件</cite></a>
-                    <dl class="layui-nav-child">
-                        <dd>
-                            <a>常用组件</a>
-                            <dl class="layui-nav-child">
-                                <dd><a lay-href="page/plugin/basic/dialog.html">弹窗扩展</a></dd>
-                                <dd><a lay-href="page/plugin/basic/dropdown.html">下拉菜单</a></dd>
-                                <dd><a lay-href="page/plugin/basic/notice.html">消息通知</a></dd>
-                                <dd><a lay-href="page/plugin/basic/tagsInput.html">标签输入</a></dd>
-                                <dd><a lay-href="page/plugin/basic/cascader.html">级联选择</a></dd>
-                                <dd><a lay-href="page/plugin/basic/steps.html">步骤条</a></dd>
-                            </dl>
-                        </dd>
-                        <dd>
-                            <a>进阶组件</a>
-                            <dl class="layui-nav-child">
-                                <dd><a lay-href="page/plugin/advance/printer.html">打印插件</a></dd>
-                                <dd><a lay-href="page/plugin/advance/split.html">分割面板</a></dd>
-                                <dd><a lay-href="page/plugin/advance/formX.html">表单扩展</a></dd>
-                                <dd><a lay-href="page/plugin/advance/tableX.html">表格扩展</a></dd>
-                                <dd><a lay-href="page/plugin/advance/dataGrid.html">数据列表</a></dd>
-                                <dd><a lay-href="page/plugin/advance/contextMenu.html">鼠标右键</a></dd>
-                            </dl>
-                        </dd>
-                        <dd>
-                            <a>其他组件</a>
-                            <dl class="layui-nav-child">
-                                <dd><a lay-href="page/plugin/other/circleProgress.html">圆形进度条</a></dd>
-                                <dd><a lay-href="page/plugin/other/editor.html">富文本编辑</a></dd>
-                                <dd><a lay-href="page/plugin/other/mousewheel.html">鼠标滚轮</a></dd>
-                                <dd><a lay-href="page/plugin/other/other.html">更多组件</a></dd>
-                            </dl>
-                        </dd>
-                        <dd><a lay-href="page/plugin/more.html">更多扩展</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a><i class="layui-icon layui-icon-app"></i>&emsp;<cite>经典实例</cite></a>
-                    <dl class="layui-nav-child">
-                        <dd><a lay-href="page/example/dialog.html">弹窗实例</a></dd>
-                        <dd><a lay-href="page/example/course.html">课程管理</a></dd>
-                        <dd><a lay-href="page/example/calendar.html">排课管理</a></dd>
-                        <dd><a lay-href="page/example/question.html">添加试题</a></dd>
-                        <dd><a lay-href="page/example/file.html">文件管理</a></dd>
-                        <dd><a lay-href="page/example/table-crud.html">表格CRUD</a></dd>
-                        <dd><a href="page/example/side-more.html" target="_blank">多系统模式</a></dd>
-                        <dd><a href="page/example/side-ajax.html" target="_blank">Ajax侧边栏</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a><i class="layui-icon layui-icon-release"></i>&emsp;<cite>LayUI组件</cite></a>
-                    <dl class="layui-nav-child">
-                        <dd><a lay-href="page/plugin/other/layui.html">组件演示</a></dd>
-                        <dd><a lay-href="https://www.layui.com/doc/element/button.html#use">layui文档</a></dd>
-                        <dd><a lay-href="https://layer.layui.com/">layer弹窗</a></dd>
-                        <dd><a lay-href="https://www.layui.com/laydate/">laydate日期</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a><i class="layui-icon layui-icon-unlink"></i>&emsp;<cite>多级菜单</cite></a>
-                    <dl class="layui-nav-child">
-                        <dd><a>二级菜单</a></dd>
-                        <dd>
-                            <a>二级菜单</a>
-                            <dl class="layui-nav-child">
-                                <dd><a lay-href="javascript:layer.msg('Hello!');">三级菜单</a></dd>
-                                <dd>
-                                    <a>三级菜单</a>
-                                    <dl class="layui-nav-child">
-                                        <dd><a lay-href="javascript:;">四级菜单</a></dd>
-                                        <dd>
-                                            <a>四级菜单</a>
-                                            <dl class="layui-nav-child">
-                                                <dd><a>五级菜单</a></dd>
-                                                <dd>
-                                                    <a lay-href="https://baidu.com">百度一下</a>
-                                                </dd>
-                                            </dl>
-                                        </dd>
-                                    </dl>
-                                </dd>
-                            </dl>
-                        </dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a lay-href="//baidu.com"><i class="layui-icon layui-icon-unlink"></i>&emsp;<cite>一级菜单</cite></a>
-                </li>
+<!--                <li class="layui-nav-item">-->
+<!--                    <a><i class="layui-icon layui-icon-template"></i>&emsp;<cite>模板页面</cite></a>-->
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd>-->
+<!--                            <a>表单页</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a lay-href="page/template/form/form-basic.html">基础表单</a></dd>-->
+<!--                                <dd><a lay-href="page/template/form/form-advance.html">复杂表单</a></dd>-->
+<!--                                <dd><a lay-href="page/template/form/form-step.html">分步表单</a></dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                        <dd>-->
+<!--                            <a>列表页</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a lay-href="page/template/table/table-basic.html">数据表格</a></dd>-->
+<!--                                <dd><a lay-href="page/template/table/table-advance.html">复杂表格</a></dd>-->
+<!--                                <dd><a lay-href="page/template/table/table-img.html">图片表格</a></dd>-->
+<!--                                <dd><a lay-href="page/template/table/table-card.html">卡片列表</a></dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                        <dd>-->
+<!--                            <a>错误页</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a lay-href="page/template/error/error-500.html">500</a></dd>-->
+<!--                                <dd><a lay-href="page/template/error/error-404.html">404</a></dd>-->
+<!--                                <dd><a lay-href="page/template/error/error-403.html">403</a></dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                        <dd>-->
+<!--                            <a>登录页</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a href="page/template/login/login.html" target="_blank">登录页</a></dd>-->
+<!--                                <dd><a href="page/template/login/reg.html" target="_blank">注册页</a></dd>-->
+<!--                                <dd><a href="page/template/login/forget.html" target="_blank">忘记密码</a></dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                        <dd><a lay-href="page/template/user-info.html">个人中心</a></dd>-->
+<!--                    </dl>-->
+<!--                </li>-->
+<!--                <li class="layui-nav-item">-->
+<!--                    <a><i class="layui-icon layui-icon-component"></i>&emsp;<cite>扩展组件</cite></a>-->
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd>-->
+<!--                            <a>常用组件</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a lay-href="page/plugin/basic/dialog.html">弹窗扩展</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/basic/dropdown.html">下拉菜单</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/basic/notice.html">消息通知</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/basic/tagsInput.html">标签输入</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/basic/cascader.html">级联选择</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/basic/steps.html">步骤条</a></dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                        <dd>-->
+<!--                            <a>进阶组件</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a lay-href="page/plugin/advance/printer.html">打印插件</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/advance/split.html">分割面板</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/advance/formX.html">表单扩展</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/advance/tableX.html">表格扩展</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/advance/dataGrid.html">数据列表</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/advance/contextMenu.html">鼠标右键</a></dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                        <dd>-->
+<!--                            <a>其他组件</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a lay-href="page/plugin/other/circleProgress.html">圆形进度条</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/other/editor.html">富文本编辑</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/other/mousewheel.html">鼠标滚轮</a></dd>-->
+<!--                                <dd><a lay-href="page/plugin/other/other.html">更多组件</a></dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                        <dd><a lay-href="page/plugin/more.html">更多扩展</a></dd>-->
+<!--                    </dl>-->
+<!--                </li>-->
+<!--                <li class="layui-nav-item">-->
+<!--                    <a><i class="layui-icon layui-icon-app"></i>&emsp;<cite>经典实例</cite></a>-->
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd><a lay-href="page/example/dialog.html">弹窗实例</a></dd>-->
+<!--                        <dd><a lay-href="page/example/course.html">课程管理</a></dd>-->
+<!--                        <dd><a lay-href="page/example/calendar.html">排课管理</a></dd>-->
+<!--                        <dd><a lay-href="page/example/question.html">添加试题</a></dd>-->
+<!--                        <dd><a lay-href="page/example/file.html">文件管理</a></dd>-->
+<!--                        <dd><a lay-href="page/example/table-crud.html">表格CRUD</a></dd>-->
+<!--                        <dd><a href="page/example/side-more.html" target="_blank">多系统模式</a></dd>-->
+<!--                        <dd><a href="page/example/side-ajax.html" target="_blank">Ajax侧边栏</a></dd>-->
+<!--                    </dl>-->
+<!--                </li>-->
+<!--                <li class="layui-nav-item">-->
+<!--                    <a><i class="layui-icon layui-icon-release"></i>&emsp;<cite>LayUI组件</cite></a>-->
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd><a lay-href="page/plugin/other/layui.html">组件演示</a></dd>-->
+<!--                        <dd><a lay-href="https://www.layui.com/doc/element/button.html#use">layui文档</a></dd>-->
+<!--                        <dd><a lay-href="https://layer.layui.com/">layer弹窗</a></dd>-->
+<!--                        <dd><a lay-href="https://www.layui.com/laydate/">laydate日期</a></dd>-->
+<!--                    </dl>-->
+<!--                </li>-->
+<!--                <li class="layui-nav-item">-->
+<!--                    <a><i class="layui-icon layui-icon-unlink"></i>&emsp;<cite>多级菜单</cite></a>-->
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd><a>二级菜单</a></dd>-->
+<!--                        <dd>-->
+<!--                            <a>二级菜单</a>-->
+<!--                            <dl class="layui-nav-child">-->
+<!--                                <dd><a lay-href="javascript:layer.msg('Hello!');">三级菜单</a></dd>-->
+<!--                                <dd>-->
+<!--                                    <a>三级菜单</a>-->
+<!--                                    <dl class="layui-nav-child">-->
+<!--                                        <dd><a lay-href="javascript:;">四级菜单</a></dd>-->
+<!--                                        <dd>-->
+<!--                                            <a>四级菜单</a>-->
+<!--                                            <dl class="layui-nav-child">-->
+<!--                                                <dd><a>五级菜单</a></dd>-->
+<!--                                                <dd>-->
+<!--                                                    <a lay-href="https://baidu.com">百度一下</a>-->
+<!--                                                </dd>-->
+<!--                                            </dl>-->
+<!--                                        </dd>-->
+<!--                                    </dl>-->
+<!--                                </dd>-->
+<!--                            </dl>-->
+<!--                        </dd>-->
+<!--                    </dl>-->
+<!--                </li>-->
+<!--                <li class="layui-nav-item">-->
+<!--                    <a lay-href="//baidu.com"><i class="layui-icon layui-icon-unlink"></i>&emsp;<cite>一级菜单</cite></a>-->
+<!--                </li>-->
             </ul>
         </div>
     </div>
@@ -243,8 +243,8 @@
 
         // 默认加载主页
         index.loadHome({
-            // 注意，这是api路径（
-            menuPath: '/admin/console/workplace',
+            // 注意，这是api路径
+            menuPath: '/admin/system/post',
             menuName: '<i class="layui-icon layui-icon-home"></i>'
         });
 

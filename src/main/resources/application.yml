@@ -5,9 +5,9 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
   datasource:
-    url: jdbc:mysql://localhost:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://159.75.116.100:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 87654321
+    password: Lx183184,.
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       initial-size: 5   # 初始化连接数
@@ -112,6 +112,7 @@ server:
     include-message: always
     include-stacktrace: always
     include-binding-errors: always
+  port: 8765
 
 # 自定义配置
 upload:
@@ -126,16 +127,16 @@ upload:
 oauth:
   gitee:
     client-id: d9b72e60aef218352f09dd3ef1841be3546fa31421820ef0a7966ea64a0d9ab3
-    client-secret: 448546ccd502b7dc0586e6043fa06bc31bf5f5cf8cf1090da5c601c731c09503
-    redirect-uri: http://localhost:8080/user/oauth/gitee/callback
+    client-secret: 298ab5b2fbc4b032872e1f74760fad329dd5ea817cfaa41db2e5a9c1d5a1795a
+    redirect-uri: http://159.75.116.100:80/user/oauth/gitee/callback
     po-field: giteeId
   qq:
     client-id: 101956139
     client-secret: e7f7f114f2b972db18476198e64d71ab
-    redirect-uri: https://www.ysqorz.top/index.php
+    redirect-uri: http://159.75.116.100:80/user/oauth/qq/callback
     po-field: qqId
   baidu:
     client-id: MKnePFb5rDNxqn7GQagBI01VI3oOWEhj
     client-secret: lK6dX6kQGcF9mqDuf9o7DN8q0iDBPsD9
-    redirect-uri: http://localhost:8080/user/oauth/baidu/callback
+    redirect-uri: http://159.75.116.100:80/user/oauth/baidu/callback
     po-field: baiduId

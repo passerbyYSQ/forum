@@ -106,7 +106,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label layui-form-required">置顶权重:</label>
             <div class="layui-input-block">
-                <input name="topWeight" placeholder="请输入账号" class="layui-input"
+                <input name="topWeight" placeholder="请输入置顶权重" class="layui-input"
                        max="9999" min="0" type="number" lay-verType="tips" lay-verify="required" required/>
             </div>
         </div>
@@ -305,6 +305,7 @@
             } else if (obj.event === 'del') { // 删除
                 doDel(obj);
             } else if (obj.event === 'top') { // 置顶
+                console.log(obj.data);
                 showTopDialog(obj.data);
             }
         });
@@ -327,13 +328,14 @@
         });
 
         function showTopDialog(mData) {
+            console.log(mData);
             admin.open({
                 type: 1,
                 title: '置顶',
                 content: $('#topDialog').html(),
                 success: function (layero, dIndex) {
                     // 回显表单数据
-                    form.val('topForm', mData);
+                    form.val('topForm',{postId: mData.id});
                     // 表单提交事件
                     form.on('submit(topSubmit)', function (data) {
                         console.log(data);

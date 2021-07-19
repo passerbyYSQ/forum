@@ -45,7 +45,7 @@ public abstract class OauthProvider<T> {
      * @param referer       用户在哪个页面点击了授权登录的按钮
      */
     public void redirectAuthorize(String referer, HttpServletResponse response) throws IOException {
-        if (referer.endsWith("/user/login")) {
+        if (referer.endsWith("/user/login")||referer.endsWith("/head")) {
             referer = "/";
         }
         String key = RandomUtils.generateUUID();

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>top.ysqorz</groupId>
 	<artifactId>forum</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>8765</version>
 	<!-- 打包方式为war包	-->
 	<packaging>jar</packaging>
 	<name>forum</name>
@@ -219,6 +219,21 @@
 						<version>4.1.5</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<!--打包成可执行jar-->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

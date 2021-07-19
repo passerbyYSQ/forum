@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>基于 layui 的极简社区页面模版</title>
+    <title>码缘社区</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="keywords" content="fly,layui,前端社区">
     <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
@@ -392,12 +392,10 @@
 </div>
 
 <div class="fly-footer">
-    <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/"
-                                                                                target="_blank">layui.com 出品</a></p>
+    <p>Copyright 2021 &copy; passerbyYSQ.All Rights Reserved |<a href="http://beian.miit.gov.cn"
+                                                                                target="_blank"> 粤ICP备20036780号</a></p>
     <p>
-        <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
-        <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
-        <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
+        Powered by passerbyYSQ 1127664027@qq.com
     </p>
 </div>
 <script th:src="@{/front/res/layui/layui.js}" src="../res/layui/layui.js"></script>
@@ -539,6 +537,19 @@
             isHighQuality: "0",
             topicId: "",
         };
+
+
+        //后端返回的提示码msg，显示信息两秒后刷新去除url中的信息
+        var code = app.getUrlParam("code");
+        var msg = app.getUrlParam("msg");
+        var oldUrl = '/';
+
+        if (code && msg) {
+            setTimeout(function() {
+                location.href = oldUrl;
+            }, 2);
+        }
+
 
         // rank dialog
         window.showRankDialog = function () {
