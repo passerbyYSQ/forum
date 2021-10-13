@@ -13,6 +13,15 @@ import top.ysqorz.forum.po.SecondComment;
  */
 public interface CommentService {
 
+    /**
+     * 该条一级评论前面有多少条评论
+     */
+    int getFrontFirstCommentCount(Integer firstCommentId);
+    /**
+     * 该条二级评论前面有多少条评论
+     */
+    int[] getFrontSecondCommentCount(Integer secondCommentId);
+
     // 发布一级评论
     void publishFirstComment(Post post, String content);
 

@@ -5,9 +5,9 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
   datasource:
-    url: jdbc:mysql://159.75.116.100:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: Lx183184,.
+    password: ysqJYKL2010
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       initial-size: 5   # 初始化连接数
@@ -112,7 +112,7 @@ server:
     include-message: always
     include-stacktrace: always
     include-binding-errors: always
-  port: 8765
+  port: 8080
 
 # 自定义配置
 upload:

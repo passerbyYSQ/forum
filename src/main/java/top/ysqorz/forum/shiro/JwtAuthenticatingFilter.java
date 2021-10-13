@@ -38,7 +38,7 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
     }
 
     public JwtAuthenticatingFilter(Boolean shouldRefreshToken) {
-        this.shouldRefreshToken=shouldRefreshToken;
+        this.shouldRefreshToken = shouldRefreshToken;
     }
 
     /**

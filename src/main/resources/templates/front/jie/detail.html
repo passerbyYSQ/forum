@@ -615,6 +615,9 @@
         var fcid;  //一级定位id
         var scid;  //二级定位id
 
+        var dataGridMap = new Map(); // 二级评论列表的dataGrid
+        var editorMap = new Map(); // 二级评论的editor
+
 
         var imgList = [];
         // 将主题帖内容所包含的图片制成相册
@@ -624,9 +627,7 @@
                 alt: elem.alt || '暂无描述',
                 src: elem.src
             });
-
         });
-
 
         $("div.detail-body img[src]").click(function () {
             console.log(this);
@@ -642,7 +643,7 @@
         });
 
 
-        /* 渲染评论列表 */
+        /* 渲染一级评论列表 */
         var commentList = dataGrid.render({
             elem: '#commentList',
             templet: '#firstCommentItem',
@@ -653,6 +654,7 @@
             request: {
                 limitName: 'count' //每页数据量的参数名，默认：limit
             },
+            // 无效设置。源码封装的问题
             // response: {
             //     statusCode: 2000 //规定成功的状态码，默认：0
             // },
@@ -682,9 +684,8 @@
                 curPage = curr;
                 dataGridMap.clear();
                 editorMap.clear();
+
                 //得到数据总量
-                // console.log(curr);
-                // console.log("11111111111");
                 if (page1) {
                     if (curr != page1) {
                         commentList.reload({page: {curr: page1}});
@@ -704,10 +705,6 @@
 
             }
         });
-
-
-        var dataGridMap = new Map(); // 二级评论列表的dataGrid
-        var editorMap = new Map(); // 二级评论的editor
 
         dataGrid.on('tool(commentList)', function (obj) {
             if (obj.event === 'expand') {
@@ -767,23 +764,17 @@
                             //得到当前页码
                             //console.log(curr);
                             curPage = curr;
-                            dataGridMap.clear();
-                            editorMap.clear();
                             //得到数据总量
                             console.log(curr);
-                            console.log("11111111111");
                             if (page2) {
-                                if (curr != page2) {
+                                if (curr !== page2) {
                                     secondListGrid.reload({page: {curr: page2}});
-
                                 } else {
                                     app.scrollIntoView("div[data-id=scid-" + scid + "]");
                                     page2 = null;
                                 }
                             }
-
                             Prism.highlightAll();
-
                         }
                     });
                     var selector = 'tool(secondCommentList_' + firstCommentId + ')';
@@ -1078,7 +1069,7 @@
                 formData.append('image', file, file.name);//此处与源文档不一样
                 xhr.send(formData);
             }
-            });
+        });
 
             //关注按钮事件
         $(document).on('click', "[name='isFollow']", function(){
@@ -1105,6 +1096,7 @@
                 });
             });
 
+        // 计算评论所在页码
         function checkPage() {
             fcid = app.getUrlParam("fcid");
             scid = app.getUrlParam("scid");
@@ -1113,7 +1105,6 @@
                 // 计算page1
                 app.ajax('/comment/first/page', {firstId: fcid}, function (res) {
                     console.log(res);
-
                     page1 = Math.floor(res.data / 6) + 1;
                 }, "get");
                 if (scid) {

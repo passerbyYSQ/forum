@@ -19,6 +19,8 @@ import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author passerbyYSQ
@@ -118,6 +120,26 @@ public class CommentController {
         PageData<SecondCommentDTO> secondCommentList =
                 commentService.getSecondCommentList(firstComment, page, count);
         return ResultModel.success(secondCommentList);
+    }
+
+    @GetMapping("/first/frontCount")
+    public ResultModel<Integer> getFrontFirstCommentCount(@RequestParam Integer firstCommentId) {
+        int count = commentService.getFrontFirstCommentCount(firstCommentId);
+        return  count != -1 ? ResultModel.success(count) :
+                ResultModel.failed(StatusCode.FIRST_COMMENT_NOT_EXIST);
+
+    }
+
+    @GetMapping("/second/frontCount")
+    public ResultModel<Map<String, Integer>> getFrontSecondCommentCount(@RequestParam Integer secondCommentId) {
+        int[] countArr = commentService.getFrontSecondCommentCount(secondCommentId);
+        if (countArr == null) {
+            return ResultModel.failed(StatusCode.SECOND_COMMENT_NOT_EXIST);
+        }
+        Map<String, Integer> data = new HashMap<>();
+        data.put("firstCount", countArr[0]);
+        data.put("secondCount", countArr[1]);
+        return  ResultModel.success(data);
     }
 
     /**

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
+import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
 import top.ysqorz.forum.dao.SecondCommentMapper;
@@ -45,6 +46,34 @@ public class CommentServiceImpl implements CommentService {
     private PostService postService;
     @Resource
     private RewardPointsAction rewardPointsAction;
+
+    @Override
+    public int getFrontFirstCommentCount(Integer firstCommentId) {
+        FirstComment firstComment = firstCommentMapper.selectByPrimaryKey(firstCommentId);
+        if (ObjectUtils.isEmpty(firstCommentId)) {
+            return -1;
+        }
+        Example example = new Example(FirstComment.class);
+        example.createCriteria().andEqualTo("postId", firstComment.getPostId())
+                .andLessThan("createTime", firstComment.getCreateTime());
+        return firstCommentMapper.selectCountByExample(example);
+    }
+
+    @Override
+    public int[] getFrontSecondCommentCount(Integer secondCommentId) {
+        SecondComment secondComment = secondCommentMapper.selectByPrimaryKey(secondCommentId);
+        if (ObjectUtils.isEmpty(secondComment)) {
+            return null;
+        }
+        Integer firstCommentId = secondComment.getFirstCommentId();
+        Example example = new Example(SecondComment.class);
+        example.createCriteria().andEqualTo("firstCommentId", firstCommentId)
+                .andLessThan("createTime", secondComment.getCreateTime());
+        int secondCount = secondCommentMapper.selectCountByExample(example);
+        int firstCount = this.getFrontFirstCommentCount(firstCommentId);
+        return new int[] {firstCount, secondCount};
+    }
+
 
     @Transactional
     @Override
