@@ -39,11 +39,5 @@
       where sc1.first_comment_id = #{firstCommentId}
       order by sc1.create_time desc
   </select>
-    <select id="getSecondPage" resultType="java.lang.Integer">
-        SELECT count(*)
-        FROM `second_comment`
-        where first_comment_id = #{firstMegId}
-          and create_time > (select create_time from second_comment where id = #{secondMegId})
-    </select>
 
 </mapper>

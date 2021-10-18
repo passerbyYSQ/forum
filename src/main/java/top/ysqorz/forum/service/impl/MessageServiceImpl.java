@@ -13,7 +13,6 @@ import top.ysqorz.forum.dao.SecondCommentMapper;
 import top.ysqorz.forum.dto.MessageListDTO;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.po.CommentNotification;
-import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.service.MessageService;
 import top.ysqorz.forum.shiro.ShiroUtils;
 
@@ -48,8 +47,8 @@ public class MessageServiceImpl implements MessageService {
                 Document doc = Jsoup.parse(meg.getMyContent());
                 String content = doc.text();  //获取html文本
                 Elements images = doc.select("img[src]");
-                if (images.size()>0){
-                    content=content+"[图片]";
+                if (images.size() > 0) {
+                    content = content + "[图片]";
                 }
                 meg.setMyContent(content);
             }
@@ -58,25 +57,6 @@ public class MessageServiceImpl implements MessageService {
 
         PageInfo<MessageListDTO> pageInfo = new PageInfo<>(megList);
         return new PageData<>(pageInfo, megList);
-
-
-    }
-
-    @Override
-    public Integer getFirstMegPage(Integer firstMegId) {
-
-        FirstComment firstComment = firstCommentMapper.selectByPrimaryKey(firstMegId);
-        Example example=new Example(FirstComment.class);
-        example.createCriteria().andEqualTo("postId",firstComment.getPostId())
-                .andLessThan("createTime",firstComment.getCreateTime());
-
-        return firstCommentMapper.selectCountByExample(example);
-    }
-
-
-    @Override
-    public Integer getSecondMegPage(Integer firstMegId, Integer secondMegId) {
-        return secondCommentMapper.getSecondPage(firstMegId, secondMegId);
     }
 
     @Override
@@ -85,8 +65,8 @@ public class MessageServiceImpl implements MessageService {
         example.createCriteria().andEqualTo("receiverId", ShiroUtils.getUserId());
 
         CommentNotification record = new CommentNotification();
-        record.setIsRead((byte)1);
-        return commentNotificationMapper.updateByExampleSelective(record,example);
+        record.setIsRead((byte) 1);
+        return commentNotificationMapper.updateByExampleSelective(record, example);
     }
 
 

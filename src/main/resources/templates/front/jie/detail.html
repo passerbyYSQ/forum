@@ -60,6 +60,15 @@
             cursor: pointer;
         }
 
+        span[type=edit], span[type=del] {
+            cursor: pointer;
+        }
+
+        span[type=edit]:hover, span[type=del]:hover {
+            color: #009688;
+            transition: all .3s;
+        }
+
         div.fly-detail-info a {
             margin-right: 12px;
             line-height: 20px;
@@ -144,19 +153,19 @@
             padding-left: 30px;
         }
 
-        .alreadyFocus{
-            background-color: gray!important;
+        .alreadyFocus {
+            background-color: gray !important;
         }
 
-        .user-info-list-item i{
+        .user-info-list-item i {
             padding-left: 0px !important;
         }
 
-        .card-text-color{
+        .card-text-color {
             color: #666 !important;
         }
 
-        .button-isFollowed{
+        .button-isFollowed {
             cursor: pointer !important;
         }
     </style>
@@ -212,20 +221,21 @@
                     <!-- <span class="layui-badge" style="background-color: #5FB878;">锁定</span> -->
                     <span th:if="${post.detail.topWeight > 0}" class="layui-badge layui-bg-blue">置顶</span>
                     <span th:if="${post.detail.isHighQuality == 1}" class="layui-badge layui-bg-red">精帖</span>
-                    <span th:if="${post.isHot}" class="iconfont icon-remen" style="color: #fc3218; font-size: 26px;"></span>
+                    <span th:if="${post.isHot}" class="iconfont icon-remen"
+                          style="color: #fc3218; font-size: 26px;"></span>
                 </h1>
                 <div class="fly-detail-info clear-float">
                     <!-- <span class="layui-badge">审核中</span> -->
                     <!-- <span class="layui-badge layui-bg-green fly-detail-column">编辑</span> -->
-                    <a th:href="@{/post/publish(postId=${post.detail.id})}" href="">编辑</a>
-                    <a href="javascript:;">删除</a>
-                    <a class="top-link" href="javascript:;">
+                    <a th:if="${post.isShowEdit}" th:href="@{/post/publish(postId=${post.detail.id})}" href="">编辑</a>
+                    <a th:if="${post.isShowDelete}" href="javascript:;">删除</a>
+                    <a th:if="${post.isShowTop}" class="top-link" href="javascript:;">
                         <span th:if="${post.detail.topWeight > 0}">取消置顶</span>
                         <span th:if="${post.detail.topWeight == 0}">置顶</span>
                     </a>
-<!--                    <a class="topLink" th:attr="data-top=${post.detail.topWeight}"-->
-<!--                       th:if="${post.detail.topWeight == 0}" href="javascript:;">置顶</a>-->
-                    <a class="quality-link" href="javascript:;">
+                    <!--                    <a class="topLink" th:attr="data-top=${post.detail.topWeight}"-->
+                    <!--                       th:if="${post.detail.topWeight == 0}" href="javascript:;">置顶</a>-->
+                    <a th:if="${post.isShowQuality}" class="quality-link" href="javascript:;">
                         <span th:if="${post.detail.isHighQuality == 1}">取消精品</span>
                         <span th:if="${post.detail.isHighQuality == 0}">设为精品</span>
                     </a>
@@ -260,14 +270,14 @@
                 </div>
 
                 <div class="post-footer">
-                    <span th:if="${post.likeId == null}"
+                    <span th:if="${post.likeId == null}" title="点赞"
                           class="like layui-icon layui-icon-heart"><i th:text="${post.detail.likeCount}"></i></span>
-                    <span th:if="${post.likeId}"
+                    <span th:if="${post.likeId}" title="取消点赞"
                           class="like layui-icon layui-icon-heart-fill" style="color: #f47046;"><i
                             th:text="${post.detail.likeCount}"></i></span>
-                    <span th:if="${post.collectId == null}" class="collect layui-icon layui-icon-star"><i
+                    <span th:if="${post.collectId == null}" title="收藏"  class="collect layui-icon layui-icon-star"><i
                             th:text="${post.detail.collectCount}">123</i></span>
-                    <span th:if="${post.collectId}" class="collect layui-icon layui-icon-star-fill"
+                    <span th:if="${post.collectId}" class="collect layui-icon layui-icon-star-fill" title="取消收藏"
                           style="color: #f47046;"><i th:text="${post.detail.collectCount}">123</i></span>
 
                     <span class="layui-icon layui-icon-share"><i>分享</i></span>
@@ -332,21 +342,25 @@
                             <img src="../../assets/images/head.jpg" th:src="${creator.photo}" alt=""/>
                         </div>
                     </div>
-                    <div  class="text-center layui-text" style="margin-top:15px;">
+                    <div class="text-center layui-text" style="margin-top:15px;">
                         <h2 style="padding-top: 20px; display:inline;" th:text="${creator.username}">Serati Ma</h2>
-                        <span class="layui-icon layui-icon-male" style="color:#5d90ef;" th:if="${creator.gender eq 0}"></span>
-                        <span class="layui-icon layui-icon-female" style="color:#fb7299;" th:if="${creator.gender eq 1}"></span>
+                        <span class="layui-icon layui-icon-male" style="color:#5d90ef;"
+                              th:if="${creator.gender eq 0}"></span>
+                        <span class="layui-icon layui-icon-female" style="color:#fb7299;"
+                              th:if="${creator.gender eq 1}"></span>
                         <span th:if="${creator.gender eq 3}"></span>
                     </div>
 
                     <!--关注按钮-->
                     <!--未登录点击按钮进入登录界面-->
                     <div class="fly-sns" data-user="" th:if="${!isLogin}" style="text-align:center">
-                        <a href="javascript:;" class="layui-btn layui-btn-primary fly-imActive" data-type="follow" name="isFollow"
+                        <a href="javascript:;" class="layui-btn layui-btn-primary fly-imActive" data-type="follow"
+                           name="isFollow"
                            th:href="@{/user/login}">关注</a>
                     </div>
                     <!--已登录且身份为访客-->
-                    <div class="fly-sns" data-user="" id="visit" th:if="${!isMyself && isLogin}"  style="text-align:center">
+                    <div class="fly-sns" data-user="" id="visit" th:if="${!isMyself && isLogin}"
+                         style="text-align:center">
                         <a href="javascript:;" class="layui-btn layui-btn-normal" name="isFollow"
                            data-type="follow" th:if="${!isFocusOn && isLogin}">关注</a>
                         <a href="javascript:;" class="layui-btn layui-btn-disabled button-isFollowed" name="isFollow"
@@ -358,23 +372,24 @@
 
                     <div class="layui-text" style="padding-top: 30px;">
                         <div class="user-info-list-item fly-home-info">
-                            <i class="layui-icon layui-icon-gift"  style="font-size: 18px;"></i>
+                            <i class="layui-icon layui-icon-gift" style="font-size: 18px;"></i>
                             <span th:text="'积分：'+${creator.rewardPoints}" class="card-text-color">积分：0</span>
                         </div>
                         <div class="user-info-list-item fly-home-info">
                             <i class="layui-icon layui-icon-user"></i>
-                            <span th:text="'粉丝数：'+${creator.fansCount}"class="card-text-color">粉丝数：0</span>
+                            <span th:text="'粉丝数：'+${creator.fansCount}" class="card-text-color">粉丝数：0</span>
                         </div>
                         <div class="user-info-list-item fly-home-info">
-                            <i class="layui-icon layui-icon-location" ></i>
+                            <i class="layui-icon layui-icon-location"></i>
                             <span th:text="${creator.position}" class="card-text-color">浙江省杭州市</span>
                         </div>
                         <div class="user-info-list-item fly-home-info">
                             <i class="layui-icon layui-icon-time"></i>
-                            <span th:text="'最后登录时间：'+${#temporals.format(creator.registerTime, 'yyyy-MM-dd')}" class="card-text-color">最后登录时间：</span>
+                            <span th:text="'最后登录时间：'+${#temporals.format(creator.registerTime, 'yyyy-MM-dd')}"
+                                  class="card-text-color">最后登录时间：</span>
                         </div>
                         <div class="user-info-list-item fly-home-info">
-                            <i class="layui-icon layui-icon-note" ></i>
+                            <i class="layui-icon layui-icon-note"></i>
                             <span th:text="${creator.description}" class="card-text-color">海纳百川，有容乃大</span>
                         </div>
                     </div>
@@ -411,7 +426,7 @@
 
 <!-- 一级评论 模板 -->
 <script type="text/html" id="firstCommentItem">
-    <ul class="jieda" id="jieda" data-id="fcid-{{d.id}}">
+    <ul class="jieda" data-id="fcid-{{d.id}}">
         <li class="jieda-daan">
             <div class="detail-about detail-about-reply">
                 <a class="fly-avatar" href="">
@@ -438,7 +453,7 @@
 
                 <div class="detail-hits">
                     <span>{{d.createTime}}</span>
-                    <div style="float: right;">
+                    <div style="float: right;" class="first-opr layui-hide">
                         <span type="edit">编辑</span>
                         <span type="del" style="margin-left: 12px;">删除</span>
                         <!-- <span class="jieda-accept" type="accept">采纳</span> -->
@@ -511,7 +526,7 @@
 </script>
 <!-- 二级评论 模板 -->s
 <script type="text/html" id="secondCommentItem">
-    <div class="layui-col-xs-offset1" data-id="scid-{{d.id}}">
+    <div class="second-comment layui-col-xs-offset1" data-id="scid-{{d.id}}">
         <div class="detail-about detail-about-reply">
             <a class="fly-avatar" href="">
                 <img src="{{d.creator.photo}}" alt="{{d.creator.username}}">
@@ -535,7 +550,7 @@
                 &nbsp;的
                 <a href="" class="fly-link"><cite>评论</cite></a>
                 {{# } }}
-                <div style="float: right;">
+                <div style="float: right;" class="second-opr layui-hide">
                     <span type="edit">编辑</span>
                     <span type="del" style="margin-left: 12px;">删除</span>
                     <!--                <span class="jieda-accept" type="accept">采纳</span>-->
@@ -559,13 +574,13 @@
 <script type="text/html" id="topDialog">
     <form id="topForm" lay-filter="topForm" class="layui-form model-form"
           style="padding: 24px 28px 0 0;">
-        <input name="postId" type="hidden" th:value="${post.detail.id}" />
+        <input name="postId" type="hidden" th:value="${post.detail.id}"/>
         <div class="layui-form-item">
             <label class="layui-form-label layui-form-required">置顶权重:</label>
             <div class="layui-input-block">
                 <input type="number" name="topWeight" placeholder="同为置顶，权重越大越靠前"
                        class="layui-input" lay-verType="tips" lay-verify="required|topWeight" required
-                       max="9999" min="0" th:value="${post.detail.topWeight > 0} ? 0 : ''"  />
+                       max="9999" min="0" th:value="${post.detail.topWeight > 0} ? 0 : ''"/>
             </div>
         </div>
         <div class="layui-form-item" style="float: right;">
@@ -609,7 +624,6 @@
         var url = '/user/home/' + userId + '/changeFocus';
         var isFocus = [[${isFocusOn}]];
 
-        checkPage();
         var page1;  //一级评论页码
         var page2;  //二级评论页码
         var fcid;  //一级定位id
@@ -618,6 +632,7 @@
         var dataGridMap = new Map(); // 二级评论列表的dataGrid
         var editorMap = new Map(); // 二级评论的editor
 
+        calPageNumOfComment();
 
         var imgList = [];
         // 将主题帖内容所包含的图片制成相册
@@ -678,31 +693,32 @@
             done: function (res, curr, count) {
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-
-                //得到当前页码
                 //console.log(curr);
-                curPage = curr;
+                curPage = curr; // 当前页码
                 dataGridMap.clear();
                 editorMap.clear();
 
-                //得到数据总量
                 if (page1) {
-                    if (curr != page1) {
+                    if (curr !== page1) { // 不在当前页面，先跳转加载到对应页面。重新回到done
                         commentList.reload({page: {curr: page1}});
                     } else {
-                        if (page2) {
-                            var e = document.createEvent("MouseEvents");
-                            e.initEvent("click", true, true);
-                            document.getElementById("expend-fcid-" + fcid).dispatchEvent(e); //只要id 就好
+                        if (page2) { // 模拟点击，加载对应的二级列表
+                            document.getElementById("expend-fcid-" + fcid).click();
                         } else {
                             app.scrollIntoView("ul[data-id=fcid-" + fcid + "]");
+                            // flash("ul[data-id=fcid-" + fcid + "]");
+                            shadowAnimate("ul[data-id=fcid-" + fcid + "]");
                         }
-
-                        page1 = null;
+                        page1 = null; // 当前页已经是page1，故将page1置空
                     }
                 }
                 Prism.highlightAll();
 
+                $("ul.jieda").hover(function () {
+                    $(this).find("div.first-opr").removeClass("layui-hide");
+                }, function () {
+                    $(this).find("div.first-opr").addClass("layui-hide");
+                });
             }
         });
 
@@ -760,21 +776,22 @@
                         done: function (res, curr, count) {
                             //如果是异步请求数据方式，res即为你接口返回的信息。
                             //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-
-                            //得到当前页码
-                            //console.log(curr);
                             curPage = curr;
-                            //得到数据总量
-                            console.log(curr);
                             if (page2) {
                                 if (curr !== page2) {
                                     secondListGrid.reload({page: {curr: page2}});
                                 } else {
                                     app.scrollIntoView("div[data-id=scid-" + scid + "]");
+                                    shadowAnimate("div[data-id=scid-" + scid + "]");
                                     page2 = null;
                                 }
                             }
                             Prism.highlightAll();
+                            $("div.second-comment").hover(function () {
+                                $(this).find("div.second-opr").removeClass("layui-hide");
+                            }, function () {
+                                $(this).find("div.second-opr").addClass("layui-hide");
+                            })
                         }
                     });
                     var selector = 'tool(secondCommentList_' + firstCommentId + ')';
@@ -836,7 +853,7 @@
             $(selector).val('');
         }
 
-        // 第一个参数可能是一级评论，也可能是二级评论
+        // 第二个参数可能是一级评论，也可能是二级评论
         function showSecondEditor(firstCommentId, comment) {
             var selector = '#secondEditor_' + firstCommentId;
             var secondReplyDiv = $(selector).parents('div.second-reply');
@@ -851,9 +868,7 @@
                     elem: selector
                 });
             }
-            //console.log(secondEditor); // null ！！！
             editorMap.set(firstCommentId, comment);
-
             app.scrollIntoView(selector);
         }
 
@@ -940,10 +955,10 @@
                     // 表单提交事件
                     form.on('submit(topSubmit)', function (data) {
                         console.log(data.field);
-                        app.ajax('/post/top', data.field, function (res) {
+                        app.ajax('/admin/system/post/top', data.field, function (res) {
                             layer.close(dIndex); // 关闭弹框
                             app.successNotice('操作成功');
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 location.reload();
                             }, 1000);
                         });
@@ -959,12 +974,12 @@
         $("a.quality-link").click(function () {
             var quality = ([[${post.detail.isHighQuality}]] === 1);
             // console.log(quality);
-            app.ajax('/post/set_quality', {
+            app.ajax('/admin/system/post/highQuality', {
                 postId: postId,
                 isHighQuality: !quality
             }, function (res) {
                 app.successNotice('操作成功');
-                setTimeout(function() {
+                setTimeout(function () {
                     location.reload();
                 }, 1000);
             });
@@ -1071,11 +1086,11 @@
             }
         });
 
-            //关注按钮事件
-        $(document).on('click', "[name='isFollow']", function(){
+        //关注按钮事件
+        $(document).on('click', "[name='isFollow']", function () {
             <!--  isFocus:true:未关注状态，关注行为  !isFocus:已关注状态，取关行为，-->
-                app.ajax(url, {isFocusOn: !isFocus}, function(){
-                if(!isFocus){
+            app.ajax(url, {isFocusOn: !isFocus}, function () {
+                if (!isFocus) {
                     console.log("关注成功");
                     app.successNotice("关注成功");
                     $("a[name='isFollow']").removeClass("layui-btn-normal");
@@ -1083,8 +1098,7 @@
                     $("a[name='isFollow']").addClass("button-isFollowed");
                     $("a[name='isFollow']").html("已关注");
                     isFocus = true;
-                }
-                else{
+                } else {
                     console.log("取消关注成功");
                     app.successNotice("取消关注成功");
                     $("a[name='isFollow']").addClass("layui-btn-normal");
@@ -1093,29 +1107,37 @@
                     $("a[name='isFollow']").html("关注");
                     isFocus = false;
                 }
-                });
             });
+        });
 
         // 计算评论所在页码
-        function checkPage() {
+        function calPageNumOfComment() {
             fcid = app.getUrlParam("fcid");
             scid = app.getUrlParam("scid");
-
-            if (fcid) {
-                // 计算page1
-                app.ajax('/comment/first/page', {firstId: fcid}, function (res) {
+            // 两个if的顺序不能调换。否则 fcid和scid都存在时有问题
+            if (scid) {
+                app.ajax('/comment/second/frontCount', {secondCommentId: scid}, function (res) {
                     console.log(res);
+                    page1 = Math.floor(res.data.firstCount / 6) + 1;
+                    page2 = Math.floor(res.data.secondCount / 5) + 1;
+                }, "get");
+            } else if (fcid) {
+                // 计算page1
+                app.ajax('/comment/first/frontCount', {firstCommentId: fcid}, function (res) {
+                    // console.log(res);
                     page1 = Math.floor(res.data / 6) + 1;
                 }, "get");
-                if (scid) {
-                    app.ajax('/comment/second/page', {firstId: fcid, secondId: scid}, function (res) {
-                        console.log(res);
-                        page2 = Math.floor(res.data / 5) + 1;
-                    }, "get");
-
-                }
-
             }
+        }
+
+        // div 阴影闪烁效果
+        function shadowAnimate(selector) {
+            var elem = $(selector);
+            setTimeout(function () {
+                for (var i = 0; i < 3; i++) {
+                    elem.fadeOut(300).fadeIn(300);
+                }
+            }, 1000);
         }
     });
 </script>

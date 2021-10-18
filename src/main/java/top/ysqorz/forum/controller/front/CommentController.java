@@ -141,24 +141,4 @@ public class CommentController {
         data.put("secondCount", countArr[1]);
         return  ResultModel.success(data);
     }
-
-    /**
-     * 一级评论分页数
-     */
-    @GetMapping("/first/page")
-    public ResultModel firstPage(Integer firstId){
-        Integer firstMegPage = messageService.getFirstMegPage(firstId);
-
-        return ResultModel.success(firstMegPage);
-    }
-
-
-    /**
-     * 二级评论分页数
-     */
-    @GetMapping("/second/page")
-    public ResultModel secondPage(Integer firstId,Integer secondId){
-        Integer secondMegPage = messageService.getSecondMegPage(firstId, secondId);
-        return ResultModel.success(secondMegPage);
-    }
 }

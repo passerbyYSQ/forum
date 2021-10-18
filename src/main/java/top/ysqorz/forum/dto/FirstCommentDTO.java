@@ -26,4 +26,5 @@ public class FirstCommentDTO {
     private String timeDifference;  //回复的时间
 
     private Boolean isPostCreator; // 是否是楼主
+
 }

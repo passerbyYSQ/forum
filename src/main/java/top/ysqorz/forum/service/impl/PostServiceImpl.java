@@ -182,6 +182,12 @@ public class PostServiceImpl implements PostService {
             }
         }
 
+        boolean isCreator = creator.getId().equals(ShiroUtils.getUserId()); // 不登陆也不会报错
+        postDetailDTO.setIsShowEdit(ShiroUtils.hasPerm("post:update") || isCreator); // 不登陆也会返回false
+        postDetailDTO.setIsShowDelete(ShiroUtils.hasPerm("post:delete") || isCreator);
+        postDetailDTO.setIsShowTop(ShiroUtils.hasPerm("post:top"));
+        postDetailDTO.setIsShowQuality(ShiroUtils.hasPerm("post:quality"));
+
         Set<Integer> top5 = redisService.hostPostDayRankTop(5);
         postDetailDTO.setIsHot(top5.contains(post.getId()));
 

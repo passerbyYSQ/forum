@@ -17,5 +17,10 @@ public class PostDetailDTO {
     private Integer collectId; // 如果我收藏过，则不为空
     private Boolean isHot;
 
+    private Boolean isShowEdit;
+    private Boolean isShowDelete;
+    private Boolean isShowTop;
+    private Boolean isShowQuality;
+
     //private PageData<FirstCommentDTO> comments;
 }
