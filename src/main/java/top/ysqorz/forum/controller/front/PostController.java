@@ -20,6 +20,7 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -102,7 +103,6 @@ public class PostController {
                 throw new AuthorizationException();
             }
 
-
             UpdatePostDTO updatePostDTO = new UpdatePostDTO(post);
             List<Label> labels = labelService.getLabelsByPostId(postId);
             updatePostDTO.setLabelList(labels);
@@ -111,6 +111,12 @@ public class PostController {
         }
 
         return "front/jie/publish";
+    }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public ResultModel deletePost(@NotNull Integer postId) {
+        return ResultModel.wrap(postService.deletePostById(postId));
     }
 
     /**

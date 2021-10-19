@@ -97,14 +97,14 @@ public class ShiroConfig {
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
 
-        // 除了浏览帖子特殊（不登录也行，只是数据不一样），发帖、修改帖子等其他操作都需要登录
+        // 除了浏览帖子特殊（不登录也行，只是数据不一样），发帖、修改、删除帖子等其他操作都需要登录
         chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/user/oauth/**/callback", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/attend", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/user/oauth/**/callback", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/user/center/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/home/**", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/user/**", "noSessionCreation,anon");
-        chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/meg/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/comment/*/publish", "noSessionCreation,jwtAuth");

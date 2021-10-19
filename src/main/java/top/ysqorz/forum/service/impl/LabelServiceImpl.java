@@ -54,7 +54,6 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public List<Label> achieveRandomLabels(Integer total) {
-        List<Label> labelList = new ArrayList<>();
         // 如果label的总个数小于total，则返回所有label
         if (labelMapper.selectCountOfLabels() <= total) {
             return labelMapper.selectAll();

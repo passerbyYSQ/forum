@@ -201,9 +201,14 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                             app.errorNotice('请求超时');
                         } else if (type === "error") { // 请求错误
                             // console.log(xhr);
-                            // console.log(typeof xhr.responseJSON);
-                            var res = xhr.responseJSON;
-                            app.errorNotice(res.code + "：" + res.msg);
+                            // console.log(errorThrown);
+                            if (xhr.status === 404) {
+                                app.errorNotice('404');
+                            } else {
+                                // console.log(typeof xhr.responseJSON);
+                                var res = xhr.responseJSON;
+                                app.errorNotice(res.code + "：" + res.msg);
+                            }
                         }
                     }
                 });

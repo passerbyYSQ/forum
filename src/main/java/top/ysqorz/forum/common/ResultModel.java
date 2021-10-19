@@ -28,9 +28,18 @@ public class ResultModel<T>  {
         this.msg = msg;
         this.data = data;
     }
+
     // 没有data的构造
     public ResultModel(Integer code, String msg) {
         this(code, msg, null);
+    }
+
+    public static <T> ResultModel<T> wrap(StatusCode statusCode, T data) {
+        return new ResultModel<>(statusCode.getCode(), statusCode.getMsg(), data);
+    }
+
+    public static ResultModel wrap(StatusCode statusCode) {
+        return wrap(statusCode, null);
     }
 
     // 成功。带有结果集

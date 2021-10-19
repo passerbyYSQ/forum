@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.po.Like;
 import top.ysqorz.forum.po.Post;
@@ -26,6 +27,11 @@ public interface PostService {
      * 根据id选择性更新post（只更新post中非null的字段）
      */
     int updatePostById(Post post);
+
+    /**
+     * 删除帖子，帖子下面相关的其他内容也会删除
+     */
+    StatusCode deletePostById(Integer postId);
 
     /**
      * 后台帖子管理查询帖子列表

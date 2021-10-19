@@ -228,7 +228,7 @@
                     <!-- <span class="layui-badge">审核中</span> -->
                     <!-- <span class="layui-badge layui-bg-green fly-detail-column">编辑</span> -->
                     <a th:if="${post.isShowEdit}" th:href="@{/post/publish(postId=${post.detail.id})}" href="">编辑</a>
-                    <a th:if="${post.isShowDelete}" href="javascript:;">删除</a>
+                    <a th:if="${post.isShowDelete}" th:href="|javascript:showDelConfirmDialog()|">删除</a>
                     <a th:if="${post.isShowTop}" class="top-link" href="javascript:;">
                         <span th:if="${post.detail.topWeight > 0}">取消置顶</span>
                         <span th:if="${post.detail.topWeight == 0}">置顶</span>
@@ -275,7 +275,7 @@
                     <span th:if="${post.likeId}" title="取消点赞"
                           class="like layui-icon layui-icon-heart-fill" style="color: #f47046;"><i
                             th:text="${post.detail.likeCount}"></i></span>
-                    <span th:if="${post.collectId == null}" title="收藏"  class="collect layui-icon layui-icon-star"><i
+                    <span th:if="${post.collectId == null}" title="收藏" class="collect layui-icon layui-icon-star"><i
                             th:text="${post.detail.collectCount}">123</i></span>
                     <span th:if="${post.collectId}" class="collect layui-icon layui-icon-star-fill" title="取消收藏"
                           style="color: #f47046;"><i th:text="${post.detail.collectCount}">123</i></span>
@@ -455,7 +455,7 @@
                     <span>{{d.createTime}}</span>
                     <div style="float: right;" class="first-opr layui-hide">
                         <span type="edit">编辑</span>
-                        <span type="del" style="margin-left: 12px;">删除</span>
+                        <span type="del" lay-event="delete" style="margin-left: 12px;">删除</span>
                         <!-- <span class="jieda-accept" type="accept">采纳</span> -->
                     </div>
                 </div>
@@ -552,7 +552,7 @@
                 {{# } }}
                 <div style="float: right;" class="second-opr layui-hide">
                     <span type="edit">编辑</span>
-                    <span type="del" style="margin-left: 12px;">删除</span>
+                    <span type="del" lay-event="delete" style="margin-left: 12px;">删除</span>
                     <!--                <span class="jieda-accept" type="accept">采纳</span>-->
                 </div>
             </div>
@@ -723,8 +723,8 @@
         });
 
         dataGrid.on('tool(commentList)', function (obj) {
+            var firstCommentId = obj.data.id;
             if (obj.event === 'expand') {
-                var firstCommentId = obj.data.id;
                 var secondList = $('#secondCommentList_' + firstCommentId).parent('div');
                 var span = obj.elem.context;
                 var isExpanded = $(span).attr('data-expand');
@@ -791,7 +791,8 @@
                                 $(this).find("div.second-opr").removeClass("layui-hide");
                             }, function () {
                                 $(this).find("div.second-opr").addClass("layui-hide");
-                            })
+                            });
+                            this.curPage = curr; // 记录二级评论的当前页面。
                         }
                     });
                     var selector = 'tool(secondCommentList_' + firstCommentId + ')';
@@ -802,6 +803,11 @@
                             console.log('回复二级评论');
                             obj.data.type = "second";
                             showSecondEditor(firstCommentId, obj.data);
+                        } else if (obj.event === 'delete') {
+                            showDelConfirmDialog({
+                                type: 'SECOND_COMMENT',
+                                secondCommentId: obj.data.id
+                            });
                         }
                     });
                 }
@@ -810,21 +816,21 @@
                 // 回复一级评论  一级评论id：obj.data.id
                 console.log('回复一级评论');
                 obj.data.type = "first";
-                showSecondEditor(obj.data.id, obj.data);
+                showSecondEditor(firstCommentId, obj.data);
             } else if (obj.event === 'cancel') {
                 // 取消回复
-                cancelReply(obj.data.id);
+                cancelReply(firstCommentId);
             } else if (obj.event === 'submit') {
                 // 提交回复
-                var comment = editorMap.get(obj.data.id);
-                var content = $('#secondEditor_' + obj.data.id).val();
+                var comment = editorMap.get(firstCommentId);
+                var content = $('#secondEditor_' + firstCommentId).val();
                 console.log("提交回复。被回复的评论是：");
                 console.log(comment);
                 console.log("回复的内容的是：");
                 console.log(content);
 
                 var params = {
-                    firstCommentId: obj.data.id,
+                    firstCommentId: firstCommentId,
                     content: content
                 };
                 if ("second" === comment.type) {
@@ -834,15 +840,20 @@
                 app.ajax('/comment/second/publish', params, function (res) {
                     app.successNotice('回复成功');
                     // reload
-                    var dataGrid = dataGridMap.get(obj.data.id);
+                    var dataGrid = dataGridMap.get(firstCommentId);
                     if (app.isNotNull(dataGrid)) {
                         dataGrid.reload();
                     }
-                    var countSpan = $('#secondCount_' + obj.data.id);
+                    var countSpan = $('#secondCount_' + firstCommentId);
                     var count = parseInt(countSpan.text().substr(1, countSpan.text().length - 2));
                     countSpan.text('(' + (count + 1) + ')');
 
-                    cancelReply(obj.data.id);
+                    cancelReply(firstCommentId);
+                });
+            } else if (obj.event === 'delete') {
+                showDelConfirmDialog({
+                    type: 'FIRST_COMMENT',
+                    firstCommentId: firstCommentId
                 });
             }
         });
@@ -868,8 +879,48 @@
                     elem: selector
                 });
             }
+            // 存着该楼的富文本编辑器将要回复的评论（一级或二级评论）
             editorMap.set(firstCommentId, comment);
             app.scrollIntoView(selector);
+        }
+
+        window.showDelConfirmDialog = showDelConfirmDialog;
+
+        function showDelConfirmDialog(data) {
+            var param = data || { type: 'POST', postId: postId };
+            if (param.type === 'POST') {
+                doShowConfirmDialog('是否确认删除该帖子？', '/post/delete', param, function () {
+                    app.successNotice('删除成功，准备跳转到主页');
+                    setTimeout(function () {
+                        window.location = '/';
+                    }, 1000);
+                });
+            } else if (param.type === 'FIRST_COMMENT') {
+                doShowConfirmDialog("是否确认删除该评论？", '/comment/delete/first', param, function () {
+                    commentList.reload({page: {curr: curPage}});
+                    app.successNotice('删除成功，界面已刷新');
+                });
+                commentList.reload({page: {curr: curPage}});
+            } else if (param.type === 'SECOND_COMMENT') {
+                doShowConfirmDialog("是否确认删除该评论？", '/comment/delete/second', param, function () {
+                    var secondDataGrid = dataGridMap.get(data.firstCommentId);
+                    if (secondDataGrid) {
+                        secondDataGrid.reload({page: {curr: secondDataGrid.curPage}});
+                        app.successNotice('删除成功，界面已刷新');
+                    }
+                });
+            }
+        }
+
+        // desc：确认框内容；data：发起请求所需要的数据
+        function doShowConfirmDialog(desc, url, data, callback) {
+            admin.confirm(desc, function (index) {
+                parent.layer.close(index);
+                delete data.type;
+                app.ajax(url, data, function (res) {
+                    callback();
+                }, "post");
+            });
         }
 
         // 点赞
@@ -929,12 +980,8 @@
             // console.log(typeof isTimeAsc);
             // console.log(isTimeAsc);
             commentList.reload({
-                where: {
-                    isTimeAsc: isTimeAsc
-                },
-                page: {
-                    curr: 1
-                }
+                where: { isTimeAsc: isTimeAsc },
+                page: { curr: 1 }
             });
             // 高亮标识当前的排序方式
             $(this).css({"color": "#5FB878"});
@@ -1022,11 +1069,7 @@
                 var url = '/comment/first/publish';
                 // 网络请求
                 app.ajax(url, data.field, function (res) {
-                    commentList.reload({
-                        page: {
-                            curr: curPage
-                        }
-                    });
+                    commentList.reload({ page: { curr: curPage } });
                     //commentList.reload();
                     app.successNotice('评论成功，界面已刷新');
                     editorObj.setContent('');

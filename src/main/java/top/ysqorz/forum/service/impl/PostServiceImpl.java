@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.LikeMapper;
 import top.ysqorz.forum.dao.PostMapper;
 import top.ysqorz.forum.dao.UserMapper;
@@ -77,6 +78,32 @@ public class PostServiceImpl implements PostService {
     @Override
     public int updatePostById(Post post) {
         return postMapper.updateByPrimaryKeySelective(post);
+    }
+
+    @Transactional
+    @Override
+    public StatusCode deletePostById(Integer postId) {
+        Post post = this.getPostById(postId);
+        if (ObjectUtils.isEmpty(post)) {
+            return StatusCode.POST_NOT_EXIST;
+        }
+        // 权限判断
+        if (!(ShiroUtils.hasPerm("post:del") ||
+                // 未登录也不会报错。不过由于路径拦截和界面隐藏，也不会走到这里
+                post.getCreatorId().equals(ShiroUtils.getUserId()))) {
+            return StatusCode.NO_PERM;
+        }
+        // 删除标签关联
+        postLabelService.delPostLabelByPostId(postId);
+        // 不删除点赞
+        // 不删除收藏。收藏记录会显示【已删除】
+        // 一级、二级评论均不删除。
+        // 删除帖子
+        postMapper.deleteByPrimaryKey(postId);
+        // 维护话题的帖子数量
+        topicService.updatePostCountById(post.getTopicId(), -1);
+        // TODO 考虑积分回退
+        return StatusCode.SUCCESS;
     }
 
     @Override
