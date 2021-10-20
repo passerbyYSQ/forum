@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import tk.mybatis.mapper.entity.Example;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
 import top.ysqorz.forum.dao.SecondCommentMapper;
@@ -19,6 +20,7 @@ import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
+import top.ysqorz.forum.service.PermManager;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RewardPointsAction;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -46,6 +48,8 @@ public class CommentServiceImpl implements CommentService {
     private PostService postService;
     @Resource
     private RewardPointsAction rewardPointsAction;
+    @Resource
+    private PermManager permManager;
 
     @Override
     public int getFrontFirstCommentCount(Integer firstCommentId) {
@@ -226,5 +230,39 @@ public class CommentServiceImpl implements CommentService {
         params.put("firstCommentId", firstCommentId);
         params.put("dif", dif);
         return firstCommentMapper.addSecondCommentCount(params);
+    }
+
+    @Transactional
+    @Override
+    public StatusCode deleteCommentById(Integer commentId, String type) {
+        StatusCode code = StatusCode.SUCCESS;
+        if ("FIRST_COMMENT".equals(type)) {
+            FirstComment firstComment = this.getFirstCommentById(commentId);
+            if (ObjectUtils.isEmpty(firstComment)) {
+                return StatusCode.FIRST_COMMENT_NOT_EXIST;
+            }
+            if (!permManager.allowDelComment(firstComment.getUserId())) {
+                return StatusCode.NO_PERM;
+            }
+            firstCommentMapper.deleteByPrimaryKey(commentId);
+            postService.updateCommentCountAndLastTime(firstComment.getPostId(), -1);
+            // TODO 积分回退
+        } else if ("SECOND_COMMENT".equals(type)) {
+            SecondComment secondComment = this.getSecondCommentById(commentId);
+            if (ObjectUtils.isEmpty(secondComment)) {
+                return StatusCode.SECOND_COMMENT_NOT_EXIST;
+            }
+            if (!permManager.allowDelComment(secondComment.getUserId())) {
+                return StatusCode.NO_PERM;
+            }
+            secondCommentMapper.deleteByPrimaryKey(commentId);
+            FirstComment firstComment = this.getFirstCommentById(secondComment.getFirstCommentId());
+            this.addSecondCommentCount(firstComment.getId(), -1);
+            postService.updateCommentCountAndLastTime(firstComment.getPostId(), -1);
+            // TODO 积分回退
+        } else {
+            code = StatusCode.COMMENT_TYPE_INVALID; // type错误
+        }
+        return code;
     }
 }

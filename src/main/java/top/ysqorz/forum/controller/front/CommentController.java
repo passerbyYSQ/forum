@@ -14,11 +14,12 @@ import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
 import top.ysqorz.forum.service.CommentService;
-import top.ysqorz.forum.service.MessageService;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,8 +38,6 @@ public class CommentController {
     private CommentService commentService;
     @Resource
     private PostService postService;
-    @Resource
-    private MessageService messageService;
 
     @PostMapping("/first/publish")
     public ResultModel publishFirstComment(@Validated PublishFirstCommentDTO dto) {
@@ -140,5 +139,10 @@ public class CommentController {
         data.put("firstCount", countArr[0]);
         data.put("secondCount", countArr[1]);
         return  ResultModel.success(data);
+    }
+
+    @PostMapping("/delete")
+    public ResultModel deleteComment(@NotNull Integer commentId, @NotBlank String type) {
+        return ResultModel.wrap(commentService.deleteCommentById(commentId, type));
     }
 }

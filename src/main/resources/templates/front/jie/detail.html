@@ -240,8 +240,10 @@
                         <span th:if="${post.detail.isHighQuality == 0}">设为精品</span>
                     </a>
                     <span class="data-num">
-                      <a href="#comment"><i class="layui-icon layui-icon-dialogue" style="font-size: 16px;"
-                                            title="评论数"></i> [[${post.detail.commentCount}]]</a>
+                      <a href="javascript:skipToEditor();">
+                          <i class="layui-icon layui-icon-dialogue" style="font-size: 16px;" title="评论数"></i>
+                          <span id="commentCount">[[${post.detail.commentCount}]]</span>
+                      </a>
                       <i class="iconfont" title="访问量">&#xe60b;</i> [[${post.detail.visitCount}]]
                     </span>
                 </div>
@@ -455,7 +457,7 @@
                     <span>{{d.createTime}}</span>
                     <div style="float: right;" class="first-opr layui-hide">
                         <span type="edit">编辑</span>
-                        <span type="del" lay-event="delete" style="margin-left: 12px;">删除</span>
+                        <span type="del" lay-event="delete_first" style="margin-left: 12px;">删除</span>
                         <!-- <span class="jieda-accept" type="accept">采纳</span> -->
                     </div>
                 </div>
@@ -552,7 +554,7 @@
                 {{# } }}
                 <div style="float: right;" class="second-opr layui-hide">
                     <span type="edit">编辑</span>
-                    <span type="del" lay-event="delete" style="margin-left: 12px;">删除</span>
+                    <span type="del" lay-event="delete_second" style="margin-left: 12px;">删除</span>
                     <!--                <span class="jieda-accept" type="accept">采纳</span>-->
                 </div>
             </div>
@@ -643,7 +645,6 @@
                 src: elem.src
             });
         });
-
         $("div.detail-body img[src]").click(function () {
             console.log(this);
             layer.photos({
@@ -776,7 +777,6 @@
                         done: function (res, curr, count) {
                             //如果是异步请求数据方式，res即为你接口返回的信息。
                             //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                            curPage = curr;
                             if (page2) {
                                 if (curr !== page2) {
                                     secondListGrid.reload({page: {curr: page2}});
@@ -792,7 +792,6 @@
                             }, function () {
                                 $(this).find("div.second-opr").addClass("layui-hide");
                             });
-                            this.curPage = curr; // 记录二级评论的当前页面。
                         }
                     });
                     var selector = 'tool(secondCommentList_' + firstCommentId + ')';
@@ -803,10 +802,13 @@
                             console.log('回复二级评论');
                             obj.data.type = "second";
                             showSecondEditor(firstCommentId, obj.data);
-                        } else if (obj.event === 'delete') {
+                        } else if (obj.event === 'delete_second') {
+                            var id =obj.elem.parents("ul.jieda").attr('data-id');
+                            var fcid = parseInt(id.substring(id.indexOf('-') + 1));
                             showDelConfirmDialog({
                                 type: 'SECOND_COMMENT',
-                                secondCommentId: obj.data.id
+                                commentId: obj.data.id,
+                                firstCommentId: fcid
                             });
                         }
                     });
@@ -844,19 +846,27 @@
                     if (app.isNotNull(dataGrid)) {
                         dataGrid.reload();
                     }
-                    var countSpan = $('#secondCount_' + firstCommentId);
-                    var count = parseInt(countSpan.text().substr(1, countSpan.text().length - 2));
-                    countSpan.text('(' + (count + 1) + ')');
 
+                    updateSecondCount(firstCommentId, 1);
                     cancelReply(firstCommentId);
                 });
-            } else if (obj.event === 'delete') {
+            } else if (obj.event === 'delete_first') {
                 showDelConfirmDialog({
                     type: 'FIRST_COMMENT',
-                    firstCommentId: firstCommentId
+                    commentId: firstCommentId
                 });
             }
         });
+
+        function updateCommentCount(dif) {
+            $("#commentCount").text(parseInt($("#commentCount").text()) + dif);
+        }
+
+        function updateSecondCount(firstCommentId, dif) {
+            var countSpan = $('#secondCount_' + firstCommentId);
+            var count = parseInt(countSpan.text().substr(1, countSpan.text().length - 2));
+            countSpan.text('(' + (count + dif) + ')');
+        }
 
         function cancelReply(firstCommentId) {
             var selector = '#secondEditor_' + firstCommentId;
@@ -884,10 +894,9 @@
             app.scrollIntoView(selector);
         }
 
-        window.showDelConfirmDialog = showDelConfirmDialog;
-
-        function showDelConfirmDialog(data) {
+        window.showDelConfirmDialog = function (data) {
             var param = data || { type: 'POST', postId: postId };
+            console.log(param);
             if (param.type === 'POST') {
                 doShowConfirmDialog('是否确认删除该帖子？', '/post/delete', param, function () {
                     app.successNotice('删除成功，准备跳转到主页');
@@ -896,27 +905,27 @@
                     }, 1000);
                 });
             } else if (param.type === 'FIRST_COMMENT') {
-                doShowConfirmDialog("是否确认删除该评论？", '/comment/delete/first', param, function () {
+                doShowConfirmDialog("是否确认删除该评论？", '/comment/delete', param, function () {
                     commentList.reload({page: {curr: curPage}});
+                    updateCommentCount(-1);
                     app.successNotice('删除成功，界面已刷新');
                 });
-                commentList.reload({page: {curr: curPage}});
             } else if (param.type === 'SECOND_COMMENT') {
-                doShowConfirmDialog("是否确认删除该评论？", '/comment/delete/second', param, function () {
-                    var secondDataGrid = dataGridMap.get(data.firstCommentId);
-                    if (secondDataGrid) {
-                        secondDataGrid.reload({page: {curr: secondDataGrid.curPage}});
-                        app.successNotice('删除成功，界面已刷新');
+                doShowConfirmDialog("是否确认删除该评论？", '/comment/delete', param, function () {
+                    var secondGrid = dataGridMap.get(param.firstCommentId);
+                    if (secondGrid) {
+                        secondGrid.reload({page: {curr: secondGrid.options.page.curr}});
+                        updateCommentCount(-1);
+                        updateSecondCount(param.firstCommentId, -1);
                     }
                 });
             }
-        }
+        };
 
         // desc：确认框内容；data：发起请求所需要的数据
         function doShowConfirmDialog(desc, url, data, callback) {
             admin.confirm(desc, function (index) {
-                parent.layer.close(index);
-                delete data.type;
+                layer.close(index);
                 app.ajax(url, data, function (res) {
                     callback();
                 }, "post");
@@ -1043,14 +1052,17 @@
             }
         });
 
+        window.skipToEditor = function () {
+            layer.msg('我要评论');
+            app.scrollIntoView('div.tox-editor-container');
+        };
         // 固定Bar
         util.fixbar({
             bar1: '&#xe642;' // 图标
             , bgcolor: '#009688'
             , click: function (type) {
                 if (type === 'bar1') {
-                    layer.msg('我要回帖');
-                    app.scrollIntoView('div.tox-editor-container');
+                    skipToEditor();
                 }
             }
         });
@@ -1075,6 +1087,7 @@
                     editorObj.setContent('');
                     $("input[name=captcha]").val('');
                     $("#captchaImage").click();
+                    updateCommentCount(1);
                 }, "post", function (res) {
                     // 业务失败的回调
                     // 模拟点击，刷新验证码

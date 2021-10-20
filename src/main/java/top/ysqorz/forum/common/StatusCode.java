@@ -82,7 +82,8 @@ public enum StatusCode {
 
     // 评论相关
     FIRST_COMMENT_NOT_EXIST(6700, "一级评论不存在"),
-    SECOND_COMMENT_NOT_EXIST(6701, "二级评论不存在")
+    SECOND_COMMENT_NOT_EXIST(6701, "二级评论不存在"),
+    COMMENT_TYPE_INVALID(6702, "不合法的评论类型")
     ;
 
 

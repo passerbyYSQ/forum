@@ -47,7 +47,8 @@ public class PostController {
     private CollectService collectService;
     @Resource
     private UserService userService;
-
+    @Resource
+    private PermManager permManager;
 
     @GetMapping("/detail/{postId}")
     public String detailPage(@PathVariable Integer postId,
@@ -98,8 +99,7 @@ public class PostController {
                 throw new ParameterErrorException("帖子不存在");
             }
             // 不能修改其他人的帖子
-            if (!(post.getCreatorId().equals(ShiroUtils.getUserId())
-                    || ShiroUtils.hasPerm("post:update"))) {
+            if (!permManager.allowUpdatePost(post.getCreatorId())) {
                 throw new AuthorizationException();
             }
 

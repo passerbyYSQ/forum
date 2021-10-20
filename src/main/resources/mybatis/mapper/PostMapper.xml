@@ -146,8 +146,12 @@
 
     <update id="updateCommentCountAndLastTime" parameterType="map">
         update post
-        set comment_count = comment_count + #{dif},
-            last_comment_time = now()
+        <set>
+            comment_count = comment_count + #{dif},
+            <if test="dif == 1">
+                last_comment_time = now(),
+            </if>
+        </set>
         where id = #{postId}
     </update>
 

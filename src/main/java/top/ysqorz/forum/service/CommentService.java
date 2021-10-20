@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.FirstCommentDTO;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.SecondCommentDTO;
@@ -45,4 +46,9 @@ public interface CommentService {
     SecondComment getSecondCommentById(Integer secondCommentId);
 
     int addSecondCommentCount(Integer firstCommentId, Integer dif);
+
+    /**
+     * 删除一级、二级评论
+     */
+    StatusCode deleteCommentById(Integer commentId, String type);
 }

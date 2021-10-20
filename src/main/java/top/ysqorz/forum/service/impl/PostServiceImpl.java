@@ -54,6 +54,8 @@ public class PostServiceImpl implements PostService {
     private RedisService redisService;
     @Resource
     private RewardPointsAction rewardPointsAction;
+    @Resource
+    private PermManager permManager;
 
     @Transactional
     @Override
@@ -88,9 +90,7 @@ public class PostServiceImpl implements PostService {
             return StatusCode.POST_NOT_EXIST;
         }
         // 权限判断
-        if (!(ShiroUtils.hasPerm("post:del") ||
-                // 未登录也不会报错。不过由于路径拦截和界面隐藏，也不会走到这里
-                post.getCreatorId().equals(ShiroUtils.getUserId()))) {
+        if (!permManager.allowDelPost(post.getCreatorId())) {
             return StatusCode.NO_PERM;
         }
         // 删除标签关联
