@@ -114,7 +114,8 @@
 <!--        <table tableName="system_notification" />-->
 <!--        <table tableName="topic" />-->
 <!--        <table tableName="user" />-->
-        <table tableName="attendance" />
+        <!--        <table tableName="attendance" />-->
+        <table tableName="danmu_msg"/>
 
     </context>
 

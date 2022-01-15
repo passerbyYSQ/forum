@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 
@@ -79,7 +80,7 @@ public class JwtUtils {
      * @param claims
      * @return
      */
-    public static void verifyJwt(String jwt, String secret, Map<String, String> claims) {
+    public static boolean verifyJwt(String jwt, String secret, Map<String, String> claims) {
         // 解密算法
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
         Verification verification = JWT.require(algorithm).withIssuer(ISSUER);
@@ -91,12 +92,18 @@ public class JwtUtils {
             }
         }
 
-        JWTVerifier verifier = verification.build();
-        verifier.verify(jwt);
+        try {
+            JWTVerifier verifier = verification.build();
+            verifier.verify(jwt);
+            return true;
+        } catch (JWTVerificationException e) {
+            //e.printStackTrace();
+            return false;
+        }
     }
 
-    public static void verifyJwt(String jwt, String secret) {
-        verifyJwt(jwt, secret, null);
+    public static boolean verifyJwt(String jwt, String secret) {
+        return verifyJwt(jwt, secret, null);
     }
 
     /**

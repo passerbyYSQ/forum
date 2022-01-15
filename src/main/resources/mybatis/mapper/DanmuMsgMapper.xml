@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ysqorz.forum.dao.DanmuMsgMapper">
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.DanmuMsg">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="start_ms" jdbcType="BIGINT" property="startMs"/>
+        <result column="video_id" jdbcType="INTEGER" property="videoId"/>
+        <result column="creator_id" jdbcType="INTEGER" property="creatorId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+</mapper>

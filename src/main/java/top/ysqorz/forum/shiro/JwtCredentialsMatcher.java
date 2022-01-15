@@ -1,6 +1,5 @@
 package top.ysqorz.forum.shiro;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
@@ -26,13 +25,7 @@ public class JwtCredentialsMatcher implements CredentialsMatcher {
         // 校验失败，会抛出异常，被shiro捕获
         Map<String, String> claims = new HashMap<>();
         claims.put("userId", user.getId().toString());
-        try {
-            JwtUtils.verifyJwt((String) token.getCredentials(), user.getJwtSalt(), claims);
-            return true;
-        } catch (JWTVerificationException e) {
-            //e.printStackTrace();
-            return false;
-        }
 
+        return JwtUtils.verifyJwt((String) token.getCredentials(), user.getJwtSalt(), claims);
     }
 }

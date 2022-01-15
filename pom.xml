@@ -18,6 +18,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+        <netty.version>4.1.50.Final</netty.version>
 		<mybatis.version>2.1.4</mybatis.version>
 		<!--	使用1.1.10，datetime转LocalDatetime会报错java.sql.SQLFeatureNotSupportedException: null
 			原因是不支持将数据库的datetime类型转成localDateTime
@@ -36,6 +37,12 @@
 	</properties>
 
 	<dependencies>
+        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
 		<!-- thymeleaf模板引擎 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
