@@ -1,13 +1,12 @@
-package top.ysqorz.forum.netty.handler;
+package top.ysqorz.forum.im.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.dao.DanmuMsgMapper;
-import top.ysqorz.forum.netty.entity.AsyncInsertTask;
-import top.ysqorz.forum.netty.entity.MsgModel;
-import top.ysqorz.forum.netty.entity.MsgType;
+import top.ysqorz.forum.im.entity.AsyncInsertTask;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.DanmuMsg;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JsonUtils;
@@ -27,12 +26,13 @@ public class DanmuMsgHandler extends MsgHandler {
 
     @Override
     protected boolean doHandle(MsgModel msg, Channel channel, User loginUser) {
-        DanmuMsg danmu = JsonUtils.nodeToObj((JsonNode) msg.getData(), DanmuMsg.class);
+        DanmuMsg danmu = JsonUtils.nodeToObj(msg.getDataNode(), DanmuMsg.class);
         if (danmu == null || ObjectUtils.isEmpty(danmu.getContent())) {
             return true;
         }
         // TODO check video
-        String text = danmu.getContent().substring(0, 255); // 如果过长只截取前500个字符
+        int endIndex = Math.min(255, danmu.getContent().length());
+        String text = danmu.getContent().substring(0, endIndex); // 如果过长只截取前500个字符
         text = HtmlUtils.htmlEscape(text, "UTF-8"); // 转义，防止XSS攻击
         danmu.setId(RandomUtils.generateUUID())
                 .setContent(text)

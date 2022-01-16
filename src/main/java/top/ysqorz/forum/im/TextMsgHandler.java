@@ -1,9 +1,13 @@
-package top.ysqorz.forum.netty;
+package top.ysqorz.forum.im;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.handler.MsgCenter;
+import top.ysqorz.forum.utils.JsonUtils;
 
 /**
  * 用于处理文本消息的handler
@@ -14,8 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-
+    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
+        JsonNode msgNode = JsonUtils.jsonToNode(frame.text());
+        if (msgNode == null) {
+            return;
+        }
+        MsgModel msg = new MsgModel(msgNode.get("type").asText(), msgNode.get("data"));
+        MsgCenter.getInstance().handle(msg, ctx.channel());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package top.ysqorz.forum.netty;
+package top.ysqorz.forum.im;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

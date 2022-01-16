@@ -1,9 +1,9 @@
-package top.ysqorz.forum.netty.handler;
+package top.ysqorz.forum.im.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
-import top.ysqorz.forum.netty.entity.MsgModel;
-import top.ysqorz.forum.netty.entity.MsgType;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.User;
 
 /**

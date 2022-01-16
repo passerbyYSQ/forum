@@ -398,7 +398,7 @@
                 <div class="layui-form layui-form-pane layui-tab-item">
 
                     <div class="layui-form-item">
-                        <button class="layui-btn" onclick="window.location.href = '/user/logout'">退出登录</button>
+                        <button class="layui-btn" onclick="logout()">退出登录</button>
                     </div>
 
                 </div>
@@ -569,6 +569,11 @@
                 location.href = oldUrl;
             }, 2000);
         }
+
+        window.logout = function () {
+            window.location.href = '/user/logout';
+            localStorage.removeItem('user');
+        };
 
         // 监听个人信息修改的表单提交
         form.on("submit(updateInfo)", function (obj) {

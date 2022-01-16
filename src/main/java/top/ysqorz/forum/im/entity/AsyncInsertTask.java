@@ -1,4 +1,4 @@
-package top.ysqorz.forum.netty.entity;
+package top.ysqorz.forum.im.entity;
 
 import top.ysqorz.forum.common.BaseMapper;
 

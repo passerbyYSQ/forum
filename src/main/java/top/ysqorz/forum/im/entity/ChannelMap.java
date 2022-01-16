@@ -1,4 +1,4 @@
-package top.ysqorz.forum.netty.entity;
+package top.ysqorz.forum.im.entity;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;

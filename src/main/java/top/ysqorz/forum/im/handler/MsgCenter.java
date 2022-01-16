@@ -1,11 +1,14 @@
-package top.ysqorz.forum.netty.handler;
+package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
-import top.ysqorz.forum.netty.entity.ChannelMap;
-import top.ysqorz.forum.netty.entity.MsgModel;
-import top.ysqorz.forum.netty.entity.MsgType;
+import top.ysqorz.forum.im.entity.ChannelMap;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.MsgType;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

@@ -148,6 +148,11 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                 }
             },
 
+        // 判断是否登录
+        isLogin: function () {
+            return localStorage.getItem('user') && document.cookie.includes('token');
+        },
+
             // 封装ajax
             ajax: function (url, data, successCallback = function (res) {
                             }, type = "post",

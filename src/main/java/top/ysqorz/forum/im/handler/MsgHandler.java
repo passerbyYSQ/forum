@@ -1,12 +1,12 @@
-package top.ysqorz.forum.netty.handler;
+package top.ysqorz.forum.im.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import top.ysqorz.forum.netty.entity.ChannelMap;
-import top.ysqorz.forum.netty.entity.MsgModel;
-import top.ysqorz.forum.netty.entity.MsgType;
+import top.ysqorz.forum.im.entity.ChannelMap;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
