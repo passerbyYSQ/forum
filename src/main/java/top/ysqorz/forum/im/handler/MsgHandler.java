@@ -2,7 +2,7 @@ package top.ysqorz.forum.im.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
-import lombok.AllArgsConstructor;
+import io.netty.util.AttributeKey;
 import lombok.Data;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
@@ -30,60 +30,70 @@ public abstract class MsgHandler {
     // 线程池异步消费数据库操作。子类使用
     protected ThreadPoolExecutor dbExecutor;
 
+    public MsgHandler() {
+    }
     public MsgHandler(MsgType type) {
         this.type = type;
     }
 
     public void handle(MsgModel msg, Channel channel) {
-        CheckResult checkRes = canHandle(msg);
-        if (checkRes.isGoOn && !doHandle(msg, channel, checkRes.user)) {
+        if (canHandle(msg, channel) && !doHandle(msg, channel) && next != null) {
             next.handle(msg, channel);
         }
     }
 
+    public void addBehind(MsgHandler handler) {
+        if (handler == null) {
+            return;
+        }
+        handler.next = next;
+        next = handler;
+    }
+
     // 子类可重写
-    protected CheckResult canHandle(MsgModel msg) {
-        CheckResult checkRes = new CheckResult(false);
-        if (type.name().equalsIgnoreCase(msg.getType())) {
-            checkRes = checkLogin(msg);
-        }
-        return checkRes;
+    protected boolean canHandle(MsgModel msg, Channel channel) {
+        return type != null && type.name().equalsIgnoreCase(msg.getType()) && isLogin(msg, channel);
     }
 
-    // 可以让子类调用，但不能重写
-    protected final CheckResult checkLogin(MsgModel msg) {
-        if (!type.isNeedLogin) {
-            return new CheckResult(true); // 不需要登录直接放行
-        }
-        // 需要登录
-        CheckResult checkRes = checkLoginByShiro(); // 优先通过shiro判断是否已经登录
-        if (!checkRes.isGoOn) { // 再通过检查token
-            checkRes = checkToken(msg);
-        }
-        return checkRes;
+    protected final boolean isLogin(MsgModel msg, Channel channel) {
+        return checkLoginByShiro() || checkBound(channel) || checkToken(msg);
     }
 
-    // 可以让子类调用，但不能重写
-    protected final CheckResult checkToken(MsgModel msg) {
+    protected final boolean checkLoginByShiro() {
+        return ShiroUtils.isAuthenticated();
+    }
+
+    protected final boolean checkBound(Channel channel) {
+        return channelMap.isBound(channel);
+    }
+
+    protected final boolean checkToken(MsgModel msg) {
         JsonNode dataNode = msg.getDataNode();
         if (dataNode == null || !dataNode.has("token")) {
-            return new CheckResult(false);
+            return false;
         }
         String token = dataNode.get("token").asText();
-        String userId = JwtUtils.getClaimByKey(token, "userId"); // TODO 待抽取常量
-        UserService userService = SpringUtils.getBean(UserService.class);
-        User user = userService.getUserById(Integer.valueOf(userId));
-        boolean isValidToken = JwtUtils.verifyJwt(token, user.getJwtSalt());
-        return new CheckResult(isValidToken, user);
+        String userId = JwtUtils.getClaimByKey(token, "userId");
+        User user = getUserById(userId);
+        return user != null && JwtUtils.verifyJwt(token, user.getJwtSalt());
     }
 
-    protected final CheckResult checkLoginByShiro() {
-        if (!ShiroUtils.isAuthenticated()) {
-            return new CheckResult(false);
+    private boolean doHandle(MsgModel msg, Channel channel) {
+        String userId = String.valueOf(ShiroUtils.getUserId());
+        if (userId == null) {
+            AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
+            userId = channel.attr(userIdKey).get();
         }
+        if (userId == null) {
+            String token = msg.getDataNode().get("token").asText();
+            userId = JwtUtils.getClaimByKey(token, "userId");
+        }
+        return doHandle0(msg, channel, getUserById(userId));
+    }
+
+    private User getUserById(String userId) {
         UserService userService = SpringUtils.getBean(UserService.class);
-        User user = userService.getUserById(ShiroUtils.getUserId());
-        return new CheckResult(true, user);
+        return userService.getUserById(Integer.valueOf(userId));
     }
 
     /**
@@ -91,15 +101,6 @@ public abstract class MsgHandler {
      *
      * @return true：消费完成，不继续往下投递；false：未消费完成，继续往下投递
      */
-    protected abstract boolean doHandle(MsgModel msg, Channel channel, User loginUser);
+    protected abstract boolean doHandle0(MsgModel msg, Channel channel, User loginUser);
 
-    @AllArgsConstructor
-    static class CheckResult {
-        Boolean isGoOn;
-        User user;
-
-        CheckResult(Boolean isGoOn) {
-            this.isGoOn = isGoOn;
-        }
-    }
 }

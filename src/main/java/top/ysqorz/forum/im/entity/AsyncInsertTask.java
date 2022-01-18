@@ -32,9 +32,9 @@ public class AsyncInsertTask<T> implements Runnable { // T：PO的类型
                 break;
             }
             // 有可能时数据库连接不够，导致插入失败
-            // 线程池中的该线程持锁睡眠1000后重试。其他要推送的消息会堆放到阻塞队列中
+            // 线程池中的该线程持锁睡眠100后重试。其他要推送的消息会堆放到阻塞队列中
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

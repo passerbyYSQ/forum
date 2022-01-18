@@ -34,7 +34,7 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-//        logger.info("剩余通道个数：{}", UserChannelRepository.CHANNEL_GROUP.size());
+        MsgCenter.getInstance().unBind(ctx.channel());
     }
 
     @Override

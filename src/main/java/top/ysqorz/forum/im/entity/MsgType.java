@@ -1,16 +1,11 @@
 package top.ysqorz.forum.im.entity;
 
 /**
- * 消息的类型
+ * 消息的类型。
+ * 长连接建立和所有的消息推送必须登录
  */
 public enum MsgType {
-
-    BIND(true),
-    DANMU(true);
-
-    public Boolean isNeedLogin;
-
-    MsgType(Boolean isNeedLogin) {
-        this.isNeedLogin = isNeedLogin;
-    }
+    BIND,
+    DANMU,
+    CLOSE
 }

@@ -6,7 +6,10 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import top.ysqorz.forum.im.handler.DanmuMsgHandler;
+import top.ysqorz.forum.im.handler.MsgCenter;
 
 /**
  * netty和springboot的整合启动
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
  * @create 2021-02-05 20:59
  */
 @Component  // 注意不要忘了！！！
+@Slf4j
 public class WebSocketServer {
 
     /**
@@ -51,12 +55,19 @@ public class WebSocketServer {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
-                    System.out.println("netty websocket server 异步启动成功");
+                    log.info("netty websocket server 异步启动成功");
+                    initMsgHandlers();
                 } else {
-                    System.out.println("netty websocket server 异步启动失败");
+                    log.error("netty websocket server 异步启动失败");
                 }
             }
         });
+    }
+
+    private void initMsgHandlers() {
+        MsgCenter.getInstance()
+                .addLast(new DanmuMsgHandler());
+        log.info("消息处理器初始化成功");
     }
 }
 
