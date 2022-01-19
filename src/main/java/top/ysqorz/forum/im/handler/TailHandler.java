@@ -7,6 +7,8 @@ import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JsonUtils;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * 位于尾部的后置处理器
  *
@@ -14,6 +16,10 @@ import top.ysqorz.forum.utils.JsonUtils;
  * @create 2022-01-18 19:29
  */
 public class TailHandler extends MsgHandler {
+
+    public TailHandler(ThreadPoolExecutor dbExecutor) {
+        super(dbExecutor);
+    }
 
     @Override
     protected boolean canHandle(MsgModel msg, Channel channel) {

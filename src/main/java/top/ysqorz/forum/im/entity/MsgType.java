@@ -7,5 +7,6 @@ package top.ysqorz.forum.im.entity;
 public enum MsgType {
     BIND,
     DANMU,
+    PING,
     CLOSE
 }

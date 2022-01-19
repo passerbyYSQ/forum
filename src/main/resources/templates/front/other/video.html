@@ -82,11 +82,13 @@
 <script th:src="@{/admin/assets/libs/layui/layui.js}" src="../res/layui/layui.js"></script>
 <script th:src="@{/admin/assets/js/common.js(v=318)}" src="admin/js/common.js?v=318"></script>
 <script>
-    layui.use(['Player', 'app'], function () {
+    layui.use(['Player', 'app', 'ClientWebSocket'], function () {
         var $ = layui.jquery;
-        var Player = layui.Player;
+        // var Player = layui.Player;
+        // var ClientWebSocket = layui.ClientWebSocket;
         var app = layui.app;
         var playerObj;
+        var socket;
 
         window.addEventListener('resize', function () {
             var videoContainer = document.getElementById('videoContainer');
@@ -97,7 +99,24 @@
         app.ajax('/danmu/1', {}, function (res) {
             app.successNotice(`${res.data.length}条弹幕装载成功...`);
             initPlayer(res.data);
+            initSocket();
         }, "get");
+
+        function initSocket() {
+            if (!app.getCookie('token')) {
+                return;
+            }
+            socket = new layui.ClientWebSocket({
+                channelType: 'DANMU',
+                extra: 1
+            })
+        }
+
+        function sendMsg(data) {
+            if (socket) {
+                socket.send(new app.Msg(app.MSG_TYPE.DANMU, data));
+            }
+        }
 
         function initPlayer(danmuList) {
             // 开启弹幕
@@ -125,7 +144,7 @@
                 Object.assign(comment, danmuCommonStyle);
                 return comment;
             });
-            playerObj = new Player({
+            playerObj = new layui.Player({
                 id: 'videoContainer',
                 url: '//sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-720p.mp4',
                 autoplay: false,
@@ -162,8 +181,13 @@
                     Object.assign(danmu, danmuCommonStyle);
                     danmu.style = meDanmuStyle;
                     playerObj.danmu.sendComment(danmu);
-                    console.log('发送成功', danmu);
                     // TODO 推送
+                    sendMsg({
+                        content: txt,
+                        startMs: danmu.start,
+                        videoId: 1
+                    });
+                    console.log('发送成功', danmu);
                     input.value = '';
                 };
                 input.addEventListener('keydown', function (ev) {

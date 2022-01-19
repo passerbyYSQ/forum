@@ -30,8 +30,9 @@ public class MsgCenter {
         int corePoolSize = Runtime.getRuntime().availableProcessors() * 2;
         dbExecutor = new ThreadPoolExecutor(corePoolSize, corePoolSize, 10,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<>(2000));
-        UserChannelBindHandler bindHandler = new UserChannelBindHandler();
-        TailHandler tailHandler = new TailHandler();
+        UserChannelBindHandler bindHandler = new UserChannelBindHandler(dbExecutor);
+        // TODO 需要增加 PingPongMsgHandler，否则已经登录情况下Ping消息会流至TailHandler，导致通道关闭
+        TailHandler tailHandler = new TailHandler(dbExecutor);
         bindHandler.addBehind(tailHandler);
         first = bindHandler;
         tail = first; // 不包括tailHandler

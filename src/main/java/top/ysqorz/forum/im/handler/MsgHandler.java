@@ -30,14 +30,22 @@ public abstract class MsgHandler {
     // 线程池异步消费数据库操作。子类使用
     protected ThreadPoolExecutor dbExecutor;
 
-    public MsgHandler() {
+    public MsgHandler(ThreadPoolExecutor dbExecutor) {
+        this.dbExecutor = dbExecutor;
     }
+
     public MsgHandler(MsgType type) {
+        this(type, null);
+    }
+
+    public MsgHandler(MsgType type, ThreadPoolExecutor dbExecutor) {
         this.type = type;
+        this.dbExecutor = dbExecutor;
     }
 
     public void handle(MsgModel msg, Channel channel) {
-        if (canHandle(msg, channel) && !doHandle(msg, channel) && next != null) {
+        // 不能处理 或者 能处理但未处理完
+        if (next != null && (!canHandle(msg, channel) || !doHandle(msg, channel))) {
             next.handle(msg, channel);
         }
     }
@@ -56,7 +64,7 @@ public abstract class MsgHandler {
     }
 
     protected final boolean isLogin(MsgModel msg, Channel channel) {
-        return checkLoginByShiro() || checkBound(channel) || checkToken(msg);
+        return checkBound(channel) || checkToken(msg); // checkLoginByShiro() ||
     }
 
     protected final boolean checkLoginByShiro() {
@@ -64,7 +72,7 @@ public abstract class MsgHandler {
     }
 
     protected final boolean checkBound(Channel channel) {
-        return channelMap.isBound(channel);
+        return channelMap != null && channelMap.isBound(channel); // BIND和TAIL的channelMap为空
     }
 
     protected final boolean checkToken(MsgModel msg) {
@@ -79,11 +87,9 @@ public abstract class MsgHandler {
     }
 
     private boolean doHandle(MsgModel msg, Channel channel) {
-        String userId = String.valueOf(ShiroUtils.getUserId());
-        if (userId == null) {
-            AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
-            userId = channel.attr(userIdKey).get();
-        }
+        // String userId = String.valueOf(ShiroUtils.getUserId());
+        AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
+        String userId = channel.attr(userIdKey).get();
         if (userId == null) {
             String token = msg.getDataNode().get("token").asText();
             userId = JwtUtils.getClaimByKey(token, "userId");
