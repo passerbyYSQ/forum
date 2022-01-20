@@ -27,7 +27,8 @@ public class MsgModel {
         this.data = data;
     }
 
-    public JsonNode getDataNode() {
+    // 不要以getXx开头，否则objectMapper在序列化为json的时候会认为是一个属性
+    public JsonNode transformToDataNode() {
         return data instanceof JsonNode ? (JsonNode) data : null;
     }
 }

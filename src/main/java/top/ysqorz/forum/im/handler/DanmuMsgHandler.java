@@ -27,7 +27,8 @@ public class DanmuMsgHandler extends MsgHandler {
 
     @Override
     protected boolean doHandle0(MsgModel msg, Channel channel, User loginUser) {
-        DanmuMsg danmu = JsonUtils.nodeToObj(msg.getDataNode(), DanmuMsg.class);
+        // DANMU类型且已登录，但是dataNode仍可能为空(人为传错)
+        DanmuMsg danmu = JsonUtils.nodeToObj(msg.transformToDataNode(), DanmuMsg.class);
         if (danmu == null || ObjectUtils.isEmpty(danmu.getContent()) || danmu.getVideoId() == null) {
             return true;
         }

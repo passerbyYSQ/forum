@@ -45,7 +45,8 @@ public abstract class MsgHandler {
 
     public void handle(MsgModel msg, Channel channel) {
         // 不能处理 或者 能处理但未处理完
-        if (next != null && (!canHandle(msg, channel) || !doHandle(msg, channel))) {
+        // next != null 必须放到后面，否则会短路导致doHandle不被执行
+        if ((!canHandle(msg, channel) || !doHandle(msg, channel)) && next != null) {
             next.handle(msg, channel);
         }
     }
@@ -76,7 +77,7 @@ public abstract class MsgHandler {
     }
 
     protected final boolean checkToken(MsgModel msg) {
-        JsonNode dataNode = msg.getDataNode();
+        JsonNode dataNode = msg.transformToDataNode();
         if (dataNode == null || !dataNode.has("token")) {
             return false;
         }
@@ -90,14 +91,20 @@ public abstract class MsgHandler {
         // String userId = String.valueOf(ShiroUtils.getUserId());
         AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
         String userId = channel.attr(userIdKey).get();
-        if (userId == null) {
-            String token = msg.getDataNode().get("token").asText();
-            userId = JwtUtils.getClaimByKey(token, "userId");
+        if (userId == null) { // 没有绑定时发送消息
+            JsonNode dataNode = msg.transformToDataNode(); // PING消息dataNode为null但又能执行到此处
+            if (dataNode != null && dataNode.has("token")) {
+                String token = dataNode.get("token").asText();
+                userId = JwtUtils.getClaimByKey(token, "userId");
+            }
         }
         return doHandle0(msg, channel, getUserById(userId));
     }
 
     private User getUserById(String userId) {
+        if (userId == null) {
+            return null;
+        }
         UserService userService = SpringUtils.getBean(UserService.class);
         return userService.getUserById(Integer.valueOf(userId));
     }

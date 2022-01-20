@@ -12,11 +12,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 通道类型与消息消类型有差异：
- * 1. 通道类型以消息的业务类型划分
- * 2. 消息类型不仅以业务划分，还可能有一些基础类型的消息(比如说：BIND类型)
- * 例：有BIND类型的Handler和消息，但没有BIND类型的通道
- *
  * @author passerbyYSQ
  * @create 2022-01-12 0:00
  */

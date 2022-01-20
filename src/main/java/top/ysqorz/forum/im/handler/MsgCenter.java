@@ -2,6 +2,7 @@ package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
@@ -13,15 +14,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author passerbyYSQ
  * @create 2022-01-12 0:25
  */
+@Slf4j
 public class MsgCenter {
     private MsgHandler first, tail; // handler链
     private Set<String> addedHandlers = new HashSet<>();
     private Map<String, ChannelMap> typeToChannels = new ConcurrentHashMap<>(); // channelType --> ChannelMap
+    private volatile AtomicInteger channelCount = new AtomicInteger(0);
     private ThreadPoolExecutor dbExecutor;
 
     private static MsgCenter instance = new MsgCenter();
@@ -67,6 +71,8 @@ public class MsgCenter {
         ChannelMap channelMap = typeToChannels.get(channelType);
         if (channelMap != null) {
             channelMap.bind(userId, channel, extra);
+            int count = channelCount.incrementAndGet();
+            log.info("绑定成功，当前通道数：{}", count);
         }
     }
 
@@ -77,6 +83,8 @@ public class MsgCenter {
             ChannelMap channelMap = typeToChannels.get(channelType);
             if (channelMap != null) {
                 channelMap.unBind(channel);
+                int count = channelCount.decrementAndGet();
+                log.info("解绑成功，当前通道数：{}", count);
             }
         }
     }

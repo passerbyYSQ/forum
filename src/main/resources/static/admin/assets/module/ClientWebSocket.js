@@ -25,6 +25,10 @@ layui.define(['app'], function (exports) {
                 this.options.serverUrl = WS_SERVER;
             }
             this.SocketClazz = window.WebSocket || window.MozWebSocket;
+            this.initSocket();
+        }
+
+        initSocket() {
             this.socket = new this.SocketClazz(this.options.serverUrl);
             if (this.socket) {
                 this.socket.onopen = this.onOpenCallback.bind(this);
@@ -35,11 +39,11 @@ layui.define(['app'], function (exports) {
         }
 
         send(msg) { // MsgObj
-            this.trySend(msg, 0);
+            this.trySend(msg, 1);
         }
 
         trySend(msg, cnt) {
-            if (cnt >= 3) {
+            if (cnt > 3) {
                 console.log('重试3次发送消息失败，丢弃消息', msg);
                 app.errorNotice('重试3次发送消息失败，丢弃消息：' + JSON.stringify(msg));
                 return;
@@ -49,9 +53,11 @@ layui.define(['app'], function (exports) {
                 this.socket.send(JSON.stringify(msg));
                 return;
             }
-            this.socket = new this.SocketClazz(this.options.serverUrl); // 尝试重连
+            this.clearHeartBeatTimer();
+            this.initSocket(); // 尝试重连，成功会发送执行onOpenCallback
             var _that = this;
             setTimeout(function () {
+                console.log(`第${cnt}次尝试发送`, msg);
                 _that.trySend(msg, cnt + 1); // 延时1秒，递归调用
             }, 1000);
         }
@@ -72,11 +78,14 @@ layui.define(['app'], function (exports) {
             this.socket.send(JSON.stringify(msg));
             console.log('成功发送绑定类型的消息');
             // 开启心跳
-            // this.initHeartBeatTimer();
-            // console.log('成功开启心跳定时器');
+            this.initHeartBeatTimer();
+            console.log('成功开启心跳定时器');
         }
 
         initHeartBeatTimer() {
+            if (this.heartBeatTimer) {
+                return;
+            }
             var msg = new Msg(MSG_TYPE.PING, null);
             var _that = this;
             this.heartBeatTimer = setInterval(function () {
@@ -85,11 +94,16 @@ layui.define(['app'], function (exports) {
             }, 1000 * 10); // 每隔10秒（必须小与后端定义的超时时间）发送一个心跳包
         }
 
-        onCloseCallback() {
+        clearHeartBeatTimer() {
             // 清除定时器
             clearInterval(this.heartBeatTimer);
             this.heartBeatTimer = null;
-            console.log('长连接关闭，成功清除心跳定时器');
+        }
+
+        onCloseCallback() {
+            this.clearHeartBeatTimer();
+            this.socket = null;
+            console.log('长连接关闭，成功清除心跳定时器，并且置空socket');
             app.errorNotice('长连接关闭，成功清除心跳定时器');
         }
 
@@ -97,19 +111,18 @@ layui.define(['app'], function (exports) {
             console.log('发生异常');
             app.errorNotice('发生异常');
             if (this.socket) {
-                this.socket.close();
+                this.socket.close(); // 关闭后会执行onCloseCallback
             }
         }
 
         onMsgReceived(ev) {
-            var msg = JSON.parse(ev.data)
+            var msg = JSON.parse(ev.data);
             console.log('接收到消息', msg);
             if (this.options.onMsgReceived) {
                 this.options.onMsgReceived(msg);
             }
         }
     }
-
 
     exports('ClientWebSocket', ClientWebSocket);
 });

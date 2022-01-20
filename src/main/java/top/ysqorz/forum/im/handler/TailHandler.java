@@ -33,8 +33,8 @@ public class TailHandler extends MsgHandler {
         MsgModel respModel = new MsgModel(MsgType.CLOSE);
         String respText = JsonUtils.objectToJson(respModel);
         channel.writeAndFlush(new TextWebSocketFrame(respText));
-
-        channel.close();
+//        MsgCenter.getInstance().unBind(channel);
+        channel.close(); // 这里close会回调到 TextMsgHandler 中的 channelInactive。所以此处不需要 unbind
         return true;
     }
 }
