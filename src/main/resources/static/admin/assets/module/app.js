@@ -18,8 +18,9 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
             DANMU: 'DANMU'
         },
 
-        Msg: function (type, data) {
-            this.type = type;
+        Msg: function (msgType, channelType, data) {
+            this.msgType = msgType;
+            this.channelType = channelType;
             this.data = data;
         },
 

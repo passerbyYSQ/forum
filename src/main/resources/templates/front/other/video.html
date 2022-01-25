@@ -84,10 +84,9 @@
 <script>
     layui.use(['Player', 'app', 'ClientWebSocket'], function () {
         var $ = layui.jquery;
-        // var Player = layui.Player;
-        // var ClientWebSocket = layui.ClientWebSocket;
         var app = layui.app;
-        // 开启弹幕
+        const currVideoId = 1;
+        const channelType = 'DANMU';
         const danmuCommonStyle = {
             color: true,
             style: {
@@ -103,7 +102,9 @@
             borderRadius: '50px',
             padding: '2px 10px'
         };
-        var currVideoId = 1;
+        var Msg = function (msgType, data) {
+            app.Msg.call(this, msgType, channelType, data);  // 继承
+        };
         var playerObj;
         var socket;
 
@@ -117,15 +118,15 @@
             app.successNotice(`${res.data.length}条弹幕装载成功...`);
             initPlayer(res.data);
             initSocket();
-        }, "get");
+        }, 'get');
 
         function initSocket() {
             if (!app.getCookie('token')) {
                 return;
             }
             socket = new layui.ClientWebSocket({
-                channelType: 'DANMU',
-                extra: 1,
+                channelType,
+                extra: currVideoId,
                 onMsgReceived(msg) {
                     if (msg.type !== app.MSG_TYPE.DANMU || msg.data.videoId !== currVideoId) {
                         return;
@@ -155,7 +156,7 @@
 
         function pushMsg(txt, startMs) {
             if (socket) {
-                var msg = new app.Msg(app.MSG_TYPE.DANMU, {
+                var msg = new Msg(app.MSG_TYPE.DANMU, {
                     content: txt,
                     startMs,
                     videoId: currVideoId

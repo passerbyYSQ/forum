@@ -2,11 +2,11 @@ package top.ysqorz.forum.im.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
-import io.netty.util.AttributeKey;
 import lombok.Data;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.im.utils.IMUtils;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -25,6 +25,7 @@ public abstract class MsgHandler {
     private MsgType type;
     // 下一个消息处理器
     private MsgHandler next;
+    private boolean isNeedLoginUserInfo;
     // 该类型消息的所有通道。子类使用
     protected ChannelMap channelMap;
     // 线程池异步消费数据库操作。子类使用
@@ -35,12 +36,13 @@ public abstract class MsgHandler {
     }
 
     public MsgHandler(MsgType type) {
-        this(type, null);
+        this(type, null, false);
     }
 
-    public MsgHandler(MsgType type, ThreadPoolExecutor dbExecutor) {
+    public MsgHandler(MsgType type, ThreadPoolExecutor dbExecutor, boolean isNeedLoginUserInfo) {
         this.type = type;
         this.dbExecutor = dbExecutor;
+        this.isNeedLoginUserInfo = isNeedLoginUserInfo;
     }
 
     public void handle(MsgModel msg, Channel channel) {
@@ -61,18 +63,18 @@ public abstract class MsgHandler {
 
     // 子类可重写
     protected boolean canHandle(MsgModel msg, Channel channel) {
-        return type != null && type.name().equalsIgnoreCase(msg.getType()) && isLogin(msg, channel);
+        return type != null && type.name().equalsIgnoreCase(msg.getMsgType()) && isLogin(msg, channel);
     }
 
-    protected final boolean isLogin(MsgModel msg, Channel channel) {
+    protected boolean isLogin(MsgModel msg, Channel channel) {
         return checkBound(channel) || checkToken(msg); // checkLoginByShiro() ||
     }
 
-    protected final boolean checkLoginByShiro() {
+    protected boolean checkLoginByShiro() {
         return ShiroUtils.isAuthenticated();
     }
 
-    protected final boolean checkBound(Channel channel) {
+    protected boolean checkBound(Channel channel) {
         return channelMap != null && channelMap.isBound(channel); // BIND和TAIL的channelMap为空
     }
 
@@ -88,17 +90,20 @@ public abstract class MsgHandler {
     }
 
     private boolean doHandle(MsgModel msg, Channel channel) {
-        // String userId = String.valueOf(ShiroUtils.getUserId());
-        AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
-        String userId = channel.attr(userIdKey).get();
-        if (userId == null) { // 没有绑定时发送消息
-            JsonNode dataNode = msg.transformToDataNode(); // PING消息dataNode为null但又能执行到此处
-            if (dataNode != null && dataNode.has("token")) {
-                String token = dataNode.get("token").asText();
-                userId = JwtUtils.getClaimByKey(token, "userId");
+        User loginUser = null;
+        if (isNeedLoginUserInfo) {
+            // String userId = String.valueOf(ShiroUtils.getUserId());
+            String userId = IMUtils.getUserIdFromChannel(channel);
+            if (userId == null) { // 没有绑定时发送消息
+                JsonNode dataNode = msg.transformToDataNode(); // PING消息dataNode为null但又能执行到此处
+                if (dataNode != null && dataNode.has("token")) {
+                    String token = dataNode.get("token").asText();
+                    userId = JwtUtils.getClaimByKey(token, "userId");
+                }
             }
+            loginUser = getUserById(userId);
         }
-        return doHandle0(msg, channel, getUserById(userId));
+        return doHandle0(msg, channel, loginUser);
     }
 
     private User getUserById(String userId) {

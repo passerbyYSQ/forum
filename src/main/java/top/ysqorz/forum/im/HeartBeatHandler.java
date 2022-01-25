@@ -5,8 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 之所以不继承SimpleChannelInboundHandler方法，而实现它的父类ChannelInboundHandlerAdapter
@@ -15,9 +14,8 @@ import org.slf4j.LoggerFactory;
  * @author passerbyYSQ
  * @create 2021-02-08 22:11
  */
+@Slf4j
 public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -27,15 +25,13 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
             String channelId = channel.id().asLongText();
 
             if (event.state() == IdleState.READER_IDLE) {
-//                logger.info("channel进入读空闲状态：{}", channelId);
-
+                log.info("channel进入读空闲状态：{}", channelId);
             } else if (event.state() == IdleState.WRITER_IDLE) {
-//                logger.info("channel进入写空闲状态：{}", channelId);
-
+                log.info("channel进入写空闲状态：{}", channelId);
             } else if (event.state() == IdleState.ALL_IDLE) {
-//                logger.info("channel进入写读写空闲状态：{}，剩余通道个数：{}",
-//                        channelId, UserChannelRepository.CHANNEL_GROUP.size());
-//                UserChannelRepository.print();
+                log.info("channel进入写读写空闲状态：{}", channelId);
+//                channel.writeAndFlush(IMUtils.createTextFrame(MsgType.CLOSE));
+//                channel.close();
             }
         }
     }

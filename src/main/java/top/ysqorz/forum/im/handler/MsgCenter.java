@@ -1,11 +1,10 @@
 package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
-import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
-import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.im.utils.IMUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -23,7 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class MsgCenter {
     private MsgHandler first, tail; // handler链
-    private Set<String> addedHandlers = new HashSet<>();
+    private Set<String> addedHandlers = new HashSet<>(); // 已经添加的外置handlers
+
     private Map<String, ChannelMap> typeToChannels = new ConcurrentHashMap<>(); // channelType --> ChannelMap
     private volatile AtomicInteger channelCount = new AtomicInteger(0);
     private ThreadPoolExecutor dbExecutor;
@@ -34,12 +34,7 @@ public class MsgCenter {
         int corePoolSize = Runtime.getRuntime().availableProcessors() * 2;
         dbExecutor = new ThreadPoolExecutor(corePoolSize, corePoolSize, 10,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<>(2000));
-        UserChannelBindHandler bindHandler = new UserChannelBindHandler(dbExecutor);
-        // TODO 需要增加 PingPongMsgHandler，否则已经登录情况下Ping消息会流至TailHandler，导致通道关闭
-        TailHandler tailHandler = new TailHandler(dbExecutor);
-        bindHandler.addBehind(tailHandler);
-        first = bindHandler;
-        tail = first; // 不包括tailHandler
+        initInternalHandlers();
     }
 
     public static MsgCenter getInstance() {
@@ -47,8 +42,7 @@ public class MsgCenter {
     }
 
     public synchronized MsgCenter addLast(MsgHandler handler) { // 链式调用
-        // 处理BIND类型的消息的handler已经被内置添加到责任链的第一个了，不允许外部添加
-        if (handler == null || handler.getType() == null || MsgType.BIND.equals(handler.getType())) {
+        if (handler == null || handler.getType() == null) {
             return instance;
         }
         String type = handler.getType().name();
@@ -77,8 +71,7 @@ public class MsgCenter {
     }
 
     public void unBind(Channel channel) {
-        AttributeKey<String> channelTypeKey = AttributeKey.valueOf("channelType");
-        String channelType = channel.attr(channelTypeKey).get();
+        String channelType = IMUtils.getChannelTypeFromChannel(channel);
         if (channelType != null) {
             ChannelMap channelMap = typeToChannels.get(channelType);
             if (channelMap != null) {
@@ -87,6 +80,26 @@ public class MsgCenter {
                 log.info("解绑成功，当前通道数：{}", count);
             }
         }
+    }
+
+    public ChannelMap getChannelMap(String channelType) {
+        return typeToChannels.get(channelType);
+    }
+
+    private void initInternalHandlers() {
+        UserChannelBindHandler bindHandler = new UserChannelBindHandler(dbExecutor);
+        // 需要增加 PingPongMsgHandler，否则已经登录情况下Ping消息会流至TailHandler，导致通道关闭
+        PingPongMsgHandler pingPongHandler = new PingPongMsgHandler();
+        TailHandler tailHandler = new TailHandler(dbExecutor);
+
+        addedHandlers.add(bindHandler.getType().name());
+        addedHandlers.add(pingPongHandler.getType().name());
+
+        bindHandler.addBehind(pingPongHandler);
+        pingPongHandler.addBehind(tailHandler);
+
+        first = bindHandler;
+        tail = pingPongHandler; // 不包括tailHandler
     }
 
     public void handle(MsgModel msg, Channel channel) {

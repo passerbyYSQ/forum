@@ -8,6 +8,7 @@ import top.ysqorz.forum.im.entity.AsyncInsertTask;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.im.utils.IMUtils;
 import top.ysqorz.forum.po.DanmuMsg;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JsonUtils;
@@ -33,12 +34,13 @@ public class DanmuMsgHandler extends MsgHandler {
             return true;
         }
         // TODO check video exists
+        String userId = IMUtils.getUserIdFromChannel(channel);
         int endIndex = Math.min(255, danmu.getContent().length());
         String text = danmu.getContent().substring(0, endIndex); // 如果过长只截取前500个字符
         text = HtmlUtils.htmlEscape(text, "UTF-8"); // 转义，防止XSS攻击
         danmu.setId(RandomUtils.generateUUID())
                 .setContent(text)
-                .setCreatorId(loginUser.getId())
+                .setCreatorId(Integer.valueOf(userId))
                 .setCreateTime(LocalDateTime.now())
                 .setStartMs(Math.max(danmu.getStartMs(), 0)); // 负数时做纠正
         // 推送弹幕

@@ -20,10 +20,12 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
         JsonNode msgNode = JsonUtils.jsonToNode(frame.text());
-        if (msgNode == null) {
+        if (msgNode == null || !msgNode.has("msgType") || !msgNode.has("channelType")) {
             return;
         }
-        MsgModel msg = new MsgModel(msgNode.get("type").asText(), msgNode.get("data"));
+        String msgType = msgNode.get("msgType").asText();
+        String channelType = msgNode.get("channelType").asText();
+        MsgModel msg = new MsgModel(msgType, channelType, msgNode.get("data"));
         MsgCenter.getInstance().handle(msg, ctx.channel());
     }
 

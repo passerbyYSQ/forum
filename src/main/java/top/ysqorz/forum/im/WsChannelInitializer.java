@@ -28,7 +28,7 @@ public class WsChannelInitializer extends ChannelInitializer<SocketChannel> {
                 // 注意。关于心跳的两个handler在pipeline中的顺序不能更改。且需要放到业务handler的前面
                 // IdleStateHandler一旦检查到空闲状态发生，会触发IdleStateEvent事件并且交给下一个handler处理
                 // 下一个handler必须实现userEventTriggered方法处理对应事件
-                .addLast(new IdleStateHandler(6, 8, 12))
+                .addLast(new IdleStateHandler(12, 12, 12))
                 // 空闲状态检查的handler
                 .addLast(new HeartBeatHandler())
 

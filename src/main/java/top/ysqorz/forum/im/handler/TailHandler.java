@@ -1,11 +1,10 @@
 package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.im.utils.IMUtils;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.utils.JsonUtils;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -30,9 +29,7 @@ public class TailHandler extends MsgHandler {
     protected boolean doHandle0(MsgModel msg, Channel channel, User loginUser) {
         // 消息能流至最后一个处理器，只能说客户端建立了长连接后，没有进行绑定操作，就发送消息，从而导致未被消费
         // 此时认为长连接非法建立，强制关闭长连接
-        MsgModel respModel = new MsgModel(MsgType.CLOSE);
-        String respText = JsonUtils.objectToJson(respModel);
-        channel.writeAndFlush(new TextWebSocketFrame(respText));
+        channel.writeAndFlush(IMUtils.createTextFrame(MsgType.CLOSE));
 //        MsgCenter.getInstance().unBind(channel);
         channel.close(); // 这里close会回调到 TextMsgHandler 中的 channelInactive。所以此处不需要 unbind
         return true;

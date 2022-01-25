@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
 import lombok.Data;
-import top.ysqorz.forum.utils.JsonUtils;
+import top.ysqorz.forum.im.utils.IMUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -45,8 +45,7 @@ public class ChannelMap {
     }
 
     public void unBind(Channel channel) {
-        AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
-        String userId = channel.attr(userIdKey).get();
+        String userId = IMUtils.getUserIdFromChannel(channel);
         if (userId != null) {
             Set<Channel> channels = channelMap.get(userId);
             if (channels != null) {
@@ -67,8 +66,7 @@ public class ChannelMap {
                 if (channel == currChannel) { // 排除当前通道
                     continue;
                 }
-                AttributeKey<Object> extraKey = AttributeKey.valueOf("extra");
-                Object extra = channel.attr(extraKey).get();
+                Object extra = IMUtils.getExtraFromChannel(channel);
                 if (matcher == null || matcher.isMatch(extra, channel)) {
                     channel.writeAndFlush(createTextFrame(data));
                 }
@@ -86,8 +84,7 @@ public class ChannelMap {
             return;
         }
         for (Channel channel : channels) {
-            AttributeKey<Object> extraKey = AttributeKey.valueOf("extra");
-            Object extra = channel.attr(extraKey).get();
+            Object extra = IMUtils.getExtraFromChannel(channel);
             if (matcher == null || matcher.isMatch(extra, channel)) {
                 channel.writeAndFlush(createTextFrame(data));
             }
@@ -95,8 +92,7 @@ public class ChannelMap {
     }
 
     public boolean isBound(Channel channel) {
-        AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
-        String userId = channel.attr(userIdKey).get();
+        String userId = IMUtils.getUserIdFromChannel(channel);
         if (userId == null) {
             return false;
         }
@@ -108,9 +104,7 @@ public class ChannelMap {
     }
 
     private TextWebSocketFrame createTextFrame(Object data) {
-        MsgModel respModel = new MsgModel(type, data);
-        String respText = JsonUtils.objectToJson(respModel);
-        return new TextWebSocketFrame(respText);
+        return IMUtils.createTextFrame(type, data);
     }
 
     public interface ChannelMatcher {
