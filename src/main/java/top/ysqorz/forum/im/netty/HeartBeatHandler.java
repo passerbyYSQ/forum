@@ -1,4 +1,4 @@
-package top.ysqorz.forum.im;
+package top.ysqorz.forum.im.netty;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -32,6 +32,8 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
                 log.info("channel进入写读写空闲状态：{}", channelId);
 //                channel.writeAndFlush(IMUtils.createTextFrame(MsgType.CLOSE));
 //                channel.close();
+            } else {
+                super.userEventTriggered(ctx, evt);
             }
         }
     }

@@ -1,4 +1,4 @@
-package top.ysqorz.forum.im;
+package top.ysqorz.forum.im.netty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.ChannelHandlerContext;

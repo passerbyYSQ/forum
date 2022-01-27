@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MsgCenter {
     private MsgHandler first, tail; // handler链
     private Set<String> addedHandlers = new HashSet<>(); // 已经添加的外置handlers
-
     private Map<String, ChannelMap> typeToChannels = new ConcurrentHashMap<>(); // channelType --> ChannelMap
     private volatile AtomicInteger channelCount = new AtomicInteger(0);
     private ThreadPoolExecutor dbExecutor;

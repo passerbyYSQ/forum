@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ysqorz.forum.dao.VideoMapper">
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.Video">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="duration" jdbcType="BIGINT" property="duration"/>
+        <result column="cover" jdbcType="VARCHAR" property="cover"/>
+        <result column="author_id" jdbcType="INTEGER" property="authorId"/>
+        <result column="file_id" jdbcType="INTEGER" property="fileId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="videoDetail" type="Video" extends="BaseResultMap">
+        <association property="file" column="file_id" javaType="DbFile"
+                     select="top.ysqorz.forum.dao.DbFileMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+    <select id="selectVideoDetailById" resultMap="videoDetail" parameterType="Integer">
+        select v.*
+        from video v
+                 left join db_file df on v.file_id = df.id
+        where v.id = #{videoId}
+    </select>
+
+</mapper>

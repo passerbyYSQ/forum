@@ -92,7 +92,6 @@
         -->
 <!--        <table tableName="fs"  domainObjectName="FS" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
         <!-- 谨慎【覆盖】，小心重新生成覆盖导致xml中自己写的sql语句全部没有了 -->
-<!--        <table tableName="chat_msg"/>-->
 
 <!--        <table tableName="blacklist" />-->
 <!--        <table tableName="collect" />-->
@@ -115,7 +114,9 @@
 <!--        <table tableName="topic" />-->
 <!--        <table tableName="user" />-->
         <!--        <table tableName="attendance" />-->
-        <table tableName="danmu_msg"/>
+        <!--        <table tableName="danmu_msg"/>-->
+        <!--        <table tableName="video"/>-->
+        <table tableName="db_file"/>
 
     </context>
 

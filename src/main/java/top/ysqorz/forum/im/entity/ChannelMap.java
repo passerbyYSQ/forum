@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author passerbyYSQ
@@ -21,6 +22,7 @@ public class ChannelMap {
     private MsgType type; // channelType
     // 该业务类型的所有通道 userId --> Set<Channel>
     private Map<String, Set<Channel>> channelMap = new ConcurrentHashMap<>();
+    private volatile AtomicInteger channelCount = new AtomicInteger(0);
 
     public ChannelMap(MsgType type) {
         this.type = type;
@@ -42,6 +44,7 @@ public class ChannelMap {
         } else {
             channels.add(channel);
         }
+        channelCount.incrementAndGet();
     }
 
     public void unBind(Channel channel) {
@@ -50,6 +53,7 @@ public class ChannelMap {
             Set<Channel> channels = channelMap.get(userId);
             if (channels != null) {
                 channels.remove(channel);
+                channelCount.decrementAndGet();
             }
         }
     }

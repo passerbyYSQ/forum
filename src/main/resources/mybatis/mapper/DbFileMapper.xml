@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ysqorz.forum.dao.DbFileMapper">
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.DbFile">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
+        <result column="rand_name" jdbcType="VARCHAR" property="randName"/>
+        <result column="file_md5" jdbcType="VARCHAR" property="fileMd5"/>
+        <result column="total_bytes" jdbcType="BIGINT" property="totalBytes"/>
+        <result column="uploaded_bytes" jdbcType="BIGINT" property="uploadedBytes"/>
+        <result column="creator_id" jdbcType="INTEGER" property="creatorId"/>
+        <result column="local_path" jdbcType="VARCHAR" property="localPath"/>
+        <result column="oss_url" jdbcType="VARCHAR" property="ossUrl"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+</mapper>

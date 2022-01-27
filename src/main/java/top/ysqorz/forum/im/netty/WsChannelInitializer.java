@@ -1,4 +1,4 @@
-package top.ysqorz.forum.im;
+package top.ysqorz.forum.im.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

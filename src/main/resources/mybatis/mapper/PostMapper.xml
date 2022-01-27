@@ -53,7 +53,6 @@
         <collection property="labelList" ofType="top.ysqorz.forum.po.Label" column="id"
                     select="top.ysqorz.forum.dao.LabelMapper.selectLabelsByPostId"/>
 
-
     </resultMap>
 
     <select id="selectListByConditions" resultMap="post"

@@ -83,7 +83,11 @@ public enum StatusCode {
     // 评论相关
     FIRST_COMMENT_NOT_EXIST(6700, "一级评论不存在"),
     SECOND_COMMENT_NOT_EXIST(6701, "二级评论不存在"),
-    COMMENT_TYPE_INVALID(6702, "不合法的评论类型")
+    COMMENT_TYPE_INVALID(6702, "不合法的评论类型"),
+
+    // 文件相关
+    VIDEO_NOT_EXIST(6800, "视频不存在"),
+    FILE_NOT_EXIST(6801, "文件不存在")
     ;
 
 
