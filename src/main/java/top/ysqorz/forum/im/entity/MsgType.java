@@ -12,4 +12,14 @@ public enum MsgType {
     CLOSE,
     // 业务类型
     DANMU;
+
+    public static boolean isFunctionalType(String type) {
+        MsgType[] funcTypes = new MsgType[]{BIND, PING, PONG, CLOSE};
+        for (MsgType funcType : funcTypes) {
+            if (funcType.name().equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -17,6 +17,7 @@ layui.define(['app'], function (exports) {
             // extra: videoId,       // 额外信息。绑定到长连接上
             // onMsgReceived         // 收到消息的回调
         };
+        channelId;
 
         constructor(opt) {
             this.options = opt || {};
@@ -66,11 +67,11 @@ layui.define(['app'], function (exports) {
             // 发送绑定类型的消息
             var data = {
                 token: app.getToken('token'),
-                extra: this.options.extra
+                groupId: this.options.groupId
             };
-            if (!data.token) {
-                app.errorNotice('缺少参数token');
-                throw new Error('缺少参数token');
+            if (!data.token || !data.groupId) {
+                app.errorNotice('缺少参数token或groupId');
+                throw new Error('缺少参数token或groupId');
             }
             this.socket.send(this._createMsg(MSG_TYPE.BIND, data));
             console.log('成功发送绑定类型的消息');
@@ -120,7 +121,9 @@ layui.define(['app'], function (exports) {
         _onMsgReceived(ev) {
             var msg = JSON.parse(ev.data);
             console.log('接收到消息', msg);
-            if (this.options.onMsgReceived) {
+            if (msg.msgType === MSG_TYPE.BIND) {
+                this.channelId = msg.data.channelId;
+            } else if (msg.msgType !== MSG_TYPE.PONG && this.options.onMsgReceived) {
                 this.options.onMsgReceived(msg);
             }
         }

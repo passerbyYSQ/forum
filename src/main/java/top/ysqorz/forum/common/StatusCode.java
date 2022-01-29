@@ -85,9 +85,13 @@ public enum StatusCode {
     SECOND_COMMENT_NOT_EXIST(6701, "二级评论不存在"),
     COMMENT_TYPE_INVALID(6702, "不合法的评论类型"),
 
+    // im相关
+    CHANNEL_NOT_EXIST(6800, "channel不存在"),
+    NOT_SUPPORT_FUNC_TYPE(6801, "不支持功能类型的消息"),
+
     // 文件相关
-    VIDEO_NOT_EXIST(6800, "视频不存在"),
-    FILE_NOT_EXIST(6801, "文件不存在")
+    VIDEO_NOT_EXIST(6900, "视频不存在"),
+    FILE_NOT_EXIST(6901, "文件不存在")
     ;
 
 

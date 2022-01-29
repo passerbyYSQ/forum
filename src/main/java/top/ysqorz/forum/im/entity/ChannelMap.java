@@ -28,15 +28,15 @@ public class ChannelMap {
         this.type = type;
     }
 
-    public void bind(String userId, Channel channel, Object extra) {
+    public void bind(String userId, String groupId, Channel channel) {
         Set<Channel> channels = channelMap.get(userId);
         // 往channel里面存储额外信息，实现双向绑定，以便能通过能够移除Map中的channel
         AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
         channel.attr(userIdKey).set(userId);
+        AttributeKey<String> groupIdKey = AttributeKey.valueOf("groupId");
+        channel.attr(groupIdKey).set(groupId);
         AttributeKey<String> channelTypeKey = AttributeKey.valueOf("channelType");
         channel.attr(channelTypeKey).set(type.name());
-        AttributeKey<Object> extraKey = AttributeKey.valueOf("extra");
-        channel.attr(extraKey).set(extra);
         if (channels == null) {
             Set<Channel> newChannels = new HashSet<>();
             newChannels.add(channel);
@@ -58,38 +58,28 @@ public class ChannelMap {
         }
     }
 
-    public void pushExceptCurr(Object data, Channel currChannel) {
-        pushExceptCurr(data, currChannel, null);
-    }
-
-    public void pushExceptCurr(Object data, Channel currChannel, ChannelMatcher matcher) {
+    public void pushExceptCurr(Object data, Channel currChannel, String destGroupId) {
         Set<String> userIds = channelMap.keySet();
         for (String userId : userIds) {
             Set<Channel> channels = channelMap.get(userId);
             for (Channel channel : channels) {
-                if (channel == currChannel) { // 排除当前通道
+                String groupId = IMUtils.getGroupIdFromChannel(channel);
+                if (channel == currChannel || !groupId.equals(destGroupId)) {
                     continue;
                 }
-                Object extra = IMUtils.getExtraFromChannel(channel);
-                if (matcher == null || matcher.isMatch(extra, channel)) {
-                    channel.writeAndFlush(createTextFrame(data));
-                }
+                channel.writeAndFlush(createTextFrame(data));
             }
         }
     }
 
-    public void pushToUser(Object data, Integer userId) {
-        pushToUser(data, userId, null);
-    }
-
-    public void pushToUser(Object data, Integer userId, ChannelMatcher matcher) {
-        Set<Channel> channels = channelMap.get(String.valueOf(userId));
+    public void pushToUser(Object data, Integer userId, String destGroupId) {
+        Set<Channel> channels = channelMap.get(userId.toString());
         if (channels == null) {
             return;
         }
         for (Channel channel : channels) {
-            Object extra = IMUtils.getExtraFromChannel(channel);
-            if (matcher == null || matcher.isMatch(extra, channel)) {
+            String groupId = IMUtils.getGroupIdFromChannel(channel);
+            if (groupId.equals(destGroupId)) {
                 channel.writeAndFlush(createTextFrame(data));
             }
         }
@@ -107,11 +97,21 @@ public class ChannelMap {
         return channels.contains(channel);
     }
 
+    public Channel findChannel(Integer userId, String channelId) {
+        Set<Channel> channels = channelMap.get(userId.toString());
+        if (channels == null) {
+            return null;
+        }
+        for (Channel channel : channels) {
+            if (channel.id().asLongText().equals(channelId)) {
+                return channel;
+            }
+        }
+        return null;
+    }
+
     private TextWebSocketFrame createTextFrame(Object data) {
         return IMUtils.createTextFrame(type, data);
     }
 
-    public interface ChannelMatcher {
-        boolean isMatch(Object extra, Channel channel);
-    }
 }

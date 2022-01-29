@@ -41,4 +41,9 @@ public class VideoServiceImpl implements VideoService {
         }
         return video;
     }
+
+    @Override
+    public Video getVideoById(Integer videoId) {
+        return videoMapper.selectByPrimaryKey(videoId);
+    }
 }

@@ -15,6 +15,7 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
         MSG_TYPE: {
             BIND: 'BIND',
             PING: 'PING',
+            PONG: 'PONG',
             DANMU: 'DANMU'
         },
 

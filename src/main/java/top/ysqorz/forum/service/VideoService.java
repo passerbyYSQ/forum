@@ -9,4 +9,6 @@ import top.ysqorz.forum.po.Video;
 public interface VideoService {
 
     Video getVideoDetailById(Integer videoId);
+
+    Video getVideoById(Integer videoId);
 }

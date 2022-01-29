@@ -46,8 +46,8 @@ public class IMUtils {
         return channel.attr(channelTypeKey).get();
     }
 
-    public static Object getExtraFromChannel(Channel channel) {
-        AttributeKey<Object> extraKey = AttributeKey.valueOf("extra");
-        return channel.attr(extraKey).get();
+    public static String getGroupIdFromChannel(Channel channel) {
+        AttributeKey<String> channelTypeKey = AttributeKey.valueOf("groupId");
+        return channel.attr(channelTypeKey).get();
     }
 }

@@ -110,6 +110,8 @@ public class ShiroConfig {
         chain.addPathDefinition("/comment/*/publish", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/comment/delete", "noSessionCreation,jwtAuth");
 
+        chain.addPathDefinition("/im/*", "noSessionCreation,jwtAuth");
+
         chain.addPathDefinition("/index", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/head", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/index/list", "noSessionCreation,jwtAuth[permissive]");

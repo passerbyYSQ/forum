@@ -115,7 +115,7 @@
             videoContainer.style.width = window.innerWidth + 'px';
         });
 
-        app.ajax('/danmu/' + currVideoId, {}, function (res) {
+        app.ajax('/video/danmu/' + currVideoId, {}, function (res) {
             app.successNotice(res.data.length > 0 ? `${res.data.length}条弹幕装载成功...` : '还没有弹幕哦，赶紧抢沙发...');
             initPlayer(res.data);
             initSocket();
@@ -127,9 +127,9 @@
             }
             socket = new layui.ClientWebSocket({
                 channelType,
-                extra: currVideoId,
+                groupId: currVideoId,
                 onMsgReceived(msg) {
-                    if (msg.type !== app.MSG_TYPE.DANMU || msg.data.videoId !== currVideoId) {
+                    if (msg.msgType !== app.MSG_TYPE.DANMU || msg.data.videoId !== currVideoId) {
                         return;
                     }
                     var {id, content, startMs} = msg.data;
@@ -139,7 +139,7 @@
         }
 
         function sendDanmu(txt, startMs, id) { // id存在说明是收到的消息
-            if (!playerObj) {
+            if (!playerObj || !playerObj.danmu) {
                 return;
             }
             var danmu = {

@@ -60,10 +60,10 @@ public class MsgCenter {
         return instance;
     }
 
-    public void bind(String channelType, String userId, Channel channel, Object extra) {
+    public void bind(String channelType, String userId, String groupId, Channel channel) {
         ChannelMap channelMap = typeToChannels.get(channelType);
         if (channelMap != null) {
-            channelMap.bind(userId, channel, extra);
+            channelMap.bind(userId, groupId, channel);
             int count = channelCount.incrementAndGet();
             log.info("绑定成功，当前通道数：{}", count);
         }
@@ -105,4 +105,11 @@ public class MsgCenter {
         first.handle(msg, channel);
     }
 
+    public Channel findChannel(String channelType, Integer userId, String channelId) {
+        ChannelMap channelMap = this.getChannelMap(channelType);
+        if (channelMap == null) {
+            return null;
+        }
+        return channelMap.findChannel(userId, channelId);
+    }
 }

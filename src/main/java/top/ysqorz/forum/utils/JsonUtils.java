@@ -21,8 +21,8 @@ public class JsonUtils {
      */
     public static String objectToJson(Object obj) {
         try {
-            ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
-            return MAPPER.writeValueAsString(obj);
+            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
+            return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -38,8 +38,8 @@ public class JsonUtils {
      */
     public static <T> T jsonToObj(String json, Class<T> clazz) {
         try {
-            ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
-            return MAPPER.readValue(json, clazz);
+            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
+            return objectMapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -48,8 +48,8 @@ public class JsonUtils {
 
     public static JsonNode jsonToNode(String json) {
         try {
-            ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
-            return MAPPER.readTree(json);
+            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
+            return objectMapper.readTree(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -58,22 +58,27 @@ public class JsonUtils {
 
     public static <T> T nodeToObj(JsonNode node, Class<T> clazz) {
         try {
-            ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
-            return MAPPER.treeToValue(node, clazz);
+            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
+            return objectMapper.treeToValue(node, clazz);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    public static JsonNode objToNode(Object obj) {
+        ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
+        return objectMapper.valueToTree(obj);
+    }
+
     /**
      * 将json数据转换成pojo对象list
      */
     public static <T> List<T> jsonToList(String json, Class<T> clazz) {
-        ObjectMapper MAPPER = SpringUtils.getBean(ObjectMapper.class);
-        JavaType javaType = MAPPER.getTypeFactory().constructParametricType(List.class, clazz);
+        ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
+        JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, clazz);
         try {
-            return MAPPER.readValue(json, javaType);
+            return objectMapper.readValue(json, javaType);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

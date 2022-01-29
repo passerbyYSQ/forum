@@ -3,11 +3,13 @@ package top.ysqorz.forum.im.handler;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import org.springframework.util.ObjectUtils;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.utils.JsonUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -24,12 +26,17 @@ public class UserChannelBindHandler extends MsgHandler {
 
     @Override
     protected boolean doHandle0(MsgModel msg, Channel channel, User loginUser) {
-        JsonNode dataNode = msg.transformToDataNode();
-        if (!ObjectUtils.isEmpty(msg.getChannelType())) { // 能来到这，一定是BIND类型且携带了token，dataNode一定不为空
-            Object extra = JsonUtils.nodeToObj(dataNode.get("extra"), Object.class);
-            String userId = String.valueOf(loginUser.getId().intValue());
-            MsgCenter.getInstance().bind(msg.getChannelType(), userId, channel, extra);
+        JsonNode dataNode = msg.transformToDataNode(); // 能来到这，一定是BIND类型且携带了token，dataNode一定不为空
+        if (ObjectUtils.isEmpty(msg.getChannelType()) || !dataNode.has("groupId")) {
+            return true;
         }
+        String userId = String.valueOf(loginUser.getId().intValue());
+        String groupId = dataNode.get("groupId").asText();
+        MsgCenter.getInstance().bind(msg.getChannelType(), userId, groupId, channel);
+        // 回送channelId
+        Map<String, String> data = new HashMap<>();
+        data.put("channelId", channel.id().asLongText());
+        channel.writeAndFlush(IMUtils.createTextFrame(MsgType.BIND, data));
         return true; // 消费完成
     }
 }
