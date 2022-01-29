@@ -17,13 +17,8 @@ public class WsServerBoot implements ApplicationListener<ContextRefreshedEvent> 
     public void onApplicationEvent(ContextRefreshedEvent event) {
         // 对于web应用会出现父子容器，这样就会触发两次
         if (event.getApplicationContext().getParent() == null) {
-            try {
-                WebSocketServer.getInstance().start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            WebSocketServer.getInstance().start();
         }
     }
-
 
 }

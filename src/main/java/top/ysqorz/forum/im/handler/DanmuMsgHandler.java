@@ -8,7 +8,7 @@ import top.ysqorz.forum.im.entity.AsyncInsertTask;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.utils.IMUtils;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.po.DanmuMsg;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JsonUtils;

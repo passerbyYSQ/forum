@@ -1,4 +1,4 @@
-package top.ysqorz.forum.utils;
+package top.ysqorz.forum.middleware;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

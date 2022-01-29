@@ -84,7 +84,6 @@ spring:
     # 开发时关闭缓存
     cache: false
 
-
 mybatis:
   # xxMapper.xml文件在resources/mybatis/mapper下
   mapper-locations: classpath:mybatis/mapper/*.xml
@@ -115,15 +114,17 @@ server:
   port: 8080
 
 # 自定义配置
+# osss配置
 upload:
   repository:
     aliyun-oss:
-      access-key-id: "LTAI4GFvPgPakyd9rT7ahbXf"
-      access-key-secret: "jd3QMuwTmRxZCP77NCnKW5Q2arWfUo"
-      bucket-name: "webchat-ysq"
-      domain-name: "https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com"
-      end-point: "https://oss-cn-shenzhen.aliyuncs.com"
+      access-key-id: LTAI4GFvPgPakyd9rT7ahbXf
+      access-key-secret: jd3QMuwTmRxZCP77NCnKW5Q2arWfUo
+      bucket-name: webchat-ysq
+      domain-name: https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com
+      end-point: https://oss-cn-shenzhen.aliyuncs.com
 
+# 第三方授权登录配置
 oauth:
   gitee:
     client-id: d9b72e60aef218352f09dd3ef1841be3546fa31421820ef0a7966ea64a0d9ab3
@@ -140,3 +141,15 @@ oauth:
     client-secret: lK6dX6kQGcF9mqDuf9o7DN8q0iDBPsD9
     redirect-uri: http://159.75.116.100:80/user/oauth/baidu/callback
     po-field: baiduId
+
+# zookeeper配置
+zookeeper:
+  curator:
+    user: ysq
+    password: ysqJYKL2010
+    servers: 119.45.164.115:2181
+    session-timeout: 30000
+    connection-timeout: 20000
+
+
+

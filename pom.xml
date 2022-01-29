@@ -19,6 +19,8 @@
 	<properties>
 		<java.version>1.8</java.version>
         <netty.version>4.1.50.Final</netty.version>
+		<!-- 版本过高，连接时会出现两次报错，然后才连接成功 -->
+		<curator.version>5.0.0</curator.version>
 		<mybatis.version>2.1.4</mybatis.version>
 		<!--	使用1.1.10，datetime转LocalDatetime会报错java.sql.SQLFeatureNotSupportedException: null
 			原因是不支持将数据库的datetime类型转成localDateTime
@@ -37,7 +39,13 @@
 	</properties>
 
 	<dependencies>
-        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+		<!-- https://mvnrepository.com/artifact/org.apache.curator/curator-recipes -->
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-recipes</artifactId>
+			<version>${curator.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>

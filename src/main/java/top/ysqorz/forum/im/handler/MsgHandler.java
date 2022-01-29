@@ -6,7 +6,7 @@ import lombok.Data;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.utils.IMUtils;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;

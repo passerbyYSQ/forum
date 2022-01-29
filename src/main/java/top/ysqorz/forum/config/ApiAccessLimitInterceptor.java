@@ -31,7 +31,7 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
         // 判断IP是否在黑名单中
-        String ip = IpUtils.getIpAddress(request);
+        String ip = IpUtils.getIpFromRequest(request);
         String blackListKey = "blackList:" + DateTimeUtils.getFormattedDate();
         if (stringRedisTemplate.opsForSet().isMember(blackListKey, ip)) { // 黑名单(set)不存在也会返回false
             // 如果在黑名单中，直接拦截

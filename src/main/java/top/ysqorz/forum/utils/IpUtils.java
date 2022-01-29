@@ -1,8 +1,11 @@
 package top.ysqorz.forum.utils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 /**
  * @author passerbyYSQ
@@ -10,7 +13,7 @@ import java.net.UnknownHostException;
  */
 public class IpUtils {
 
-    public static String getIpAddress(HttpServletRequest request) {
+    public static String getIpFromRequest(HttpServletRequest request) {
         String ipAddress;
         try {
             ipAddress = request.getHeader("x-forwarded-for");
@@ -47,4 +50,26 @@ public class IpUtils {
         }
     }
 
+    public static String getLocalIp() {
+        try {
+            Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+            InetAddress ip;
+            while (allNetInterfaces.hasMoreElements()) {
+                NetworkInterface netInterface = allNetInterfaces.nextElement();
+                if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    ip = addresses.nextElement();
+                    if (ip instanceof Inet4Address) {
+                        return ip.getHostAddress();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }

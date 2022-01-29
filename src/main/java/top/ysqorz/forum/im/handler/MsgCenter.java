@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
-import top.ysqorz.forum.im.utils.IMUtils;
+import top.ysqorz.forum.im.IMUtils;
 
 import java.util.HashSet;
 import java.util.Map;
