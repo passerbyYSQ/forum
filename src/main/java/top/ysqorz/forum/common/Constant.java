@@ -17,11 +17,13 @@ public interface Constant {
     String BASE64_REGEX =  "^(data:image/(jpg|jpeg|png);base64,)(\\S+)";
 
     // redis prefix captcha
-    String REDIS_PREFIX_CAPTCHA = "captcha:";
+    String REDIS_KEY_CAPTCHA = "captcha:";
     //
-    String REDIS_PREFIX_OAUTH_STATE = "oauth:state:";
+    String REDIS_KEY_OAUTH_STATE = "oauth:state:";
     // post:visit:postId:ip
-    String REDIS_PREFIX_POST_VISIT = "post:visit:%d:%s";
+    String REDIS_KEY_POST_VISIT = "post:visit:%d:%s";
+    // im:userId:wsServerIp
+    String REDIS_KEY_USER_WS = "im:";
 
     // redis captcha 有效期：5分钟
     Duration DURATION_CAPTCHA = Duration.ofMinutes(5);

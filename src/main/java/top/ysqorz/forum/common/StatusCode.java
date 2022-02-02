@@ -88,6 +88,7 @@ public enum StatusCode {
     // im相关
     CHANNEL_NOT_EXIST(6800, "channel不存在"),
     NOT_SUPPORT_FUNC_TYPE(6801, "不支持功能类型的消息"),
+    REMOTE_FORWARD_MSG_FAILED(6802, "远程调用API转发消息失败"),
 
     // 文件相关
     VIDEO_NOT_EXIST(6900, "视频不存在"),

@@ -13,6 +13,21 @@ public class RandomUtils {
     private static final String letterChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String numberChar = "0123456789";
 
+    /**
+     * [0, n)
+     */
+    public static int generateInt(int n) {
+        return new Random().nextInt(n);
+    }
+
+    /**
+     * [l, r]
+     */
+    public static int generateRange(int l, int r) {
+        int rand = new Random().nextInt(r - l + 1);
+        return l + rand;
+    }
+
     public static String generateStr(int length) {
         return generateStr(length, allChar);
     }

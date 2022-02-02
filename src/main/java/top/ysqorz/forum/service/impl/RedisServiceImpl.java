@@ -30,13 +30,13 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public void saveCaptcha(String key, String captcha) {
         redisTemplate.opsForValue()
-                .set(Constant.REDIS_PREFIX_CAPTCHA + key,
+                .set(Constant.REDIS_KEY_CAPTCHA + key,
                     captcha, Constant.DURATION_CAPTCHA);
     }
 
     @Override
     public String getCaptcha(String key) {
-        key = Constant.REDIS_PREFIX_CAPTCHA + key;
+        key = Constant.REDIS_KEY_CAPTCHA + key;
         String correctCaptcha = (String) redisTemplate.opsForValue().get(key);
         redisTemplate.delete(key);
         return correctCaptcha;
@@ -45,13 +45,13 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public void saveOauthState(String key, String salt) {
         redisTemplate.opsForValue()
-                .set(Constant.REDIS_PREFIX_OAUTH_STATE + key,
+                .set(Constant.REDIS_KEY_OAUTH_STATE + key,
                     salt, Constant.DURATION_OAUTH_STATE);
     }
 
     @Override
     public String getOauthState(String key) {
-        key = Constant.REDIS_PREFIX_OAUTH_STATE + key;
+        key = Constant.REDIS_KEY_OAUTH_STATE + key;
         // 错误的key或者key过期，都会返回null
         String salt = (String) redisTemplate.opsForValue().get(key);
         redisTemplate.delete(key);
@@ -60,7 +60,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public boolean tryAddPostVisitIp(String ipAddress, Integer postId) {
-        String key = String.format(Constant.REDIS_PREFIX_POST_VISIT, postId, ipAddress);
+        String key = String.format(Constant.REDIS_KEY_POST_VISIT, postId, ipAddress);
         return redisTemplate.opsForValue()
                 .setIfAbsent(key, "", Constant.DURATION_POST_VISIT);
     }
@@ -125,5 +125,21 @@ public class RedisServiceImpl implements RedisService {
         Set<Object> set = redisTemplate.opsForZSet().range(key, 0, 1);
         return set != null && set.size() != 0;
     }
+
+    @Override
+    public void bindUserIdToWsIp(Integer userId, String wsIp) {
+        redisTemplate.opsForValue().setIfAbsent(Constant.REDIS_KEY_USER_WS + userId.toString(), wsIp);
+    }
+
+    @Override
+    public void removeUserIdToWsIp(Integer userId) {
+        redisTemplate.delete(Constant.REDIS_KEY_USER_WS + userId.toString());
+    }
+
+    @Override
+    public String getUserWs(Integer userId) {
+        return (String) redisTemplate.opsForValue().get(Constant.REDIS_KEY_USER_WS + userId.toString());
+    }
+
 
 }

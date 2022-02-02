@@ -51,4 +51,11 @@ public interface RedisService {
 
     // 获取热帖周榜是否有信息
     Boolean isHaveWeekHotPost();
+
+    // bind userId --> ws server
+    void bindUserIdToWsIp(Integer userId, String wsIp);
+
+    void removeUserIdToWsIp(Integer userId);
+
+    String getUserWs(Integer userId);
 }

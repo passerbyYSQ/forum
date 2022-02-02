@@ -178,7 +178,7 @@ public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeCh
             log.info("连接Zookeeper成功");
             String localIp = IpUtils.getLocalIp();
             String wsServerUrl = String.format("ws://%s:8081/ws", localIp);
-            this.create("/im/ws/" + localIp, wsServerUrl, CreateMode.EPHEMERAL); // data为channel数量
+            this.create(ZkConnector.PATH + "/" + localIp, wsServerUrl, CreateMode.EPHEMERAL);
             log.info("往Zookeeper注册当前服务成功");
         }
     }

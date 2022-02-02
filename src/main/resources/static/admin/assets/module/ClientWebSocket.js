@@ -11,25 +11,23 @@ layui.define(['app'], function (exports) {
         SocketClazz;    // 浏览器的WebSocket类
         socket;         // 长连接
         heartBeatTimer; // 心跳定时器
-        options = {
-            // serverUrl: 'ws://119.45.164.115:8081/ws',   // WS服务器的地址
-            // channelType: 'DAMU',  // 通道的业务类型
-            // extra: videoId,       // 额外信息。绑定到长连接上
-            // onMsgReceived         // 收到消息的回调
-        };
+        options;
         channelId;
+        server;
 
         constructor(opt) {
             this.options = opt || {};
-            if (!this.options.serverUrl) {
-                this.options.serverUrl = WS_SERVER;
-            }
-            this.SocketClazz = window.WebSocket || window.MozWebSocket;
-            this._initSocket();
+            var _that = this;
+            let callback = function (res) {
+                _that.server = res.data;
+                _that.SocketClazz = window.WebSocket || window.MozWebSocket;
+                _that._initSocket();
+            };
+            app.ajax('/im/server', {}, callback, 'get', null, false);
         }
 
         _initSocket() {
-            this.socket = new this.SocketClazz(this.options.serverUrl);
+            this.socket = new this.SocketClazz(this.server);
             if (this.socket) {
                 this.socket.onopen = this._onOpenCallback.bind(this);
                 this.socket.onclose = this._onCloseCallback.bind(this);
@@ -38,7 +36,17 @@ layui.define(['app'], function (exports) {
             }
         }
 
+        sendByHttp(msg, failedCallback) { // msgObj
+            app.ajax('/im/send', {
+                msgJson: JSON.stringify(msg),
+                channelId: this.channelId
+            }, null, 'post', failedCallback, false);
+        }
+
         send(msg) { // MsgObj
+            if (!this.channelId) { // 未绑定不发送
+                return;
+            }
             this._trySend(msg, 1);
         }
 
@@ -54,7 +62,10 @@ layui.define(['app'], function (exports) {
                 return;
             }
             this._clearHeartBeatTimer();
-            this._initSocket(); // 尝试重连，成功会发送执行_onOpenCallback
+            // 尝试重连，成功会发送执行_onOpenCallback，里面也有个超时重试
+            // 但不存在trySend第2次之后，第一次重连的bind消息才回来。因为在trySend第2次之前的_initSocket会把this.socket重置掉
+            // 因为_initSocket中重置了this.socket，第一次重连成功的_onOpenCallback自然也不会执行
+            this._initSocket();
             var _that = this;
             setTimeout(function () {
                 console.log(`第${cnt}次尝试发送`, msg);
@@ -63,10 +74,13 @@ layui.define(['app'], function (exports) {
         }
 
         _onOpenCallback() {
+            if (this.channelId || !this.socket || this.socket.readyState !== this.SocketClazz.OPEN) {
+                return;
+            }
             console.log('长连接成功建立');
             // 发送绑定类型的消息
             var data = {
-                token: app.getToken('token'),
+                token: app.getToken(),
                 groupId: this.options.groupId
             };
             if (!data.token || !data.groupId) {
@@ -75,9 +89,7 @@ layui.define(['app'], function (exports) {
             }
             this.socket.send(this._createMsg(MSG_TYPE.BIND, data));
             console.log('成功发送绑定类型的消息');
-            // 开启心跳
-            this._initHeartBeatTimer();
-            console.log('成功开启心跳定时器');
+            setTimeout(this._onOpenCallback.bind(this), 1000); // 超时重试，直到后端绑定成功或者后端关闭了通道才放弃
         }
 
         _initHeartBeatTimer() {
@@ -123,6 +135,9 @@ layui.define(['app'], function (exports) {
             console.log('接收到消息', msg);
             if (msg.msgType === MSG_TYPE.BIND) {
                 this.channelId = msg.data.channelId;
+                // 开启心跳
+                this._initHeartBeatTimer();
+                console.log('绑定成功，开启心跳定时器');
             } else if (msg.msgType !== MSG_TYPE.PONG && this.options.onMsgReceived) {
                 this.options.onMsgReceived(msg);
             }

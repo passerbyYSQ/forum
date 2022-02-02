@@ -176,20 +176,18 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
         },
 
         // 封装ajax
-        ajax: function (url, data, successCallback = function (res) {
+        ajax: function (url, data = {}, successCallback = function (res) {
                         }, type = "post",
                         failedCallback = function (res) {
-                        }) { // 业务失败
-
-            //var loadIndex = layer.load(2); // 显示loading...
-            app.showLoading();
+                        }, showLoading = true) { // 业务失败
+            showLoading && app.showLoading();
 
             var user = localStorage.getItem("user");
             //var token;
             // if (app.isNotNull(user)) {
             //     token = user.token;
             // }
-
+            data = data || {};
             $.ajax(url, {
                 type: type,
                 dataType: "json",
@@ -205,11 +203,11 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                 },
                 success: function (res, textStatus, xhr) {
                     //layer.close(loadIndex); // 关闭 loading
-                    notice.destroy();
+                    showLoading && notice.destroy();
 
                     if (res.code !== 2000) {
                         app.errorNotice(res.msg);
-                        failedCallback(res); // 业务失败的回调，可通过传参自定义。默认实现以弹框形式输出错误信息
+                        failedCallback && failedCallback(res); // 业务失败的回调，可通过传参自定义。默认实现以弹框形式输出错误信息
                     } else {
                         // 判断是否签发了新的token。如果是，更新token
                         var header = xhr.getAllResponseHeaders();
@@ -217,7 +215,7 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                             user.token = header.token;
                             localStorage.setItem("user", user);
                         }
-                        successCallback(res); // 业务成功
+                        successCallback && successCallback(res); // 业务成功
                     }
                 },
                 // 请求发生错误

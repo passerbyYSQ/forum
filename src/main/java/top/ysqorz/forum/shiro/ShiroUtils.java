@@ -1,6 +1,7 @@
 package top.ysqorz.forum.shiro;
 
 import org.apache.shiro.SecurityUtils;
+import top.ysqorz.forum.utils.JwtUtils;
 
 /**
  * @author passerbyYSQ
@@ -12,7 +13,11 @@ public class ShiroUtils {
      * 如果Subject认证成功，此处必定可以取地userId
      */
     public static Integer getUserId() {
-        return (Integer) SecurityUtils.getSubject().getPrincipal();
+        return Integer.valueOf(JwtUtils.getClaimByKey(getToken(), "userId"));
+    }
+
+    public static String getToken() {
+        return (String) SecurityUtils.getSubject().getPrincipal();
     }
 
     public static boolean isAuthenticated() {

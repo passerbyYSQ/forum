@@ -3,10 +3,10 @@ package top.ysqorz.forum.im.handler;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import lombok.Data;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -53,6 +53,16 @@ public abstract class MsgHandler {
         }
     }
 
+    // 返回最终要插入到数据库的PO
+    public Object save(MsgModel msg, Integer userId) {
+        if (checkMsgType(msg)) { // 当前handler消费
+            return doSave(msg, userId);
+        } else if (next != null) { // 如果当前handler不能消费，且下一个handler不为空，则交由下一个handler消费
+            return next.save(msg, userId);
+        }
+        return null;
+    }
+
     public void addBehind(MsgHandler handler) {
         if (handler == null) {
             return;
@@ -63,7 +73,11 @@ public abstract class MsgHandler {
 
     // 子类可重写
     protected boolean canHandle(MsgModel msg, Channel channel) {
-        return type != null && type.name().equalsIgnoreCase(msg.getMsgType()) && isLogin(msg, channel);
+        return checkMsgType(msg) && isLogin(msg, channel);
+    }
+
+    protected boolean checkMsgType(MsgModel msg) {
+        return type != null && type.name().equalsIgnoreCase(msg.getMsgType());
     }
 
     protected boolean isLogin(MsgModel msg, Channel channel) {
@@ -85,20 +99,20 @@ public abstract class MsgHandler {
         }
         String token = dataNode.get("token").asText();
         String userId = JwtUtils.getClaimByKey(token, "userId");
-        User user = getUserById(userId);
+        User user = getUserById(Integer.valueOf(userId));
         return user != null && JwtUtils.verifyJwt(token, user.getJwtSalt());
     }
 
     private boolean doHandle(MsgModel msg, Channel channel) {
         User loginUser = null;
         if (isNeedLoginUserInfo) {
-            // String userId = String.valueOf(ShiroUtils.getUserId());
-            String userId = IMUtils.getUserIdFromChannel(channel);
+            // Integer userId = ShiroUtils.getUserId();
+            Integer userId = IMUtils.getUserIdFromChannel(channel);
             if (userId == null) { // 没有绑定时发送消息
                 JsonNode dataNode = msg.transformToDataNode(); // PING消息dataNode为null但又能执行到此处
                 if (dataNode != null && dataNode.has("token")) {
                     String token = dataNode.get("token").asText();
-                    userId = JwtUtils.getClaimByKey(token, "userId");
+                    userId = Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
                 }
             }
             loginUser = getUserById(userId);
@@ -106,12 +120,19 @@ public abstract class MsgHandler {
         return doHandle0(msg, channel, loginUser);
     }
 
-    private User getUserById(String userId) {
+    private User getUserById(Integer userId) {
         if (userId == null) {
             return null;
         }
         UserService userService = SpringUtils.getBean(UserService.class);
-        return userService.getUserById(Integer.valueOf(userId));
+        return userService.getUserById(userId);
+    }
+
+    /**
+     * 如果业务类型的消息需要存到数据库，则子类需要重写此方法
+     */
+    protected Object doSave(MsgModel msg, Integer userId) {
+        return null;
     }
 
     /**
@@ -120,5 +141,4 @@ public abstract class MsgHandler {
      * @return true：消费完成，不继续往下投递；false：未消费完成，继续往下投递
      */
     protected abstract boolean doHandle0(MsgModel msg, Channel channel, User loginUser);
-
 }

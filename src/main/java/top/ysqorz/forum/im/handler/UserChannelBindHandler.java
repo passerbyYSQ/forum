@@ -30,9 +30,8 @@ public class UserChannelBindHandler extends MsgHandler {
         if (ObjectUtils.isEmpty(msg.getChannelType()) || !dataNode.has("groupId")) {
             return true;
         }
-        String userId = String.valueOf(loginUser.getId().intValue());
         String groupId = dataNode.get("groupId").asText();
-        MsgCenter.getInstance().bind(msg.getChannelType(), userId, groupId, channel);
+        MsgCenter.getInstance().bind(msg.getChannelType(), loginUser.getId(), groupId, channel);
         // 回送channelId
         Map<String, String> data = new HashMap<>();
         data.put("channelId", channel.id().asLongText());

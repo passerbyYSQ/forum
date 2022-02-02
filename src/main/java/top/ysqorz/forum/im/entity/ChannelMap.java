@@ -21,17 +21,17 @@ public class ChannelMap {
     // 通道的业务类型。如：弹幕、单聊、群聊。
     private MsgType type; // channelType
     // 该业务类型的所有通道 userId --> Set<Channel>
-    private Map<String, Set<Channel>> channelMap = new ConcurrentHashMap<>();
+    private Map<Integer, Set<Channel>> channelMap = new ConcurrentHashMap<>();
     private volatile AtomicInteger channelCount = new AtomicInteger(0);
 
     public ChannelMap(MsgType type) {
         this.type = type;
     }
 
-    public void bind(String userId, String groupId, Channel channel) {
+    public void bind(Integer userId, String groupId, Channel channel) {
         Set<Channel> channels = channelMap.get(userId);
         // 往channel里面存储额外信息，实现双向绑定，以便能通过能够移除Map中的channel
-        AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
+        AttributeKey<Integer> userIdKey = AttributeKey.valueOf("userId");
         channel.attr(userIdKey).set(userId);
         AttributeKey<String> groupIdKey = AttributeKey.valueOf("groupId");
         channel.attr(groupIdKey).set(groupId);
@@ -48,7 +48,7 @@ public class ChannelMap {
     }
 
     public void unBind(Channel channel) {
-        String userId = IMUtils.getUserIdFromChannel(channel);
+        Integer userId = IMUtils.getUserIdFromChannel(channel);
         if (userId != null) {
             Set<Channel> channels = channelMap.get(userId);
             if (channels != null) {
@@ -59,8 +59,8 @@ public class ChannelMap {
     }
 
     public void pushExceptCurr(Object data, Channel currChannel, String destGroupId) {
-        Set<String> userIds = channelMap.keySet();
-        for (String userId : userIds) {
+        Set<Integer> userIds = channelMap.keySet();
+        for (Integer userId : userIds) {
             Set<Channel> channels = channelMap.get(userId);
             for (Channel channel : channels) {
                 String groupId = IMUtils.getGroupIdFromChannel(channel);
@@ -73,7 +73,7 @@ public class ChannelMap {
     }
 
     public void pushToUser(Object data, Integer userId, String destGroupId) {
-        Set<Channel> channels = channelMap.get(userId.toString());
+        Set<Channel> channels = channelMap.get(userId);
         if (channels == null) {
             return;
         }
@@ -86,7 +86,7 @@ public class ChannelMap {
     }
 
     public boolean isBound(Channel channel) {
-        String userId = IMUtils.getUserIdFromChannel(channel);
+        Integer userId = IMUtils.getUserIdFromChannel(channel);
         if (userId == null) {
             return false;
         }
@@ -98,7 +98,7 @@ public class ChannelMap {
     }
 
     public Channel findChannel(Integer userId, String channelId) {
-        Set<Channel> channels = channelMap.get(userId.toString());
+        Set<Channel> channels = channelMap.get(userId);
         if (channels == null) {
             return null;
         }

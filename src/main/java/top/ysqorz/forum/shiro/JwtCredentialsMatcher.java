@@ -20,7 +20,7 @@ public class JwtCredentialsMatcher implements CredentialsMatcher {
         User user = (User) info.getCredentials();
 
         //String tokenStr = (String) token.getPrincipal();
-        //Integer userId = (Integer) info.getPrincipals().getPrimaryPrincipal();
+        //String tokenStr = (Integer) info.getPrincipals().getPrimaryPrincipal();
 
         // 校验失败，会抛出异常，被shiro捕获
         Map<String, String> claims = new HashMap<>();

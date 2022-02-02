@@ -2,9 +2,12 @@ package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
-import top.ysqorz.forum.im.IMUtils;
+import top.ysqorz.forum.service.RedisService;
+import top.ysqorz.forum.utils.IpUtils;
+import top.ysqorz.forum.utils.SpringUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -60,10 +63,12 @@ public class MsgCenter {
         return instance;
     }
 
-    public void bind(String channelType, String userId, String groupId, Channel channel) {
+    public void bind(String channelType, Integer userId, String groupId, Channel channel) {
         ChannelMap channelMap = typeToChannels.get(channelType);
         if (channelMap != null) {
             channelMap.bind(userId, groupId, channel);
+            RedisService redisService = SpringUtils.getBean(RedisService.class);
+            redisService.bindUserIdToWsIp(userId, IpUtils.getLocalIp());
             int count = channelCount.incrementAndGet();
             log.info("绑定成功，当前通道数：{}", count);
         }
@@ -75,6 +80,9 @@ public class MsgCenter {
             ChannelMap channelMap = typeToChannels.get(channelType);
             if (channelMap != null) {
                 channelMap.unBind(channel);
+                RedisService redisService = SpringUtils.getBean(RedisService.class);
+                Integer userId = IMUtils.getUserIdFromChannel(channel);
+                redisService.removeUserIdToWsIp(userId);
                 int count = channelCount.decrementAndGet();
                 log.info("解绑成功，当前通道数：{}", count);
             }
@@ -103,6 +111,10 @@ public class MsgCenter {
 
     public void handle(MsgModel msg, Channel channel) {
         first.handle(msg, channel);
+    }
+
+    public void save(MsgModel msg, Integer userId) {
+        first.save(msg, userId);
     }
 
     public Channel findChannel(String channelType, Integer userId, String channelId) {

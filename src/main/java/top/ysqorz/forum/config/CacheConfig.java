@@ -16,6 +16,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import top.ysqorz.forum.common.Constant;
 
 /**
@@ -56,6 +57,11 @@ public class CacheConfig extends CachingConfigurerSupport {
         template.afterPropertiesSet();
 
         return template;
+    }
+
+    @Bean
+    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+        return builder.serializationInclusion(JsonInclude.Include.NON_NULL).createXmlMapper(false).build();
     }
 
     @Bean

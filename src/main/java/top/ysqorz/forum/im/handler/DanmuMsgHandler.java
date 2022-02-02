@@ -38,24 +38,32 @@ public class DanmuMsgHandler extends MsgHandler {
         Video video = videoService.getVideoById(danmu.getVideoId());
         if (video == null) {
             return true;
+
         }
         // 处理DanmuMsg
-        String userId = IMUtils.getUserIdFromChannel(channel);
+        Integer userId = IMUtils.getUserIdFromChannel(channel);
+        // 异步将弹幕插入数据库
+        danmu = (DanmuMsg) this.doSave(msg, userId);
+        // 推送弹幕
+        this.channelMap.pushExceptCurr(danmu, channel, video.getId().toString());
+        return true;
+    }
+
+    @Override
+    protected Object doSave(MsgModel msg, Integer userId) {
+        DanmuMsgMapper mapper = SpringUtils.getBean(DanmuMsgMapper.class);
+        DanmuMsg danmu = JsonUtils.nodeToObj(msg.transformToDataNode(), DanmuMsg.class);
         int endIndex = Math.min(255, danmu.getContent().length());
         String text = danmu.getContent().substring(0, endIndex); // 如果过长只截取前500个字符
         text = HtmlUtils.htmlEscape(text, "UTF-8"); // 转义，防止XSS攻击
         danmu.setId(RandomUtils.generateUUID())
                 .setContent(text)
-                .setCreatorId(Integer.valueOf(userId))
+                .setCreatorId(userId)
                 .setCreateTime(LocalDateTime.now())
                 .setStartMs(Math.max(danmu.getStartMs(), 0)); // 负数时做纠正
-        // 推送弹幕
-        this.channelMap.pushExceptCurr(danmu, channel, video.getId().toString());
-        // 异步将弹幕插入数据库
-        DanmuMsgMapper mapper = SpringUtils.getBean(DanmuMsgMapper.class);
         AsyncInsertTask<DanmuMsg> insertTask = new AsyncInsertTask<>(mapper, danmu);
         this.dbExecutor.execute(insertTask);
-        return true;
+        return danmu;
     }
 
 }

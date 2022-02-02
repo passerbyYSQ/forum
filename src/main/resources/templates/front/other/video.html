@@ -155,14 +155,17 @@
             return danmu;
         }
 
-        function pushMsg(txt, startMs) {
+        function pushMsg(id, txt, startMs) {
             if (socket) {
                 var msg = new Msg(app.MSG_TYPE.DANMU, {
                     content: txt,
                     startMs,
                     videoId: currVideoId
                 });
-                socket.send(msg);
+                // socket.send(msg);
+                socket.sendByHttp(msg, function (res) {
+                    // 撤回弹幕
+                });
             }
         }
 
@@ -202,13 +205,17 @@
                 input.className = 'danmu-input';
                 input.placeholder = '发送弹幕跟大家一起评论吧';
                 var sendFn = function () {
+                    if (!app.getToken()) {
+                        app.infoNotice('请先登录');
+                        return;
+                    }
                     var txt = input.value.trim();
                     if (!txt) {
                         return;
                     }
                     var startMs = playerObj.currentTime * 1000;
                     var danmu = sendDanmu(txt, startMs);
-                    pushMsg(txt, startMs);
+                    pushMsg(danmu.id, txt, startMs);
                     console.log('发送成功', danmu);
                     input.value = '';
                 };

@@ -225,7 +225,7 @@ public class UserController {
         }
         if (StatusCode.SUCCESS.equals(code)) { // 成功
             // 清除shiro的认证缓存，实现单点登录
-            userService.clearShiroAuthCache(user);
+//            userService.clearShiroAuthCache(user);
             // 签发我们自己的token
             userService.login(user.getId(), response);
             // 重定向携带token

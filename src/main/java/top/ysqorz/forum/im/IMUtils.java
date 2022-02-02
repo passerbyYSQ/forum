@@ -36,8 +36,8 @@ public class IMUtils {
         return createTextFrame(type, null);
     }
 
-    public static String getUserIdFromChannel(Channel channel) {
-        AttributeKey<String> userIdKey = AttributeKey.valueOf("userId");
+    public static Integer getUserIdFromChannel(Channel channel) {
+        AttributeKey<Integer> userIdKey = AttributeKey.valueOf("userId");
         return channel.attr(userIdKey).get();
     }
 

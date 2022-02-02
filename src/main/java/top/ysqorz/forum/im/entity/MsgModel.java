@@ -3,6 +3,8 @@ package top.ysqorz.forum.im.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -13,6 +15,7 @@ import javax.validation.constraints.NotNull;
  * @create 2021-02-05 22:31
  */
 @Data
+@NoArgsConstructor
 public class MsgModel {
     // 消息类型
     @NotEmpty
@@ -40,5 +43,9 @@ public class MsgModel {
     // 不要以getXx开头，否则objectMapper在序列化为json的时候会认为是一个属性
     public JsonNode transformToDataNode() {
         return data instanceof JsonNode ? (JsonNode) data : JsonUtils.objToNode(data);
+    }
+
+    public boolean check() {
+        return !(ObjectUtils.isEmpty(msgType) || ObjectUtils.isEmpty(channelType) || ObjectUtils.isEmpty(data));
     }
 }
