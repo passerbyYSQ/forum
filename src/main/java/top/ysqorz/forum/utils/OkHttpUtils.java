@@ -216,18 +216,18 @@ public class OkHttpUtils {
      *
      * @param callBack
      */
-    public void async(ICallBack callBack) {
+    public void async(ApiCallback callBack) {
         setHeader(request);
         okHttpClient.newCall(request.build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                callBack.onFailure(call, e.getMessage());
+                callBack.onFailed(call, e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 assert response.body() != null;
-                callBack.onSuccessful(call, response.body().string());
+                callBack.onSucceed(call, response.body().string());
             }
         });
     }
@@ -289,11 +289,11 @@ public class OkHttpUtils {
     /**
      * 自定义一个接口回调
      */
-    public interface ICallBack {
+    public interface ApiCallback {
 
-        void onSuccessful(Call call, String data);
+        void onSucceed(Call call, String data);
 
-        void onFailure(Call call, String errorMsg);
+        void onFailed(Call call, String errorMsg);
 
     }
 }

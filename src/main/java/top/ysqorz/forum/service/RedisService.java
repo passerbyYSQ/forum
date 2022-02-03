@@ -57,5 +57,5 @@ public interface RedisService {
 
     void removeWsServer(String channelType, String groupId);
 
-    String getUserWs(Integer userId, String channelId);
+    Set<String> getWsServers(String channelType, String groupId);
 }

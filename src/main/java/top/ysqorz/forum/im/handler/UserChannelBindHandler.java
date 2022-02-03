@@ -18,10 +18,15 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author passerbyYSQ
  * @create 2022-01-12 0:58
  */
-public class UserChannelBindHandler extends MsgHandler {
+public class UserChannelBindHandler extends MsgHandler<MsgModel> {
 
     public UserChannelBindHandler(ThreadPoolExecutor dbExecutor) {
         super(MsgType.BIND, dbExecutor, true);
+    }
+
+    @Override
+    protected MsgModel transformData(MsgModel msg, Integer userId) {
+        return msg; // must return msg, or doHandle0 do not invoke
     }
 
     @Override

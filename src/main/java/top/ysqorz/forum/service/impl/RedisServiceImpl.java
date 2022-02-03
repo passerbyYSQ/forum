@@ -1,6 +1,7 @@
 package top.ysqorz.forum.service.impl;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import top.ysqorz.forum.common.Constant;
@@ -25,6 +26,8 @@ public class RedisServiceImpl implements RedisService {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     @Resource
     private PostService postService;
 
@@ -130,20 +133,19 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public void bindWsServer(String channelType, String groupId) {
         String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
-        redisTemplate.opsForSet().add(key, IMUtils.getWebServer()); // 如果没有会被创建
+        stringRedisTemplate.opsForSet().add(key, IMUtils.getWebServer()); // 如果没有会被创建
     }
 
     @Override
     public void removeWsServer(String channelType, String groupId) {
         String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
-        redisTemplate.opsForSet().remove(key, IMUtils.getWebServer());
+        stringRedisTemplate.opsForSet().remove(key, IMUtils.getWebServer());
     }
 
     @Override
-    public String getUserWs(Integer userId, String channelId) {
-        String key = String.format(Constant.REDIS_KEY_USER_WS, userId, channelId);
-        return (String) redisTemplate.opsForValue().get(key);
+    public Set<String> getWsServers(String channelType, String groupId) {
+        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
+        return stringRedisTemplate.opsForSet().members(key);
     }
-
 
 }

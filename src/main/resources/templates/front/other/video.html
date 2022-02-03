@@ -162,10 +162,10 @@
                     startMs,
                     videoId: currVideoId
                 });
-                socket.send(msg);
-                // socket.sendByHttp(msg, function (res) {
-                //     // 撤回弹幕
-                // });
+                // socket.send(msg);
+                socket.sendByHttp(msg, function (res) {
+                    // revoke danmu
+                });
             }
         }
 

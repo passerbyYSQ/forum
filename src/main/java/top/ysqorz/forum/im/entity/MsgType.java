@@ -10,7 +10,7 @@ public enum MsgType {
     PING,
     PONG,
     CLOSE,
-    // 业务类型
+    // 业务类型。同时也是通道类型
     DANMU,
     CHAT;
 

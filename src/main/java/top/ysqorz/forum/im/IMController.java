@@ -11,7 +11,9 @@ import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.im.handler.MsgCenter;
 import top.ysqorz.forum.service.IMService;
+import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 
 import javax.annotation.Resource;
@@ -35,7 +37,15 @@ public class IMController {
      */
     @PostMapping("/send")
     public ResultModel sendMsg(@NotEmpty String msgJson, @NotEmpty String channelId) {
-        return ResultModel.success(imService.forwardMsg(HtmlUtils.htmlUnescape(msgJson), channelId));
+        MsgModel msg = JsonUtils.jsonToObj(HtmlUtils.htmlUnescape(msgJson), MsgModel.class);
+        if (msg == null || !msg.check()) {
+            return ResultModel.failed(StatusCode.PARAM_INVALID);
+        }
+        if (MsgType.isFunctionalType(msg.getMsgType())) {
+            return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
+        }
+        MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getUserId());
+        return null;
     }
 
     /**
@@ -43,19 +53,13 @@ public class IMController {
      */
     @PostMapping("/push")
     public ResultModel pushMsg(@NotEmpty String msgJson, @NotEmpty String channelId) { // source channel
-        MsgModel msg = JsonUtils.jsonToObj(msgJson, MsgModel.class);
-        if (msg == null || !msg.check()) {
-            return ResultModel.failed(StatusCode.PARAM_INVALID);
-        }
-        if (MsgType.isFunctionalType(msg.getMsgType())) {
-            return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
-        }
-        return null;
+        MsgModel msg = JsonUtils.jsonToObj(HtmlUtils.htmlUnescape(msgJson), MsgModel.class);
+        MsgCenter.getInstance().push(msg, channelId, ShiroUtils.getUserId());
+        return ResultModel.success();
     }
 
     @GetMapping("/server")
     public ResultModel<String> wsServers() {
         return ResultModel.success(imService.getRandWsServerUrl());
     }
-
 }

@@ -11,7 +11,7 @@ import top.ysqorz.forum.po.User;
  * @author passerbyYSQ
  * @create 2022-01-25 19:07
  */
-public class PingPongMsgHandler extends MsgHandler {
+public class PingPongMsgHandler extends MsgHandler<MsgModel> {
 
     public PingPongMsgHandler() {
         super(MsgType.PING);
@@ -21,6 +21,11 @@ public class PingPongMsgHandler extends MsgHandler {
     protected boolean isLogin(MsgModel msg, Channel channel) {
         ChannelMap channelMap = MsgCenter.getInstance().getChannelMap(msg.getChannelType());
         return (channelMap != null && channelMap.isBound(channel)) || super.checkToken(msg);
+    }
+
+    @Override
+    protected MsgModel transformData(MsgModel msg, Integer userId) {
+        return msg; // must return msg, or doHandle0 do not invoke
     }
 
     @Override

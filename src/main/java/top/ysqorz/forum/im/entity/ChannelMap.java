@@ -58,13 +58,13 @@ public class ChannelMap {
         }
     }
 
-    public void pushToGroup(Object data, Channel sourceChannel, String groupId) {
+    public void pushToGroup(Object data, String sourceChannelId, String groupId) {
         Set<Channel> channels = channelMap.get(groupId);
         if (channels == null) {
             return;
         }
         for (Channel channel : channels) {
-            if (channel == sourceChannel) {
+            if (channel.id().asLongText().equals(sourceChannelId)) {
                 continue;
             }
             channel.writeAndFlush(createTextFrame(data));

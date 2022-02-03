@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author passerbyYSQ
  * @create 2022-01-18 19:29
  */
-public class TailHandler extends MsgHandler {
+public class TailHandler extends MsgHandler<MsgModel> {
 
     public TailHandler(ThreadPoolExecutor dbExecutor) {
         super(dbExecutor);
@@ -23,6 +23,11 @@ public class TailHandler extends MsgHandler {
     @Override
     protected boolean canHandle(MsgModel msg, Channel channel) {
         return true; // 可以处理所有流到尾部、未被消费完的消息
+    }
+
+    @Override
+    protected MsgModel transformData(MsgModel msg, Integer userId) {
+        return msg; // must return msg, or doHandle0 do not invoke
     }
 
     @Override

@@ -88,6 +88,18 @@ public class MsgCenter {
         }
     }
 
+    public void handle(MsgModel msg, Channel channel) {
+        first.handle(msg, channel);
+    }
+
+    public void push(MsgModel msg, String sourceChannelId, Integer userId) { // source user
+        first.push(msg, sourceChannelId, userId);
+    }
+
+    public void remoteDispatch(MsgModel msg, String sourceChannelId, Integer userId) { // source user
+        first.remoteDispatch(msg, sourceChannelId, userId);
+    }
+
     public ChannelMap getChannelMap(String channelType) {
         return typeToChannels.get(channelType);
     }
@@ -106,21 +118,5 @@ public class MsgCenter {
 
         first = bindHandler;
         tail = pingPongHandler; // 不包括tailHandler
-    }
-
-    public void handle(MsgModel msg, Channel channel) {
-        first.handle(msg, channel);
-    }
-
-    public void save(MsgModel msg, Integer userId) {
-        first.save(msg, userId);
-    }
-
-    public Channel findChannel(String channelType, String groupId, String channelId) {
-        ChannelMap channelMap = this.getChannelMap(channelType);
-        if (channelMap == null) {
-            return null;
-        }
-        return channelMap.findChannel(groupId, channelId);
     }
 }

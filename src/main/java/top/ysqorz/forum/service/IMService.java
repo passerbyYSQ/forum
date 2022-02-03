@@ -1,7 +1,5 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.common.StatusCode;
-
 import java.util.List;
 
 /**
@@ -14,5 +12,4 @@ public interface IMService {
 
     String getRandWsServerUrl();
 
-    StatusCode forwardMsg(String msgJson, String channelId);
 }
