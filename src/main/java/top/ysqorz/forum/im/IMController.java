@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.service.IMService;
+import top.ysqorz.forum.utils.JsonUtils;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
@@ -32,6 +36,21 @@ public class IMController {
     @PostMapping("/send")
     public ResultModel sendMsg(@NotEmpty String msgJson, @NotEmpty String channelId) {
         return ResultModel.success(imService.forwardMsg(HtmlUtils.htmlUnescape(msgJson), channelId));
+    }
+
+    /**
+     * 转交给 MsgCenter push
+     */
+    @PostMapping("/push")
+    public ResultModel pushMsg(@NotEmpty String msgJson, @NotEmpty String channelId) { // source channel
+        MsgModel msg = JsonUtils.jsonToObj(msgJson, MsgModel.class);
+        if (msg == null || !msg.check()) {
+            return ResultModel.failed(StatusCode.PARAM_INVALID);
+        }
+        if (MsgType.isFunctionalType(msg.getMsgType())) {
+            return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
+        }
+        return null;
     }
 
     @GetMapping("/server")

@@ -1,19 +1,17 @@
 package top.ysqorz.forum.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.im.handler.MsgCenter;
 import top.ysqorz.forum.middleware.ZkConnector;
-import top.ysqorz.forum.service.DanmuService;
 import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.shiro.ShiroUtils;
-import top.ysqorz.forum.utils.IpUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 import top.ysqorz.forum.utils.RandomUtils;
@@ -32,8 +30,6 @@ public class IMServiceImpl implements IMService {
     private ZkConnector zkConnector;
     @Resource
     private RedisService redisService;
-    @Resource
-    private DanmuService danmuService;
 
     @Override
     public List<String> getIMServerIpList() {
@@ -58,18 +54,18 @@ public class IMServiceImpl implements IMService {
             return StatusCode.NOT_SUPPORT_FUNC_TYPE;
         }
         Integer userId = ShiroUtils.getUserId();
-        String wsServer = redisService.getUserWs(userId);
-        String localServer = IpUtils.getLocalIp();
-        if (localServer.equals(wsServer)) { // channel在当前服务上
-            Channel channel = MsgCenter.getInstance().findChannel(msg.getChannelType(), userId, channelId);
-            if (channel == null) {
-                return StatusCode.CHANNEL_NOT_EXIST;
-            }
-            MsgCenter.getInstance().handle(msg, channel);
+        String webServer = redisService.getUserWs(userId, channelId);
+        String localServer = IMUtils.getWebServer();
+        if (localServer.equals(webServer)) { // channel在当前服务上
+//            Channel channel = MsgCenter.getInstance().findChannel(msg.getChannelType(), userId, channelId);
+//            if (channel == null) {
+//                return StatusCode.CHANNEL_NOT_EXIST;
+//            }
+            MsgCenter.getInstance().handle(msg, null);
             return StatusCode.SUCCESS;
         } else {
             try {
-                return remoteForwardMsg(wsServer, msgJson, channelId, 1);
+                return remoteForwardMsg(webServer, msgJson, channelId, 1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 return StatusCode.REMOTE_FORWARD_MSG_FAILED;
@@ -77,12 +73,12 @@ public class IMServiceImpl implements IMService {
         }
     }
 
-    private StatusCode remoteForwardMsg(String wsServer, String msgJson, String channelId, int tryCount) throws InterruptedException {
+    private StatusCode remoteForwardMsg(String webServer, String msgJson, String channelId, int tryCount) throws InterruptedException {
         if (tryCount > 3) { // 重试超过3次，则将消息存到数据库，返回成功
             MsgCenter.getInstance().save(JsonUtils.jsonToObj(msgJson, MsgModel.class), ShiroUtils.getUserId());
             return StatusCode.SUCCESS;
         }
-        String api = String.format("http://%s:8080/im/send", wsServer);
+        String api = String.format("http://%s/im/send", webServer);
         String body = OkHttpUtils.builder().url(api)
                 .addHeader("token", ShiroUtils.getToken())
                 .addParam("msgJson", msgJson)
@@ -94,7 +90,7 @@ public class IMServiceImpl implements IMService {
         } else {
             // 递归重试
             Thread.sleep(1000);
-            return remoteForwardMsg(wsServer, msgJson, channelId, tryCount + 1);
+            return remoteForwardMsg(webServer, msgJson, channelId, tryCount + 1);
         }
     }
 }

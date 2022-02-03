@@ -18,10 +18,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Data
 public class ChannelMap {
-    // 通道的业务类型。如：弹幕、单聊、群聊。
+    // 通道的业务类型。如：DANMU, CHAT ... etc
     private MsgType type; // channelType
-    // 该业务类型的所有通道 userId --> Set<Channel>
-    private Map<Integer, Set<Channel>> channelMap = new ConcurrentHashMap<>();
+    // 该业务类型的所有通道。groupId(videoId, userId... etc) --> Set<Channel>
+    private Map<String, Set<Channel>> channelMap = new ConcurrentHashMap<>();
     private volatile AtomicInteger channelCount = new AtomicInteger(0);
 
     public ChannelMap(MsgType type) {
@@ -29,7 +29,7 @@ public class ChannelMap {
     }
 
     public void bind(Integer userId, String groupId, Channel channel) {
-        Set<Channel> channels = channelMap.get(userId);
+        Set<Channel> channels = channelMap.get(groupId);
         // 往channel里面存储额外信息，实现双向绑定，以便能通过能够移除Map中的channel
         AttributeKey<Integer> userIdKey = AttributeKey.valueOf("userId");
         channel.attr(userIdKey).set(userId);
@@ -40,7 +40,7 @@ public class ChannelMap {
         if (channels == null) {
             Set<Channel> newChannels = new HashSet<>();
             newChannels.add(channel);
-            channelMap.put(userId, newChannels);
+            channelMap.put(groupId, newChannels);
         } else {
             channels.add(channel);
         }
@@ -48,9 +48,9 @@ public class ChannelMap {
     }
 
     public void unBind(Channel channel) {
-        Integer userId = IMUtils.getUserIdFromChannel(channel);
-        if (userId != null) {
-            Set<Channel> channels = channelMap.get(userId);
+        String groupId = IMUtils.getGroupIdFromChannel(channel);
+        if (groupId != null) {
+            Set<Channel> channels = channelMap.get(groupId);
             if (channels != null) {
                 channels.remove(channel);
                 channelCount.decrementAndGet();
@@ -58,47 +58,32 @@ public class ChannelMap {
         }
     }
 
-    public void pushExceptCurr(Object data, Channel currChannel, String destGroupId) {
-        Set<Integer> userIds = channelMap.keySet();
-        for (Integer userId : userIds) {
-            Set<Channel> channels = channelMap.get(userId);
-            for (Channel channel : channels) {
-                String groupId = IMUtils.getGroupIdFromChannel(channel);
-                if (channel == currChannel || !groupId.equals(destGroupId)) {
-                    continue;
-                }
-                channel.writeAndFlush(createTextFrame(data));
-            }
-        }
-    }
-
-    public void pushToUser(Object data, Integer userId, String destGroupId) {
-        Set<Channel> channels = channelMap.get(userId);
+    public void pushToGroup(Object data, Channel sourceChannel, String groupId) {
+        Set<Channel> channels = channelMap.get(groupId);
         if (channels == null) {
             return;
         }
         for (Channel channel : channels) {
-            String groupId = IMUtils.getGroupIdFromChannel(channel);
-            if (groupId.equals(destGroupId)) {
-                channel.writeAndFlush(createTextFrame(data));
+            if (channel == sourceChannel) {
+                continue;
             }
+            channel.writeAndFlush(createTextFrame(data));
         }
     }
 
     public boolean isBound(Channel channel) {
         Integer userId = IMUtils.getUserIdFromChannel(channel);
-        if (userId == null) {
+        String channelType = IMUtils.getChannelTypeFromChannel(channel);
+        String groupId = IMUtils.getGroupIdFromChannel(channel);
+        if (userId == null || channelType == null || groupId == null) {
             return false;
         }
-        Set<Channel> channels = channelMap.get(userId);
-        if (channels == null) {
-            return false;
-        }
-        return channels.contains(channel);
+        Set<Channel> channels = channelMap.get(groupId);
+        return channelType.equals(type.name()) && (channels != null && channels.contains(channel));
     }
 
-    public Channel findChannel(Integer userId, String channelId) {
-        Set<Channel> channels = channelMap.get(userId);
+    public Channel findChannel(String groupId, String channelId) {
+        Set<Channel> channels = channelMap.get(groupId);
         if (channels == null) {
             return null;
         }

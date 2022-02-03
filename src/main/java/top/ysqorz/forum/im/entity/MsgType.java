@@ -11,7 +11,8 @@ public enum MsgType {
     PONG,
     CLOSE,
     // 业务类型
-    DANMU;
+    DANMU,
+    CHAT;
 
     public static boolean isFunctionalType(String type) {
         MsgType[] funcTypes = new MsgType[]{BIND, PING, PONG, CLOSE};

@@ -87,7 +87,7 @@
         var $ = layui.jquery;
         var app = layui.app;
         const currVideoId = [[${video.id}]];
-        const channelType = 'DANMU';
+        const channelType = app.MSG_TYPE.DANMU;
         const danmuCommonStyle = {
             color: true,
             style: {
@@ -162,10 +162,10 @@
                     startMs,
                     videoId: currVideoId
                 });
-                // socket.send(msg);
-                socket.sendByHttp(msg, function (res) {
-                    // 撤回弹幕
-                });
+                socket.send(msg);
+                // socket.sendByHttp(msg, function (res) {
+                //     // 撤回弹幕
+                // });
             }
         }
 

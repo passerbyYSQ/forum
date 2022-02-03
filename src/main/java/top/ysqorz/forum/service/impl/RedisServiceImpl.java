@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.dto.WeekTopPostDTO;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.DateTimeUtils;
@@ -127,18 +128,21 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void bindUserIdToWsIp(Integer userId, String wsIp) {
-        redisTemplate.opsForValue().setIfAbsent(Constant.REDIS_KEY_USER_WS + userId.toString(), wsIp);
+    public void bindWsServer(String channelType, String groupId) {
+        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
+        redisTemplate.opsForSet().add(key, IMUtils.getWebServer()); // 如果没有会被创建
     }
 
     @Override
-    public void removeUserIdToWsIp(Integer userId) {
-        redisTemplate.delete(Constant.REDIS_KEY_USER_WS + userId.toString());
+    public void removeWsServer(String channelType, String groupId) {
+        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
+        redisTemplate.opsForSet().remove(key, IMUtils.getWebServer());
     }
 
     @Override
-    public String getUserWs(Integer userId) {
-        return (String) redisTemplate.opsForValue().get(Constant.REDIS_KEY_USER_WS + userId.toString());
+    public String getUserWs(Integer userId, String channelId) {
+        String key = String.format(Constant.REDIS_KEY_USER_WS, userId, channelId);
+        return (String) redisTemplate.opsForValue().get(key);
     }
 
 

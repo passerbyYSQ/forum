@@ -4,9 +4,13 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
+import org.springframework.core.env.Environment;
+import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.utils.IpUtils;
 import top.ysqorz.forum.utils.JsonUtils;
+import top.ysqorz.forum.utils.SpringUtils;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -15,6 +19,15 @@ import java.security.NoSuchAlgorithmException;
  * @create 2022-01-25 19:12
  */
 public class IMUtils {
+
+    public static String getWsServer() {
+        return String.format("ws://%s:%d/ws", IpUtils.getLocalIp(), Constant.WS_SERVER_PORT);
+    }
+
+    public static String getWebServer() {
+        Environment env = SpringUtils.getBean(Environment.class);
+        return IpUtils.getLocalIp() + ":" + env.getProperty("server.port");
+    }
 
     public static String generateAuthDigest(String userPwd) {
         // user:passowrd  --sha1--> --base64--> digest

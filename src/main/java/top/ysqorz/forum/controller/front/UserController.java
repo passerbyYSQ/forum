@@ -134,7 +134,7 @@ public class UserController {
             return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
 
-        userService.clearShiroAuthCache(user);
+//        userService.clearShiroAuthCache(user);
         String token = userService.login(user.getId(), response);
 
         // 为什么登录不使用UsernamePasswordToken和定义专门的LoginRealm（Service层的逻辑）来处理UsernamePasswordToken？

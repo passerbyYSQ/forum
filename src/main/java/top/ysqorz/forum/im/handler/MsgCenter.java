@@ -6,7 +6,6 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.service.RedisService;
-import top.ysqorz.forum.utils.IpUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
 import java.util.HashSet;
@@ -68,7 +67,7 @@ public class MsgCenter {
         if (channelMap != null) {
             channelMap.bind(userId, groupId, channel);
             RedisService redisService = SpringUtils.getBean(RedisService.class);
-            redisService.bindUserIdToWsIp(userId, IpUtils.getLocalIp());
+            redisService.bindWsServer(channelType, groupId);
             int count = channelCount.incrementAndGet();
             log.info("绑定成功，当前通道数：{}", count);
         }
@@ -81,8 +80,8 @@ public class MsgCenter {
             if (channelMap != null) {
                 channelMap.unBind(channel);
                 RedisService redisService = SpringUtils.getBean(RedisService.class);
-                Integer userId = IMUtils.getUserIdFromChannel(channel);
-                redisService.removeUserIdToWsIp(userId);
+                String groupId = IMUtils.getGroupIdFromChannel(channel);
+                redisService.removeWsServer(channelType, groupId);
                 int count = channelCount.decrementAndGet();
                 log.info("解绑成功，当前通道数：{}", count);
             }
@@ -117,11 +116,11 @@ public class MsgCenter {
         first.save(msg, userId);
     }
 
-    public Channel findChannel(String channelType, Integer userId, String channelId) {
+    public Channel findChannel(String channelType, String groupId, String channelId) {
         ChannelMap channelMap = this.getChannelMap(channelType);
         if (channelMap == null) {
             return null;
         }
-        return channelMap.findChannel(userId, channelId);
+        return channelMap.findChannel(groupId, channelId);
     }
 }

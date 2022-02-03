@@ -432,9 +432,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logout() {
         Subject subject = SecurityUtils.getSubject();
-        // 为什么可以强制转成User？与在Realm中认证方法返回的SimpleAuthenticationInfo()的第一个参数有关
-        Integer userId = (Integer) subject.getPrincipal();
-        this.updateJwtSalt(userId, "");
+        this.updateJwtSalt(ShiroUtils.getUserId(), "");
         subject.logout();
 
     }

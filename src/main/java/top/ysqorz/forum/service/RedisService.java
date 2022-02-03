@@ -52,10 +52,10 @@ public interface RedisService {
     // 获取热帖周榜是否有信息
     Boolean isHaveWeekHotPost();
 
-    // bind userId --> ws server
-    void bindUserIdToWsIp(Integer userId, String wsIp);
+    // 记录用户的ws连接在哪个web服务上，以便转发消息时调用接口
+    void bindWsServer(String channelType, String groupId);
 
-    void removeUserIdToWsIp(Integer userId);
+    void removeWsServer(String channelType, String groupId);
 
-    String getUserWs(Integer userId);
+    String getUserWs(Integer userId, String channelId);
 }

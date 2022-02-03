@@ -10,6 +10,8 @@ import java.time.Duration;
  */
 public interface Constant {
 
+    int WS_SERVER_PORT = 8081;
+
     // 手机号的正则表达式
     String REGEX_PHONE = "^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\\d{8}$";
 
@@ -22,8 +24,8 @@ public interface Constant {
     String REDIS_KEY_OAUTH_STATE = "oauth:state:";
     // post:visit:postId:ip
     String REDIS_KEY_POST_VISIT = "post:visit:%d:%s";
-    // im:userId:wsServerIp
-    String REDIS_KEY_USER_WS = "im:";
+    // im:ws:channelType:groupId
+    String REDIS_KEY_USER_WS = "im:ws:%s:%s";
 
     // redis captcha 有效期：5分钟
     Duration DURATION_CAPTCHA = Duration.ofMinutes(5);

@@ -13,6 +13,7 @@ import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
+import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -61,6 +62,20 @@ public abstract class MsgHandler {
             return next.save(msg, userId);
         }
         return null;
+    }
+
+    public void remoteDispatch(MsgModel msg) {
+        if (checkMsgType(msg)) {
+            Set<String> servers = queryServersChannelLocated(msg);
+            if (servers == null) {
+                return;
+            }
+            for (String server : servers) {
+                // TODO remote invoke push api
+            }
+        } else if (next != null) {
+            next.remoteDispatch(msg);
+        }
     }
 
     public void addBehind(MsgHandler handler) {
@@ -132,6 +147,10 @@ public abstract class MsgHandler {
      * 如果业务类型的消息需要存到数据库，则子类需要重写此方法
      */
     protected Object doSave(MsgModel msg, Integer userId) {
+        return null;
+    }
+
+    protected Set<String> queryServersChannelLocated(MsgModel msg) {
         return null;
     }
 

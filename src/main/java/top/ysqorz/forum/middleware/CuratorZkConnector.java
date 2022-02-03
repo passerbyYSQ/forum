@@ -19,7 +19,6 @@ import org.apache.zookeeper.data.Id;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import top.ysqorz.forum.im.IMUtils;
-import top.ysqorz.forum.utils.IpUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -90,7 +89,7 @@ public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeCh
             client.create()
                     .orSetData()
                     .creatingParentsIfNeeded()
-                    .withMode(CreateMode.PERSISTENT)
+                    .withMode(mode)
                     .withACL(aclList, true)
                     .forPath(path, data.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
@@ -176,9 +175,8 @@ public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeCh
         if (ConnectionState.CONNECTED == newState || ConnectionState.RECONNECTED == newState) {
             // 将当前服务器注册到zookeeper中，作为临时节点
             log.info("连接Zookeeper成功");
-            String localIp = IpUtils.getLocalIp();
-            String wsServerUrl = String.format("ws://%s:8081/ws", localIp);
-            this.create(ZkConnector.PATH + "/" + localIp, wsServerUrl, CreateMode.EPHEMERAL);
+            String path = ZkConnector.PATH + "/" + IMUtils.getWebServer();
+            this.create(path, IMUtils.getWsServer(), CreateMode.EPHEMERAL);
             log.info("往Zookeeper注册当前服务成功");
         }
     }

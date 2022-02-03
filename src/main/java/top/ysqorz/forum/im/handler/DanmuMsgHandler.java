@@ -29,7 +29,6 @@ public class DanmuMsgHandler extends MsgHandler {
 
     @Override
     protected boolean doHandle0(MsgModel msg, Channel channel, User loginUser) {
-        // DANMU类型且已登录，但是dataNode仍可能为空(人为传错)
         DanmuMsg danmu = JsonUtils.nodeToObj(msg.transformToDataNode(), DanmuMsg.class);
         if (danmu == null || ObjectUtils.isEmpty(danmu.getContent()) || danmu.getVideoId() == null) {
             return true;
@@ -40,12 +39,11 @@ public class DanmuMsgHandler extends MsgHandler {
             return true;
 
         }
-        // 处理DanmuMsg
         Integer userId = IMUtils.getUserIdFromChannel(channel);
         // 异步将弹幕插入数据库
         danmu = (DanmuMsg) this.doSave(msg, userId);
         // 推送弹幕
-        this.channelMap.pushExceptCurr(danmu, channel, video.getId().toString());
+        this.channelMap.pushToGroup(danmu, channel, video.getId().toString());
         return true;
     }
 

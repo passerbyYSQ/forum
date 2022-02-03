@@ -118,6 +118,7 @@ layui.define(['app'], function (exports) {
         _onCloseCallback() {
             this._clearHeartBeatTimer();
             this.socket = null;
+            this.channelId = null;
             console.log('长连接关闭，成功清除心跳定时器，并且置空socket');
             app.errorNotice('长连接关闭，成功清除心跳定时器');
         }
