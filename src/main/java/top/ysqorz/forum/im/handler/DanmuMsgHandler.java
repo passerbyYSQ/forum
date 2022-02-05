@@ -4,7 +4,6 @@ import io.netty.channel.Channel;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.dao.DanmuMsgMapper;
-import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.AsyncInsertTask;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
@@ -35,16 +34,19 @@ public class DanmuMsgHandler extends MsgHandler<DanmuMsg> {
     @Override
     protected boolean doHandle0(DanmuMsg danmu, Channel channel, User loginUser) {
         // 异步将弹幕插入数据库
-        Integer userId = IMUtils.getUserIdFromChannel(channel);
-        danmu = (DanmuMsg) this.doSave(danmu, userId);
+        this.doSave(danmu);
         // 推送弹幕
         this.doPush(danmu, channel.id().asLongText());
         return true;
     }
 
     @Override
-    protected DanmuMsg transformData(MsgModel msg, Integer userId) {
-        DanmuMsg danmu = JsonUtils.nodeToObj(msg.transformToDataNode(), DanmuMsg.class);
+    protected DanmuMsg transformData(MsgModel msg) {
+        return JsonUtils.nodeToObj(msg.transformToDataNode(), DanmuMsg.class);
+    }
+
+    @Override
+    protected DanmuMsg processData(DanmuMsg danmu, Integer userId) {
         if (danmu == null || ObjectUtils.isEmpty(danmu.getContent()) || danmu.getVideoId() == null) {
             return null;
         }
@@ -71,15 +73,13 @@ public class DanmuMsgHandler extends MsgHandler<DanmuMsg> {
     }
 
     @Override
-    protected void doPush(DanmuMsg data, String sourceChannelId) {  // data is completed
-        this.channelMap.pushToGroup(data, sourceChannelId, data.getVideoId().toString());
+    protected void doPush(DanmuMsg danmu, String sourceChannelId) {  // data is completed
+        this.channelMap.pushToGroup(danmu, sourceChannelId, danmu.getVideoId().toString());
     }
 
     @Override
-    protected Object doSave(DanmuMsg danmu, Integer userId) { // data is completed
+    protected AsyncInsertTask createAsyncInsertTask(DanmuMsg danmu) {
         DanmuMsgMapper mapper = SpringUtils.getBean(DanmuMsgMapper.class);
-        AsyncInsertTask<DanmuMsg> insertTask = new AsyncInsertTask<>(mapper, danmu);
-        this.dbExecutor.execute(insertTask);
-        return danmu;
+        return new AsyncInsertTask<>(mapper, danmu);
     }
 }

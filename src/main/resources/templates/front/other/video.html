@@ -83,9 +83,10 @@
 <script th:src="@{/admin/assets/libs/layui/layui.js}" src="../res/layui/layui.js"></script>
 <script th:src="@{/admin/assets/js/common.js(v=318)}" src="admin/js/common.js?v=318"></script>
 <script>
-    layui.use(['Player', 'app', 'ClientWebSocket'], function () {
+    layui.use(['Player', 'app', 'ClientWebSocket', 'notice'], function () {
         var $ = layui.jquery;
         var app = layui.app;
+        var notice = layui.notice;
         const currVideoId = [[${video.id}]];
         const channelType = app.MSG_TYPE.DANMU;
         const danmuCommonStyle = {
@@ -150,6 +151,8 @@
             Object.assign(danmu, danmuCommonStyle);
             if (!id) {
                 danmu.style = meDanmuStyle; // 如果id不存在说明是自己发的弹幕
+            } else {
+                danmuNotice(txt);
             }
             playerObj.danmu.sendComment(danmu);
             return danmu;
@@ -236,6 +239,27 @@
             }
         }
 
+        function danmuNotice(txt) {
+            notice.success({
+                theme: 'light',
+                animateInside: false,
+                layout: '2',
+                rtl: false,
+                displayMode: '0',
+                balloon: false,
+                position: 'topRight',
+                transitionIn: 'fadeInLeft',
+                transitionOut: 'fadeOutRight',
+                audio: '',
+                timeout: '5000',
+                progressBar: true,
+                // noticeType: "success",
+                title: '新弹幕',
+                message: txt,
+                pauseOnHover: false,
+                resetOnHover: false
+            })
+        }
     });
 </script>
 </body>

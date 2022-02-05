@@ -89,7 +89,7 @@ layui.define(['app'], function (exports) {
             }
             this.socket.send(this._createMsg(MSG_TYPE.BIND, data));
             console.log('成功发送绑定类型的消息');
-            setTimeout(this._onOpenCallback.bind(this), 1000); // 超时重试，直到后端绑定成功或者后端关闭了通道才放弃
+            setTimeout(this._onOpenCallback.bind(this), 5000); // 超时重试，直到后端绑定成功或者后端关闭了通道才放弃
         }
 
         _initHeartBeatTimer() {

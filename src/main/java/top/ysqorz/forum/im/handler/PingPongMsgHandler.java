@@ -24,7 +24,7 @@ public class PingPongMsgHandler extends MsgHandler<MsgModel> {
     }
 
     @Override
-    protected MsgModel transformData(MsgModel msg, Integer userId) {
+    protected MsgModel transformData(MsgModel msg) {
         return msg; // must return msg, or doHandle0 do not invoke
     }
 

@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import lombok.Data;
 import okhttp3.Call;
 import top.ysqorz.forum.im.IMUtils;
+import top.ysqorz.forum.im.entity.AsyncInsertTask;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
@@ -57,9 +58,9 @@ public abstract class MsgHandler<DataType> {
         }
     }
 
-    public void push(MsgModel msg, String sourceChannelId, Integer userId) {
+    public void push(MsgModel msg, String sourceChannelId, Integer userId) { // msg.data is completed
         if (checkMsgType(msg)) {
-            DataType data = transformData(msg, userId);
+            DataType data = transformData(msg);
             if (data == null) {
                 return;
             }
@@ -71,7 +72,8 @@ public abstract class MsgHandler<DataType> {
 
     public void remoteDispatch(MsgModel msg, String sourceChannelId, Integer userId) {
         if (checkMsgType(msg)) {
-            DataType data = transformData(msg, userId);
+            DataType data = transformData(msg);
+            data = processData(data, userId);
             if (data == null) {
                 return;
             }
@@ -80,7 +82,8 @@ public abstract class MsgHandler<DataType> {
                 return;
             }
             // 保存到数据库
-            doSave(data, userId);
+            doSave(data);
+            msg.setData(data); // completed data
             // 分发到各个服务器，然后进行推送
             for (String server : servers) {
                 String api = String.format("http://%s/im/push", server);
@@ -149,7 +152,8 @@ public abstract class MsgHandler<DataType> {
             }
             loginUser = getUserById(userId);
         }
-        DataType data = transformData(msg, loginUser != null ? loginUser.getId() : null);
+        DataType data = transformData(msg);
+        data = processData(data, loginUser != null ? loginUser.getId() : null);
         return data != null && doHandle0(data, channel, loginUser);
     }
 
@@ -162,8 +166,12 @@ public abstract class MsgHandler<DataType> {
     }
 
     // data is completed
-    protected Object doSave(DataType data, Integer userId) {
-        return null;
+    protected void doSave(DataType data) {
+        AsyncInsertTask insertTask = createAsyncInsertTask(data);
+        if (insertTask == null) {
+            return;
+        }
+        this.dbExecutor.execute(insertTask);
     }
 
     // data is completed
@@ -174,7 +182,15 @@ public abstract class MsgHandler<DataType> {
         return null;
     }
 
-    protected abstract DataType transformData(MsgModel msg, Integer userId); // source user
+    protected abstract DataType transformData(MsgModel msg); // must implement
+
+    protected DataType processData(DataType data, Integer userId) {
+        return data; // 默认不处理直接返回
+    }
+
+    protected AsyncInsertTask createAsyncInsertTask(DataType data) {
+        return null;
+    }
 
     /**
      * 消费数据
