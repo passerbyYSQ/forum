@@ -58,7 +58,7 @@ public abstract class MsgHandler<DataType> {
         }
     }
 
-    public void push(MsgModel msg, String sourceChannelId, Integer userId) { // msg.data is completed
+    public void push(MsgModel msg, String sourceChannelId) { // msg.data is completed
         if (checkMsgType(msg)) {
             DataType data = transformData(msg);
             if (data == null) {
@@ -66,14 +66,14 @@ public abstract class MsgHandler<DataType> {
             }
             doPush(data, sourceChannelId);
         } else if (next != null) {
-            next.push(msg, sourceChannelId, userId);
+            next.push(msg, sourceChannelId);
         }
     }
 
-    public void remoteDispatch(MsgModel msg, String sourceChannelId, Integer userId) {
+    public void remoteDispatch(MsgModel msg, String sourceChannelId, User user) {
         if (checkMsgType(msg)) {
             DataType data = transformData(msg);
-            data = processData(data, userId);
+            data = processData(data, user);
             if (data == null) {
                 return;
             }
@@ -94,7 +94,7 @@ public abstract class MsgHandler<DataType> {
                         .post(false).async(new PushApiCallback(data));
             }
         } else if (next != null) {
-            next.remoteDispatch(msg, sourceChannelId, userId);
+            next.remoteDispatch(msg, sourceChannelId, user);
         }
     }
 
@@ -153,7 +153,7 @@ public abstract class MsgHandler<DataType> {
             loginUser = getUserById(userId);
         }
         DataType data = transformData(msg);
-        data = processData(data, loginUser != null ? loginUser.getId() : null);
+        data = processData(data, loginUser);
         return data != null && doHandle0(data, channel, loginUser);
     }
 
@@ -184,7 +184,7 @@ public abstract class MsgHandler<DataType> {
 
     protected abstract DataType transformData(MsgModel msg); // must implement
 
-    protected DataType processData(DataType data, Integer userId) {
+    protected DataType processData(DataType data, User user) {
         return data; // 默认不处理直接返回
     }
 

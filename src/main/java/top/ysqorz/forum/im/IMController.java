@@ -44,7 +44,7 @@ public class IMController {
         if (MsgType.isFunctionalType(msg.getMsgType())) {
             return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
         }
-        MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getUserId());
+        MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getLoginUser());
         return null;
     }
 
@@ -54,7 +54,7 @@ public class IMController {
     @PostMapping("/push")
     public ResultModel pushMsg(@NotEmpty String msgJson, @NotEmpty String channelId) { // source channel
         MsgModel msg = JsonUtils.jsonToObj(HtmlUtils.htmlUnescape(msgJson), MsgModel.class);
-        MsgCenter.getInstance().push(msg, channelId, ShiroUtils.getUserId());
+        MsgCenter.getInstance().push(msg, channelId);
         return ResultModel.success();
     }
 

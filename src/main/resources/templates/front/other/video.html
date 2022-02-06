@@ -133,26 +133,25 @@
                     if (msg.msgType !== app.MSG_TYPE.DANMU || msg.data.videoId !== currVideoId) {
                         return;
                     }
-                    var {id, content, startMs} = msg.data;
-                    sendDanmu(content, startMs, id);
+                    sendDanmu(msg.data);
                 }
             })
         }
 
-        function sendDanmu(txt, startMs, id) { // id存在说明是收到的消息
+        function sendDanmu(danmuMsg) { // id存在说明是收到的消息
             if (!playerObj || !playerObj.danmu) {
                 return;
             }
             var danmu = {
-                id: id || new Date().getTime() + '_' + Math.random(),
-                start: startMs,
-                txt
+                id: danmuMsg.id || new Date().getTime() + '_' + Math.random(),
+                start: danmuMsg.startMs,
+                txt: danmuMsg.content
             };
             Object.assign(danmu, danmuCommonStyle);
-            if (!id) {
+            if (!danmuMsg.id) {
                 danmu.style = meDanmuStyle; // 如果id不存在说明是自己发的弹幕
             } else {
-                danmuNotice(txt);
+                danmuNotice(danmuMsg);
             }
             playerObj.danmu.sendComment(danmu);
             return danmu;
@@ -217,7 +216,7 @@
                         return;
                     }
                     var startMs = playerObj.currentTime * 1000;
-                    var danmu = sendDanmu(txt, startMs);
+                    var danmu = sendDanmu({content: txt, startMs});
                     pushMsg(danmu.id, txt, startMs);
                     console.log('发送成功', danmu);
                     input.value = '';
@@ -239,8 +238,11 @@
             }
         }
 
-        function danmuNotice(txt) {
-            notice.success({
+        function danmuNotice(danmu) {
+            notice.show({
+                image: danmu.creator.photo,
+                imageWidth: 71,
+                maxWidth: '300px',
                 theme: 'light',
                 animateInside: false,
                 layout: '2',
@@ -254,8 +256,8 @@
                 timeout: '5000',
                 progressBar: true,
                 // noticeType: "success",
-                title: '新弹幕',
-                message: txt,
+                title: danmu.creator.username,
+                message: danmu.content,
                 pauseOnHover: false,
                 resetOnHover: false
             })

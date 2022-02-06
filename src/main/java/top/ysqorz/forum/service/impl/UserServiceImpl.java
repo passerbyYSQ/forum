@@ -434,9 +434,7 @@ public class UserServiceImpl implements UserService {
         Subject subject = SecurityUtils.getSubject();
         this.updateJwtSalt(ShiroUtils.getUserId(), "");
         subject.logout();
-
     }
-
 
     @Override
     public JwtToken generateJwtToken(Integer userId, String jwtSalt) {

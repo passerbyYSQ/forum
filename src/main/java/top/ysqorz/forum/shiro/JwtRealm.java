@@ -69,7 +69,6 @@ public class JwtRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 //        JwtToken jwtToken = (JwtToken) token;
-
         // 取决于JwtToken的getPrincipal()
         String tokenStr = (String) token.getPrincipal();
         Integer userId = Integer.valueOf(JwtUtils.getClaimByKey(tokenStr, "userId"));

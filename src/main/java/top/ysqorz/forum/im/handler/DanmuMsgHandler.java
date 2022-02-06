@@ -9,9 +9,7 @@ import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.DanmuMsg;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.po.Video;
 import top.ysqorz.forum.service.RedisService;
-import top.ysqorz.forum.service.VideoService;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 import top.ysqorz.forum.utils.SpringUtils;
@@ -46,13 +44,8 @@ public class DanmuMsgHandler extends MsgHandler<DanmuMsg> {
     }
 
     @Override
-    protected DanmuMsg processData(DanmuMsg danmu, Integer userId) {
+    protected DanmuMsg processData(DanmuMsg danmu, User user) {
         if (danmu == null || ObjectUtils.isEmpty(danmu.getContent()) || danmu.getVideoId() == null) {
-            return null;
-        }
-        VideoService videoService = SpringUtils.getBean(VideoService.class);
-        Video video = videoService.getVideoById(danmu.getVideoId());
-        if (video == null) {
             return null;
         }
         int endIndex = Math.min(255, danmu.getContent().length());
@@ -60,7 +53,8 @@ public class DanmuMsgHandler extends MsgHandler<DanmuMsg> {
         text = HtmlUtils.htmlEscape(text, "UTF-8"); // 转义，防止XSS攻击
         danmu.setId(RandomUtils.generateUUID())
                 .setContent(text)
-                .setCreatorId(userId)
+                .setCreatorId(user.getId())
+                .setCreator(new DanmuMsg.DanmuCreator(user))
                 .setCreateTime(LocalDateTime.now())
                 .setStartMs(Math.max(danmu.getStartMs(), 0)); // 负数时做纠正
         return danmu;

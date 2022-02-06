@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.SpringUtils;
 
@@ -92,12 +93,12 @@ public class MsgCenter {
         first.handle(msg, channel);
     }
 
-    public void push(MsgModel msg, String sourceChannelId, Integer userId) { // source user
-        first.push(msg, sourceChannelId, userId);
+    public void push(MsgModel msg, String sourceChannelId) { // source user
+        first.push(msg, sourceChannelId);
     }
 
-    public void remoteDispatch(MsgModel msg, String sourceChannelId, Integer userId) { // source user
-        first.remoteDispatch(msg, sourceChannelId, userId);
+    public void remoteDispatch(MsgModel msg, String sourceChannelId, User user) { // source user
+        first.remoteDispatch(msg, sourceChannelId, user);
     }
 
     public ChannelMap getChannelMap(String channelType) {

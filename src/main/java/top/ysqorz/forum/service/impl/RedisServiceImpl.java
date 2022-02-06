@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -12,15 +13,14 @@ import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.DateTimeUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author passerbyYSQ
  * @create 2021-06-02 13:21
  */
+@Slf4j
 @Service
 public class RedisServiceImpl implements RedisService {
 
@@ -133,19 +133,22 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public void bindWsServer(String channelType, String groupId) {
         String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
-        stringRedisTemplate.opsForSet().add(key, IMUtils.getWebServer()); // 如果没有会被创建
+        stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), 1);
     }
 
     @Override
     public void removeWsServer(String channelType, String groupId) {
         String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
-        stringRedisTemplate.opsForSet().remove(key, IMUtils.getWebServer());
+        stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), -1);
     }
 
     @Override
     public Set<String> getWsServers(String channelType, String groupId) {
         String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
-        return stringRedisTemplate.opsForSet().members(key);
+        Map<Object, Object> hash = stringRedisTemplate.opsForHash().entries(key); // 使用 redisTemplate 反序列化报错
+        return hash.entrySet().stream().filter(entry -> Integer.parseInt((String) entry.getValue()) > 0)
+                .map(entry -> (String) entry.getKey())
+                .collect(Collectors.toSet());
     }
 
 }

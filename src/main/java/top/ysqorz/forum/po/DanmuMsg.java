@@ -1,8 +1,6 @@
 package top.ysqorz.forum.po;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
@@ -43,9 +41,25 @@ public class DanmuMsg {
     @Column(name = "creator_id")
     private Integer creatorId;
 
+    private DanmuCreator creator;
+
     /**
      * 发布时间
      */
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
+    @Data
+    @NoArgsConstructor
+    public static class DanmuCreator {
+        Integer userId;
+        String username;
+        String photo;
+
+        public DanmuCreator(User user) {
+            this.userId = user.getId();
+            this.username = user.getUsername();
+            this.photo = user.getPhoto();
+        }
+    }
 }
