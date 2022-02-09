@@ -11,8 +11,10 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.DateTimeUtils;
+import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,6 +136,13 @@ public class RedisServiceImpl implements RedisService {
     public void bindWsServer(String channelType, String groupId) {
         String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
         stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), 1);
+        Long expire = stringRedisTemplate.getExpire(key);
+        // 由于缓存不是绝对准确的，可能因为某个服务挂了，导致Redis缓存不准确，从而会将消息转发到已经挂掉的服务上
+        if (Long.valueOf(-1).equals(expire)) { // 故缓存需要设置超时时间，定时重建缓存
+            int randMinutes = RandomUtils.generateInt(30);
+            LocalDateTime expireTime = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(2, randMinutes));
+            stringRedisTemplate.expireAt(key, DateTimeUtils.toInstant(expireTime)); // 次日凌晨两点多过期
+        }
     }
 
     @Override

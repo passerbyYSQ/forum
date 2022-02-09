@@ -205,13 +205,13 @@
                 // input
                 var input = document.createElement('input');
                 input.className = 'danmu-input';
-                input.placeholder = '发送弹幕跟大家一起评论吧';
+                input.placeholder = '快发弹幕一起互动，弹幕最长36个字符哟~';
                 var sendFn = function () {
                     if (!app.getToken()) {
                         app.infoNotice('请先登录');
                         return;
                     }
-                    var txt = input.value.trim();
+                    var txt = input.value.trim().substr(0, 36);
                     if (!txt) {
                         return;
                     }

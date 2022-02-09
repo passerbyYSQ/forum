@@ -5,7 +5,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import top.ysqorz.forum.im.IMUtils;
+import top.ysqorz.forum.im.entity.MsgType;
 
 /**
  * 之所以不继承SimpleChannelInboundHandler方法，而实现它的父类ChannelInboundHandlerAdapter
@@ -25,21 +28,42 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
             String channelId = channel.id().asLongText();
 
             if (event.state() == IdleState.READER_IDLE) {
-                log.info("channel进入读空闲状态：{}", channelId);
+                log.info("channel进入[读]空闲状态：{}", channelId);
             } else if (event.state() == IdleState.WRITER_IDLE) {
-                log.info("channel进入写空闲状态：{}", channelId);
+                log.info("channel进入[写]空闲状态：{}", channelId);
+                channel.writeAndFlush(IMUtils.createTextFrame(MsgType.PONG));
+                resetChannelAllIdleCount(channel);
             } else if (event.state() == IdleState.ALL_IDLE) {
-                log.info("channel进入写读写空闲状态：{}", channelId);
-//                channel.writeAndFlush(IMUtils.createTextFrame(MsgType.CLOSE));
-//                channel.close();
-            } else {
-                super.userEventTriggered(ctx, evt);
+                log.info("channel进入[读写]空闲状态：{}", channelId);
+                AttributeKey<Integer> allIdleKey = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
+                Integer allIdleCount = channel.attr(allIdleKey).get();
+                if (Integer.valueOf(3).equals(allIdleCount)) { // >=3
+                    log.info("channel[读写]空闲状态超过3次，已关闭：{}", channelId);
+                    channel.writeAndFlush(IMUtils.createTextFrame(MsgType.CLOSE));
+                    channel.close();
+                } else { // <3
+                    channel.attr(allIdleKey).compareAndSet(allIdleCount, allIdleCount + 1);
+                }
             }
+        } else {
+            super.userEventTriggered(ctx, evt);
         }
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // 一旦有消息可读，包括但不限于PING消息，都打破了空闲状态的嫌疑，重置allIdleCount为0
+        resetChannelAllIdleCount(ctx.channel());
         super.channelRead(ctx, msg);
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        resetChannelAllIdleCount(ctx.channel());
+    }
+
+    public static void resetChannelAllIdleCount(Channel channel) {
+        AttributeKey<Integer> allIdleKey = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
+        channel.attr(allIdleKey).set(0);
     }
 }

@@ -67,10 +67,10 @@ public class MsgCenter {
         ChannelMap channelMap = typeToChannels.get(channelType);
         if (channelMap != null) {
             channelMap.bind(userId, groupId, channel);
-            RedisService redisService = SpringUtils.getBean(RedisService.class);
-            redisService.bindWsServer(channelType, groupId);
             int count = channelCount.incrementAndGet();
             log.info("绑定成功，当前通道数：{}", count);
+            RedisService redisService = SpringUtils.getBean(RedisService.class);
+            redisService.bindWsServer(channelType, groupId);
         }
     }
 
@@ -80,11 +80,11 @@ public class MsgCenter {
             ChannelMap channelMap = typeToChannels.get(channelType);
             if (channelMap != null) {
                 channelMap.unBind(channel);
+                int count = channelCount.decrementAndGet();
+                log.info("解绑成功，当前通道数：{}", count);
                 RedisService redisService = SpringUtils.getBean(RedisService.class);
                 String groupId = IMUtils.getGroupIdFromChannel(channel);
                 redisService.removeWsServer(channelType, groupId);
-                int count = channelCount.decrementAndGet();
-                log.info("解绑成功，当前通道数：{}", count);
             }
         }
     }

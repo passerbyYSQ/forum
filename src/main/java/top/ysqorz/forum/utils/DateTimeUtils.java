@@ -15,10 +15,14 @@ import java.util.Date;
  */
 public class DateTimeUtils {
 
+    // LocalDateTime => Instant
+    public static Instant toInstant(LocalDateTime dateTime) {
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant();
+    }
+
     // Date => LocalDateTime
     public static LocalDateTime toLocalDateTime(Date date) {
-        ZonedDateTime zonedDateTime = date.toInstant().atZone(ZoneId.systemDefault());
-        return zonedDateTime.toLocalDateTime();
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     // LocalDateTime => Date

@@ -10,7 +10,9 @@ layui.define(['app'], function (exports) {
     class ClientWebSocket {
         SocketClazz;    // 浏览器的WebSocket类
         socket;         // 长连接
-        heartBeatTimer; // 心跳定时器
+        isHeartBeating = false;
+        pingDelay = 1000 * 10; // 必须小于后端设置的空闲超时间隔
+        lastPingTime;   // debug
         options;
         channelId;
         server;
@@ -61,7 +63,7 @@ layui.define(['app'], function (exports) {
                 this.socket.send(JSON.stringify(msg));
                 return;
             }
-            this._clearHeartBeatTimer();
+            this.isHeartBeating = false;
             // 尝试重连，成功会发送执行_onOpenCallback，里面也有个超时重试
             // 但不存在trySend第2次之后，第一次重连的bind消息才回来。因为在trySend第2次之前的_initSocket会把this.socket重置掉
             // 因为_initSocket中重置了this.socket，第一次重连成功的_onOpenCallback自然也不会执行
@@ -89,34 +91,37 @@ layui.define(['app'], function (exports) {
             }
             this.socket.send(this._createMsg(MSG_TYPE.BIND, data));
             console.log('成功发送绑定类型的消息');
-            // setTimeout(this._onOpenCallback.bind(this), 5000); // 超时重试，直到后端绑定成功或者后端关闭了通道才放弃
+            // setTimeout(this._onOpenCallback.bind(this), 6000); // 超时重试，直到后端绑定成功或者后端关闭了通道才放弃
         }
 
-        _initHeartBeatTimer() {
-            if (this.heartBeatTimer) {
+        _heartBeat() {
+            if (this.isHeartBeating) { // 已经开启心跳则返回
                 return;
             }
+            this.isHeartBeating = true; // 标记心跳已开启
             var heartBeatJob = () => {
                 if (this.socket && this.socket.readyState === this.SocketClazz.OPEN) {
-                    this.socket.send(this._createMsg(MSG_TYPE.PING));
-                    console.log('发送心跳包', new Date().format());
+                    setTimeout(() => this.socket.send(this._createMsg(MSG_TYPE.PING)), 0); // 异步发送，防止send阻塞
+                    // ===debug===
+                    var currTime = new Date().getTime();
+                    var dif = currTime - this.lastPingTime;
+                    if (this.lastPingTime && dif > 1000 * 11) {
+                        console.log('出现延迟，距离上次心跳发送成功超过11s', (dif / 1000).toFixed(2) + 's', new Date().format());
+                    }
+                    this.lastPingTime = currTime;
+                    // ===debug===
+                    // console.log('发送心跳包', new Date().format());
+                    setTimeout(heartBeatJob.bind(this), this.pingDelay); // 递归实现下一次心跳
                 } else {
-                    this._clearHeartBeatTimer(); // 清除当前心跳定时器
-                    this._initSocket(); // 尝试重连，成功会发送执行_onOpenCallback，发送绑定消息和开启新的心跳定时器
+                    this.isHeartBeating = false; // 停止心跳
+                    this._initSocket(); // 尝试重连，成功会发送执行_onOpenCallback，发送绑定消息和开启新的心跳
                 }
             };
-            // 每隔10秒（必须小与后端定义的超时时间）发送一个心跳包
-            this.heartBeatTimer = setInterval(heartBeatJob.bind(this), 1000 * 10);
-        }
-
-        _clearHeartBeatTimer() {
-            // 清除定时器
-            clearInterval(this.heartBeatTimer);
-            this.heartBeatTimer = null;
+            setTimeout(heartBeatJob.bind(this), this.pingDelay);
         }
 
         _onCloseCallback() {
-            this._clearHeartBeatTimer();
+            this.isHeartBeating = false;
             this.socket = null;
             this.channelId = null;
             console.log('长连接关闭，成功清除心跳定时器，并且置空socket');
@@ -133,13 +138,14 @@ layui.define(['app'], function (exports) {
 
         _onMsgReceived(ev) {
             var msg = JSON.parse(ev.data);
-            console.log('接收到消息', msg);
             if (msg.msgType === MSG_TYPE.BIND) {
+                console.log('接收到消息', msg);
                 this.channelId = msg.data.channelId;
                 // 开启心跳
-                this._initHeartBeatTimer();
+                this._heartBeat();
                 console.log('绑定成功，开启心跳定时器');
             } else if (msg.msgType !== MSG_TYPE.PONG && this.options.onMsgReceived) {
+                console.log('接收到消息', msg);
                 this.options.onMsgReceived(msg);
             }
         }

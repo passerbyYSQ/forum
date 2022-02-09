@@ -43,4 +43,5 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
     }
+
 }
