@@ -5,6 +5,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.dao.DanmuMsgMapper;
 import top.ysqorz.forum.im.entity.AsyncInsertTask;
+import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.DanmuMsg;
@@ -23,7 +24,7 @@ import java.util.Set;
  */
 public class DanmuMsgHandler extends MsgHandler<DanmuMsg> {
     public DanmuMsgHandler() {
-        super(MsgType.DANMU);
+        super(MsgType.DANMU, ChannelType.DANMU);
     }
 
     /**
@@ -63,7 +64,7 @@ public class DanmuMsgHandler extends MsgHandler<DanmuMsg> {
     @Override
     protected Set<String> queryServersChannelLocated(DanmuMsg msg) {
         RedisService redisService = SpringUtils.getBean(RedisService.class);
-        return redisService.getWsServers(this.getType().name(), msg.getVideoId().toString());
+        return redisService.getWsServers(this.getChannelType(), msg.getVideoId().toString());
     }
 
     @Override

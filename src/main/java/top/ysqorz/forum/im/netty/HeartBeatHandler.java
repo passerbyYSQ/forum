@@ -5,7 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.MsgType;
@@ -35,14 +34,13 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
                 resetChannelAllIdleCount(channel);
             } else if (event.state() == IdleState.ALL_IDLE) {
                 log.info("channel进入[读写]空闲状态：{}", channelId);
-                AttributeKey<Integer> allIdleKey = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
-                Integer allIdleCount = channel.attr(allIdleKey).get();
+                Integer allIdleCount = channel.attr(IMUtils.ALL_IDLE_KEY).get();
                 if (Integer.valueOf(3).equals(allIdleCount)) { // >=3
                     log.info("channel[读写]空闲状态超过3次，已关闭：{}", channelId);
                     channel.writeAndFlush(IMUtils.createTextFrame(MsgType.CLOSE));
                     channel.close();
                 } else { // <3
-                    channel.attr(allIdleKey).compareAndSet(allIdleCount, allIdleCount + 1);
+                    channel.attr(IMUtils.ALL_IDLE_KEY).compareAndSet(allIdleCount, allIdleCount + 1);
                 }
             }
         } else {
@@ -63,7 +61,6 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
     }
 
     public static void resetChannelAllIdleCount(Channel channel) {
-        AttributeKey<Integer> allIdleKey = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
-        channel.attr(allIdleKey).set(0);
+        channel.attr(IMUtils.ALL_IDLE_KEY).set(0);
     }
 }

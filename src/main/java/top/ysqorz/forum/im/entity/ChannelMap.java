@@ -2,7 +2,6 @@ package top.ysqorz.forum.im.entity;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.util.AttributeKey;
 import lombok.Data;
 import top.ysqorz.forum.im.IMUtils;
 
@@ -18,25 +17,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Data
 public class ChannelMap {
+    private MsgType msgType;
     // 通道的业务类型。如：DANMU, CHAT ... etc
-    private MsgType type; // channelType
+    private ChannelType channelType;
     // 该业务类型的所有通道。groupId(videoId, userId... etc) --> Set<Channel>
     private Map<String, Set<Channel>> channelMap = new ConcurrentHashMap<>();
     private volatile AtomicInteger channelCount = new AtomicInteger(0);
 
-    public ChannelMap(MsgType type) {
-        this.type = type;
+    public ChannelMap(MsgType msgType, ChannelType channelType) {
+        this.msgType = msgType;
+        this.channelType = channelType;
     }
 
     public void bind(Integer userId, String groupId, Channel channel) {
         Set<Channel> channels = channelMap.get(groupId);
         // 往channel里面存储额外信息，实现双向绑定，以便能通过能够移除Map中的channel
-        AttributeKey<Integer> userIdKey = AttributeKey.valueOf("userId");
-        channel.attr(userIdKey).set(userId);
-        AttributeKey<String> groupIdKey = AttributeKey.valueOf("groupId");
-        channel.attr(groupIdKey).set(groupId);
-        AttributeKey<String> channelTypeKey = AttributeKey.valueOf("channelType");
-        channel.attr(channelTypeKey).set(type.name());
+        channel.attr(IMUtils.USER_ID_KEY).set(userId);
+        channel.attr(IMUtils.GROUP_ID_KEY).set(groupId);
+        channel.attr(IMUtils.CHANNEL_TYPE_KEY).set(channelType.name());
         if (channels == null) {
             Set<Channel> newChannels = new HashSet<>();
             newChannels.add(channel);
@@ -79,24 +77,11 @@ public class ChannelMap {
             return false;
         }
         Set<Channel> channels = channelMap.get(groupId);
-        return channelType.equals(type.name()) && (channels != null && channels.contains(channel));
-    }
-
-    public Channel findChannel(String groupId, String channelId) {
-        Set<Channel> channels = channelMap.get(groupId);
-        if (channels == null) {
-            return null;
-        }
-        for (Channel channel : channels) {
-            if (channel.id().asLongText().equals(channelId)) {
-                return channel;
-            }
-        }
-        return null;
+        return channelType.equals(this.channelType.name()) && (channels != null && channels.contains(channel));
     }
 
     private TextWebSocketFrame createTextFrame(Object data) {
-        return IMUtils.createTextFrame(type, data);
+        return IMUtils.createTextFrame(msgType, data);
     }
 
 }

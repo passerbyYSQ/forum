@@ -26,6 +26,6 @@ public class JwtCredentialsMatcher implements CredentialsMatcher {
         Map<String, String> claims = new HashMap<>();
         claims.put("userId", user.getId().toString());
 
-        return JwtUtils.verifyJwt((String) token.getCredentials(), user.getJwtSalt(), claims);
+        return JwtUtils.verifyJwt((String) token.getCredentials(), user.getLoginSalt(), claims);
     }
 }

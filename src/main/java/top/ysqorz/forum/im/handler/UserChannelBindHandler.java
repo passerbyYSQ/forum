@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.im.IMUtils;
+import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.User;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 用户和通道的绑定
@@ -20,8 +20,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class UserChannelBindHandler extends MsgHandler<MsgModel> {
 
-    public UserChannelBindHandler(ThreadPoolExecutor dbExecutor) {
-        super(MsgType.BIND, dbExecutor, true);
+    public UserChannelBindHandler() {
+        super(MsgType.BIND, null, true);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class UserChannelBindHandler extends MsgHandler<MsgModel> {
             return true;
         }
         String groupId = dataNode.get("groupId").asText();
-        MsgCenter.getInstance().bind(msg.getChannelType(), loginUser.getId(), groupId, channel);
+        MsgCenter.getInstance().bind(ChannelType.valueOf(msg.getChannelType()), loginUser.getId(), groupId, channel);
         // 回送channelId
         Map<String, String> data = new HashMap<>();
         data.put("channelId", channel.id().asLongText());

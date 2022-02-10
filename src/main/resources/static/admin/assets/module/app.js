@@ -16,6 +16,13 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
             BIND: 'BIND',
             PING: 'PING',
             PONG: 'PONG',
+            CLOSE: 'CLOSE',
+            DANMU: 'DANMU',
+            SINGLE_CHAT: 'SINGLE_CHAT',
+            GROUP_CHAT: 'GROUP_CHAT'
+        },
+
+        CHANNEL_TYPE: {
             DANMU: 'DANMU',
             CHAT: 'CHAT'
         },

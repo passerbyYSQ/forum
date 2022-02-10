@@ -37,7 +37,7 @@ public interface UserService {
     /**
      * 登录
      */
-    String login(Integer userId, HttpServletResponse response);
+    String login(User user, HttpServletResponse response);
 
     /**
      * 退出登录
@@ -130,11 +130,11 @@ public interface UserService {
     User oauth2Baidu(String code) throws IOException;
 
     /**
-     * 清除上一次shiro的认证缓存（实现单点登录）。
-     * 我们不直接操作缓存，而是采取先login再logout的方式，
+     * 清除上一次shiro的认证和授权缓存（实现单账号登录）。
+     * 没有办法直接操作缓存，而是采取先login再logout的方式，
      * 让shiro帮我们清除缓存
      */
-    void clearShiroAuthCache(User user);
+    void clearShiroCache(User user);
 
     SimpleUserDTO getSimpleUser(Integer userId);
 

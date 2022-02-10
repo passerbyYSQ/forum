@@ -5,19 +5,20 @@ package top.ysqorz.forum.im.entity;
  * 长连接建立和所有的消息推送必须登录
  */
 public enum MsgType {
-    // 功能类型
+    // 功能类型的消息
     BIND,
     PING,
     PONG,
     CLOSE,
-    // 业务类型。同时也是通道类型
+    // 业务类型的消息
     DANMU,
-    CHAT;
+    SINGLE_CHAT,
+    GROUP_CHAT;
 
-    public static boolean isFunctionalType(String type) {
+    public static boolean isFunctionalType(MsgType type) {
         MsgType[] funcTypes = new MsgType[]{BIND, PING, PONG, CLOSE};
         for (MsgType funcType : funcTypes) {
-            if (funcType.name().equals(type)) {
+            if (funcType.equals(type)) {
                 return true;
             }
         }

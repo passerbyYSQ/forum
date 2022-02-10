@@ -134,8 +134,8 @@ public class UserController {
             return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
 
-//        userService.clearShiroAuthCache(user);
-        String token = userService.login(user.getId(), response);
+//        userService.clearShiroCache(user);
+        String token = userService.login(user, response);
 
         // 为什么登录不使用UsernamePasswordToken和定义专门的LoginRealm（Service层的逻辑）来处理UsernamePasswordToken？
         // 由于密码登录只用一次，成功之后都凭借jwt令牌来访问
@@ -224,10 +224,10 @@ public class UserController {
             }
         }
         if (StatusCode.SUCCESS.equals(code)) { // 成功
-            // 清除shiro的认证缓存，实现单点登录
-//            userService.clearShiroAuthCache(user);
+            // 清除shiro的缓存，实现单账号登录
+//            userService.clearShiroCache(user);
             // 签发我们自己的token
-            userService.login(user.getId(), response);
+            userService.login(user, response);
             // 重定向携带token
             //redirectAttributes.addAttribute("token", token);
             // redirect:后不要加 "/"

@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
+import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class MsgCenter {
     private MsgHandler first, tail; // handler链
-    private Set<String> addedHandlers = new HashSet<>(); // 已经添加的外置handlers
+    private Set<String> addedMsgTypes = new HashSet<>(); // 已经添加的外置handlers
     private Map<String, ChannelMap> typeToChannels = new ConcurrentHashMap<>(); // channelType --> ChannelMap
     private volatile AtomicInteger channelCount = new AtomicInteger(0);
     private ThreadPoolExecutor dbExecutor;
@@ -44,17 +45,18 @@ public class MsgCenter {
     }
 
     public synchronized MsgCenter addLast(MsgHandler handler) { // 链式调用
-        if (handler == null || handler.getType() == null) {
+        if (handler == null || handler.getMsgType() == null || handler.getChannelType() == null) {
             return instance;
         }
-        String type = handler.getType().name();
-        if (addedHandlers.contains(type)) {
+        String msgType = handler.getMsgType().name();
+        if (addedMsgTypes.contains(msgType)) {
             return instance;
         }
-        addedHandlers.add(type);
-        ChannelMap channelMap = new ChannelMap(handler.getType());
-        typeToChannels.put(type, channelMap);
-        handler.setChannelMap(channelMap);
+        addedMsgTypes.add(msgType);
+        ChannelMap channelMap = handler.getChannelMap();
+        if (channelMap != null) {
+            typeToChannels.put(handler.getChannelType().name(), channelMap);
+        }
         handler.setDbExecutor(dbExecutor);
 
         tail.addBehind(handler);
@@ -63,8 +65,8 @@ public class MsgCenter {
         return instance;
     }
 
-    public void bind(String channelType, Integer userId, String groupId, Channel channel) {
-        ChannelMap channelMap = typeToChannels.get(channelType);
+    public void bind(ChannelType channelType, Integer userId, String groupId, Channel channel) {
+        ChannelMap channelMap = typeToChannels.get(channelType.name());
         if (channelMap != null) {
             channelMap.bind(userId, groupId, channel);
             int count = channelCount.incrementAndGet();
@@ -84,7 +86,7 @@ public class MsgCenter {
                 log.info("解绑成功，当前通道数：{}", count);
                 RedisService redisService = SpringUtils.getBean(RedisService.class);
                 String groupId = IMUtils.getGroupIdFromChannel(channel);
-                redisService.removeWsServer(channelType, groupId);
+                redisService.removeWsServer(ChannelType.valueOf(channelType), groupId);
             }
         }
     }
@@ -106,13 +108,13 @@ public class MsgCenter {
     }
 
     private void initInternalHandlers() {
-        UserChannelBindHandler bindHandler = new UserChannelBindHandler(dbExecutor);
+        UserChannelBindHandler bindHandler = new UserChannelBindHandler();
         // 需要增加 PingPongMsgHandler，否则已经登录情况下Ping消息会流至TailHandler，导致通道关闭
         PingPongMsgHandler pingPongHandler = new PingPongMsgHandler();
-        TailHandler tailHandler = new TailHandler(dbExecutor);
+        TailHandler tailHandler = new TailHandler();
 
-        addedHandlers.add(bindHandler.getType().name());
-        addedHandlers.add(pingPongHandler.getType().name());
+        addedMsgTypes.add(bindHandler.getMsgType().name());
+        addedMsgTypes.add(pingPongHandler.getMsgType().name());
 
         bindHandler.addBehind(pingPongHandler);
         pingPongHandler.addBehind(tailHandler);

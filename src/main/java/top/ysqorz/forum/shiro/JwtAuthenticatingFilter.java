@@ -8,6 +8,7 @@ import org.apache.shiro.web.util.WebUtils;
 import org.springframework.util.StringUtils;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.JsonUtils;
@@ -119,13 +120,14 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
         String oldToken = (String) token.getCredentials();
         LocalDateTime expireAt = DateTimeUtils.toLocalDateTime(JwtUtils.getExpireAt(oldToken));
 
+        // 如果token过期前一天内登录，则签发新的token给用户
         if (shouldRefreshToken &&
                 DateTimeUtils.dif(LocalDateTime.now(), expireAt, ChronoUnit.DAYS) < 1) {
-            // 刷新token
             HttpServletResponse httpResponse = WebUtils.toHttp(response);
-            UserService userService = (UserService) SpringUtils.getBean("userServiceImpl");
+            User user = ShiroUtils.getLoginUser(); // 退出登录前获取缓存中的认证信息
+            UserService userService = SpringUtils.getBean(UserService.class);
             userService.logout();
-            String jwt = userService.login((Integer) token.getPrincipal(), httpResponse);
+            String jwt = userService.login(user, httpResponse);
             httpResponse.setHeader("token", jwt);
         }
 

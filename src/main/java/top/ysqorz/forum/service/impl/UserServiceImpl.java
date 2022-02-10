@@ -307,14 +307,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void clearShiroAuthCache(User user) {
-        Subject subject = SecurityUtils.getSubject();
+    public void clearShiroCache(User user) {
         // 旧的盐未被清空说明，已经登录尚未退出
         if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
             // 根据旧盐再一次生成旧的token
             JwtToken oldToken = this.generateJwtToken(user.getId(), user.getJwtSalt());
+            Subject subject = SecurityUtils.getSubject();
             subject.login(oldToken);
-            this.logout(); // 清除旧token的缓存
+            this.logout(); // 先用旧的token登录再退出，从而清除掉旧token的缓存
         }
     }
 
@@ -409,13 +409,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(Integer userId, HttpServletResponse response) {
-        String jwtSecret = RandomUtils.generateStr(8);
+    public String login(User user, HttpServletResponse response) {
+//        String jwtSecret = RandomUtils.generateStr(8);
         // 更新数据库中的jwt salt
-        this.updateJwtSalt(userId, jwtSecret);
+//        this.updateJwtSalt(user.getId(), jwtSecret); // jwt_salt已无用
 
         // shiro login
-        JwtToken jwtToken = this.generateJwtToken(userId, jwtSecret);
+        JwtToken jwtToken = this.generateJwtToken(user.getId(), user.getLoginSalt());
         Subject subject = SecurityUtils.getSubject();
         subject.login(jwtToken);
 
@@ -432,7 +432,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logout() {
         Subject subject = SecurityUtils.getSubject();
-        this.updateJwtSalt(ShiroUtils.getUserId(), "");
+//        this.updateJwtSalt(ShiroUtils.getUserId(), "");
         subject.logout();
     }
 
@@ -473,7 +473,6 @@ public class UserServiceImpl implements UserService {
         }
         return new SimpleUserDTO();
     }
-
 
     @Override
     public StatusCode checkUser(CheckUserDTO checkUser) {

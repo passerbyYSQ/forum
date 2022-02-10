@@ -1,12 +1,10 @@
 package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
+import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.po.User;
-
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 位于尾部的后置处理器
@@ -16,8 +14,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class TailHandler extends MsgHandler<MsgModel> {
 
-    public TailHandler(ThreadPoolExecutor dbExecutor) {
-        super(dbExecutor);
+    public TailHandler() {
+        super(null);
     }
 
     @Override

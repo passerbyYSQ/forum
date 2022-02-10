@@ -1,6 +1,7 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.dto.WeekTopPostDTO;
+import top.ysqorz.forum.im.entity.ChannelType;
 
 import java.util.List;
 import java.util.Set;
@@ -53,9 +54,9 @@ public interface RedisService {
     Boolean isHaveWeekHotPost();
 
     // 记录用户的ws连接在哪个web服务上，以便转发消息时调用接口
-    void bindWsServer(String channelType, String groupId);
+    void bindWsServer(ChannelType channelType, String groupId);
 
-    void removeWsServer(String channelType, String groupId);
+    void removeWsServer(ChannelType channelType, String groupId);
 
-    Set<String> getWsServers(String channelType, String groupId);
+    Set<String> getWsServers(ChannelType channelType, String groupId);
 }

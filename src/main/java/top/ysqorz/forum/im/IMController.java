@@ -41,7 +41,7 @@ public class IMController {
         if (msg == null || !msg.check()) {
             return ResultModel.failed(StatusCode.PARAM_INVALID);
         }
-        if (MsgType.isFunctionalType(msg.getMsgType())) {
+        if (MsgType.isFunctionalType(MsgType.valueOf(msg.getMsgType()))) { // 如果非法type会抛出异常
             return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
         }
         MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getLoginUser());

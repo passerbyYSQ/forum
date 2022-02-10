@@ -2,6 +2,7 @@ package top.ysqorz.forum.im;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.timeout.IdleState;
 import io.netty.util.AttributeKey;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.springframework.core.env.Environment;
@@ -19,6 +20,11 @@ import java.security.NoSuchAlgorithmException;
  * @create 2022-01-25 19:12
  */
 public class IMUtils {
+    public static final AttributeKey<Integer> USER_ID_KEY = AttributeKey.valueOf("userId");
+    public static final AttributeKey<String> GROUP_ID_KEY = AttributeKey.valueOf("groupId");
+    public static final AttributeKey<String> CHANNEL_TYPE_KEY = AttributeKey.valueOf("channelType");
+    public static final AttributeKey<Integer> ALL_IDLE_KEY = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
+
 
     public static String getWsServer() {
         return String.format("ws://%s:%d/ws", IpUtils.getLocalIp(), Constant.WS_SERVER_PORT);
@@ -50,17 +56,14 @@ public class IMUtils {
     }
 
     public static Integer getUserIdFromChannel(Channel channel) {
-        AttributeKey<Integer> userIdKey = AttributeKey.valueOf("userId");
-        return channel.attr(userIdKey).get();
+        return channel.attr(USER_ID_KEY).get();
     }
 
     public static String getChannelTypeFromChannel(Channel channel) {
-        AttributeKey<String> channelTypeKey = AttributeKey.valueOf("channelType");
-        return channel.attr(channelTypeKey).get();
+        return channel.attr(CHANNEL_TYPE_KEY).get();
     }
 
     public static String getGroupIdFromChannel(Channel channel) {
-        AttributeKey<String> channelTypeKey = AttributeKey.valueOf("groupId");
-        return channel.attr(channelTypeKey).get();
+        return channel.attr(GROUP_ID_KEY).get();
     }
 }

@@ -5,11 +5,9 @@ import io.netty.channel.Channel;
 import lombok.Data;
 import okhttp3.Call;
 import top.ysqorz.forum.im.IMUtils;
-import top.ysqorz.forum.im.entity.AsyncInsertTask;
-import top.ysqorz.forum.im.entity.ChannelMap;
-import top.ysqorz.forum.im.entity.MsgModel;
-import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.im.entity.*;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
@@ -17,6 +15,7 @@ import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -27,7 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Data
 public abstract class MsgHandler<DataType> {
     // 能够处理的消息类型
-    private MsgType type;
+    private MsgType msgType;
     // 下一个消息处理器
     private MsgHandler next;
     private boolean isNeedLoginUserInfo;
@@ -36,17 +35,19 @@ public abstract class MsgHandler<DataType> {
     // 线程池异步消费数据库操作。子类使用
     protected ThreadPoolExecutor dbExecutor;
 
-    public MsgHandler(ThreadPoolExecutor dbExecutor) {
-        this.dbExecutor = dbExecutor;
+    public MsgHandler(MsgType msgType) {
+        this(msgType, null);
     }
 
-    public MsgHandler(MsgType type) {
-        this(type, null, false);
+    public MsgHandler(MsgType msgType, ChannelType channelType) {
+        this(msgType, channelType, false);
     }
 
-    public MsgHandler(MsgType type, ThreadPoolExecutor dbExecutor, boolean isNeedLoginUserInfo) {
-        this.type = type;
-        this.dbExecutor = dbExecutor;
+    public MsgHandler(MsgType msgType, ChannelType channelType, boolean isNeedLoginUserInfo) {
+        this.msgType = msgType;
+        if (msgType != null && channelType != null) {
+            this.channelMap = new ChannelMap(msgType, channelType);
+        }
         this.isNeedLoginUserInfo = isNeedLoginUserInfo;
     }
 
@@ -84,14 +85,18 @@ public abstract class MsgHandler<DataType> {
             // 保存到数据库
             doSave(data);
             msg.setData(data); // completed data
+            IMService imService = SpringUtils.getBean(IMService.class);
+            Set<String> imServers = new HashSet<>(imService.getIMServerIpList()); // web servers
             // 分发到各个服务器，然后进行推送
             for (String server : servers) {
-                String api = String.format("http://%s/im/push", server);
-                OkHttpUtils.builder().url(api)
-                        .addHeader("token", ShiroUtils.getToken())
-                        .addParam("msgJson", JsonUtils.objectToJson(msg))
-                        .addParam("channelId", sourceChannelId)
-                        .post(false).async(new PushApiCallback(data));
+                if (imServers.contains(server)) { // 如果服务是正常，才转发
+                    String api = String.format("http://%s/im/push", server);
+                    OkHttpUtils.builder().url(api)
+                            .addHeader("token", ShiroUtils.getToken())
+                            .addParam("msgJson", JsonUtils.objectToJson(msg))
+                            .addParam("channelId", sourceChannelId)
+                            .post(false).async(new PushApiCallback(data));
+                }
             }
         } else if (next != null) {
             next.remoteDispatch(msg, sourceChannelId, user);
@@ -106,13 +111,17 @@ public abstract class MsgHandler<DataType> {
         next = handler;
     }
 
+    public ChannelType getChannelType() {
+        return channelMap != null ? channelMap.getChannelType() : null;
+    }
+
     // 子类可重写
     protected boolean canHandle(MsgModel msg, Channel channel) {
         return checkMsgType(msg) && isLogin(msg, channel);
     }
 
     protected boolean checkMsgType(MsgModel msg) {
-        return type != null && type.name().equalsIgnoreCase(msg.getMsgType());
+        return msgType != null && msgType.name().equalsIgnoreCase(msg.getMsgType());
     }
 
     protected boolean isLogin(MsgModel msg, Channel channel) {
@@ -135,7 +144,7 @@ public abstract class MsgHandler<DataType> {
         String token = dataNode.get("token").asText();
         String userId = JwtUtils.getClaimByKey(token, "userId");
         User user = getUserById(Integer.valueOf(userId));
-        return user != null && JwtUtils.verifyJwt(token, user.getJwtSalt());
+        return user != null && JwtUtils.verifyJwt(token, user.getLoginSalt());
     }
 
     private boolean doHandle(MsgModel msg, Channel channel) {

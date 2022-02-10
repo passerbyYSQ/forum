@@ -56,6 +56,7 @@ public class User implements Serializable {
 
     /**
      * 生成jwt的随机盐
+     * @deprecated 不实现单账号登录，此字段无用，已废弃
      */
     @Column(name = "jwt_salt")
     private String jwtSalt;
