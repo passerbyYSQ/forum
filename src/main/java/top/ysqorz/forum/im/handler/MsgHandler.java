@@ -27,6 +27,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 public abstract class MsgHandler<DataType> {
     // 能够处理的消息类型
     private MsgType msgType;
+    // 通道类型
+    private ChannelType channelType;
     // 下一个消息处理器
     private MsgHandler next;
     private boolean isNeedLoginUserInfo;
@@ -45,9 +47,7 @@ public abstract class MsgHandler<DataType> {
 
     public MsgHandler(MsgType msgType, ChannelType channelType, boolean isNeedLoginUserInfo) {
         this.msgType = msgType;
-        if (msgType != null && channelType != null) {
-            this.channelMap = new ChannelMap(msgType, channelType);
-        }
+        this.channelType = channelType;
         this.isNeedLoginUserInfo = isNeedLoginUserInfo;
     }
 
@@ -90,7 +90,7 @@ public abstract class MsgHandler<DataType> {
             // 分发到各个服务器，然后进行推送
             for (String server : servers) {
                 if (imServers.contains(server)) { // 如果服务是正常，才转发
-                    String api = String.format("http://%s/im/push", server);
+                    String api = String.format("http://%s/im/push", server); // 如果设置了context-path，此处需要改动
                     OkHttpUtils.builder().url(api)
                             .addHeader("token", ShiroUtils.getToken())
                             .addParam("msgJson", JsonUtils.objectToJson(msg))
@@ -109,10 +109,6 @@ public abstract class MsgHandler<DataType> {
         }
         handler.next = next;
         next = handler;
-    }
-
-    public ChannelType getChannelType() {
-        return channelMap != null ? channelMap.getChannelType() : null;
     }
 
     // 子类可重写
@@ -216,7 +212,7 @@ public abstract class MsgHandler<DataType> {
         }
 
         @Override
-        public void onSucceed(Call call, String data) {
+        public void onSucceed(Call call, String bodyJson) {
             // do nothing
         }
 

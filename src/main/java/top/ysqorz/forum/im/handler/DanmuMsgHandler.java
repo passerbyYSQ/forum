@@ -1,6 +1,5 @@
 package top.ysqorz.forum.im.handler;
 
-import io.netty.channel.Channel;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.dao.DanmuMsgMapper;
@@ -22,21 +21,9 @@ import java.util.Set;
  * @author passerbyYSQ
  * @create 2022-01-15 23:02
  */
-public class DanmuMsgHandler extends MsgHandler<DanmuMsg> {
+public class DanmuMsgHandler extends NonFunctionalMsgHandler<DanmuMsg> {
     public DanmuMsgHandler() {
         super(MsgType.DANMU, ChannelType.DANMU);
-    }
-
-    /**
-     * 兼容单机版本
-     */
-    @Override
-    protected boolean doHandle0(DanmuMsg danmu, Channel channel, User loginUser) {
-        // 异步将弹幕插入数据库
-        this.doSave(danmu);
-        // 推送弹幕
-        this.doPush(danmu, channel.id().asLongText());
-        return true;
     }
 
     @Override

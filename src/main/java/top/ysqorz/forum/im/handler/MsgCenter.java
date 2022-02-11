@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class MsgCenter {
     private MsgHandler first, tail; // handler链
-    private Set<String> addedMsgTypes = new HashSet<>(); // 已经添加的外置handlers
+    private Set<String> addedMsgTypes = new HashSet<>();
     private Map<String, ChannelMap> typeToChannels = new ConcurrentHashMap<>(); // channelType --> ChannelMap
     private volatile AtomicInteger channelCount = new AtomicInteger(0);
     private ThreadPoolExecutor dbExecutor;
@@ -53,10 +53,16 @@ public class MsgCenter {
             return instance;
         }
         addedMsgTypes.add(msgType);
-        ChannelMap channelMap = handler.getChannelMap();
-        if (channelMap != null) {
-            typeToChannels.put(handler.getChannelType().name(), channelMap);
+
+        String channelType = handler.getChannelType().name();
+        ChannelMap channelMap = typeToChannels.get(channelType);
+        // 如果该channelType的channelMap不存在则创建，否则使用已创建的。因为可能多个handler共用一个channelMap
+        if (channelMap == null) {
+            channelMap = new ChannelMap(handler.getMsgType(), handler.getChannelType());
+            typeToChannels.put(channelType, channelMap);
         }
+
+        handler.setChannelMap(channelMap);
         handler.setDbExecutor(dbExecutor);
 
         tail.addBehind(handler);

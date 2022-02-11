@@ -291,7 +291,7 @@ public class OkHttpUtils {
      */
     public interface ApiCallback {
 
-        void onSucceed(Call call, String data);
+        void onSucceed(Call call, String bodyJson);
 
         void onFailed(Call call, String errorMsg);
 

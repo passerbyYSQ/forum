@@ -8,13 +8,16 @@ import org.springframework.stereotype.Service;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.dto.WeekTopPostDTO;
 import top.ysqorz.forum.im.IMUtils;
+import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,8 +136,8 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void bindWsServer(String channelType, String groupId) {
-        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
+    public void bindWsServer(ChannelType channelType, String groupId) {
+        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType.name(), groupId);
         stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), 1);
         Long expire = stringRedisTemplate.getExpire(key);
         // 由于缓存不是绝对准确的，可能因为某个服务挂了，导致Redis缓存不准确，从而会将消息转发到已经挂掉的服务上
@@ -146,14 +149,14 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void removeWsServer(String channelType, String groupId) {
-        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
+    public void removeWsServer(ChannelType channelType, String groupId) {
+        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType.name(), groupId);
         stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), -1);
     }
 
     @Override
-    public Set<String> getWsServers(String channelType, String groupId) {
-        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType, groupId);
+    public Set<String> getWsServers(ChannelType channelType, String groupId) {
+        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType.name(), groupId);
         Map<Object, Object> hash = stringRedisTemplate.opsForHash().entries(key); // 使用 redisTemplate 反序列化报错
         return hash.entrySet().stream().filter(entry -> Integer.parseInt((String) entry.getValue()) > 0)
                 .map(entry -> (String) entry.getKey())
