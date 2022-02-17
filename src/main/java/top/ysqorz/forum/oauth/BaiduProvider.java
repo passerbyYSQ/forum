@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * baidu认证登录网络链接
- * https://pan.baidu.com/union/document/entrance#%E6%8E%A5%E5%85%A5%E6%B5%81%E7%A8%8B
+ * https://pan.baidu.com/union/doc/0ksg0sbig
  *
  * @author ligouzi
  * @create 2021-06-21 10:57

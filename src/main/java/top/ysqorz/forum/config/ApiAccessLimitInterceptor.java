@@ -4,7 +4,6 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.IpUtils;
 
 import javax.annotation.Resource;
@@ -30,29 +29,18 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
-        // 判断IP是否在黑名单中
         String ip = IpUtils.getIpFromRequest(request);
-        String blackListKey = "blackList:" + DateTimeUtils.getFormattedDate();
-        if (stringRedisTemplate.opsForSet().isMember(blackListKey, ip)) { // 黑名单(set)不存在也会返回false
-            // 如果在黑名单中，直接拦截
-            throw new AuthorizationException("当前IP已被列入黑名单，5分钟后请重试");
-        }
-
         String accessKey = "API:" + request.getServletPath() + ":" + ip;
+        String remained = stringRedisTemplate.opsForValue().get(accessKey);
+        if (remained != null && Integer.parseInt(remained) <= 0) {
+            String msg = "访问" + request.getServletPath() + "过于频繁，已被拦截";
+            throw new AuthorizationException(msg);
+        }
         // 60为剩余次数，过期时间为1分钟。如果已经设置，不会重复set
         stringRedisTemplate.opsForValue()
                 .setIfAbsent(accessKey, "60", Duration.ofMinutes(1));
         // 次数-1
-        Long remained = stringRedisTemplate.opsForValue().decrement(accessKey, 1);
-        if (remained < 0) {
-            // 加入黑名单
-            stringRedisTemplate.opsForSet().add(blackListKey, ip);
-            if (stringRedisTemplate.getExpire(blackListKey) == -1) { // 黑名单还没设置过期时间
-                stringRedisTemplate.expire(blackListKey, Duration.ofMinutes(5));
-            }
-        }
+        stringRedisTemplate.opsForValue().decrement(accessKey, 1);
         return true;
     }
-
-
 }

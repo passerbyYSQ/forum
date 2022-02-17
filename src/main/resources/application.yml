@@ -1,13 +1,9 @@
-
 spring:
   servlet:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
   datasource:
-    url: jdbc:mysql://localhost:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: ysqJYKL2010
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       initial-size: 5   # 初始化连接数
@@ -34,8 +30,6 @@ spring:
       stat-view-servlet:
         # 1.1.10以后的版本需要指定为true 不然默认是关闭的就会出现404
         enabled: true
-        login-username: admin
-        login-password: 123456
         reset-enable: false
         url-pattern: /druid/*
         # 添加IP白名单
@@ -60,10 +54,6 @@ spring:
 #      max-request-size: 125MB     # 单次 HTTP 请求上传的最大长度
     static-path-pattern: /**
   redis:
-    host: 119.45.164.115
-    port: 6379
-    password: ysqJYKL2010
-    database: 0
     lettuce:
       pool:
         max-active: 32  # 连接池连接的最大数量。-1表示没有限制
@@ -83,6 +73,8 @@ spring:
   thymeleaf:
     # 开发时关闭缓存
     cache: false
+  profiles:
+    active: dev
 
 mybatis:
   # xxMapper.xml文件在resources/mybatis/mapper下
@@ -92,8 +84,6 @@ mybatis:
   configuration:
     # 将数据库表的带下划线字段转成java中的驼峰命名
     map-underscore-to-camel-case: true
-    # 增加sql语句打印，用于本地开发测试
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # 分页插件
 pagehelper:
@@ -111,45 +101,3 @@ server:
     include-message: always
     include-stacktrace: always
     include-binding-errors: always
-  port: 8080
-
-# 自定义配置
-# osss配置
-upload:
-  repository:
-    aliyun-oss:
-      access-key-id: LTAI4GFvPgPakyd9rT7ahbXf
-      access-key-secret: jd3QMuwTmRxZCP77NCnKW5Q2arWfUo
-      bucket-name: webchat-ysq
-      domain-name: https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com
-      end-point: https://oss-cn-shenzhen.aliyuncs.com
-
-# 第三方授权登录配置
-oauth:
-  gitee:
-    client-id: d9b72e60aef218352f09dd3ef1841be3546fa31421820ef0a7966ea64a0d9ab3
-    client-secret: 298ab5b2fbc4b032872e1f74760fad329dd5ea817cfaa41db2e5a9c1d5a1795a
-    redirect-uri: http://159.75.116.100:80/user/oauth/gitee/callback
-    po-field: giteeId
-  qq:
-    client-id: 101956139
-    client-secret: e7f7f114f2b972db18476198e64d71ab
-    redirect-uri: http://159.75.116.100:80/user/oauth/qq/callback
-    po-field: qqId
-  baidu:
-    client-id: MKnePFb5rDNxqn7GQagBI01VI3oOWEhj
-    client-secret: lK6dX6kQGcF9mqDuf9o7DN8q0iDBPsD9
-    redirect-uri: http://159.75.116.100:80/user/oauth/baidu/callback
-    po-field: baiduId
-
-# zookeeper配置
-zookeeper:
-  curator:
-    user: ysq
-    password: ysqJYKL2010
-    servers: 119.45.164.115:2181
-    session-timeout: 30000
-    connection-timeout: 20000
-
-
-

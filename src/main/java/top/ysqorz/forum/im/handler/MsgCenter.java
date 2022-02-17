@@ -44,7 +44,7 @@ public class MsgCenter {
         return instance;
     }
 
-    public synchronized MsgCenter addLast(MsgHandler handler) { // 链式调用
+    public synchronized MsgCenter addHandlerAtLast(MsgHandler handler) { // 链式调用
         if (handler == null || handler.getMsgType() == null || handler.getChannelType() == null) {
             return instance;
         }
@@ -114,7 +114,7 @@ public class MsgCenter {
     }
 
     private void initInternalHandlers() {
-        UserChannelBindHandler bindHandler = new UserChannelBindHandler();
+        BindMsgHandler bindHandler = new BindMsgHandler();
         // 需要增加 PingPongMsgHandler，否则已经登录情况下Ping消息会流至TailHandler，导致通道关闭
         PingPongMsgHandler pingPongHandler = new PingPongMsgHandler();
         TailHandler tailHandler = new TailHandler();

@@ -63,7 +63,7 @@ public class WebSocketServer implements ChannelFutureListener {
 
 
     private void initMsgHandlers() {
-        MsgCenter.getInstance().addLast(new DanmuMsgHandler());
+        MsgCenter.getInstance().addHandlerAtLast(new DanmuMsgHandler());
         log.info("消息处理器初始化成功");
     }
 }

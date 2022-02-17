@@ -47,8 +47,8 @@
             </li>
             <li class="layui-nav-item" lay-unselect>
                 <a>
-                    <img src="admin/images/head.jpg" th:src="@{/admin/assets/images/head.jpg}" class="layui-nav-img">
-                    <cite>管理员</cite>
+                    <img src="admin/images/head.jpg" th:src="${user.photo}" class="layui-nav-img">
+                    <cite th:text="${user.username}">管理员</cite>
                 </a>
                 <dl class="layui-nav-child">
                     <dd lay-unselect><a ew-href="page/template/user-info.html">个人中心</a></dd>

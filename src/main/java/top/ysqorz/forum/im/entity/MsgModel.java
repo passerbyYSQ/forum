@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 /**
  * @author passerbyYSQ
  * @create 2021-02-05 22:31
@@ -18,16 +15,13 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class MsgModel {
     // 消息类型
-    @NotEmpty
     private String msgType;
 
     // 通道类型
-    @NotEmpty
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 只用于反序列化(json -> obj)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 只会反序列化(json -> obj)，不会序列化(obj -> json)
     private String channelType;
 
     // 数据
-    @NotNull
     private Object data;
 
     public MsgModel(MsgType msgType, Object data) {

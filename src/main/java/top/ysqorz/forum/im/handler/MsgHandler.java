@@ -52,7 +52,7 @@ public abstract class MsgHandler<DataType> {
     }
 
     public void handle(MsgModel msg, Channel channel) {
-        // 不能处理 或者 能处理但未处理完
+        // 不能处理 或者 能处理但未处理完的需要交给下一个handler处理
         // next != null 必须放到后面，否则会短路导致doHandle不被执行
         if ((!canHandle(msg, channel) || !doHandle(msg, channel)) && next != null) {
             next.handle(msg, channel);
@@ -74,6 +74,9 @@ public abstract class MsgHandler<DataType> {
     public void remoteDispatch(MsgModel msg, String sourceChannelId, User user) {
         if (checkMsgType(msg)) {
             DataType data = transformData(msg);
+            if (data == null) {
+                return;
+            }
             data = processData(data, user);
             if (data == null) {
                 return;
@@ -121,15 +124,11 @@ public abstract class MsgHandler<DataType> {
     }
 
     protected boolean isLogin(MsgModel msg, Channel channel) {
-        return checkBound(channel) || checkToken(msg); // checkLoginByShiro() ||
-    }
-
-    protected boolean checkLoginByShiro() {
-        return ShiroUtils.isAuthenticated();
+        return checkBound(channel) || checkToken(msg);
     }
 
     protected boolean checkBound(Channel channel) {
-        return channelMap != null && channelMap.isBound(channel); // BIND和TAIL的channelMap为空
+        return channelMap != null && channelMap.isBound(channel); // 功能类型的消息，channelMap为空
     }
 
     protected final boolean checkToken(MsgModel msg) {
@@ -158,7 +157,9 @@ public abstract class MsgHandler<DataType> {
             loginUser = getUserById(userId);
         }
         DataType data = transformData(msg);
-        data = processData(data, loginUser);
+        if (data != null) {
+            data = processData(data, loginUser);
+        }
         return data != null && doHandle0(data, channel, loginUser);
     }
 

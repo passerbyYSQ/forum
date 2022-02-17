@@ -173,8 +173,8 @@ public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeCh
     @Override
     public void stateChanged(CuratorFramework client, ConnectionState newState) {
         if (ConnectionState.CONNECTED == newState || ConnectionState.RECONNECTED == newState) {
-            // 将当前服务器注册到zookeeper中，作为临时节点
             log.info("连接Zookeeper成功");
+            // 将当前服务器注册到zookeeper中，作为临时节点
             String path = ZkConnector.PATH + "/" + IMUtils.getWebServer();
             this.create(path, IMUtils.getWsServer(), CreateMode.EPHEMERAL);
             log.info("往Zookeeper注册当前服务成功");

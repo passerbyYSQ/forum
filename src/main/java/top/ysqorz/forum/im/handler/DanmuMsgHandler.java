@@ -33,7 +33,7 @@ public class DanmuMsgHandler extends NonFunctionalMsgHandler<DanmuMsg> {
 
     @Override
     protected DanmuMsg processData(DanmuMsg danmu, User user) {
-        if (danmu == null || ObjectUtils.isEmpty(danmu.getContent()) || danmu.getVideoId() == null) {
+        if (ObjectUtils.isEmpty(danmu.getContent()) || danmu.getVideoId() == null) {
             return null;
         }
         int endIndex = Math.min(255, danmu.getContent().length());

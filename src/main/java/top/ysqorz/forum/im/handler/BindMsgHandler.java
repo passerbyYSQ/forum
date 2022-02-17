@@ -18,9 +18,9 @@ import java.util.Map;
  * @author passerbyYSQ
  * @create 2022-01-12 0:58
  */
-public class UserChannelBindHandler extends MsgHandler<MsgModel> {
+public class BindMsgHandler extends MsgHandler<MsgModel> {
 
-    public UserChannelBindHandler() {
+    public BindMsgHandler() {
         super(MsgType.BIND, null, true);
     }
 

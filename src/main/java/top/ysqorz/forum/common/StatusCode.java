@@ -37,7 +37,7 @@ public enum StatusCode {
     TOKEN_EXPIRED(6001, "token已过期，请重新登录"),
     ACCOUNT_INCORRECT(6002, "账号错误"),
     CREDENTIAL_INCORRECT(6003, "密码错误"), // 凭证错误
-    AUTHENTICATION_FAILED(6004, "无效token，登录过期或者被挤下线"),
+    AUTHENTICATION_FAILED(6004, "尚未登录或登录过期"),
     PASSWORD_NOT_EQUAL(6005,"两次输入密码不一致"),
 
     // 用户相关

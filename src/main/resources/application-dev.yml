@@ -1,0 +1,62 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/forum?serverTimezone=Asia/Shanghai&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: ysqJYKL2010
+    druid:
+      stat-view-servlet:
+        login-username: admin
+        login-password: 123456
+  redis:
+    host: 119.45.164.115
+    port: 6379
+    password: ysqJYKL2010
+    database: 0
+  thymeleaf:
+    cache: false
+
+mybatis:
+  configuration:
+    # 增加sql语句打印，用于本地开发测试
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+server:
+  port: 8080
+
+# 自定义配置
+# osss配置
+upload:
+  repository:
+    aliyun-oss:
+      access-key-id: LTAI4GFvPgPakyd9rT7ahbXf
+      access-key-secret: jd3QMuwTmRxZCP77NCnKW5Q2arWfUo
+      bucket-name: webchat-ysq
+      domain-name: https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com
+      end-point: https://oss-cn-shenzhen.aliyuncs.com
+
+# 第三方授权登录配置
+oauth:
+  gitee:
+    client-id: ca27066c4ffd35444bdff476a1bae20216857b7521e3624e4f3acef51ffeceb0
+    client-secret: 68f7fcbf0767d840162b8b505bbe25b73a40e681facceaaaf538be48e49d4a07
+    redirect-uri: http://localhost:8080/user/oauth/gitee/callback
+    po-field: giteeId
+  qq:
+    client-id: 101996626
+    client-secret: 8715aaaa127302290226cf200976da3c
+    redirect-uri: https://www.ysqorz.top/user/oauth/qq/callback
+    po-field: qqId
+  baidu:
+    client-id: tUYUGza9SlrBvXY3CcqViLEfrzHkGIlD
+    client-secret: P04jHYmGRtvg1nRLDeRIxbnV6zkTvXMn
+    redirect-uri: http://localhost:8080/user/oauth/baidu/callback
+    po-field: baiduId
+
+# zookeeper配置
+zookeeper:
+  curator:
+    user: ysq
+    password: ysqJYKL2010
+    servers: 119.45.164.115:2181
+    session-timeout: 30000
+    connection-timeout: 20000

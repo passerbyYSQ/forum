@@ -44,7 +44,8 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        Integer userId = (Integer) principals.getPrimaryPrincipal();
+        String token = (String) principals.getPrimaryPrincipal();
+        Integer userId = Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
         List<top.ysqorz.forum.po.Resource> resourceList =
                 authorityService.getAuthorityList(null);
         List<Role> roles = roleService.getRoleByUserId(userId);
@@ -63,6 +64,7 @@ public class JwtRealm extends AuthorizingRealm {
             authorizationInfo.addStringPermissions(leafPermList);
         }
 
+        builder.destroy();
         return authorizationInfo;
     }
 

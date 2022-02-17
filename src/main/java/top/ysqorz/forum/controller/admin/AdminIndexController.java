@@ -2,8 +2,10 @@ package top.ysqorz.forum.controller.admin;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import top.ysqorz.forum.shiro.ShiroUtils;
 
 /**
  * @author passerbyYSQ
@@ -16,7 +18,8 @@ public class AdminIndexController {
     // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
    // @RequiresPermissions("admin:access")
     @GetMapping({"", "/index"})
-    public String indexPage() {
+    public String indexPage(Model model) {
+        model.addAttribute("user", ShiroUtils.getLoginUser());
         return "admin/index";
     }
 

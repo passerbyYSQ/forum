@@ -16,7 +16,7 @@ public class TreeBuilder<T> {
     // 根节点（可能有多个）的parentId的值。根节点的parentId值都指向一个不存在的相同id
     private T rootParentId;
     // 森林
-    private List<TreeNode<T>> treeData;
+    private TreeNode<T> fakeRootNode;
     // 所有的id
     private Set<T> idSet;
 
@@ -28,14 +28,14 @@ public class TreeBuilder<T> {
         this.nodeList = nodeList;
         this.rootParentId = rootParentId;
 
-        this.treeData = buildTree();
+        buildTree();
     }
 
     /**
      * 构建森林
      * @return  返回多棵树的真实根节点
      */
-    private List<TreeNode<T>> buildTree() {
+    private void buildTree() {
         // 预处理
         preProcess();
 
@@ -45,8 +45,7 @@ public class TreeBuilder<T> {
         idSet = new HashSet<>();
         // 递归建树
         doBuildTreeByDfs(fakeRoot);
-
-        return fakeRoot.getChildren();
+        this.fakeRootNode = fakeRoot;
     }
 
     private void doBuildTreeByDfs(TreeNode<T> root) {
@@ -62,6 +61,28 @@ public class TreeBuilder<T> {
 //            child.setParent(root); // 注释掉，否则无法打印测试
             doBuildTreeByDfs(child);
         }
+    }
+
+    public void destroy() {
+        nodeList.clear();
+        map.clear();
+        idSet.clear();
+        doClearTreeByDfs(fakeRootNode);
+    }
+
+    private void doClearTreeByDfs(TreeNode<T> root) {
+        if (root == null) {
+            return;
+        }
+        if (root.getChildren() != null) {
+            for (TreeNode<T> child : root.getChildren()) {
+                doClearTreeByDfs(child);
+            }
+        }
+        // help gc
+        root.setChildren(null);
+        root.setParentId(null);
+        root = null;
     }
 
     // 判断id是否合法
@@ -128,9 +149,4 @@ public class TreeBuilder<T> {
             }
         }
     }
-
-    public List<TreeNode<T>> getTreeData() {
-        return treeData;
-    }
-
 }

@@ -2,6 +2,7 @@ package top.ysqorz.forum.shiro;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
+import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.SpringUtils;
@@ -16,15 +17,20 @@ public class ShiroUtils {
      * 如果Subject认证成功，此处必定可以取地userId
      */
     public static Integer getUserId() {
-        return Integer.valueOf(JwtUtils.getClaimByKey(getToken(), "userId"));
+        String token = getToken();
+        return ObjectUtils.isEmpty(token) ? null : Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
     }
 
     /**
      * 获取登录用户缓存在Redis中的认证信息
      */
     public static User getLoginUser() {
+        String token = getToken();
+        if (ObjectUtils.isEmpty(token)) {
+            return null;
+        }
         JwtRealm jwtRealm = SpringUtils.getBean(JwtRealm.class);
-        JwtToken jwtToken = new JwtToken(getToken());
+        JwtToken jwtToken = new JwtToken(token);
         AuthenticationInfo authenticationInfo = jwtRealm.getAuthenticationInfo(jwtToken);
         return (User) authenticationInfo.getCredentials();
     }
