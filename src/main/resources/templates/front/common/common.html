@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<!-- front footer start -->
+<div class="fly-footer" th:fragment="frontFooter">
+    <p>Copyright <span th:text="${#dates.year(#dates.createNow())}">2021</span> &copy;
+        <a href="https://blog.csdn.net/qq_43290318">passerbyYSQ</a>.&nbsp;
+        All Rights Reserved |
+        <a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022016587号</a>
+    </p>
+    <p>
+        Powered by passerbyYSQ 1127664027@qq.com
+    </p>
+</div>
+<!-- front footer end -->
+
+<!-- front header start -->
+<div class="fly-header layui-bg-black" th:fragment="frontHeader(loginUser)">
+    <div class="layui-container">
+        <a class="fly-logo" href="/">
+            <img th:src="@{/front/res/images/logo3.png}" src="../res/images/logo.png" alt="layui">
+        </a>
+        <ul class="layui-nav fly-nav-user">
+            <!-- 未登入的状态 -->
+            <li class="layui-nav-item" th:if="${loginUser.id == null}">
+                <a th:href="@{/user/login}" target="_parent">登入</a>
+            </li>
+            <li class="layui-nav-item" th:if="${loginUser.id == null}">
+                <a th:href="@{/user/reg}" target="_parent">注册</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs" th:if="${loginUser.id == null}">
+                <a th:href="@{/user/oauth/qq/authorize}" target="_parent" class="myiconfont icon-QQ"
+                   style="font-size: 22px;"></a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs" th:if="${loginUser.id == null}">
+                <a th:href="@{/user/oauth/gitee/authorize}" target="_parent" class="myiconfont icon-Gitee"
+                   style="font-size: 22px;"></a>
+            </li>
+            <!-- 登入后的状态 -->
+            <li class="layui-nav-item" th:if="${loginUser.id != null}">
+                <a class="fly-nav-avatar" href="javascript:;">
+                    <cite class="layui-hide-xs" th:text="${loginUser.username}">贤心</cite>
+                    <i class="lv" th:text="'Lv' + ${loginUser.level}">Lv3</i>
+                    <img th:src="${loginUser.photo}"
+                         src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a th:href="@{/user/center/set}" href="user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a>
+                    </dd>
+                    <dd><a th:href="@{/user/center/message}" href="user/message.html"><i class="iconfont icon-tongzhi"
+                                                                                         style="top: 4px;"></i>我的消息
+                        <span th:if="${loginUser.newMeg > 0}" th:text="${loginUser.newMeg}"
+                              class="layui-badge-dot"></span></a>
+                    </dd>
+                    <dd><a th:href="@{/user/center/home}" href="user/home.html"><i class="layui-icon"
+                                                                                   style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
+                    </dd>
+                    <hr style="margin: 5px 0;">
+                    <dd><a th:href="@{/user/logout}" href="/user/logout/" style="text-align: center;">退出登录</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- front header end -->
+
+</body>
+</html>

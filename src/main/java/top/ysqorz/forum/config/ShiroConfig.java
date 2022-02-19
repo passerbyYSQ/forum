@@ -97,14 +97,18 @@ public class ShiroConfig {
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
 
+        chain.addPathDefinition("/", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/index", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/index/list", "noSessionCreation,jwtAuth[permissive]");
         // 除了浏览帖子特殊（不登录也行，只是数据不一样），发帖、修改、删除帖子等其他操作都需要登录
-        chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/video/*", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/post/detail/*", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/attend", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/logout", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/center/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/user/oauth/**/callback", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/user/home/**", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/user/oauth/*/callback", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/user/home/*", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/user/**", "noSessionCreation,anon");
         chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/meg/**", "noSessionCreation,jwtAuth");
@@ -113,15 +117,11 @@ public class ShiroConfig {
 
         chain.addPathDefinition("/im/*", "noSessionCreation,jwtAuth");
 
-        chain.addPathDefinition("/index", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/head", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/index/list", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/admin/assets/**", "noSessionCreation,anon");
         chain.addPathDefinition("/admin", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/admin/index", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/admin/console/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/admin/system/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/", "noSessionCreation,jwtAuth[permissive]");
 
         // 放行静态资源。但是admin也把后台给放行了。之后再做修正
         chain.addPathDefinition("/front/**", "noSessionCreation,anon");

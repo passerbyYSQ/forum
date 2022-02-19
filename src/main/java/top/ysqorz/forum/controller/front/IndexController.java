@@ -74,15 +74,8 @@ public class IndexController {
 
         // 热议周榜是否有信息
         Boolean isHaveWeekHotPost = redisService.isHaveWeekHotPost();
-        model.addAttribute("isHaveWeekHotPost" ,isHaveWeekHotPost);
+        model.addAttribute("isHaveWeekHotPost", isHaveWeekHotPost);
         return "front/index";
-    }
-
-    @GetMapping("/head")
-    public String head(Model model) {
-        SimpleUserDTO loginUser = userService.getLoginUser();
-        model.addAttribute("myUser", loginUser);
-        return "front/head";
     }
 
     /**
@@ -122,7 +115,7 @@ public class IndexController {
     @GetMapping("/attend/rank")
     @ResponseBody
     public ResultModel<List<AttendDTO>> attendRankList(@NotNull @Min(1) @Max(20)
-                                                                   Integer count) {
+                                                               Integer count) {
         List<AttendDTO> rankList = attendService.rankList(count);
         return ResultModel.success(rankList);
     }

@@ -28,14 +28,9 @@
         }
     </style>
 </head>
-<body style="margin:0">
-<div style="height:62px;">
-  <iframe scrolling="no" id="main" name="main" frameborder="0" th:src="@{/head}"
-          style="width:100%;height:100%;"></iframe>
+<body>
 
-</div>
-
-
+<div th:replace="~{front/common/common :: frontHeader(${loginUser})}"></div>
 
 <div class="fly-home fly-panel" style="background-image: url();">
     <img th:src="${information.photo}" alt="贤心">
@@ -108,15 +103,7 @@
     </div>
 </div>
 
-<div class="fly-footer">
-    <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/"
-                                                                                target="_blank">layui.com 出品</a></p>
-    <p>
-        <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
-        <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
-        <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
-    </p>
-</div>
+<div th:replace="~{front/common/common :: frontFooter}"></div>
 
 <!--帖子模板-->
 <script type="text/html" id="demoDetail">

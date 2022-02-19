@@ -11,8 +11,9 @@ spring:
     host: 119.45.164.115
     port: 6379
     password: ysqJYKL2010
-    database: 0
+    database: 1
   thymeleaf:
+    # 如果设置为true，recompile html后不生效
     cache: false
 
 mybatis:

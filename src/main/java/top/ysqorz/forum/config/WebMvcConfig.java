@@ -18,6 +18,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Resource
     private ApiAccessLimitInterceptor apiAccessLimitInterceptor;
     @Resource
+    private HeaderInfoInterceptor headerInfoInterceptor;
+    @Resource
     private EscapeStringConverter escapeStringConverter;
 
     @Override
@@ -25,6 +27,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(apiAccessLimitInterceptor) // 不要用new ApiAccessLimitInterceptor()
                 .addPathPatterns("/**")
                 .excludePathPatterns("/error", "/im/push"); // 注意/im/push是IM服务转发消息调用的，不是客户端调的，不能统计
+        registry.addInterceptor(headerInfoInterceptor)
+                .addPathPatterns("/video/*",
+                        "/post/detail/*",
+                        "/", "/index",
+                        "/post/publish",
+                        "/user/center/set",
+                        "/user/center/home",
+                        "/user/center/message");
     }
 
     /**

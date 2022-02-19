@@ -1,11 +1,15 @@
 package top.ysqorz.forum.utils;
 
+import org.springframework.util.ObjectUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author passerbyYSQ
@@ -13,41 +17,29 @@ import java.util.Enumeration;
  */
 public class IpUtils {
 
+    /**
+     * https://www.cnblogs.com/death00/p/11557305.html
+     */
     public static String getIpFromRequest(HttpServletRequest request) {
-        String ipAddress;
-        try {
-            ipAddress = request.getHeader("x-forwarded-for");
-            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
-                ipAddress = request.getHeader("Proxy-Client-IP");
-            }
-            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
-                ipAddress = request.getHeader("WL-Proxy-Client-IP");
-            }
-            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
-                ipAddress = request.getRemoteAddr();
-                if (ipAddress.equals("127.0.0.1")) {
-                    // 根据网卡取本机配置的IP
-                    try {
-                        ipAddress = InetAddress.getLocalHost().getHostAddress();
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            // 通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
-            if (ipAddress != null) {
-                if (ipAddress.contains(",")) {
-                    return ipAddress.split(",")[0];
-                } else {
-                    return ipAddress;
-                }
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
+        List<String> candidateIps = new ArrayList<>();
+
+        String xFor = request.getHeader("X-Forwarded-For");
+        if (xFor != null) {
+            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
+            // "abc, sdv,  sddv  ,, sdv ,  ,  dfb "
+            candidateIps.add(xFor.split("((\\s*),(\\s*))+")[0]);
         }
+        candidateIps.add(request.getHeader("X-Real-IP"));
+        candidateIps.add(request.getHeader("Proxy-Client-IP"));
+        candidateIps.add(request.getHeader("WL-Proxy-Client-IP"));
+        candidateIps.add(request.getHeader("HTTP_CLIENT_IP"));
+        candidateIps.add(request.getHeader("HTTP_X_FORWARDED_FOR"));
+        candidateIps.add(request.getRemoteAddr());
+
+        Optional<String> finalIp = candidateIps.stream()
+                .filter(s -> !ObjectUtils.isEmpty(s) && !"unKnown".equalsIgnoreCase(s))
+                .findFirst();
+        return finalIp.map(String::trim).orElse("");
     }
 
     public static String getLocalIp() {
