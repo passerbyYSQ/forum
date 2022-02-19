@@ -27,22 +27,22 @@
         </a>
         <ul class="layui-nav fly-nav-user">
             <!-- 未登入的状态 -->
-            <li class="layui-nav-item" th:if="${loginUser.id == null}">
+            <li class="layui-nav-item" th:if="!${loginUser.id}">
                 <a th:href="@{/user/login}" target="_parent">登入</a>
             </li>
-            <li class="layui-nav-item" th:if="${loginUser.id == null}">
+            <li class="layui-nav-item" th:if="!${loginUser.id}">
                 <a th:href="@{/user/reg}" target="_parent">注册</a>
             </li>
-            <li class="layui-nav-item layui-hide-xs" th:if="${loginUser.id == null}">
+            <li class="layui-nav-item layui-hide-xs" th:if="!${loginUser.id}">
                 <a th:href="@{/user/oauth/qq/authorize}" target="_parent" class="myiconfont icon-QQ"
                    style="font-size: 22px;"></a>
             </li>
-            <li class="layui-nav-item layui-hide-xs" th:if="${loginUser.id == null}">
+            <li class="layui-nav-item layui-hide-xs" th:if="!${loginUser.id}">
                 <a th:href="@{/user/oauth/gitee/authorize}" target="_parent" class="myiconfont icon-Gitee"
                    style="font-size: 22px;"></a>
             </li>
             <!-- 登入后的状态 -->
-            <li class="layui-nav-item" th:if="${loginUser.id != null}">
+            <li class="layui-nav-item" th:if="${loginUser.id}">
                 <a class="fly-nav-avatar" href="javascript:;">
                     <cite class="layui-hide-xs" th:text="${loginUser.username}">贤心</cite>
                     <i class="lv" th:text="'Lv' + ${loginUser.level}">Lv3</i>

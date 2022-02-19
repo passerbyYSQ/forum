@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 
 /**
- * 通过拦截器和redis实现简单的API防刷
+ * TODO 通过拦截器和redis实现简单的API防刷，待优化
  *
  * 同一个ip在1分钟内调用同个一个API接口超过60次，认为非正常请求，
  * 该请求在当天内无法再次调用该API
