@@ -245,12 +245,13 @@
                     </span>
                 </div>
                 <div class="detail-about">
-                    <a class="fly-avatar" href="../user/home.html">
+                    <a class="fly-avatar" th:href="${'/user/home/' + post.detail.creator.id}" href="../user/home.html">
                         <img th:src="${post.detail.creator.photo}" th:alt="${post.detail.creator.username}" alt="贤心"
                              src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
                     </a>
                     <div class="fly-detail-user">
-                        <a href="../user/home.html" class="fly-link">
+                        <a th:href="${'/user/home/' + post.detail.creator.id}" href="../user/home.html"
+                           class="fly-link">
                             <cite th:text="${post.detail.creator.username}">贤心</cite>
                             <i class="iconfont icon-renzheng" title="认证信息：{{ rows.user.approve }}"></i>
                             <i class="lv" th:text="'Lv ' + ${post.detail.creator.level}"
@@ -422,11 +423,11 @@
     <ul class="jieda" data-id="fcid-{{d.id}}">
         <li class="jieda-daan">
             <div class="detail-about detail-about-reply">
-                <a class="fly-avatar" href="">
+                <a class="fly-avatar" href="/user/home/{{d.creator.id}}">
                     <img src="{{d.creator.photo}}" alt="{{d.creator.username}}">
                 </a>
                 <div class="fly-detail-user">
-                    <a href="" class="fly-link">
+                    <a href="/user/home/{{d.creator.id}}" class="fly-link">
                         <cite>{{d.creator.username}}</cite>
                         <i class="iconfont icon-renzheng" title="认证信息：XXX"></i>
                         <i class="lv"
@@ -512,24 +513,22 @@
             </div>
         </li>
 
-
         <!-- 无数据时 -->
         <!-- <li class="fly-none">消灭零回复</li> -->
     </ul>
 </script>
-<!-- 二级评论 模板 -->s
+<!-- 二级评论 模板 -->
 <script type="text/html" id="secondCommentItem">
     <div class="second-comment layui-col-xs-offset1" data-id="scid-{{d.id}}">
         <div class="detail-about detail-about-reply">
-            <a class="fly-avatar" href="">
+            <a class="fly-avatar" href="/user/home/{{d.creator.id}}">
                 <img src="{{d.creator.photo}}" alt="{{d.creator.username}}">
             </a>
             <div class="fly-detail-user">
-                <a href="" class="fly-link">
+                <a href="/user/home/{{d.creator.id}}" class="fly-link">
                     <cite>{{d.creator.username}}</cite>
                     <i class="iconfont icon-renzheng" title="认证信息：XXX"></i>
-                    <i class="lv"
-                       title="积分数：{{d.creator.rewardPoints}}">Lv {{d.creator.level}}</i>
+                    <i class="lv" title="积分数：{{d.creator.rewardPoints}}">Lv {{d.creator.level}}</i>
                 </a>
                 {{# if (d.isPostCreator) { }}
                 <span>(楼主)</span>
@@ -1141,7 +1140,6 @@
             <!--  isFocus:true:未关注状态，关注行为  !isFocus:已关注状态，取关行为，-->
             app.ajax(url, {isFocusOn: !isFocus}, function () {
                 if (!isFocus) {
-                    console.log("关注成功");
                     app.successNotice("关注成功");
                     $("a[name='isFollow']").removeClass("layui-btn-normal");
                     $("a[name='isFollow']").addClass("layui-btn-disabled");
@@ -1149,7 +1147,6 @@
                     $("a[name='isFollow']").html("已关注");
                     isFocus = true;
                 } else {
-                    console.log("取消关注成功");
                     app.successNotice("取消关注成功");
                     $("a[name='isFollow']").addClass("layui-btn-normal");
                     $("a[name='isFollow']").removeClass("layui-btn-disabled");

@@ -45,7 +45,7 @@ function oauthRefresh(app) {
     if (code === '2000' && msg) {
         setTimeout(function () {
             location.href = location.href.substr(0, location.href.indexOf('?'));
-        }, 1000);
+        }, 500);
     }
 }
 

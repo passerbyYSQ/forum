@@ -75,7 +75,7 @@ public class PostController {
         //用于检验用户是否登录
         //判断进入用户界面状态，1：未登录， 2：已登录，身份为本人， 3：已登录，身份为访客
         boolean isLogin = ShiroUtils.isAuthenticated();
-        boolean isMyself = isLogin && ShiroUtils.getUserId().equals(creator.getId());
+        boolean isMyself = isLogin && creator.getId().equals(ShiroUtils.getUserId());
         model.addAttribute("isLogin", isLogin);
         model.addAttribute("isMyself", isMyself);
         boolean isFocus = userService.isFocusOn(creator.getId());

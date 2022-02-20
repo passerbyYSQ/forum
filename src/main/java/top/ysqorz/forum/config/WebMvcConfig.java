@@ -33,6 +33,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/", "/index",
                         "/post/publish",
                         "/user/login", "/user/reg",
+                        "/user/home/*",
                         "/user/center/set",
                         "/user/center/home",
                         "/user/center/message");
