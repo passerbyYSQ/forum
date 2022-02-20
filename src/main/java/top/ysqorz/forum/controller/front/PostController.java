@@ -15,7 +15,7 @@ import top.ysqorz.forum.dto.UpdatePostDTO;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
 import top.ysqorz.forum.shiro.ShiroUtils;
-import top.ysqorz.forum.utils.IpUtils;
+import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
@@ -59,7 +59,7 @@ public class PostController {
         }
 
         // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post的访问量
-        post = postService.addVisitCount(IpUtils.getIpFromRequest(request), post);
+        post = postService.addVisitCount(CommonUtils.getIpFromRequest(request), post);
 
         // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
         String token = RandomUtils.generateUUID();

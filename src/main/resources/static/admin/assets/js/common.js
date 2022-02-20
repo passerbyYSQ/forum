@@ -21,13 +21,33 @@ layui.config({  // common.js是配置layui扩展模块的目录，每个页面�
     var $ = layui.jquery,
         app = layui.app;
 
+    formatDateTime($, app);
+
+    // 授权登录成功后刷新，去掉url参数
+    oauthRefresh(app);
+
+    // 扩展Date
+    extendDate();
+});
+
+function formatDateTime($, app) {
+    // 格式化时间
     var dateTimeElem = $(".datetime");
     if (app.isNotNull(dateTimeElem)) {
         dateTimeElem.text(app.formatDateTime(dateTimeElem.text()));
     }
+}
 
-    extendDate();
-});
+function oauthRefresh(app) {
+    //后端返回的提示码msg，显示信息1秒后刷新去除url中的信息
+    var code = app.getUrlParam("code");
+    var msg = app.getUrlParam("msg");
+    if (code === '2000' && msg) {
+        setTimeout(function () {
+            location.href = location.href.substr(0, location.href.indexOf('?'));
+        }, 1000);
+    }
+}
 
 // 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
 // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)

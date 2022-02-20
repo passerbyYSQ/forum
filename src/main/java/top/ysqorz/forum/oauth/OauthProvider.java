@@ -8,18 +8,18 @@ import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
+import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
  * 第三方授权接口
- * @param <T>       getUser()返回值的类型
  *
+ * @param <T> getUser()返回值的类型
  * @author 阿灿
  * @create 2021-06-13 20:57
  */
@@ -42,24 +42,27 @@ public abstract class OauthProvider<T> {
 
     /**
      * 请求用户授权
-     * @param referer       用户在哪个页面点击了授权登录的按钮
+     *
+     * @param referer 用户在哪个页面点击了授权登录的按钮
      */
-    public void redirectAuthorize(String referer, HttpServletResponse response) throws IOException {
-        if (referer.endsWith("/user/login")||referer.endsWith("/head")) {
-            referer = "/";
+    public String redirectAuthorize(String referer) {
+        String originReferer = CommonUtils.getUrlParam(referer, "referer");
+        if (ObjectUtils.isEmpty(originReferer)) {
+            originReferer = "/";
         }
         String key = RandomUtils.generateUUID();
         // 注意不允许有&符号
         String salt = RandomUtils.generateStrWithNumAndLetter(4);
         // 用于防止CSRF(跨站请求伪造)
-        String state = String.format("%s,%s,%s", referer, key, salt);
+        String state = String.format("%s,%s,%s", originReferer, key, salt);
         // 存入redis
         redisService.saveOauthState(key, state);
-        response.sendRedirect(joinAuthorizeUrl(state, response));
+        return "redirect:" + joinAuthorizeUrl(state);
     }
 
     /**
      * 模板方法，不允许子类重写
+     *
      * @param code
      */
     public final T getUser(String code) throws IOException {
@@ -72,7 +75,8 @@ public abstract class OauthProvider<T> {
 
     /**
      * 获取 DB User
-     * @param openId    第三方账号的唯一标识
+     *
+     * @param openId 第三方账号的唯一标识
      */
     public final User getDbUser(Object openId) {
         Example example = new Example(User.class);
@@ -82,6 +86,7 @@ public abstract class OauthProvider<T> {
 
     /**
      * 校验state，防止CSRF
+     *
      * @return
      */
     public String checkState(String state) {
@@ -104,7 +109,7 @@ public abstract class OauthProvider<T> {
     /**
      * 拼接请求授权的url
      */
-    public abstract String joinAuthorizeUrl(String state, HttpServletResponse response);
+    protected abstract String joinAuthorizeUrl(String state);
 
     /**
      * 获取Token

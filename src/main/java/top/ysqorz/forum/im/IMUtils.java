@@ -9,7 +9,7 @@ import org.springframework.core.env.Environment;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.utils.IpUtils;
+import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
@@ -27,12 +27,12 @@ public class IMUtils {
 
 
     public static String getWsServer() {
-        return String.format("ws://%s:%d/ws", IpUtils.getLocalIp(), Constant.WS_SERVER_PORT);
+        return String.format("ws://%s:%d/ws", CommonUtils.getLocalIp(), Constant.WS_SERVER_PORT);
     }
 
     public static String getWebServer() {
         Environment env = SpringUtils.getBean(Environment.class);
-        return IpUtils.getLocalIp() + ":" + env.getProperty("server.port");
+        return CommonUtils.getLocalIp() + ":" + env.getProperty("server.port");
     }
 
     public static String generateAuthDigest(String userPwd) {

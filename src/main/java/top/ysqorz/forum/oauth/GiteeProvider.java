@@ -3,11 +3,10 @@ package top.ysqorz.forum.oauth;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 import top.ysqorz.forum.dto.GiteeUserDTO;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * gitee认证登录网络链接
@@ -20,10 +19,14 @@ import javax.servlet.http.HttpServletResponse;
 public class GiteeProvider extends OauthProvider<GiteeUserDTO> {
 
     @Override
-    public String joinAuthorizeUrl(String state, HttpServletResponse response) {
-        return String.format("https://gitee.com/oauth/authorize" +
-                        "?client_id=%s&redirect_uri=%s&state=%s&response_type=code&scope=user_info",
-                clientId, redirectUri, state);
+    public String joinAuthorizeUrl(String state) {
+        return UriComponentsBuilder.fromHttpUrl("https://gitee.com/oauth/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("scope", "user_info")
+                .queryParam("state", state)
+                .queryParam("client_id", clientId)
+                .queryParam("redirect_uri", redirectUri)
+                .toUriString();
     }
 
     @Override

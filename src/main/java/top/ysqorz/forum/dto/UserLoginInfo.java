@@ -24,6 +24,9 @@ public class UserLoginInfo {
     private String photo; // 照片
     private Integer rewardPoints;
     private LocalDateTime registerTime;
+
+    private String referer;
+
     // 角色信息...
 
 
@@ -31,8 +34,9 @@ public class UserLoginInfo {
 
     }
 
-    public UserLoginInfo(String token, User user) {
+    public UserLoginInfo(String token, User user, String referer) {
         this.token = token;
+        this.referer = referer;
         BeanUtils.copyProperties(user, this);
     }
 }

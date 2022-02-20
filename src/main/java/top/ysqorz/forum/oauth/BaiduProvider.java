@@ -2,11 +2,11 @@ package top.ysqorz.forum.oauth;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 import top.ysqorz.forum.dto.BaiduUserDTO;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -20,10 +20,15 @@ import java.io.IOException;
 public class BaiduProvider extends OauthProvider<BaiduUserDTO> {
 
     @Override
-    public String joinAuthorizeUrl(String state, HttpServletResponse response) {
-        return String.format("http://openapi.baidu.com/oauth/2.0/authorize" +
-                        "?response_type=code&client_id=%s&redirect_uri=%s&scope=basic,netdisk&state=%s",
-                clientId, redirectUri, state);
+    public String joinAuthorizeUrl(String state) {
+        return UriComponentsBuilder.fromHttpUrl("http://openapi.baidu.com/oauth/2.0/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("scope", "basic")
+                .queryParam("state", state)
+                .queryParam("display", "popup")
+                .queryParam("client_id", clientId)
+                .queryParam("redirect_uri", redirectUri)
+                .toUriString();
     }
 
     @Override

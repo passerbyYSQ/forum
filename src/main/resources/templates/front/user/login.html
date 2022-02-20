@@ -206,7 +206,7 @@
                             <a th:href="@{/user/oauth/baidu/authorize}">
                                 <i class="myiconfont icon-baiduwangpan" style="font-size: 26px;color:#3492ed;"></i>
                             </a>&emsp;
-                            <a th:href="@{/user/oauth/qq/authorize}" >
+                            <a th:href="@{/user/oauth/qq/authorize}">
                                 <i class="myiconfont icon-QQ" style="font-size: 26px;color:#3492ed;"></i>
                             </a>
                         </div>
@@ -250,12 +250,14 @@
             console.log(data.field);
             app.ajax('/user/login', data.field, function (res) {
                 // 业务成功（业务状态码）的回调
-               // layui.cache.user = res.data;
+                // layui.cache.user = res.data;
                 console.log(res);
-                localStorage.setItem("user",JSON.stringify(res.data));
+                var referer = res.data.referer;
+                delete res.data.referer;
+                localStorage.setItem("user", JSON.stringify(res.data));
                 app.successNotice("登录成功");
-                setTimeout(function() {
-                    window.location = '/';
+                setTimeout(function () {
+                    window.location = referer;
                 }, 1000);
                 //location.reload();
             }, "post", function (res) {

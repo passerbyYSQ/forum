@@ -18,10 +18,12 @@ import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -102,11 +104,14 @@ public class UserController {
      * 跳转到登录页面
      */
     @GetMapping("/login")
-    public String loginPage(Model model) {
-        // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
-        String token = RandomUtils.generateUUID();
-        model.addAttribute("token", token);
-        return "front/user/login";
+    public String loginPage(HttpServletRequest request, Model model) {
+        if (ObjectUtils.isEmpty(request.getParameter("referer"))) {
+            return "redirect:/user/login?referer=" + request.getHeader("referer");
+        } else {
+            // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
+            model.addAttribute("token", RandomUtils.generateUUID());
+            return "front/user/login";
+        }
     }
 
     /**
@@ -114,7 +119,8 @@ public class UserController {
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResultModel<UserLoginInfo> login(@Validated LoginDTO dto, HttpServletResponse response) {
+    public ResultModel<UserLoginInfo> login(@Validated LoginDTO dto, @RequestHeader(defaultValue = "") String referer,
+                                            HttpServletResponse response) {
         String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
             return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
@@ -137,32 +143,36 @@ public class UserController {
 //        userService.clearShiroCache(user);
         String token = userService.login(user, response);
 
+        String originReferer = CommonUtils.getUrlParam(referer, "referer");
+        if (ObjectUtils.isEmpty(originReferer)) {
+            originReferer = "/";
+        }
+
         // 为什么登录不使用UsernamePasswordToken和定义专门的LoginRealm（Service层的逻辑）来处理UsernamePasswordToken？
         // 由于密码登录只用一次，成功之后都凭借jwt令牌来访问
         // 经过LoginRealm后所缓存起来的认证信息之后多不会被用到。。个人想法
 
         // 将token放到请求头中，方便前端判断有无token刷新
         // 将常显的数据返回给前端缓存
-        return ResultModel.success(new UserLoginInfo(token, user));
+        return ResultModel.success(new UserLoginInfo(token, user, originReferer));
     }
 
     /**
      * 销毁主体的认证信息
      */
     @RequestMapping("/logout")
-    public String logout(HttpServletResponse response) {
+    public String logout(@RequestHeader(defaultValue = "/") String referer, HttpServletResponse response) {
         userService.logout();
         Cookie cookie = new Cookie("token", "");
         cookie.setMaxAge(0);
         cookie.setPath("/"); // ！！！
         response.addCookie(cookie);
-        return "redirect:/";
+        return "redirect:" + referer;
     }
 
     @GetMapping("/oauth/gitee/authorize")
-    public void giteeAuthorize(@RequestHeader(defaultValue = "") String referer,
-                               HttpServletResponse response) throws IOException {
-        giteeProvider.redirectAuthorize(referer, response);
+    public String giteeAuthorize(@RequestHeader(defaultValue = "") String referer) {
+        return giteeProvider.redirectAuthorize(referer);
     }
 
     /**
@@ -179,9 +189,8 @@ public class UserController {
     }
 
     @GetMapping("/oauth/qq/authorize")
-    public void qqAuthorize(@RequestHeader(defaultValue = "") String referer,
-                            HttpServletResponse response) throws IOException {
-        qqProvider.redirectAuthorize(referer, response);
+    public String qqAuthorize(@RequestHeader(defaultValue = "") String referer) {
+        return qqProvider.redirectAuthorize(referer);
     }
 
     /**
@@ -196,9 +205,8 @@ public class UserController {
     }
 
     @GetMapping("/oauth/baidu/authorize")
-    public void baiduAuthorize(@RequestHeader(defaultValue = "") String referer,
-                               HttpServletResponse response) throws IOException {
-        baiduProvider.redirectAuthorize(referer, response);
+    public String baiduAuthorize(@RequestHeader(defaultValue = "") String referer) {
+        return baiduProvider.redirectAuthorize(referer);
     }
 
     /**

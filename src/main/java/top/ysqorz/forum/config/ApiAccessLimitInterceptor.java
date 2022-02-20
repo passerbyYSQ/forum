@@ -4,7 +4,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import top.ysqorz.forum.utils.IpUtils;
+import top.ysqorz.forum.utils.CommonUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +29,7 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
-        String ip = IpUtils.getIpFromRequest(request);
+        String ip = CommonUtils.getIpFromRequest(request);
         String accessKey = "API:" + request.getServletPath() + ":" + ip;
         String remained = stringRedisTemplate.opsForValue().get(accessKey);
         if (remained != null && Integer.parseInt(remained) <= 0) {

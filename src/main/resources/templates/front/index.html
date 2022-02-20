@@ -531,18 +531,6 @@
         };
 
 
-        //后端返回的提示码msg，显示信息两秒后刷新去除url中的信息
-        var code = app.getUrlParam("code");
-        var msg = app.getUrlParam("msg");
-        var oldUrl = '/';
-
-        if (code && msg) {
-            setTimeout(function() {
-                location.href = oldUrl;
-            }, 2);
-        }
-
-
         // rank dialog
         window.showRankDialog = function () {
             var dataGridMap = new Map();

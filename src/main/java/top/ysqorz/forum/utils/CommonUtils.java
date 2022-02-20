@@ -1,21 +1,40 @@
 package top.ysqorz.forum.utils;
 
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author passerbyYSQ
  * @create 2021-06-19 23:15
  */
-public class IpUtils {
+public class CommonUtils {
+
+    /**
+     * 解析url的参数值
+     */
+    public static String getUrlParam(String url, String name) {
+        try {
+            url = HtmlUtils.htmlUnescape(URLDecoder.decode(url, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Pattern pattern = Pattern.compile("(^|\\?|&)" + name + "=([^&]*)(&|$)");
+        Matcher matcher = pattern.matcher(url);
+        if (!matcher.find()) {
+            return null;
+        }
+        return matcher.group(2);
+    }
 
     /**
      * https://www.cnblogs.com/death00/p/11557305.html

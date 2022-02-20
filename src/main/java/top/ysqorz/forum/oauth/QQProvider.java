@@ -3,11 +3,11 @@ package top.ysqorz.forum.oauth;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 import top.ysqorz.forum.dto.QQUserDTO;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -20,9 +20,14 @@ import java.io.IOException;
 public class QQProvider extends OauthProvider<QQUserDTO> {
 
     @Override
-    public String joinAuthorizeUrl(String state, HttpServletResponse response) {
-        return String.format("https://graph.qq.com/oauth2.0/authorize?client_id=%s&redirect_uri=%s" +
-                "&state=%s&response_type=code&scope=get_user_info", clientId, redirectUri, state);
+    public String joinAuthorizeUrl(String state) {
+        return UriComponentsBuilder.fromHttpUrl("https://graph.qq.com/oauth2.0/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("scope", "get_user_info")
+                .queryParam("state", state)
+                .queryParam("client_id", clientId)
+                .queryParam("redirect_uri", redirectUri)
+                .toUriString();
     }
 
     @Override
