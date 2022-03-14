@@ -40,7 +40,6 @@ spring:
         url-pattern: /*   # 添加过滤规则
         exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"   # 忽略过滤格式
   mvc:
-
     format:
       date-time: yyyy-MM-dd HH:mm:ss
 #    multipart:

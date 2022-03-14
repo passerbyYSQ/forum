@@ -23,7 +23,7 @@ public class BaiduProvider extends OauthProvider<BaiduUserDTO> {
     public String joinAuthorizeUrl(String state) {
         return UriComponentsBuilder.fromHttpUrl("http://openapi.baidu.com/oauth/2.0/authorize")
                 .queryParam("response_type", "code")
-                .queryParam("scope", "basic")
+                .queryParam("scope", "basic,netdisk") // 不能只填 basic，否则会获取不到用户信息
                 .queryParam("state", state)
                 .queryParam("display", "popup")
                 .queryParam("client_id", clientId)

@@ -355,12 +355,10 @@
                     <!--未登录点击按钮进入登录界面-->
                     <div class="fly-sns" data-user="" th:if="${!isLogin}" style="text-align:center">
                         <a href="javascript:;" class="layui-btn layui-btn-primary fly-imActive" data-type="follow"
-                           name="isFollow"
-                           th:href="@{/user/login}">关注</a>
+                           name="isFollow" th:href="@{/user/login}">关注</a>
                     </div>
                     <!--已登录且身份为访客-->
-                    <div class="fly-sns" data-user="" id="visit" th:if="${!isMyself && isLogin}"
-                         style="text-align:center">
+                    <div class="fly-sns" data-user="" id="visit" th:if="${!isMyself && isLogin}" style="text-align:center">
                         <a href="javascript:;" class="layui-btn layui-btn-normal" name="isFollow"
                            data-type="follow" th:if="${!isFocusOn && isLogin}">关注</a>
                         <a href="javascript:;" class="layui-btn layui-btn-disabled button-isFollowed" name="isFollow"

@@ -33,11 +33,11 @@ import java.util.Set;
  * @create 2022-01-28 13:20
  */
 @Slf4j
-@Getter
 @Data
 @Component
 @ConfigurationProperties(prefix = "zookeeper.curator")
 public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeChangedCallback>, ConnectionStateListener {
+    private String namespace;
     // ACL digest方式
     private String user;
     private String password;
@@ -58,9 +58,9 @@ public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeCh
         String userPwdDigest = IMUtils.generateAuthDigest(plainUserPwd);
         Id userId = new Id("digest", userPwdDigest);
         aclList.add(new ACL(ZooDefs.Perms.ALL, userId));
-
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
         this.client = CuratorFrameworkFactory.builder()
+                .namespace(namespace)
                 .authorization("digest", plainUserPwd.getBytes(StandardCharsets.UTF_8))
                 .connectString(servers)
                 .sessionTimeoutMs(sessionTimeout)

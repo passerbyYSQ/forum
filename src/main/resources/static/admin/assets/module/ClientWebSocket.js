@@ -2,7 +2,7 @@ layui.define(['app'], function (exports) {
     var app = layui.app;
     const MSG_TYPE = app.MSG_TYPE;
     var Msg = app.Msg;
-    const WS_SERVER = 'ws://localhost:8081/ws';
+    const WS_SERVER = 'wss://www.ysqorz.top/ws';
 
     /**
      * 封装WebSocket
@@ -19,6 +19,7 @@ layui.define(['app'], function (exports) {
 
         constructor(opt) {
             this.options = opt || {};
+            // ====== dev ======
             var _that = this;
             let callback = function (res) {
                 _that.server = res.data;
@@ -26,6 +27,10 @@ layui.define(['app'], function (exports) {
                 _that._initSocket();
             };
             app.ajax('/im/server', {}, callback, 'get', null, false);
+            // ====== prod ======
+            // this.server = WS_SERVER;
+            // this.SocketClazz = window.WebSocket || window.MozWebSocket;
+            // this._initSocket();
         }
 
         _initSocket() {

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface ZkConnector<Callback extends ZkConnector.NodeChangedCallback> {
 
-    static final String PATH = "/im/ws"; // 最后不能加 /
+    String PATH = "/im/ws"; // 最后不能加 /
 
     default void create(String path) {
         create(path, "");

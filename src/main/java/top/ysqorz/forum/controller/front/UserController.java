@@ -105,7 +105,8 @@ public class UserController {
      */
     @GetMapping("/login")
     public String loginPage(HttpServletRequest request, Model model) {
-        if (ObjectUtils.isEmpty(request.getParameter("referer"))) {
+        if (ObjectUtils.isEmpty(request.getParameter("referer")) &&
+                !ObjectUtils.isEmpty(request.getHeader("referer"))) {
             return "redirect:/user/login?referer=" + request.getHeader("referer");
         } else {
             // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中

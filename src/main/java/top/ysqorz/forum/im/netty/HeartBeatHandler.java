@@ -27,9 +27,9 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
             String channelId = channel.id().asLongText();
 
             if (event.state() == IdleState.READER_IDLE) {
-                log.info("channel进入[读]空闲状态：{}", channelId);
+//                log.info("channel进入[读]空闲状态：{}", channelId);
             } else if (event.state() == IdleState.WRITER_IDLE) {
-                log.info("channel进入[写]空闲状态：{}", channelId);
+//                log.info("channel进入[写]空闲状态：{}", channelId);
                 channel.writeAndFlush(IMUtils.createTextFrame(MsgType.PONG));
                 resetChannelAllIdleCount(channel);
             } else if (event.state() == IdleState.ALL_IDLE) {

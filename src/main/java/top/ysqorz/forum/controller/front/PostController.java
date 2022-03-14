@@ -76,9 +76,9 @@ public class PostController {
         //判断进入用户界面状态，1：未登录， 2：已登录，身份为本人， 3：已登录，身份为访客
         boolean isLogin = ShiroUtils.isAuthenticated();
         boolean isMyself = isLogin && creator.getId().equals(ShiroUtils.getUserId());
+        boolean isFocus = isLogin && userService.isFocusOn(creator.getId());
         model.addAttribute("isLogin", isLogin);
         model.addAttribute("isMyself", isMyself);
-        boolean isFocus = userService.isFocusOn(creator.getId());
         model.addAttribute("isFocusOn", isFocus);
 
         return "front/jie/detail";

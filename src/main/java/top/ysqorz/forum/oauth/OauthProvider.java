@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.ParameterErrorException;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
@@ -68,7 +69,7 @@ public abstract class OauthProvider<T> {
     public final T getUser(String code) throws IOException {
         T oauthUser = getOauthUser(getAccessToken(code));
         if (ObjectUtils.isEmpty(oauthUser)) {
-            throw new ParameterErrorException("Oauth授权登录出错");
+            throw new ParameterErrorException(StatusCode.OAUTH_FAILED.getMsg());
         }
         return oauthUser;
     }
@@ -79,6 +80,9 @@ public abstract class OauthProvider<T> {
      * @param openId 第三方账号的唯一标识
      */
     public final User getDbUser(Object openId) {
+        if (ObjectUtils.isEmpty(openId)) {
+            throw new ParameterErrorException(StatusCode.OAUTH_FAILED.getMsg());
+        }
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo(poField, openId); //gitee_id
         return userMapper.selectOneByExample(example);
@@ -97,11 +101,11 @@ public abstract class OauthProvider<T> {
         }
         String[] params = state.split(",");
         if (params.length != 3) {
-            throw new ParameterErrorException("正在受到CSRF攻击");
+            throw new ParameterErrorException(StatusCode.CSRF_ATTACK.getMsg());
         }
         String correctState = redisService.getOauthState(params[1]);
         if (ObjectUtils.isEmpty(correctState) || !correctState.equals(state)) {
-            throw new ParameterErrorException("正在受到CSRF攻击");
+            throw new ParameterErrorException(StatusCode.CSRF_ATTACK.getMsg());
         }
         return params[0]; // 返回真正的referer
     }

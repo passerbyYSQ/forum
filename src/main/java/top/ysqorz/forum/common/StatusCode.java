@@ -39,6 +39,8 @@ public enum StatusCode {
     CREDENTIAL_INCORRECT(6003, "密码错误"), // 凭证错误
     AUTHENTICATION_FAILED(6004, "尚未登录或登录过期"),
     PASSWORD_NOT_EQUAL(6005,"两次输入密码不一致"),
+    OAUTH_FAILED(6006, "oauth授权登录失败"),
+    CSRF_ATTACK(6007, "正在受到CSRF攻击"),
 
     // 用户相关
     USERNAME_IS_EXIST(6101, "用户名已存在"),
@@ -92,9 +94,7 @@ public enum StatusCode {
 
     // 文件相关
     VIDEO_NOT_EXIST(6900, "视频不存在"),
-    FILE_NOT_EXIST(6901, "文件不存在")
-    ;
-
+    FILE_NOT_EXIST(6901, "文件不存在");
 
     // 状态码数值
     private Integer code;
