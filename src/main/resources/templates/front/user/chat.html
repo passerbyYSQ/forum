@@ -2,54 +2,59 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>LayIM 社交聊天</title>
+    <title>在线聊天</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" th:href="@{/admin/assets/libs/layui/css/layui.css}" href="../res/layui/css/layui.css">
+    <link rel="stylesheet" th:href="@{/admin/assets/module/admin.css(v=318)}" href="admin/assets/module/admin.css?v=318">
     <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
 </head>
 <body>
 
-<div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">面板外的操作示例</div>
-                <div class="layui-card-body">
+<div th:replace="~{front/common/common :: frontHeader(${loginUser})}"></div>
 
-                    <div class="layui-btn-container LAY-senior-im-chat-demo">
-                        <button class="layui-btn" data-type="chat">自定义会话</button>
-                        <button class="layui-btn" data-type="message">接受好友的消息</button>
-                        <button class="layui-btn" data-type="messageAudio">接受音频消息</button>
-                        <button class="layui-btn" data-type="messageVideo">接受视频消息</button>
-                        <button class="layui-btn" data-type="messageTemp">接受临时会话消息</button>
+<div class="layui-container fly-marginTop fly-user-main">
+    <div th:replace="~{front/common/common :: userCenterSidebar('chat')}"></div>
+    <div th:replace="~{front/common/common :: userCenterHideDom}"></div>
+    <div class="fly-panel fly-panel-user" pad20>
+        <div class="layui-tab layui-tab-brief" lay-filter="user" id="LAY_msg" style="margin-top: 15px;">
+            <div class="layui-card-header">面板外的操作示例</div>
+            <div class="layui-card-body">
 
-                        <br>
+                <div class="layui-btn-container LAY-senior-im-chat-demo">
+                    <button class="layui-btn" data-type="chat">自定义会话</button>
+                    <button class="layui-btn" data-type="message">接受好友的消息</button>
+                    <button class="layui-btn" data-type="messageAudio">接受音频消息</button>
+                    <button class="layui-btn" data-type="messageVideo">接受视频消息</button>
+                    <button class="layui-btn" data-type="messageTemp">接受临时会话消息</button>
 
-                        <button class="layui-btn" data-type="add">申请好友</button>
-                        <button class="layui-btn" data-type="addqun">申请加群</button>
-                        <button class="layui-btn" data-type="addFriend">同意好友</button>
-                        <button class="layui-btn" data-type="addGroup">增加群组到主面板</button>
-                        <button class="layui-btn" data-type="removeFriend">删除主面板好友</button>
-                        <button class="layui-btn" data-type="removeGroup">删除主面板群组</button>
+                    <br>
 
-                        <br>
-                        <button class="layui-btn" data-type="setGray">置灰离线好友</button>
-                        <button class="layui-btn" data-type="unGray">取消好友置灰</button>
+                    <button class="layui-btn" data-type="add">申请好友</button>
+                    <button class="layui-btn" data-type="addqun">申请加群</button>
+                    <button class="layui-btn" data-type="addFriend">同意好友</button>
+                    <button class="layui-btn" data-type="addGroup">增加群组到主面板</button>
+                    <button class="layui-btn" data-type="removeFriend">删除主面板好友</button>
+                    <button class="layui-btn" data-type="removeGroup">删除主面板群组</button>
 
-                        <button class="layui-btn" data-type="kefu1">在线客服一</button>
-                        <button class="layui-btn" data-type="kefu2">在线客服二</button>
+                    <br>
+                    <button class="layui-btn" data-type="setGray">置灰离线好友</button>
+                    <button class="layui-btn" data-type="unGray">取消好友置灰</button>
 
-                        <button class="layui-btn" data-type="mobile">移动端版本</button>
-                    </div>
+                    <button class="layui-btn" data-type="kefu1">在线客服一</button>
+                    <button class="layui-btn" data-type="kefu2">在线客服二</button>
 
+                    <button class="layui-btn" data-type="mobile">移动端版本</button>
                 </div>
+
             </div>
         </div>
     </div>
+
 </div>
+
+<div th:replace="~{front/common/common :: frontFooter}"></div>
 
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
@@ -111,7 +116,7 @@
             //,brief: true //是否简约模式（若开启则不显示主面板）
 
             , title: 'LayIM' //自定义主面板最小化时的标题
-            //,right: '100px' //主面板相对浏览器右侧距离
+            ,right: '16px' //主面板相对浏览器右侧距离
             //,minRight: '90px' //聊天面板最小化时相对浏览器右侧距离
             , initSkin: '3.jpg' //1-5 设置初始背景
             //,skin: ['aaa.jpg'] //新增皮肤

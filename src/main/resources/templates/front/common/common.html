@@ -6,6 +6,46 @@
 </head>
 <body>
 
+<!-- user center sidebar start -->
+<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user" th:fragment="userCenterSidebar(page)">
+    <li class="layui-nav-item" th:class="'layui-nav-item' + ${page == 'home' ? ' layui-this' : ''}">
+        <a th:href="@{/user/center/home}" href="home"><i class="layui-icon">&#xe609;</i>我的主页</a>
+    </li>
+    <li class="layui-nav-item">
+        <a href="index"><i class="layui-icon">&#xe612;</i>用户中心</a>
+    </li>
+    <li class="layui-nav-item" th:class="'layui-nav-item' + ${page == 'set' ? ' layui-this' : ''}">
+        <a th:href="@{/user/center/set}" href="set"><i class="layui-icon">&#xe620;</i>基本设置</a>
+    </li>
+    <li class="layui-nav-item" th:class="'layui-nav-item' + ${page == 'message' ? ' layui-nav-itemed' : ''}">
+        <a th:href="@{/user/center/message}"><i class="layui-icon">&#xe645;</i>我的消息</a>
+        <dl class="layui-nav-child" th:if="${page == 'message'}">
+            <dd class="layui-this"><a href="javascript:void(0);" onclick="searchff(this, 0)">评论</a></dd>
+            <dd><a href="javascript:void(0);" onclick="searchff(this, 1)">回复我的</a></dd>
+            <!--        <dd><a href="javascript:void(0);" onclick="searchff(this,2)">点赞</a></dd>-->
+            <!--        <dd><a href="javascript:void(0);" onclick="searchff(this,3)">系统通知</a></dd>-->
+            <!--        <dd><a href="javascript:void(0);" onclick="searchff(this,4)">消息设置</a></dd>-->
+        </dl>
+    </li>
+    <li class="layui-nav-item" th:class="'layui-nav-item' + ${page == 'chat' ? ' layui-this' : ''}">
+        <a th:href="@{/user/chat}"><i class="layui-icon">&#xe611;</i>在线聊天</a>
+    </li>
+</ul>
+<!-- user center sidebar end -->
+
+<!-- user center hide dom start -->
+<div th:fragment="userCenterHideDom">
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+    <div class="site-tree-mobile layui-hide">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+</div>
+<!-- user center hide dom end -->
+
 <!-- front footer start -->
 <div class="fly-footer" th:fragment="frontFooter">
     <p>Copyright <span th:text="${#dates.year(#dates.createNow())}">2021</span> &copy;
