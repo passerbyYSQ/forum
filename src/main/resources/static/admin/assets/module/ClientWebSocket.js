@@ -31,6 +31,19 @@ layui.define(['app'], function (exports) {
             // this.server = WS_SERVER;
             // this.SocketClazz = window.WebSocket || window.MozWebSocket;
             // this._initSocket();
+
+            window.addEventListener("online", this._onNetworkChanged.bind(this));
+            window.addEventListener("offline", this._onNetworkChanged.bind(this));
+        }
+
+        _onNetworkChanged(ev) {
+            if (ev.type === 'offline') {
+                app.errorNotice('网络断开');
+                this.socket.close();
+            } else if (ev.type === 'online') {
+                app.successNotice('网络连接成功');
+                this._initSocket();
+            }
         }
 
         _initSocket() {
@@ -105,6 +118,9 @@ layui.define(['app'], function (exports) {
             }
             this.isHeartBeating = true; // 标记心跳已开启
             var heartBeatJob = () => {
+                if (!this.isHeartBeating) { // 已经停止心跳则返回，
+                    return;
+                }
                 if (this.socket && this.socket.readyState === this.SocketClazz.OPEN) {
                     setTimeout(() => this.socket.send(this._createMsg(MSG_TYPE.PING)), 0); // 异步发送，防止send阻塞
                     // ===debug===

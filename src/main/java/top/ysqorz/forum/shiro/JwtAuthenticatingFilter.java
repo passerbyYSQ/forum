@@ -10,8 +10,8 @@ import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
+import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.DateTimeUtils;
-import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
@@ -20,7 +20,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -65,14 +64,8 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = WebUtils.toHttp(request);
         HttpServletResponse httpResponse = WebUtils.toHttp(response);
-        if (httpRequest.getHeader("Accept") == null ||
-                !httpRequest.getHeader("Accept").contains("text/html")) { // api
-            httpResponse.setCharacterEncoding("UTF-8");
-            httpResponse.setContentType("application/json;charset=UTF-8");
-            //httpResponse.setStatus(HttpStatus.FORBIDDEN.value()); // ajax 提示 "请求失败"，无法提示业务失败的提示信息
-            PrintWriter writer = response.getWriter();
-            String json = JsonUtils.objectToJson(ResultModel.failed(StatusCode.AUTHENTICATION_FAILED));
-            writer.print(json);
+        if (CommonUtils.isApiRequest(httpRequest)) { // api
+            CommonUtils.writeJson(httpResponse, ResultModel.failed(StatusCode.AUTHENTICATION_FAILED));
         } else { // html
             httpResponse.sendRedirect("/user/login"); // 重定向到登录页面
         }
@@ -85,7 +78,7 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletRequest httpRequest = WebUtils.toHttp(request);
         // 从请求头中的Authorization字段尝试获取jwt token
         String token = httpRequest.getHeader("Authorization");
         // 从请求头中的token字段（自定义字段）尝试获取jwt token
@@ -116,14 +109,13 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject,
                                      ServletRequest request, ServletResponse response) {
+        HttpServletResponse httpResponse = WebUtils.toHttp(response);
 
         String oldToken = (String) token.getCredentials();
         LocalDateTime expireAt = DateTimeUtils.toLocalDateTime(JwtUtils.getExpireAt(oldToken));
-
         // 如果token过期前一天内登录，则签发新的token给用户
         if (shouldRefreshToken &&
                 DateTimeUtils.dif(LocalDateTime.now(), expireAt, ChronoUnit.DAYS) < 1) {
-            HttpServletResponse httpResponse = WebUtils.toHttp(response);
             User user = ShiroUtils.getLoginUser(); // 退出登录前获取缓存中的认证信息
             UserService userService = SpringUtils.getBean(UserService.class);
             userService.logout();

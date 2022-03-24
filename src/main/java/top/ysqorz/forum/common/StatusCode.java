@@ -62,6 +62,7 @@ public enum StatusCode {
     PASSWORD_INCORRECT(6205, "密码错误"),
     ACCOUNT_IS_BOUND(6206, "该社交账号已被其他账号绑定"),
     EMAIL_NOT_SET(6206, "请先绑定邮箱"),
+    NOT_LOGIN_REPEATEDLY(6207, "请勿重复登录"),
     //REFERER_ERROR(6207, "referer错误"),
 
     // 权限相关

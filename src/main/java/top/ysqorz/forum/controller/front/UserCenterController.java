@@ -46,7 +46,6 @@ public class UserCenterController {
      */
     @GetMapping("/home")
     public String personalHomePage() {
-
         return "forward:/user/home/" + ShiroUtils.getUserId();
     }
 

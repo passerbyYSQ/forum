@@ -2,10 +2,16 @@ package top.ysqorz.forum.utils;
 
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
+import top.ysqorz.forum.common.ResultModel;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -18,6 +24,24 @@ import java.util.regex.Pattern;
  * @create 2021-06-19 23:15
  */
 public class CommonUtils {
+
+    public static void writeJson(HttpServletResponse httpResponse, ResultModel result) {
+        httpResponse.setCharacterEncoding("UTF-8");
+        httpResponse.setContentType("application/json;charset=UTF-8");
+        try {
+            httpResponse.getWriter().print(JsonUtils.objectToJson(result));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 判断是否为API请求
+     */
+    public static boolean isApiRequest(HttpServletRequest httpRequest) {
+        return httpRequest.getHeader("Accept") == null ||
+                !httpRequest.getHeader("Accept").contains("text/html");
+    }
 
     /**
      * 解析url的参数值

@@ -1,4 +1,4 @@
-package top.ysqorz.forum.config;
+package top.ysqorz.forum.config.interceptor;
 
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.data.redis.core.StringRedisTemplate;

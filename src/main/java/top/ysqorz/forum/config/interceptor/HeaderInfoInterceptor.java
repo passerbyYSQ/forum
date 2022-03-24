@@ -1,4 +1,4 @@
-package top.ysqorz.forum.config;
+package top.ysqorz.forum.config.interceptor;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
