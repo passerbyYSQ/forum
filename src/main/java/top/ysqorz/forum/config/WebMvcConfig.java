@@ -32,7 +32,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(headerInfoInterceptor)
                 .addPathPatterns("/video/*", "/post/detail/*", "/", "/index", "/post/publish",
                         "/user/login", "/user/reg", "/user/home/*", "/user/center/set", "/user/center/home",
-                        "/user/center/message", "/user/chat");
+                        "/user/center/message", "/chat");
     }
 
     /**

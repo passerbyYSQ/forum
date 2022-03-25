@@ -105,9 +105,9 @@ public class ShiroConfig {
         chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/attend", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/chat/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/logout", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/center/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/user/chat/**", "noSessionCreation,jwtAuth");
         chain.addPathDefinition("/user/oauth/**/callback", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/user/home/**", "noSessionCreation,jwtAuth[permissive]");
         chain.addPathDefinition("/user/**", "noSessionCreation,anon");

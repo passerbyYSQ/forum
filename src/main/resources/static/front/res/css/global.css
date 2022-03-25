@@ -605,7 +605,6 @@ body .fly-user-main{position: relative; min-height: 600px;}
 /*lv6等级样式*/
 .lv {
   vertical-align: middle;
-
   font-weight: bold;
   font-style: italic;
   background-image: -webkit-linear-gradient(left, blue, #66ffff 10%, #cc00ff 20%, #CC00CC 30%, #CCCCFF 40%, #00FFFF 50%, #CCCCFF 60%, #CC00CC 70%, #CC00FF 80%, #66FFFF 90%, blue 100%);
@@ -613,7 +612,6 @@ body .fly-user-main{position: relative; min-height: 600px;}
   -webkit-background-clip: text; /* 裁剪背景图，使文字作为裁剪区域向外裁剪 */
   -webkit-background-size: 200% 100%;
   -webkit-animation: masked-animation 4s linear infinite;
-
 }
 
 @keyframes masked-animation {
@@ -624,3 +622,18 @@ body .fly-user-main{position: relative; min-height: 600px;}
     background-position: -100% 0;
   }
 }
+
+/* common start */
+.ellipsis-1-line {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-all;
+}
+.ellipsis-2-lines {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+/* common end */
