@@ -177,8 +177,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public PageData<FirstCommentDTO> getFirstCommentList(Post post,
-                                                         Integer page, Integer count, Boolean isTimeAsc) {
+    public PageData<FirstCommentDTO> getFirstCommentList(Post post, Integer page, Integer count, Boolean isTimeAsc) {
         PageHelper.startPage(page, count); // 里面会做page的越界纠正
 
         Map<String, Object> params = new HashMap<>();

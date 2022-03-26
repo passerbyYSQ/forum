@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 27/01/2022 23:43:19
+ Date: 26/03/2022 23:43:42
 */
 
 SET NAMES utf8mb4;
@@ -21,18 +21,13 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Table structure for attendance
 -- ----------------------------
 DROP TABLE IF EXISTS `attendance`;
-CREATE TABLE `attendance`
-(
+CREATE TABLE `attendance`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int(10) UNSIGNED NOT NULL,
   `attend_date` date NOT NULL COMMENT '签到的日期，独立出来方便查询',
   `attend_time` time(0) NOT NULL COMMENT '签到的时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 30
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of attendance
@@ -47,36 +42,34 @@ INSERT INTO `attendance` VALUES (10, 23, '2021-07-05', '15:41:42');
 INSERT INTO `attendance` VALUES (11, 26, '2021-07-05', '16:45:49');
 INSERT INTO `attendance` VALUES (12, 27, '2021-07-06', '16:34:15');
 INSERT INTO `attendance` VALUES (14, 26, '2021-07-10', '15:01:47');
-INSERT INTO `attendance`
-VALUES (15, 22, '2021-07-10', '15:58:04');
-INSERT INTO `attendance`
-VALUES (16, 26, '2021-07-12', '10:58:48');
-INSERT INTO `attendance`
-VALUES (17, 21, '2021-10-10', '23:56:19');
-INSERT INTO `attendance`
-VALUES (18, 21, '2021-10-17', '00:08:57');
-INSERT INTO `attendance`
-VALUES (19, 26, '2021-10-18', '20:10:16');
-INSERT INTO `attendance`
-VALUES (20, 21, '2021-10-18', '21:15:22');
-INSERT INTO `attendance`
-VALUES (21, 21, '2021-10-19', '13:08:24');
-INSERT INTO `attendance`
-VALUES (22, 26, '2021-10-19', '19:52:28');
-INSERT INTO `attendance`
-VALUES (23, 21, '2021-10-20', '20:11:30');
-INSERT INTO `attendance`
-VALUES (24, 26, '2021-10-20', '20:11:40');
-INSERT INTO `attendance`
-VALUES (25, 26, '2021-10-28', '17:31:11');
-INSERT INTO `attendance`
-VALUES (26, 21, '2021-12-05', '14:37:18');
-INSERT INTO `attendance`
-VALUES (27, 26, '2021-12-05', '15:12:28');
-INSERT INTO `attendance`
-VALUES (28, 26, '2022-01-20', '23:11:32');
-INSERT INTO `attendance`
-VALUES (29, 26, '2022-01-25', '19:03:50');
+INSERT INTO `attendance` VALUES (15, 22, '2021-07-10', '15:58:04');
+INSERT INTO `attendance` VALUES (16, 26, '2021-07-12', '10:58:48');
+INSERT INTO `attendance` VALUES (17, 21, '2021-10-10', '23:56:19');
+INSERT INTO `attendance` VALUES (18, 21, '2021-10-17', '00:08:57');
+INSERT INTO `attendance` VALUES (19, 26, '2021-10-18', '20:10:16');
+INSERT INTO `attendance` VALUES (20, 21, '2021-10-18', '21:15:22');
+INSERT INTO `attendance` VALUES (21, 21, '2021-10-19', '13:08:24');
+INSERT INTO `attendance` VALUES (22, 26, '2021-10-19', '19:52:28');
+INSERT INTO `attendance` VALUES (23, 21, '2021-10-20', '20:11:30');
+INSERT INTO `attendance` VALUES (24, 26, '2021-10-20', '20:11:40');
+INSERT INTO `attendance` VALUES (25, 26, '2021-10-28', '17:31:11');
+INSERT INTO `attendance` VALUES (26, 21, '2021-12-05', '14:37:18');
+INSERT INTO `attendance` VALUES (27, 26, '2021-12-05', '15:12:28');
+INSERT INTO `attendance` VALUES (28, 26, '2022-01-20', '23:11:32');
+INSERT INTO `attendance` VALUES (29, 26, '2022-01-25', '19:03:50');
+INSERT INTO `attendance` VALUES (30, 21, '2022-02-03', '21:11:21');
+INSERT INTO `attendance` VALUES (31, 26, '2022-02-10', '22:57:28');
+INSERT INTO `attendance` VALUES (32, 26, '2022-02-11', '00:00:18');
+INSERT INTO `attendance` VALUES (33, 26, '2022-02-17', '18:06:27');
+INSERT INTO `attendance` VALUES (34, 22, '2022-02-17', '18:07:13');
+INSERT INTO `attendance` VALUES (35, 26, '2022-02-18', '22:09:18');
+INSERT INTO `attendance` VALUES (36, 26, '2022-02-19', '23:33:50');
+INSERT INTO `attendance` VALUES (37, 26, '2022-02-20', '00:34:55');
+INSERT INTO `attendance` VALUES (38, 22, '2022-02-20', '15:57:35');
+INSERT INTO `attendance` VALUES (39, 22, '2022-02-21', '00:29:25');
+INSERT INTO `attendance` VALUES (40, 26, '2022-02-22', '00:03:01');
+INSERT INTO `attendance` VALUES (41, 26, '2022-03-24', '20:07:05');
+INSERT INTO `attendance` VALUES (42, 26, '2022-03-25', '00:45:27');
 
 -- ----------------------------
 -- Table structure for blacklist
@@ -118,21 +111,69 @@ INSERT INTO `blacklist` VALUES (80, 7, 1, '2021-05-20 16:57:39', '2021-05-20 16:
 INSERT INTO `blacklist` VALUES (81, 2, 1, '2021-05-20 17:01:59', '2021-05-23 23:32:12', '2021-05-20 17:01:59', '123', 0);
 
 -- ----------------------------
+-- Table structure for chat_friend
+-- ----------------------------
+DROP TABLE IF EXISTS `chat_friend`;
+CREATE TABLE `chat_friend`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `my_id` int(10) UNSIGNED NOT NULL COMMENT '我的用户id',
+  `friend_id` int(10) UNSIGNED NOT NULL COMMENT '好友的用户id',
+  `alias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '好友的备注名',
+  `create_time` datetime(0) NOT NULL COMMENT '成为好友额时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友关系表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of chat_friend
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for chat_friend_apply
+-- ----------------------------
+DROP TABLE IF EXISTS `chat_friend_apply`;
+CREATE TABLE `chat_friend_apply`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sender_id` int(10) UNSIGNED NOT NULL COMMENT '发送者的用户id',
+  `receiver_id` int(10) UNSIGNED NOT NULL COMMENT '接收者的用户id',
+  `content` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '好友申请的内容',
+  `status` tinyint(4) NULL DEFAULT NULL COMMENT '状态。0：拒绝；1：同意；2：忽略',
+  `apply_time` datetime(0) NOT NULL COMMENT '申请时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友申请表。好友同意和拒绝后，对方签收后才删除对应；忽略后，立即删除' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of chat_friend_apply
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for chat_friend_msg
+-- ----------------------------
+DROP TABLE IF EXISTS `chat_friend_msg`;
+CREATE TABLE `chat_friend_msg`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sender_id` int(10) UNSIGNED NOT NULL COMMENT '发送者的用户id',
+  `receiver_id` int(10) UNSIGNED NOT NULL COMMENT '接收者的用户id',
+  `content` varchar(10240) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '消息的内容',
+  `sign_flag` tinyint(4) NOT NULL COMMENT '是否已签收。0：未签收；1：已签收',
+  `create_time` datetime(0) NOT NULL COMMENT '发送时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '单聊消息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of chat_friend_msg
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for collect
 -- ----------------------------
 DROP TABLE IF EXISTS `collect`;
-CREATE TABLE `collect`
-(
+CREATE TABLE `collect`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int(11) UNSIGNED NOT NULL COMMENT '用户id',
   `post_id` int(11) UNSIGNED NOT NULL COMMENT '帖子id',
   `create_time` datetime(0) NOT NULL COMMENT '点赞时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 22
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '收藏\r\n'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '收藏\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of collect
@@ -142,23 +183,17 @@ INSERT INTO `collect` VALUES (13, 26, 12, '2021-06-30 23:12:39');
 INSERT INTO `collect` VALUES (14, 22, 12, '2021-07-02 11:56:50');
 INSERT INTO `collect` VALUES (15, 21, 2, '2021-07-04 15:19:07');
 INSERT INTO `collect` VALUES (16, 23, 8, '2021-07-05 15:43:24');
-INSERT INTO `collect`
-VALUES (17, 26, 2, '2021-10-18 20:38:05');
-INSERT INTO `collect`
-VALUES (18, 26, 17, '2021-10-19 23:33:25');
-INSERT INTO `collect`
-VALUES (19, 21, 18, '2021-12-05 14:50:00');
-INSERT INTO `collect`
-VALUES (20, 26, 11, '2021-12-05 15:04:50');
-INSERT INTO `collect`
-VALUES (21, 26, 13, '2021-12-05 15:05:45');
+INSERT INTO `collect` VALUES (17, 26, 2, '2021-10-18 20:38:05');
+INSERT INTO `collect` VALUES (18, 26, 17, '2021-10-19 23:33:25');
+INSERT INTO `collect` VALUES (19, 21, 18, '2021-12-05 14:50:00');
+INSERT INTO `collect` VALUES (20, 26, 11, '2021-12-05 15:04:50');
+INSERT INTO `collect` VALUES (21, 26, 13, '2021-12-05 15:05:45');
 
 -- ----------------------------
 -- Table structure for comment_notification
 -- ----------------------------
 DROP TABLE IF EXISTS `comment_notification`;
-CREATE TABLE `comment_notification`
-(
+CREATE TABLE `comment_notification`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '通知id',
   `sender_id` int(11) UNSIGNED NOT NULL COMMENT '发送者id',
   `receiver_id` int(11) UNSIGNED NOT NULL COMMENT '接收者id',
@@ -170,11 +205,7 @@ CREATE TABLE `comment_notification`
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `quote_comment_id`(`replied_id`) USING BTREE,
   INDEX `comment_id`(`comment_id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 80
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '评论通知'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 80 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '评论通知' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of comment_notification
@@ -252,152 +283,116 @@ INSERT INTO `comment_notification` VALUES (70, 21, 22, 0, 11, 52, '2021-07-04 21
 INSERT INTO `comment_notification` VALUES (71, 21, 22, 1, 53, 53, '2021-07-04 21:25:53', 0);
 INSERT INTO `comment_notification` VALUES (72, 21, 22, 2, 54, 55, '2021-07-04 21:26:32', 0);
 INSERT INTO `comment_notification` VALUES (73, 21, 22, 2, 54, 56, '2021-07-04 21:29:47', 0);
-INSERT INTO `comment_notification`
-VALUES (74, 26, 21, 0, 16, 55, '2021-10-19 19:54:16', 0);
-INSERT INTO `comment_notification`
-VALUES (75, 26, 21, 1, 54, 58, '2021-10-19 19:54:57', 0);
-INSERT INTO `comment_notification`
-VALUES (76, 26, 21, 0, 17, 56, '2021-10-19 23:33:38', 0);
-INSERT INTO `comment_notification`
-VALUES (77, 26, 21, 0, 17, 57, '2021-10-19 23:34:21', 0);
-INSERT INTO `comment_notification`
-VALUES (78, 26, 21, 1, 58, 59, '2021-10-19 23:35:29', 0);
-INSERT INTO `comment_notification`
-VALUES (79, 26, 21, 1, 58, 60, '2021-10-19 23:35:42', 0);
+INSERT INTO `comment_notification` VALUES (74, 26, 21, 0, 16, 55, '2021-10-19 19:54:16', 0);
+INSERT INTO `comment_notification` VALUES (75, 26, 21, 1, 54, 58, '2021-10-19 19:54:57', 0);
+INSERT INTO `comment_notification` VALUES (76, 26, 21, 0, 17, 56, '2021-10-19 23:33:38', 0);
+INSERT INTO `comment_notification` VALUES (77, 26, 21, 0, 17, 57, '2021-10-19 23:34:21', 0);
+INSERT INTO `comment_notification` VALUES (78, 26, 21, 1, 58, 59, '2021-10-19 23:35:29', 0);
+INSERT INTO `comment_notification` VALUES (79, 26, 21, 1, 58, 60, '2021-10-19 23:35:42', 0);
 
 -- ----------------------------
 -- Table structure for danmu_msg
 -- ----------------------------
 DROP TABLE IF EXISTS `danmu_msg`;
-CREATE TABLE `danmu_msg`
-(
-    `id`          varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '弹幕的唯一id，由应用层生成',
-    `content`     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '弹幕的文本内容',
-    `start_ms`    bigint(20) UNSIGNED                                           NOT NULL DEFAULT 0 COMMENT '弹幕在视频的哪一毫秒进入',
-    `video_id`    int(11)                                                       NOT NULL COMMENT '视频的id',
-    `creator_id`  int(11)                                                       NOT NULL COMMENT '发布者的id，发弹幕需要登录',
-    `create_time` datetime(0)                                                   NOT NULL COMMENT '发布时间',
-    UNIQUE INDEX `id` (`id`) USING BTREE
-) ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci
-  ROW_FORMAT = Dynamic;
+CREATE TABLE `danmu_msg`  (
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '弹幕的唯一id，由应用层生成',
+  `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '弹幕的文本内容',
+  `start_ms` bigint(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT '弹幕在视频的哪一毫秒进入',
+  `video_id` int(11) NOT NULL COMMENT '视频的id',
+  `creator_id` int(11) NOT NULL COMMENT '发布者的id，发弹幕需要登录',
+  `create_time` datetime(0) NOT NULL COMMENT '发布时间',
+  UNIQUE INDEX `id`(`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of danmu_msg
 -- ----------------------------
-INSERT INTO `danmu_msg`
-VALUES ('07084E25EAD74F11A1505D5DE1026AEC', 'sdbber', 10938, 1, 26, '2022-01-20 01:32:51');
-INSERT INTO `danmu_msg`
-VALUES ('1520A4C58EED4B31BEAB137A2531317D', '重连', 25655, 1, 26, '2022-01-25 19:29:11');
-INSERT INTO `danmu_msg`
-VALUES ('1680CAAC0BF54F7C83DF03A2CC97FC79', '啊啊啊啊啊啊啊啊啊', 63317, 1, 26, '2022-01-20 01:39:53');
-INSERT INTO `danmu_msg`
-VALUES ('1BECFBF8BED74E649FA82FC296E00001', '测试推送', 31427, 1, 26, '2022-01-20 23:15:54');
-INSERT INTO `danmu_msg`
-VALUES ('1C221A4F9AB944C988927DF823EC8CAA', '。。。。。。。。。。。。。。', 29736, 1, 26, '2022-01-20 23:44:07');
-INSERT INTO `danmu_msg`
-VALUES ('2934229B39D24A3FB6D01DA468DE84B7', '内存 ？', 27126, 1, 26, '2022-01-26 02:09:43');
-INSERT INTO `danmu_msg`
-VALUES ('2D8DA3BA440A48C3B0CAA37CD28473F3', '心跳包', 62278, 1, 26, '2022-01-25 19:05:24');
-INSERT INTO `danmu_msg`
-VALUES ('3F0278E9F93B478195496974DC2F07C4', '撒VS的VS豆瓣VS吧', 68344, 1, 26, '2022-01-20 23:55:27');
-INSERT INTO `danmu_msg`
-VALUES ('412302E199344188BB623C66F73B7CC3', '新年快乐', 38233, 1, 26, '2022-01-20 23:57:21');
-INSERT INTO `danmu_msg`
-VALUES ('427E4338BC2D440E8A62B78222600377', 'hao', 54052, 1, 26, '2022-01-20 23:44:31');
-INSERT INTO `danmu_msg`
-VALUES ('4D192C2EFA3847B28C425D14C4F485A7', '发弹幕。。。。！！！', 15124, 1, 26, '2022-01-25 19:04:20');
-INSERT INTO `danmu_msg`
-VALUES ('548085C3CA064B43A430D8B674D465E9', '博客日本人', 74063, 1, 26, '2022-01-20 23:55:32');
-INSERT INTO `danmu_msg`
-VALUES ('5B31B3FDDA2342D3AA943042CACA68A0', '冲冲冲啊啊啊啊', 21729, 1, 26, '2022-01-25 19:04:25');
-INSERT INTO `danmu_msg`
-VALUES ('5B46D541EB2442988AAF29DBE5083CB6', '冲啊', 33250, 1, 26, '2022-01-20 01:39:23');
-INSERT INTO `danmu_msg`
-VALUES ('5FC0AED4-8157-C54E-D3A0-44889F61B3B4', '测试弹幕111', 0, 1, 1, '2022-01-16 22:45:18');
-INSERT INTO `danmu_msg`
-VALUES ('73FFB38485BF4581B0C63949877FCC01', '重连', 39243, 1, 26, '2022-01-25 19:31:19');
-INSERT INTO `danmu_msg`
-VALUES ('8103D3B36E08462DA294724BE47ABE75', '。。。。。。。。。。。。。。', 9234, 1, 26, '2022-01-20 23:43:46');
-INSERT INTO `danmu_msg`
-VALUES ('87AB77ED46404DB8893BBCDCAA2C4EE5', 'sdvsv', 12149, 1, 26, '2022-01-20 01:37:07');
-INSERT INTO `danmu_msg`
-VALUES ('8F519115CD03463DB507E9B9C1BE7D5E', '内存异常异常异常？？？？？？？', 51362, 1, 26, '2022-01-26 02:10:13');
-INSERT INTO `danmu_msg`
-VALUES ('90E0303C01CB408DA98D9372C5F30D3C', '123225', 1076, 1, 26, '2022-01-21 00:40:11');
-INSERT INTO `danmu_msg`
-VALUES ('A11D4AF537AC473E9885C8F0A0CCBAD9', '测试推送。。。。', 13638, 1, 26, '2022-01-20 23:12:31');
-INSERT INTO `danmu_msg`
-VALUES ('AE209155C294498CB7818CD00617B511', '收到VS v', 10459, 1, 26, '2022-01-20 23:51:46');
-INSERT INTO `danmu_msg`
-VALUES ('AE6D4BAA87074D479057C5BF008A0F8E', 'c搜索DVD是v宝宝', 13229, 1, 26, '2022-01-20 23:54:29');
-INSERT INTO `danmu_msg`
-VALUES ('BAC2D178F5F549B9BF110AC0657DCFF7', '235', 6977, 1, 26, '2022-01-21 00:41:56');
-INSERT INTO `danmu_msg`
-VALUES ('BDCCCF1EA60C42B3BA7FA845D67E6F8F', 'hao', 56738, 1, 26, '2022-01-20 23:44:34');
-INSERT INTO `danmu_msg`
-VALUES ('C1FD358EE0654F1AB98B95ED4AAD0837', '兄弟们，晚上好', 43072, 1, 26, '2022-01-20 01:39:33');
-INSERT INTO `danmu_msg`
-VALUES ('C8832B167B64456989E6FE4FD652E4C9', 'hao', 52218, 1, 26, '2022-01-20 23:44:29');
-INSERT INTO `danmu_msg`
-VALUES ('CC20760E27194F1BAA445595EF802985', '送', 75047, 1, 26, '2022-01-26 01:17:10');
-INSERT INTO `danmu_msg`
-VALUES ('DAC39206A7F6419B9DDCC5A480F09750', 'sdbber', 10938, 1, 26, '2022-01-20 01:33:56');
-INSERT INTO `danmu_msg`
-VALUES ('DB43FBD4C47F4B3D85819CC15A032A01', '说不定v看到v', 20520, 1, 26, '2022-01-21 00:55:41');
-INSERT INTO `danmu_msg`
-VALUES ('DF04B69E9F6F406F888FA97788BD1E84', '重连', 39243, 1, 26, '2022-01-25 19:30:45');
-INSERT INTO `danmu_msg`
-VALUES ('E607916ACB2947F98F16718E1B7F4EA8', 'chonglianceshi', 47871, 1, 26, '2022-01-25 19:04:54');
-INSERT INTO `danmu_msg`
-VALUES ('E9CD0EA0E49B4E1FB9B94BC195D2B24F', 'sdvsdv', 31427, 1, 26, '2022-01-20 23:13:43');
-INSERT INTO `danmu_msg`
-VALUES ('F9FA5F2E-51AF-DD8D-72C2-38E3CF244F8D', '奥里给', 0, 1, 1, '2022-01-16 22:46:06');
-INSERT INTO `danmu_msg`
-VALUES ('FEEC2D7576F440B08BB6F5C037695AF8', '重连', 1076, 1, 26, '2022-01-21 00:39:47');
+INSERT INTO `danmu_msg` VALUES ('0A2938E7602F4706A019DFA0D592472F', '测试弹幕。。。', 6422, 1, 26, '2022-02-07 22:06:44');
+INSERT INTO `danmu_msg` VALUES ('0C82A1672B5B4A7D846A72B89EBEE1DA', '有点慢啊', 1480, 1, 26, '2022-02-11 00:41:43');
+INSERT INTO `danmu_msg` VALUES ('0EA7BE601D174C62AAC6820F5178E4F0', '测试', 25104, 1, 26, '2022-02-24 00:21:33');
+INSERT INTO `danmu_msg` VALUES ('14521513063A4ACA8198B0B90429731A', '你好啊', 5080, 1, 21, '2022-02-07 20:34:49');
+INSERT INTO `danmu_msg` VALUES ('154CD86377B84A598803DE479C2F4A1C', 'hello', 558, 1, 22, '2022-03-01 01:17:40');
+INSERT INTO `danmu_msg` VALUES ('1582B065AE4D42E9A7368C62CEC8576D', '一秒好像都不用啊', 1489, 1, 26, '2022-02-09 15:24:46');
+INSERT INTO `danmu_msg` VALUES ('1E41CBCDB2484325B9793B01231BFE02', '怎么出不来', 24600, 1, 26, '2022-02-10 22:59:27');
+INSERT INTO `danmu_msg` VALUES ('2A9077067CBB4CD39780DEF7191D6EE2', '哈哈哈？', 5445, 1, 26, '2022-02-10 22:59:16');
+INSERT INTO `danmu_msg` VALUES ('2BB7626D57F647AAA609EF1C738F71C0', '有了缓存还这么慢，主要是请求了3次redis', 0, 1, 26, '2022-02-17 22:15:56');
+INSERT INTO `danmu_msg` VALUES ('2DCD439C658F41CE9BB6B897A691215B', '缓存', 1253, 1, 26, '2022-02-17 22:15:25');
+INSERT INTO `danmu_msg` VALUES ('2DD218EEA8CF4B1FB9FB9357EAFF683A', '测试。。。', 11891, 1, 26, '2022-02-07 20:34:36');
+INSERT INTO `danmu_msg` VALUES ('3C23C8D93ACA472D82F7BCB298D5DD13', '我要抢沙发', 2586, 2, 21, '2022-02-07 20:36:19');
+INSERT INTO `danmu_msg` VALUES ('405CE6BE98BE4B53970EA6FB22A11D85', 'efvv', 1942, 1, 22, '2022-03-02 17:34:00');
+INSERT INTO `danmu_msg` VALUES ('49DB6F805F1D4F01824599B201697C82', '有了缓存还这么慢', 25104, 1, 22, '2022-02-17 22:15:36');
+INSERT INTO `danmu_msg` VALUES ('4ED66BEB8D9A4E71874AB169EC680D8E', '测试', 2282, 1, 26, '2022-02-11 00:41:31');
+INSERT INTO `danmu_msg` VALUES ('4EF42B2EED674BD88A9BB61E47DCE391', '你好啊', 1489, 1, 26, '2022-02-09 15:23:11');
+INSERT INTO `danmu_msg` VALUES ('4F1AE7BF3F484EB7AA61E986794CECE9', '延迟挺低的', 1489, 1, 26, '2022-02-09 15:24:11');
+INSERT INTO `danmu_msg` VALUES ('4FBE832FB0B54E24B604BD5DFD597BD7', '由于转发会存在多次认证', 1159, 1, 26, '2022-02-11 22:04:12');
+INSERT INTO `danmu_msg` VALUES ('59020307CC204F60850146B3B1267FAC', '代码迭代了好多次了', 1159, 1, 26, '2022-02-11 22:04:50');
+INSERT INTO `danmu_msg` VALUES ('5D74266F14A34CBCB0583ADAFBE512D0', '靓仔', 51300, 1, 22, '2022-03-02 15:11:57');
+INSERT INTO `danmu_msg` VALUES ('654AF4AF864F444E90A8A3E5B487BFEC', '怎么回事啊', 775, 1, 26, '2022-02-10 22:59:58');
+INSERT INTO `danmu_msg` VALUES ('6632FDE18C1A4E6AB9B5532CAAB08A76', '没有缓存时有点慢啊', 1246, 1, 26, '2022-02-11 22:03:45');
+INSERT INTO `danmu_msg` VALUES ('6647A8D5E40841B2B45FEEF286843F5B', '去除单张号登录', 2282, 1, 26, '2022-02-11 00:42:02');
+INSERT INTO `danmu_msg` VALUES ('6C575C8A986248AAA7B917EDB2C6781B', 'dfbfbnrt', 2984, 1, 26, '2022-03-14 14:57:49');
+INSERT INTO `danmu_msg` VALUES ('768D320AABA74879BB5C824F3EA05658', '哈哈哈，还挺快啊', 3984, 1, 21, '2022-02-09 15:24:02');
+INSERT INTO `danmu_msg` VALUES ('7844333D8265428E9AA6116210CD6727', '？？？？', 47402, 1, 22, '2022-02-24 00:25:57');
+INSERT INTO `danmu_msg` VALUES ('7DE3A5536DA04B82B49617952C3312A6', '离谱离谱', 5152, 1, 26, '2022-03-02 15:11:46');
+INSERT INTO `danmu_msg` VALUES ('7E175F9D5F824E76BEEB1F5862DC6B3C', '哈哈哈哈?', 6139, 1, 22, '2022-02-24 00:23:41');
+INSERT INTO `danmu_msg` VALUES ('8675384207E84B9A9FECCB1FA72753D8', '一直在演变迭代', 1246, 1, 26, '2022-02-11 22:05:07');
+INSERT INTO `danmu_msg` VALUES ('8B2F22C6CD7B414E88560DEBD6C0FE87', '几次redis', 1159, 1, 26, '2022-02-11 22:05:39');
+INSERT INTO `danmu_msg` VALUES ('8B9B9A751ADC4D97AAD92FE0D22381A5', '？？？？？', 17719, 1, 22, '2022-02-24 00:23:53');
+INSERT INTO `danmu_msg` VALUES ('931A44C462E540B8937F8DAFCAB34A97', '代码演变迭代了好多次', 1489, 1, 26, '2022-02-09 15:25:35');
+INSERT INTO `danmu_msg` VALUES ('93E682DA3DB141C586C998A021BE6565', '测试', 361, 1, 26, '2022-02-07 20:37:59');
+INSERT INTO `danmu_msg` VALUES ('9DAE1F684F124BA5A00D80A17E810977', '怎么会断开呢？', 25769, 1, 26, '2022-02-24 00:24:02');
+INSERT INTO `danmu_msg` VALUES ('A05551778D724ED38E81EC17814942FF', '你好啊', 1489, 1, 26, '2022-02-09 15:23:48');
+INSERT INTO `danmu_msg` VALUES ('A56CEE5BC35846E8B617CAD7F1D1DA60', 'fgnmfgm', 44854, 1, 26, '2022-03-01 01:58:13');
+INSERT INTO `danmu_msg` VALUES ('A7C7AB3431884CECB5B8D0AE24EC3DD9', '好了好了，散了吧。bug修完了', 3984, 1, 21, '2022-02-09 15:25:16');
+INSERT INTO `danmu_msg` VALUES ('A9E0F953F5674D74A295F71FC266C556', '测试', 1253, 1, 26, '2022-02-17 22:15:07');
+INSERT INTO `danmu_msg` VALUES ('ACD8059F6AD44887A012265030897D6F', '测试一下长文本测试一下长文本测试一下长文本测试一下长文本测试一下长文本', 0, 1, 26, '2022-02-09 15:25:54');
+INSERT INTO `danmu_msg` VALUES ('B927D97DC7A44C9480BC7D7C519D991A', '测试测试', 6203, 1, 26, '2022-02-10 22:58:14');
+INSERT INTO `danmu_msg` VALUES ('BDF689059F004288A88ACEA3BF77BEFA', '您是DVD', 5063, 1, 26, '2022-03-02 17:33:26');
+INSERT INTO `danmu_msg` VALUES ('BEE94C8AB39743E593627FC597BD37E4', 'zhuanffa', 25104, 1, 22, '2022-02-17 22:15:14');
+INSERT INTO `danmu_msg` VALUES ('C2F80D52763546E581804D99F0576081', '1秒左右吧', 3984, 1, 21, '2022-02-09 15:24:26');
+INSERT INTO `danmu_msg` VALUES ('C93DD8C4D3B94F4EB912E08C07F8AE0C', '有了缓存之后快很多啊', 5080, 1, 21, '2022-02-07 20:35:07');
+INSERT INTO `danmu_msg` VALUES ('CCE2F2A8B3B647D09A5B726B49BE4D21', '测试测试', 24600, 1, 26, '2022-02-10 23:00:04');
+INSERT INTO `danmu_msg` VALUES ('D2FF3C41781041B58C4718DB22E3703F', '多次请求', 1246, 1, 26, '2022-02-11 22:04:24');
+INSERT INTO `danmu_msg` VALUES ('D5493EDAC3524E7EBE2F4842FEFCBCEC', '怎么回事', 34435, 1, 26, '2022-02-24 00:26:08');
+INSERT INTO `danmu_msg` VALUES ('DAAEC6F63B734175BBDF0810BBA37F50', '你在干嘛啊', 11891, 1, 26, '2022-02-07 20:34:57');
+INSERT INTO `danmu_msg` VALUES ('DAD4A7F6D17941209D7E42ED489964C7', '没有缓存会慢一些', 11891, 1, 26, '2022-02-07 20:35:19');
+INSERT INTO `danmu_msg` VALUES ('DCC04B64C40E4B639D081658961193E5', '哈哈哈哈', 11891, 1, 26, '2022-02-07 20:38:17');
+INSERT INTO `danmu_msg` VALUES ('DCD7D5C47CF748BC9C4CB3406C28F4D5', '测试测试', 25104, 1, 26, '2022-02-24 00:21:24');
+INSERT INTO `danmu_msg` VALUES ('E5A4FCE09CD34BABBB9C9607A1F7AEC0', 'ceshi', 1159, 1, 26, '2022-02-11 22:03:30');
+INSERT INTO `danmu_msg` VALUES ('E8FD70B445234AF4BF2A71D377F40901', 'fbe', 1320, 1, 26, '2022-03-24 20:51:34');
+INSERT INTO `danmu_msg` VALUES ('F22F12AF30B74174A65FBE3338087C13', '你好啊', 10665, 1, 26, '2022-03-01 01:17:30');
+INSERT INTO `danmu_msg` VALUES ('F747AAB0C1984326A181AFC34D29105B', '还行还行，延迟不是很高', 5080, 1, 21, '2022-02-07 20:35:33');
 
 -- ----------------------------
 -- Table structure for db_file
 -- ----------------------------
 DROP TABLE IF EXISTS `db_file`;
-CREATE TABLE `db_file`
-(
-    `id`             int(10) UNSIGNED                                              NOT NULL AUTO_INCREMENT,
-    `origin_name`    varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '上传时的原始文件名',
-    `rand_name`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '上传后生成的随机文件名',
-    `file_md5`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件的md5',
-    `total_bytes`    bigint(20)                                                    NOT NULL COMMENT '总字节数',
-    `uploaded_bytes` bigint(20)                                                    NOT NULL COMMENT '已上传的字节数',
-    `creator_id`     int(11)                                                       NOT NULL COMMENT '第一次上传该文件的用户id',
-    `local_path`     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '文件在服务器本地的路径',
-    `oss_url`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '云存储',
-    `create_time`    datetime(0)                                                   NOT NULL COMMENT '创建时间',
-    `update_time`    datetime(0)                                                   NOT NULL COMMENT '修改时间',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 3
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci
-  ROW_FORMAT = Dynamic;
+CREATE TABLE `db_file`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `origin_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '上传时的原始文件名',
+  `rand_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '上传后生成的随机文件名',
+  `file_md5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件的md5',
+  `total_bytes` bigint(20) NOT NULL COMMENT '总字节数',
+  `uploaded_bytes` bigint(20) NOT NULL COMMENT '已上传的字节数',
+  `creator_id` int(11) NOT NULL COMMENT '第一次上传该文件的用户id',
+  `local_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '文件在服务器本地的路径',
+  `oss_url` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '云存储',
+  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of db_file
 -- ----------------------------
-INSERT INTO `db_file`
-VALUES (1, '西瓜视频介绍', 'xigua_video', '123', 1024, 1024, 1, NULL,
-        'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-720p.mp4',
-        '2022-01-26 17:10:12', '2022-01-26 17:10:17');
-INSERT INTO `db_file`
-VALUES (2, '思迈特2021-freshman', 'smartbi2021-freshman', '123', 1024, 1024, 1, NULL, '', '2022-01-26 23:55:09',
-        '2022-01-26 23:55:14');
+INSERT INTO `db_file` VALUES (1, '西瓜视频介绍', 'xigua_video', '123', 1024, 1024, 1, NULL, 'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-720p.mp4', '2022-01-26 17:10:12', '2022-01-26 17:10:17');
+INSERT INTO `db_file` VALUES (2, '思迈特2021-freshman', 'smartbi2021-freshman', '123', 1024, 1024, 1, NULL, 'http://v11-x.douyinvod.com/c82039c346a7657e8b6e0b981471fea0/6203861c/video/tos/cn/tos-cn-ve-15/87799cb5b76749d9b7f6f0f86e73f96b/?a=1128&br=1666&bt=1666&cd=0%7C0%7C0%7C0&ch=0&cr=0&cs=0&dr=0&ds=3&er=&ft=OR_LnaZZI02P1vTzWTh9Ixn_pbsdeR3ptqY&l=2022020916145501020208804908064975&lr=&mime_type=video_mp4&net=0&pl=0&qs=0&rc=M3R2ZTg6ZmkzNjMzNGkzM0ApM2g3aGg7NDs5NzxpMzQ3NmcpaGRqbGRoaGRmbGJpM3I0Z2ZsYC0tZC0wc3MvMjUvMjJeM2I2YC1iYzIuOmNwb2wrbStqdDo%3D&vl=&vr=', '2022-01-26 23:55:09', '2022-01-26 23:55:14');
 
 -- ----------------------------
 -- Table structure for first_comment
 -- ----------------------------
 DROP TABLE IF EXISTS `first_comment`;
-CREATE TABLE `first_comment`
-(
+CREATE TABLE `first_comment`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '评论id',
   `user_id` int(11) UNSIGNED NOT NULL COMMENT '发送者id',
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '评论内容',
@@ -406,11 +401,7 @@ CREATE TABLE `first_comment`
   `second_comment_count` int(11) UNSIGNED NOT NULL COMMENT '该一级评论下二级评论的数量',
   `create_time` datetime(0) NOT NULL COMMENT '发布的时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 73
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '一级评论'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 73 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '一级评论' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of first_comment
@@ -464,69 +455,45 @@ INSERT INTO `first_comment` VALUES (50, 22, '<p>给我顶上去</p>', 7, 1, 0, '
 INSERT INTO `first_comment` VALUES (51, 22, '<p>测试回复</p>', 8, 1, 0, '2021-07-02 23:57:16');
 INSERT INTO `first_comment` VALUES (52, 21, '<p>【回复通知】</p>', 11, 1, 0, '2021-07-04 21:24:19');
 INSERT INTO `first_comment` VALUES (53, 22, '<p>我是层主</p>', 11, 2, 5, '2021-07-04 21:25:09');
-INSERT INTO `first_comment`
-VALUES (54, 21, '<p>测试评论</p>', 16, 1, 1, '2021-10-19 19:53:34');
-INSERT INTO `first_comment`
-VALUES (55, 26, '<p>测试评论</p>', 16, 2, 0, '2021-10-19 19:54:15');
-INSERT INTO `first_comment`
-VALUES (56, 26, '<p>一级评论1</p>', 17, 1, 0, '2021-10-19 23:33:38');
-INSERT INTO `first_comment`
-VALUES (57, 26, '<p>一级评论2</p>', 17, 2, 0, '2021-10-19 23:34:20');
-INSERT INTO `first_comment`
-VALUES (58, 21, '<p>一级评论3</p>', 17, 3, 2, '2021-10-19 23:35:04');
-INSERT INTO `first_comment`
-VALUES (59, 21, '<p>是VS的绿色的你</p>', 18, 1, 7, '2021-10-20 21:27:08');
-INSERT INTO `first_comment`
-VALUES (61, 21, '<p>DVSVWBVW</p>', 18, 2, 0, '2021-10-20 23:05:22');
-INSERT INTO `first_comment`
-VALUES (62, 21, '<p>WEVWEV</p>', 18, 3, 0, '2021-10-20 23:05:43');
-INSERT INTO `first_comment`
-VALUES (63, 21, '<p>收到VS的不是本人</p>', 18, 4, 0, '2021-10-20 23:09:00');
-INSERT INTO `first_comment`
-VALUES (64, 21, '<p>xcbsdfb</p>', 18, 5, 0, '2021-10-20 23:09:34');
-INSERT INTO `first_comment`
-VALUES (65, 21, '<p>sdbdsbdv</p>', 18, 6, 0, '2021-10-20 23:10:19');
-INSERT INTO `first_comment`
-VALUES (66, 21, '<p>dbfdberb</p>', 18, 7, 1, '2021-10-20 23:12:31');
-INSERT INTO `first_comment`
-VALUES (67, 21, '<p>你好sdvsd</p>', 18, 8, 1, '2021-10-20 23:12:59');
-INSERT INTO `first_comment`
-VALUES (68, 21, '<p>sdbvsdbds</p>', 18, 9, 0, '2021-10-20 23:13:28');
-INSERT INTO `first_comment`
-VALUES (70, 21, '<p>=====================</p>', 18, 11, 1, '2021-10-20 23:15:02');
-INSERT INTO `first_comment`
-VALUES (71, 21, '<p>sdbsdbs</p>', 18, 12, 0, '2021-10-20 23:17:15');
-INSERT INTO `first_comment`
-VALUES (72, 21, '<p>啊啊啊啊啊啊</p>', 18, 13, 2, '2021-10-20 23:17:43');
+INSERT INTO `first_comment` VALUES (54, 21, '<p>测试评论</p>', 16, 1, 1, '2021-10-19 19:53:34');
+INSERT INTO `first_comment` VALUES (55, 26, '<p>测试评论</p>', 16, 2, 0, '2021-10-19 19:54:15');
+INSERT INTO `first_comment` VALUES (56, 26, '<p>一级评论1</p>', 17, 1, 0, '2021-10-19 23:33:38');
+INSERT INTO `first_comment` VALUES (57, 26, '<p>一级评论2</p>', 17, 2, 0, '2021-10-19 23:34:20');
+INSERT INTO `first_comment` VALUES (58, 21, '<p>一级评论3</p>', 17, 3, 2, '2021-10-19 23:35:04');
+INSERT INTO `first_comment` VALUES (59, 21, '<p>是VS的绿色的你</p>', 18, 1, 7, '2021-10-20 21:27:08');
+INSERT INTO `first_comment` VALUES (61, 21, '<p>DVSVWBVW</p>', 18, 2, 0, '2021-10-20 23:05:22');
+INSERT INTO `first_comment` VALUES (62, 21, '<p>WEVWEV</p>', 18, 3, 0, '2021-10-20 23:05:43');
+INSERT INTO `first_comment` VALUES (63, 21, '<p>收到VS的不是本人</p>', 18, 4, 0, '2021-10-20 23:09:00');
+INSERT INTO `first_comment` VALUES (64, 21, '<p>xcbsdfb</p>', 18, 5, 0, '2021-10-20 23:09:34');
+INSERT INTO `first_comment` VALUES (65, 21, '<p>sdbdsbdv</p>', 18, 6, 0, '2021-10-20 23:10:19');
+INSERT INTO `first_comment` VALUES (66, 21, '<p>dbfdberb</p>', 18, 7, 1, '2021-10-20 23:12:31');
+INSERT INTO `first_comment` VALUES (67, 21, '<p>你好sdvsd</p>', 18, 8, 1, '2021-10-20 23:12:59');
+INSERT INTO `first_comment` VALUES (68, 21, '<p>sdbvsdbds</p>', 18, 9, 0, '2021-10-20 23:13:28');
+INSERT INTO `first_comment` VALUES (70, 21, '<p>=====================</p>', 18, 11, 1, '2021-10-20 23:15:02');
+INSERT INTO `first_comment` VALUES (71, 21, '<p>sdbsdbs</p>', 18, 12, 0, '2021-10-20 23:17:15');
+INSERT INTO `first_comment` VALUES (72, 21, '<p>啊啊啊啊啊啊</p>', 18, 13, 2, '2021-10-20 23:17:43');
 
 -- ----------------------------
 -- Table structure for follow
 -- ----------------------------
 DROP TABLE IF EXISTS `follow`;
-CREATE TABLE `follow`
-(
+CREATE TABLE `follow`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `from_user_id` int(11) UNSIGNED NOT NULL COMMENT '发起者id',
   `to_user_id` int(11) UNSIGNED NOT NULL COMMENT '被关注者',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 7
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '关注'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '关注' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of follow
 -- ----------------------------
-INSERT INTO `follow`
-VALUES (2, 26, 11, '2021-07-12 11:30:14');
-INSERT INTO `follow`
-VALUES (4, 26, 22, '2021-07-12 12:45:24');
-INSERT INTO `follow`
-VALUES (5, 26, 21, '2021-10-19 19:55:55');
-INSERT INTO `follow`
-VALUES (6, 21, 26, '2021-12-06 22:40:39');
+INSERT INTO `follow` VALUES (2, 26, 11, '2021-07-12 11:30:14');
+INSERT INTO `follow` VALUES (4, 26, 22, '2021-07-12 12:45:24');
+INSERT INTO `follow` VALUES (5, 26, 21, '2021-10-19 19:55:55');
+INSERT INTO `follow` VALUES (7, 22, 1, '2022-02-20 16:07:52');
+INSERT INTO `follow` VALUES (8, 22, 21, '2022-02-21 00:30:41');
+INSERT INTO `follow` VALUES (9, 22, 26, '2022-02-21 00:32:57');
 
 -- ----------------------------
 -- Table structure for follow_notification
@@ -547,18 +514,13 @@ CREATE TABLE `follow_notification`  (
 -- Table structure for label
 -- ----------------------------
 DROP TABLE IF EXISTS `label`;
-CREATE TABLE `label`
-(
+CREATE TABLE `label`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '标签id',
   `label_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标签名',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '标签描述',
   `post_count` int(10) UNSIGNED NOT NULL COMMENT '帖子数',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 21
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '标签\r\n'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '标签\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of label
@@ -579,21 +541,16 @@ INSERT INTO `label` VALUES (13, '锁定', '', 1);
 INSERT INTO `label` VALUES (14, '验证码', '', 1);
 INSERT INTO `label` VALUES (15, '发帖', '', 1);
 INSERT INTO `label` VALUES (16, '代码', '', 1);
-INSERT INTO `label`
-VALUES (17, '冲突', '', 1);
-INSERT INTO `label`
-VALUES (18, '权限', '', 1);
-INSERT INTO `label`
-VALUES (19, '标签2', '', 1);
-INSERT INTO `label`
-VALUES (20, '标签1', '', 1);
+INSERT INTO `label` VALUES (17, '冲突', '', 1);
+INSERT INTO `label` VALUES (18, '权限', '', 1);
+INSERT INTO `label` VALUES (19, '标签2', '', 1);
+INSERT INTO `label` VALUES (20, '标签1', '', 1);
 
 -- ----------------------------
 -- Table structure for like
 -- ----------------------------
 DROP TABLE IF EXISTS `like`;
-CREATE TABLE `like`
-(
+CREATE TABLE `like`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int(11) UNSIGNED NOT NULL COMMENT '点赞的用户id',
   `post_id` int(11) UNSIGNED NOT NULL COMMENT '帖子id',
@@ -601,11 +558,7 @@ CREATE TABLE `like`
   `is_read` tinyint(4) NOT NULL COMMENT '是否已读',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `post_id`(`post_id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 39
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '点赞'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '点赞' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of like
@@ -625,97 +578,71 @@ INSERT INTO `like` VALUES (28, 21, 6, '2021-07-04 15:11:05', 0);
 INSERT INTO `like` VALUES (29, 21, 2, '2021-07-04 15:11:44', 0);
 INSERT INTO `like` VALUES (30, 21, 8, '2021-07-04 15:19:54', 0);
 INSERT INTO `like` VALUES (31, 23, 8, '2021-07-05 15:43:22', 0);
-INSERT INTO `like`
-VALUES (32, 26, 11, '2021-07-12 12:34:15', 0);
-INSERT INTO `like`
-VALUES (35, 26, 2, '2021-10-18 20:38:06', 0);
-INSERT INTO `like`
-VALUES (36, 26, 16, '2021-10-19 19:53:56', 0);
-INSERT INTO `like`
-VALUES (37, 21, 16, '2021-10-19 19:55:45', 0);
-INSERT INTO `like`
-VALUES (38, 26, 17, '2021-10-19 23:33:24', 0);
+INSERT INTO `like` VALUES (32, 26, 11, '2021-07-12 12:34:15', 0);
+INSERT INTO `like` VALUES (35, 26, 2, '2021-10-18 20:38:06', 0);
+INSERT INTO `like` VALUES (36, 26, 16, '2021-10-19 19:53:56', 0);
+INSERT INTO `like` VALUES (37, 21, 16, '2021-10-19 19:55:45', 0);
+INSERT INTO `like` VALUES (38, 26, 17, '2021-10-19 23:33:24', 0);
 
 -- ----------------------------
 -- Table structure for points_record
 -- ----------------------------
 DROP TABLE IF EXISTS `points_record`;
-CREATE TABLE `points_record`
-(
+CREATE TABLE `points_record`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int(11) UNSIGNED NOT NULL COMMENT '用户id',
   `dif` int(11) NOT NULL COMMENT '积分变化的值',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '积分变化的描述',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 31
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '积分奖励记录\r\n'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 44 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积分奖励记录\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of points_record
 -- ----------------------------
 INSERT INTO `points_record` VALUES (1, 26, 1, '签到', '2021-07-10 15:01:47');
-INSERT INTO `points_record`
-VALUES (2, 26, 5, '精品帖', '2021-07-10 15:29:08');
-INSERT INTO `points_record`
-VALUES (3, 26, 5, '精品帖', '2021-07-10 15:40:25');
-INSERT INTO `points_record`
-VALUES (4, 26, 5, '精品帖', '2021-07-10 15:42:23');
-INSERT INTO `points_record`
-VALUES (5, 22, 1, '签到', '2021-07-10 15:58:04');
-INSERT INTO `points_record`
-VALUES (6, 26, 1, '签到', '2021-07-12 10:58:48');
-INSERT INTO `points_record`
-VALUES (7, 26, 4, '发表主题帖', '2021-07-12 11:41:13');
-INSERT INTO `points_record`
-VALUES (8, 21, 1, '签到', '2021-10-10 23:56:19');
-INSERT INTO `points_record`
-VALUES (9, 21, 1, '签到', '2021-10-17 00:08:57');
-INSERT INTO `points_record`
-VALUES (10, 26, 1, '签到', '2021-10-18 20:10:16');
-INSERT INTO `points_record`
-VALUES (11, 1, 5, '精品帖', '2021-10-18 20:45:26');
-INSERT INTO `points_record`
-VALUES (12, 21, 2, '签到', '2021-10-18 21:15:22');
-INSERT INTO `points_record`
-VALUES (13, 21, 4, '发表主题帖', '2021-10-18 21:16:27');
-INSERT INTO `points_record`
-VALUES (14, 21, 2, '签到', '2021-10-19 13:08:24');
-INSERT INTO `points_record`
-VALUES (15, 26, 2, '签到', '2021-10-19 19:52:28');
-INSERT INTO `points_record`
-VALUES (16, 26, 1, '发表评论或回复', '2021-10-19 19:54:16');
-INSERT INTO `points_record`
-VALUES (17, 26, 1, '发表评论或回复', '2021-10-19 19:54:57');
-INSERT INTO `points_record`
-VALUES (18, 21, 4, '发表主题帖', '2021-10-19 23:31:11');
-INSERT INTO `points_record`
-VALUES (19, 26, 1, '发表评论或回复', '2021-10-19 23:33:38');
-INSERT INTO `points_record`
-VALUES (20, 26, 1, '发表评论或回复', '2021-10-19 23:34:21');
-INSERT INTO `points_record`
-VALUES (21, 26, 1, '发表评论或回复', '2021-10-19 23:35:29');
-INSERT INTO `points_record`
-VALUES (22, 26, 1, '发表评论或回复', '2021-10-19 23:35:42');
-INSERT INTO `points_record`
-VALUES (23, 21, 2, '签到', '2021-10-20 20:11:30');
-INSERT INTO `points_record`
-VALUES (24, 26, 2, '签到', '2021-10-20 20:11:40');
-INSERT INTO `points_record`
-VALUES (25, 21, 4, '发表主题帖', '2021-10-20 20:12:56');
-INSERT INTO `points_record`
-VALUES (26, 26, 1, '签到', '2021-10-28 17:31:11');
-INSERT INTO `points_record`
-VALUES (27, 21, 1, '签到', '2021-12-05 14:37:18');
-INSERT INTO `points_record`
-VALUES (28, 26, 1, '签到', '2021-12-05 15:12:28');
-INSERT INTO `points_record`
-VALUES (29, 26, 1, '签到', '2022-01-20 23:11:32');
-INSERT INTO `points_record`
-VALUES (30, 26, 1, '签到', '2022-01-25 19:03:50');
+INSERT INTO `points_record` VALUES (2, 26, 5, '精品帖', '2021-07-10 15:29:08');
+INSERT INTO `points_record` VALUES (3, 26, 5, '精品帖', '2021-07-10 15:40:25');
+INSERT INTO `points_record` VALUES (4, 26, 5, '精品帖', '2021-07-10 15:42:23');
+INSERT INTO `points_record` VALUES (5, 22, 1, '签到', '2021-07-10 15:58:04');
+INSERT INTO `points_record` VALUES (6, 26, 1, '签到', '2021-07-12 10:58:48');
+INSERT INTO `points_record` VALUES (7, 26, 4, '发表主题帖', '2021-07-12 11:41:13');
+INSERT INTO `points_record` VALUES (8, 21, 1, '签到', '2021-10-10 23:56:19');
+INSERT INTO `points_record` VALUES (9, 21, 1, '签到', '2021-10-17 00:08:57');
+INSERT INTO `points_record` VALUES (10, 26, 1, '签到', '2021-10-18 20:10:16');
+INSERT INTO `points_record` VALUES (11, 1, 5, '精品帖', '2021-10-18 20:45:26');
+INSERT INTO `points_record` VALUES (12, 21, 2, '签到', '2021-10-18 21:15:22');
+INSERT INTO `points_record` VALUES (13, 21, 4, '发表主题帖', '2021-10-18 21:16:27');
+INSERT INTO `points_record` VALUES (14, 21, 2, '签到', '2021-10-19 13:08:24');
+INSERT INTO `points_record` VALUES (15, 26, 2, '签到', '2021-10-19 19:52:28');
+INSERT INTO `points_record` VALUES (16, 26, 1, '发表评论或回复', '2021-10-19 19:54:16');
+INSERT INTO `points_record` VALUES (17, 26, 1, '发表评论或回复', '2021-10-19 19:54:57');
+INSERT INTO `points_record` VALUES (18, 21, 4, '发表主题帖', '2021-10-19 23:31:11');
+INSERT INTO `points_record` VALUES (19, 26, 1, '发表评论或回复', '2021-10-19 23:33:38');
+INSERT INTO `points_record` VALUES (20, 26, 1, '发表评论或回复', '2021-10-19 23:34:21');
+INSERT INTO `points_record` VALUES (21, 26, 1, '发表评论或回复', '2021-10-19 23:35:29');
+INSERT INTO `points_record` VALUES (22, 26, 1, '发表评论或回复', '2021-10-19 23:35:42');
+INSERT INTO `points_record` VALUES (23, 21, 2, '签到', '2021-10-20 20:11:30');
+INSERT INTO `points_record` VALUES (24, 26, 2, '签到', '2021-10-20 20:11:40');
+INSERT INTO `points_record` VALUES (25, 21, 4, '发表主题帖', '2021-10-20 20:12:56');
+INSERT INTO `points_record` VALUES (26, 26, 1, '签到', '2021-10-28 17:31:11');
+INSERT INTO `points_record` VALUES (27, 21, 1, '签到', '2021-12-05 14:37:18');
+INSERT INTO `points_record` VALUES (28, 26, 1, '签到', '2021-12-05 15:12:28');
+INSERT INTO `points_record` VALUES (29, 26, 1, '签到', '2022-01-20 23:11:32');
+INSERT INTO `points_record` VALUES (30, 26, 1, '签到', '2022-01-25 19:03:50');
+INSERT INTO `points_record` VALUES (31, 21, 1, '签到', '2022-02-03 21:11:21');
+INSERT INTO `points_record` VALUES (32, 26, 1, '签到', '2022-02-10 22:57:28');
+INSERT INTO `points_record` VALUES (33, 26, 2, '签到', '2022-02-11 00:00:18');
+INSERT INTO `points_record` VALUES (34, 26, 1, '签到', '2022-02-17 18:06:27');
+INSERT INTO `points_record` VALUES (35, 22, 1, '签到', '2022-02-17 18:07:13');
+INSERT INTO `points_record` VALUES (36, 26, 2, '签到', '2022-02-18 22:09:18');
+INSERT INTO `points_record` VALUES (37, 26, 2, '签到', '2022-02-19 23:33:50');
+INSERT INTO `points_record` VALUES (38, 26, 2, '签到', '2022-02-20 00:34:56');
+INSERT INTO `points_record` VALUES (39, 22, 1, '签到', '2022-02-20 15:57:35');
+INSERT INTO `points_record` VALUES (40, 22, 2, '签到', '2022-02-21 00:29:25');
+INSERT INTO `points_record` VALUES (41, 26, 1, '签到', '2022-02-22 00:03:01');
+INSERT INTO `points_record` VALUES (42, 26, 1, '签到', '2022-03-24 20:07:05');
+INSERT INTO `points_record` VALUES (43, 26, 2, '签到', '2022-03-25 00:45:27');
 
 -- ----------------------------
 -- Table structure for points_type
@@ -736,8 +663,7 @@ CREATE TABLE `points_type`  (
 -- Table structure for post
 -- ----------------------------
 DROP TABLE IF EXISTS `post`;
-CREATE TABLE `post`
-(
+CREATE TABLE `post`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '帖子id',
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标题',
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '内容',
@@ -757,66 +683,39 @@ CREATE TABLE `post`
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `creator_id`(`creator_id`) USING BTREE,
   INDEX `topic_id`(`topic_id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 19
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '主题帖'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '主题帖' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of post
 -- ----------------------------
 INSERT INTO `post` VALUES (1, '测试1111111', '<p>测试1111111说的不是吧微软</p>', 1, 1, '2021-05-25 21:13:29', '2021-05-25 21:13:29', 11, 1, 0, 0, 0, 0, 0, '2021-07-01 23:28:43', 0);
-INSERT INTO `post`
-VALUES (2, '测试标题', '<p>asvdv</p>', 1, 1, '2021-05-25 22:58:29', '2021-07-01 16:41:01', 219, 3, 3, 53, 1, 1, 34,
-        '2021-07-01 21:52:16', 0);
+INSERT INTO `post` VALUES (2, '测试标题', '<p>asvdv</p>\n<p><a href=\"/video/1\" target=\"_blank\" rel=\"noopener\">视频弹幕</a></p>\n<p><a href=\"localhost:8080/video/1\" target=\"_blank\" rel=\"noopener\">补全</a></p>\n<p>&nbsp;</p>\n<p><a href=\"localhost:8080/video/1\">补全链接</a></p>\n<p>&nbsp;</p>\n<p><a href=\"/video/1\">绝对路径</a></p>', 1, 1, '2021-05-25 22:58:29', '2022-02-18 22:46:12', 227, 3, 3, 53, 1, 1, 34, '2021-07-01 21:52:16', 0);
 INSERT INTO `post` VALUES (3, '这是一条非常重要的通知！！！', '<p><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/fc8ef26c62b94b9dbcad19570d9a6880.jpg?timestamp=1621955365165\" width=\"800\" /></p>\n<h1>欢迎。。。</h1>\n<p>&nbsp;</p>\n<table style=\"border-collapse: collapse; width: 100%;\" border=\"1\">\n<tbody>\n<tr>\n<td style=\"width: 50%;\">1</td>\n<td style=\"width: 50%;\">2</td>\n</tr>\n<tr>\n<td style=\"width: 50%;\">3</td>\n<td style=\"width: 50%;\">&nbsp;</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>\n<p><span style=\"font-size: 36pt;\">😂</span></p>\n<p><span style=\"font-size: 14pt;\">你好</span></p>', 1, 2, '2021-05-25 23:11:16', '2021-05-25 23:11:16', 9, 0, 0, 0, 0, 0, 0, '2021-07-01 23:28:47', 0);
 INSERT INTO `post` VALUES (4, '我是真的帅', '<p>我是真的帅</p>', 1, 2, '2021-05-25 23:13:02', '2021-05-25 23:13:02', 2, 0, 0, 0, 0, 0, 0, '2021-07-01 23:28:50', 1);
 INSERT INTO `post` VALUES (5, '测试标签提示', '<p>测试标签提示测试标签提示测试标签提示</p>', 1, 1, '2021-05-28 23:29:21', '2021-05-28 23:29:21', 1, 0, 0, 0, 0, 0, 0, '2021-07-01 23:28:53', 67);
 INSERT INTO `post` VALUES (6, '【修改22】测试标签1123235', '<p>测试帖子修改！！！ 8888 <img src=\"http://img.t.sinajs.cn/t4/appstyle/expression/ext/normal/9d/sada_thumb.gif\" alt=\"[泪]\" /></p>', 1, 1, '2021-05-28 23:30:36', '2021-07-02 11:12:31', 16, 2, 0, 0, 0, 1, -1, '2021-07-01 23:28:56', 67);
-INSERT INTO `post` VALUES (7, 'asvwev', '<p>erberb</p>', 1, 1, '2021-06-12 16:46:25', '2021-06-12 16:46:25', 3, 0, 0, 1, 0, 0, 0, '2021-07-02 23:50:10', 0);
-INSERT INTO `post`
-VALUES (8, '【测试】锁定',
-        '<blockquote>\n<p>【测试】锁定【测试】锁定【测试】锁定【测试】锁定</p>\n</blockquote>\n<p>&nbsp;</p>\n<h1><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/4206857946a94d639751220e1ba1036a.png?timestamp=1623502282211\" alt=\"Logo\" width=\"194\" height=\"146\" /><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/22d4b8bb504c447ca52b7b550180af0f.png?timestamp=1625211592797\" alt=\"dfnfd\" width=\"730\" height=\"781\" /></h1>\n<h1><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/e5914597f0d24ef9a3399cda535518a8.png?timestamp=1625211664578\" alt=\"ltlt\" width=\"800\" height=\"496\" /></h1>\n<h1>标题</h1>\n<p style=\"padding-left: 40px;\">你好</p>\n<p>&nbsp;</p>\n<p style=\"padding-left: 80px;\">&nbsp;</p>',
-        1, 1, '2021-06-12 16:53:28', '2021-07-02 23:55:29', 14, 3, 1, 1, 0, 0, 0, '2021-07-02 23:57:16', 23);
+INSERT INTO `post` VALUES (7, 'asvwev', '<p>erberb</p>', 1, 1, '2021-06-12 16:46:25', '2021-06-12 16:46:25', 4, 0, 0, 1, 0, 0, 0, '2021-07-02 23:50:10', 0);
+INSERT INTO `post` VALUES (8, '【测试】锁定', '<blockquote>\n<p>【测试】锁定【测试】锁定【测试】锁定【测试】锁定</p>\n</blockquote>\n<p>&nbsp;</p>\n<h1><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/4206857946a94d639751220e1ba1036a.png?timestamp=1623502282211\" alt=\"Logo\" width=\"194\" height=\"146\" /><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/22d4b8bb504c447ca52b7b550180af0f.png?timestamp=1625211592797\" alt=\"dfnfd\" width=\"730\" height=\"781\" /></h1>\n<h1><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/e5914597f0d24ef9a3399cda535518a8.png?timestamp=1625211664578\" alt=\"ltlt\" width=\"800\" height=\"496\" /></h1>\n<h1>标题</h1>\n<p style=\"padding-left: 40px;\">你好</p>\n<p>&nbsp;</p>\n<p style=\"padding-left: 80px;\">&nbsp;</p>', 1, 1, '2021-06-12 16:53:28', '2021-07-02 23:55:29', 15, 3, 1, 1, 0, 0, 0, '2021-07-02 23:57:16', 23);
 INSERT INTO `post` VALUES (9, '测试验证码测试验证码测试验证码', '<p>测试验证码测试验证码测试验证码</p>\n<p>&nbsp;</p>\n<p style=\"text-align: right;\">测试验证码测试验证码</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<p>测试验证码测试验证码</p>', 1, 1, '2021-06-14 23:56:31', '2021-06-14 23:56:31', 5, 1, 0, 0, 0, 1, 0, '2021-07-01 23:29:05', 2);
-INSERT INTO `post` VALUES (10, '测试权限', '<p>测试权限</p>\n<p>&nbsp;</p>\n<p>测试权限</p>', 1, 1, '2021-06-18 21:36:33', '2021-06-18 21:36:33', 2, 0, 0, 0, 0, 1, 0, '2021-07-01 23:29:07', 1);
-INSERT INTO `post`
-VALUES (11, '测试登录后发帖，测试修改时间',
-        '<p><span style=\"color: #e03e2d;\">测试登录后发帖测试登录后发帖测试登录后发帖</span></p>\n<ol>\n<li>Sfgss</li>\n<li>sdvsd</li>\n<li>svsd</li>\n<li>&nbsp;</li>\n</ol>\n<p style=\"text-align: right;\">测试登录后发帖测试登录后发帖测试登录后发帖</p>',
-        22, 1, '2021-06-18 21:41:46', '2021-06-20 00:22:34', 33, 3, 1, 7, 1, 0, 99, '2021-07-04 21:31:25', 2);
-INSERT INTO `post`
-VALUES (12, '测试发帖', '<p>测试发帖测试发帖测试发帖测试发帖</p>', 22, 1, '2021-06-18 23:27:03', '2021-06-18 23:27:03', 18, 2, 2, 7, 0, 0,
-        0, '2021-07-02 11:56:33', 0);
-INSERT INTO `post`
-VALUES (13, '测试代码高亮',
-        '<p>哈哈哈哈</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<pre class=\"language-java\"><code>package top.ysqorz.forum.config;\n\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.format.FormatterRegistry;\nimport org.springframework.web.servlet.config.annotation.CorsRegistry;\nimport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;\n\n/**\n * @author passerbyYSQ\n * @create 2021-01-29 14:41\n */\n@Configuration\npublic class WebMvcConfig implements WebMvcConfigurer {\n\n    /**\n     * 前后端分离需要解决跨域问题\n     */\n    @Override\n    public void addCorsMappings(CorsRegistry registry) {\n        registry.addMapping(\"/**\")\n                .allowedOrigins(\"*\")  // 放行哪些原始域\n                .allowCredentials(true) // 是否发送cookie\n                .allowedMethods(\"GET\", \"POST\", \"PUT\", \"OPTIONS\", \"DELETE\", \"PATCH\")\n                .exposedHeaders(\"*\")\n                .allowedHeaders(\"*\") // allowedHeaders是exposedHeaders的子集\n                .maxAge(3600); // 预检请求OPTIONS请求的缓存时间\n    }\n\n    /**\n     * 在参数绑定时，自定义String-&gt;String的转换器，\n     * 在转换逻辑中对参数值进行转义，从而达到防XSS的效果\n     */\n    @Override\n    public void addFormatters(FormatterRegistry registry) {\n        registry.addConverter(new EscapeStringConverter());\n        //registry.addFormatter(new LocalDateTimeFormatter());\n\n    }\n}\n</code></pre>',
-        26, 1, '2021-06-24 20:55:07', '2021-06-30 15:49:17', 31, 1, 1, 7, 1, 0, 99, '2021-06-30 12:48:18', 0);
+INSERT INTO `post` VALUES (10, '测试权限', '<p>测试权限</p>\n<p>&nbsp;</p>\n<p>测试权限</p>', 1, 1, '2021-06-18 21:36:33', '2021-06-18 21:36:33', 4, 0, 0, 0, 0, 1, 0, '2021-07-01 23:29:07', 1);
+INSERT INTO `post` VALUES (11, '测试登录后发帖，测试修改时间', '<p><span style=\"color: #e03e2d;\">测试登录后发帖测试登录后发帖测试登录后发帖</span></p>\n<ol>\n<li>Sfgss</li>\n<li>sdvsd</li>\n<li>svsd</li>\n<li>&nbsp;</li>\n</ol>\n<p style=\"text-align: right;\">测试登录后发帖测试登录后发帖测试登录后发帖</p>', 22, 1, '2021-06-18 21:41:46', '2021-06-20 00:22:34', 64, 3, 1, 7, 1, 0, 99, '2021-07-04 21:31:25', 2);
+INSERT INTO `post` VALUES (12, '测试发帖', '<p>测试发帖测试发帖测试发帖测试发帖</p>', 22, 1, '2021-06-18 23:27:03', '2021-06-18 23:27:03', 19, 2, 2, 7, 0, 0, 0, '2021-07-02 11:56:33', 0);
+INSERT INTO `post` VALUES (13, '测试代码高亮', '<p>哈哈哈哈</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<pre class=\"language-java\"><code>package top.ysqorz.forum.config;\n\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.format.FormatterRegistry;\nimport org.springframework.web.servlet.config.annotation.CorsRegistry;\nimport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;\n\n/**\n * @author passerbyYSQ\n * @create 2021-01-29 14:41\n */\n@Configuration\npublic class WebMvcConfig implements WebMvcConfigurer {\n\n    /**\n     * 前后端分离需要解决跨域问题\n     */\n    @Override\n    public void addCorsMappings(CorsRegistry registry) {\n        registry.addMapping(\"/**\")\n                .allowedOrigins(\"*\")  // 放行哪些原始域\n                .allowCredentials(true) // 是否发送cookie\n                .allowedMethods(\"GET\", \"POST\", \"PUT\", \"OPTIONS\", \"DELETE\", \"PATCH\")\n                .exposedHeaders(\"*\")\n                .allowedHeaders(\"*\") // allowedHeaders是exposedHeaders的子集\n                .maxAge(3600); // 预检请求OPTIONS请求的缓存时间\n    }\n\n    /**\n     * 在参数绑定时，自定义String-&gt;String的转换器，\n     * 在转换逻辑中对参数值进行转义，从而达到防XSS的效果\n     */\n    @Override\n    public void addFormatters(FormatterRegistry registry) {\n        registry.addConverter(new EscapeStringConverter());\n        //registry.addFormatter(new LocalDateTimeFormatter());\n\n    }\n}\n</code></pre>', 26, 1, '2021-06-24 20:55:07', '2021-06-30 15:49:17', 40, 1, 1, 7, 1, 0, 99, '2021-06-30 12:48:18', 0);
 INSERT INTO `post` VALUES (14, 'sdbdsbsdb', '<p>sdvsdbsbvsdb</p>', 26, 1, '2021-06-30 15:50:50', '2021-06-30 15:50:50', 2, 1, 0, 0, 1, 0, 0, '2021-06-30 15:50:50', 0);
-INSERT INTO `post`
-VALUES (15, '测试冲突测试冲突测试冲突测试冲突',
-        '<p>测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突</p>\n<p><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/00ca8c0bf69c4ce095a338c76c427954.jpg?timestamp=1626061510024\" width=\"800\" height=\"450\" /></p>',
-        26, 1, '2021-07-12 11:41:13', '2021-07-12 11:45:44', 5, 0, 0, 0, 0, 0, 0, '2021-07-12 11:41:13', 0);
-INSERT INTO `post`
-VALUES (18, '测试删除帖子', '<p>为v为v我</p>', 21, 2, '2021-10-20 20:12:56', '2021-10-20 20:12:56', 27, 0, 1, 26, 0, 0, 0,
-        '2021-10-20 23:30:40', 0);
+INSERT INTO `post` VALUES (15, '测试冲突测试冲突测试冲突测试冲突', '<p>测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突</p>\n<p><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/00ca8c0bf69c4ce095a338c76c427954.jpg?timestamp=1626061510024\" width=\"800\" height=\"450\" /></p>', 26, 1, '2021-07-12 11:41:13', '2021-07-12 11:45:44', 5, 0, 0, 0, 0, 0, 0, '2021-07-12 11:41:13', 0);
+INSERT INTO `post` VALUES (18, '测试删除帖子', '<p>为v为v我</p>', 21, 2, '2021-10-20 20:12:56', '2021-10-20 20:12:56', 27, 0, 1, 26, 0, 0, 0, '2021-10-20 23:30:40', 0);
 
 -- ----------------------------
 -- Table structure for post_label
 -- ----------------------------
 DROP TABLE IF EXISTS `post_label`;
-CREATE TABLE `post_label`
-(
+CREATE TABLE `post_label`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `post_id` int(11) UNSIGNED NOT NULL COMMENT '帖子id',
   `label_id` int(11) UNSIGNED NOT NULL COMMENT '标签id',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `label_id`(`label_id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 85
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '主题帖表和标签表的关联表'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 103 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '主题帖表和标签表的关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of post_label
@@ -844,25 +743,21 @@ INSERT INTO `post_label` VALUES (58, 13, 16);
 INSERT INTO `post_label` VALUES (59, 13, 2);
 INSERT INTO `post_label` VALUES (60, 14, 5);
 INSERT INTO `post_label` VALUES (61, 14, 6);
-INSERT INTO `post_label` VALUES (64, 2, 1);
-INSERT INTO `post_label` VALUES (65, 2, 3);
 INSERT INTO `post_label` VALUES (66, 6, 11);
 INSERT INTO `post_label` VALUES (73, 8, 12);
 INSERT INTO `post_label` VALUES (74, 8, 2);
 INSERT INTO `post_label` VALUES (75, 8, 13);
-INSERT INTO `post_label`
-VALUES (78, 15, 17);
-INSERT INTO `post_label`
-VALUES (79, 15, 2);
-INSERT INTO `post_label`
-VALUES (84, 18, 2);
+INSERT INTO `post_label` VALUES (78, 15, 17);
+INSERT INTO `post_label` VALUES (79, 15, 2);
+INSERT INTO `post_label` VALUES (84, 18, 2);
+INSERT INTO `post_label` VALUES (101, 2, 1);
+INSERT INTO `post_label` VALUES (102, 2, 3);
 
 -- ----------------------------
 -- Table structure for resource
 -- ----------------------------
 DROP TABLE IF EXISTS `resource`;
-CREATE TABLE `resource`
-(
+CREATE TABLE `resource`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '权限名称',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '资源名称',
@@ -872,11 +767,7 @@ CREATE TABLE `resource`
   `type` tinyint(4) NOT NULL COMMENT '类型。0：菜单，1：按钮',
   `sort_weight` int(11) NULL DEFAULT 0 COMMENT '排序权重',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 39
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of resource
@@ -904,8 +795,7 @@ INSERT INTO `resource` VALUES (34, 30, '修改话题', '', '', 'topic:update', 1
 INSERT INTO `resource` VALUES (35, 16, '锁定帖子', '', '', 'post:lock', 1, 61);
 INSERT INTO `resource` VALUES (36, 16, '删除帖子', '', '', 'post:del', 1, 51);
 INSERT INTO `resource` VALUES (37, 1, '后台准入', '', '', 'admin:access', 1, 106);
-INSERT INTO `resource`
-VALUES (38, 20, '测试11', '', '', '21', 0, 99);
+INSERT INTO `resource` VALUES (38, 20, '测试11', '', '', '21', 0, 99);
 
 -- ----------------------------
 -- Table structure for role
@@ -998,8 +888,7 @@ INSERT INTO `role_resource` VALUES (140, 26, 36);
 -- Table structure for second_comment
 -- ----------------------------
 DROP TABLE IF EXISTS `second_comment`;
-CREATE TABLE `second_comment`
-(
+CREATE TABLE `second_comment`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int(11) UNSIGNED NOT NULL COMMENT '发送者的用户id',
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '评论的内容',
@@ -1007,11 +896,7 @@ CREATE TABLE `second_comment`
   `quote_second_comment_id` int(11) UNSIGNED NULL DEFAULT NULL COMMENT '引用（回复）的二级评论id。如果为空，说明回复的是一级评论',
   `create_time` datetime(0) NOT NULL COMMENT '发布时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 92
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '二级评论'
-  ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 92 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '二级评论' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of second_comment
@@ -1072,38 +957,22 @@ INSERT INTO `second_comment` VALUES (54, 22, '哈哈哈哈', 53, NULL, '2021-07-
 INSERT INTO `second_comment` VALUES (55, 21, '【回复通知】', 53, 54, '2021-07-04 21:26:32');
 INSERT INTO `second_comment` VALUES (56, 21, '回复 哈哈哈哈', 53, 54, '2021-07-04 21:29:47');
 INSERT INTO `second_comment` VALUES (57, 22, ' 自己回复自己', 53, NULL, '2021-07-04 21:31:25');
-INSERT INTO `second_comment`
-VALUES (58, 26, '测试二级评论', 54, NULL, '2021-10-19 19:54:57');
-INSERT INTO `second_comment`
-VALUES (59, 26, ' 二级评论1face[哈哈] ', 58, NULL, '2021-10-19 23:35:29');
-INSERT INTO `second_comment`
-VALUES (60, 26, '二级评论2', 58, NULL, '2021-10-19 23:35:42');
-INSERT INTO `second_comment`
-VALUES (74, 21, 'dvef ', 59, 73, '2021-10-20 22:45:21');
-INSERT INTO `second_comment`
-VALUES (76, 21, 'edve', 59, 75, '2021-10-20 22:45:55');
-INSERT INTO `second_comment`
-VALUES (77, 21, 'edvever', 59, 74, '2021-10-20 22:46:03');
-INSERT INTO `second_comment`
-VALUES (78, 21, ' everv', 59, 74, '2021-10-20 22:46:26');
-INSERT INTO `second_comment`
-VALUES (79, 21, 'everer', 59, 74, '2021-10-20 22:46:48');
-INSERT INTO `second_comment`
-VALUES (81, 21, 'sdvwev你', 59, 80, '2021-10-20 22:49:50');
-INSERT INTO `second_comment`
-VALUES (84, 21, 'asvasvadv', 70, 83, '2021-10-20 23:16:13');
-INSERT INTO `second_comment`
-VALUES (86, 21, ' sdbsdbsd', 73, NULL, '2021-10-20 23:18:20');
-INSERT INTO `second_comment`
-VALUES (87, 21, 'asvasv', 73, 86, '2021-10-20 23:18:28');
-INSERT INTO `second_comment`
-VALUES (88, 21, ' dfbsfb', 72, NULL, '2021-10-20 23:22:52');
-INSERT INTO `second_comment`
-VALUES (89, 21, 'vasdvdbva', 72, NULL, '2021-10-20 23:22:59');
-INSERT INTO `second_comment`
-VALUES (90, 21, 'sdbvweb', 66, NULL, '2021-10-20 23:30:35');
-INSERT INTO `second_comment`
-VALUES (91, 21, ' asvaebvew', 67, NULL, '2021-10-20 23:30:41');
+INSERT INTO `second_comment` VALUES (58, 26, '测试二级评论', 54, NULL, '2021-10-19 19:54:57');
+INSERT INTO `second_comment` VALUES (59, 26, ' 二级评论1face[哈哈] ', 58, NULL, '2021-10-19 23:35:29');
+INSERT INTO `second_comment` VALUES (60, 26, '二级评论2', 58, NULL, '2021-10-19 23:35:42');
+INSERT INTO `second_comment` VALUES (74, 21, 'dvef ', 59, 73, '2021-10-20 22:45:21');
+INSERT INTO `second_comment` VALUES (76, 21, 'edve', 59, 75, '2021-10-20 22:45:55');
+INSERT INTO `second_comment` VALUES (77, 21, 'edvever', 59, 74, '2021-10-20 22:46:03');
+INSERT INTO `second_comment` VALUES (78, 21, ' everv', 59, 74, '2021-10-20 22:46:26');
+INSERT INTO `second_comment` VALUES (79, 21, 'everer', 59, 74, '2021-10-20 22:46:48');
+INSERT INTO `second_comment` VALUES (81, 21, 'sdvwev你', 59, 80, '2021-10-20 22:49:50');
+INSERT INTO `second_comment` VALUES (84, 21, 'asvasvadv', 70, 83, '2021-10-20 23:16:13');
+INSERT INTO `second_comment` VALUES (86, 21, ' sdbsdbsd', 73, NULL, '2021-10-20 23:18:20');
+INSERT INTO `second_comment` VALUES (87, 21, 'asvasv', 73, 86, '2021-10-20 23:18:28');
+INSERT INTO `second_comment` VALUES (88, 21, ' dfbsfb', 72, NULL, '2021-10-20 23:22:52');
+INSERT INTO `second_comment` VALUES (89, 21, 'vasdvdbva', 72, NULL, '2021-10-20 23:22:59');
+INSERT INTO `second_comment` VALUES (90, 21, 'sdbvweb', 66, NULL, '2021-10-20 23:30:35');
+INSERT INTO `second_comment` VALUES (91, 21, ' asvaebvew', 67, NULL, '2021-10-20 23:30:41');
 
 -- ----------------------------
 -- Table structure for system_config
@@ -1155,10 +1024,8 @@ CREATE TABLE `topic`  (
 -- ----------------------------
 -- Records of topic
 -- ----------------------------
-INSERT INTO `topic`
-VALUES (1, '测试', '测试专用', 12, 1, '2021-05-25 16:09:46', 0, 0);
-INSERT INTO `topic`
-VALUES (2, '通知', '发通知', 4, 1, '2021-05-25 16:10:09', 0, 0);
+INSERT INTO `topic` VALUES (1, '测试', '测试专用', 12, 1, '2021-05-25 16:09:46', 0, 0);
+INSERT INTO `topic` VALUES (2, '通知', '发通知', 4, 1, '2021-05-25 16:10:09', 0, 0);
 
 -- ----------------------------
 -- Table structure for user
@@ -1193,9 +1060,7 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user`
-VALUES (1, '请问', '1', '1', '123456', '1', '1', 0, '/admin/assets/images/logo.png', '1', '2021-04-07', '1',
-        '2021-04-01 14:50:24', '2021-05-04 14:50:27', '2021-07-17 14:50:30', NULL, 0, 10, 1, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (1, '请问', '1', '1', '123456', '1', '1', 0, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-04-01 14:50:24', '2021-05-04 14:50:27', '2021-07-17 14:50:30', NULL, 0, 10, 3, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (2, '阿斯蒂', '2', '2', '123456', '2', '2', 1, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-03 14:51:34', '2021-05-11 14:51:36', '2021-07-16 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (3, '阿萨大', '3', '3', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-06 14:51:34', '2021-05-11 14:51:36', '2021-06-26 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (4, '分', '4', '4', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-04-23 14:51:34', '2021-05-11 14:51:36', '2021-06-20 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
@@ -1205,9 +1070,7 @@ INSERT INTO `user` VALUES (7, 'v萨维奇', '7', '7', '123456', '2', '2', 2, '/a
 INSERT INTO `user` VALUES (8, '二维', '8', '8', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-15 14:51:34', '2021-05-11 14:51:36', '2021-05-22 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (9, '她', '9', '9', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-22 14:51:34', '2021-05-11 14:51:36', '2021-04-29 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (10, '和', '10', '10', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-05-28 14:51:34', '2021-05-11 14:51:36', '2021-05-12 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
-INSERT INTO `user`
-VALUES (11, '而', '11', '11', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1',
-        '2021-05-30 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', NULL, 0, 1, 2, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (11, '而', '11', '11', '1', '1', '1', 1, '/admin/assets/images/logo.png', '1', '2021-04-07', '1', '2021-05-30 14:50:24', '2021-05-04 14:50:27', '2021-05-13 14:50:30', NULL, 0, 1, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (12, '广东佛山', '12', '12', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-01 14:51:34', '2021-05-11 14:51:36', '2021-05-26 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (13, '覆盖', '13', '13', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-10 14:51:34', '2021-05-11 14:51:36', '2021-04-29 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (14, '都发过', '14', '14', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-06-04 14:51:34', '2021-05-11 14:51:36', '2021-04-19 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
@@ -1217,21 +1080,10 @@ INSERT INTO `user` VALUES (17, '断分', '17', '17', '2', '2', '2', 2, '/admin/a
 INSERT INTO `user` VALUES (18, '是个', '18', '18', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-17 14:51:34', '2021-05-11 14:51:36', '2021-05-03 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (19, '代国防', '19', '19', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-08-21 14:51:34', '2021-04-28 14:51:36', '2021-02-18 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (20, '三个地方', '20', '20', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-24 14:51:34', '2021-05-11 14:51:36', '2021-03-12 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
-INSERT INTO `user`
-VALUES (21, 'ysq', '1@qq.com', NULL, '3f54a72d01674b033327ab34ae5010e0', 'MOTciA8o', 'ZXnx)!5(', 3,
-        'https://gitee.com/assets/no_portrait.png', NULL, NULL, NULL, '2021-06-04 14:58:23', '2021-06-04 14:58:23',
-        '2021-12-05 14:37:13', '2021-12-05 14:37:18', 1, 29, 1, NULL, NULL, NULL);
-INSERT INTO `user`
-VALUES (22, 'passerbyYSQ', '', NULL, '', 'ad^R9%UP', '(+&iC)e&', 0, 'https://gitee.com/assets/no_portrait.png', '',
-        '2021-07-10', '广东省/肇庆市/封开县', '2021-06-14 15:54:53', '2021-06-14 15:54:53', '2021-07-12 13:08:31',
-        '2021-07-10 15:58:04', 1, 7, 1, 7369646, NULL, NULL);
+INSERT INTO `user` VALUES (21, 'ysq', '1@qq.com', NULL, '3f54a72d01674b033327ab34ae5010e0', 'MOTciA8o', 'cAr!U-Bv', 3, 'https://gitee.com/assets/no_portrait.png', NULL, NULL, NULL, '2021-06-04 14:58:23', '2021-06-04 14:58:23', '2022-02-03 21:11:08', '2022-02-03 21:11:21', 1, 30, 2, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (22, 'passerbyYSQ', '', NULL, '', 'ad^R9%UP', '(+&iC)e&', 0, 'https://gitee.com/assets/no_portrait.png', '', '2021-07-10', '广东省/肇庆市/封开县', '2021-06-14 15:54:53', '2021-06-14 15:54:53', '2021-07-12 13:08:31', '2022-02-21 00:29:25', 2, 11, 1, 7369646, NULL, NULL);
 INSERT INTO `user` VALUES (23, '过路人', '', NULL, '', 'emNiOgun', 'l#xv3)Jw', 0, 'http://thirdqq.qlogo.cn/g?b=oidb&k=nMMFjagOIQXoHlwJUfHHsA&s=40&t=1582654446', NULL, NULL, NULL, '2021-06-17 21:31:40', '2021-06-17 21:31:40', '2021-07-05 15:40:05', '2021-07-05 15:41:42', 2, 4, 0, NULL, '1AF065CF5F865B4146F7F69A1AFCC60D', NULL);
-INSERT INTO `user`
-VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', 'yd8aMs^=', 0,
-        'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361',
-        '我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！', '2021-07-10', '广东省/广州市/天河区',
-        '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-01-25 19:03:45', '2022-01-25 19:03:50', 1, 43, 1, NULL,
-        NULL, '421602246');
+INSERT INTO `user` VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', '5tZ%EO+S', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361', '我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！', '2021-07-10', '广东省/广州市/天河区', '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-02-11 00:00:03', '2022-03-25 00:45:27', 2, 57, 1, NULL, NULL, '421602246');
 INSERT INTO `user` VALUES (27, 'ligouzi', '2403298783@qq.com', NULL, '22bb34a6e77baab53ebf873afdfa34bd', 'KB%OApta', 'BNk$@YeY', 3, '/admin/assets/images/defaultUserPhoto.jpg', NULL, NULL, NULL, '2021-07-06 16:15:34', '2021-07-06 16:15:34', '2021-07-10 10:09:47', '2021-07-06 16:34:15', 1, 2, 0, NULL, NULL, '');
 
 -- ----------------------------
@@ -1291,30 +1143,23 @@ INSERT INTO `user_role` VALUES (67, 27, 27, '2021-07-09 17:55:04');
 -- Table structure for video
 -- ----------------------------
 DROP TABLE IF EXISTS `video`;
-CREATE TABLE `video`
-(
-    `id`          int(10) UNSIGNED                                               NOT NULL AUTO_INCREMENT,
-    `title`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL COMMENT '视频标题',
-    `description` varchar(2550) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '视频描述',
-    `duration`    bigint(20)                                                     NOT NULL COMMENT '视频时长，毫秒',
-    `cover`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT '视频封面',
-    `author_id`   int(10) UNSIGNED                                               NOT NULL COMMENT '作者id',
-    `file_id`     int(10) UNSIGNED                                               NULL DEFAULT NULL COMMENT '文件id',
-    `create_time` datetime(0)                                                    NOT NULL COMMENT '创建时间',
-    `update_time` datetime(0)                                                    NOT NULL COMMENT '修改时间',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 3
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci
-  ROW_FORMAT = Dynamic;
+CREATE TABLE `video`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '视频标题',
+  `description` varchar(2550) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '视频描述',
+  `duration` bigint(20) NOT NULL COMMENT '视频时长，毫秒',
+  `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '视频封面',
+  `author_id` int(10) UNSIGNED NOT NULL COMMENT '作者id',
+  `file_id` int(10) UNSIGNED NULL DEFAULT NULL COMMENT '文件id',
+  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of video
 -- ----------------------------
-INSERT INTO `video`
-VALUES (1, '《西瓜视频》', '西瓜视频。。。', 1024, NULL, 1, 1, '2022-01-26 17:15:19', '2022-01-26 17:15:23');
-INSERT INTO `video`
-VALUES (2, '思迈特2021-freshman', '冲鸭！！！', 1024, NULL, 1, 2, '2022-01-26 23:58:41', '2022-01-26 23:58:45');
+INSERT INTO `video` VALUES (1, '《西瓜视频》', '西瓜视频。。。', 1024, NULL, 1, 1, '2022-01-26 17:15:19', '2022-01-26 17:15:23');
+INSERT INTO `video` VALUES (2, '思迈特2021-freshman', '冲鸭！！！', 1024, NULL, 1, 2, '2022-01-26 23:58:41', '2022-01-26 23:58:45');
 
 SET FOREIGN_KEY_CHECKS = 1;

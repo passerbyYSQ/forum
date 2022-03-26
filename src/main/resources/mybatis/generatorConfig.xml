@@ -113,11 +113,13 @@
 <!--        <table tableName="system_notification" />-->
 <!--        <table tableName="topic" />-->
 <!--        <table tableName="user" />-->
-        <!--        <table tableName="attendance" />-->
-        <!--        <table tableName="danmu_msg"/>-->
-        <!--        <table tableName="video"/>-->
-        <table tableName="db_file"/>
-
+<!--        <table tableName="attendance" />-->
+<!--        <table tableName="danmu_msg" />-->
+<!--        <table tableName="video" />-->
+<!--        <table tableName="db_file" />-->
+<!--        <table tableName="chat_friend" />-->
+<!--        <table tableName="chat_friend_apply" />-->
+        <table tableName="chat_friend_msg" />
     </context>
 
 </generatorConfiguration>

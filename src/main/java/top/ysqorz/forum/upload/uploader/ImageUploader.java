@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  */
 public class ImageUploader extends AbstractFileUploader {
 
-    public static final Pattern BASE64_PATTERN = Pattern.compile(Constant.BASE64_REGEX);
+    public static final Pattern BASE64_PATTERN = Pattern.compile(Constant.REGEX_BASE64);
     private String base64;
 
     private ImageUploader() {

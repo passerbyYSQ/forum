@@ -59,4 +59,9 @@ public interface RedisService {
     void removeWsServer(ChannelType channelType, String groupId);
 
     Set<String> getWsServers(ChannelType channelType, String groupId);
+
+    /**
+     * 判断用户是否在线。判断该用户是否有WebSocket通道
+     */
+    boolean isUserOnline(Integer userId);
 }

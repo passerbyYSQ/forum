@@ -44,7 +44,6 @@ import java.util.Map;
  */
 @Service // 不要忘了
 public class UserServiceImpl implements UserService {
-
     @Resource
     private UserMapper userMapper;
     @Resource
@@ -74,6 +73,20 @@ public class UserServiceImpl implements UserService {
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo("email", email);
         return userMapper.selectOneByExample(example);
+    }
+
+    @Override
+    public User getUserByPhone(String phone) {
+        Example example = new Example(User.class);
+        example.createCriteria().andEqualTo("phone", phone);
+        return userMapper.selectOneByExample(example);
+    }
+
+    @Override
+    public List<User> getUsersLikeUsername(String username) {
+        Example example = new Example(User.class);
+        example.createCriteria().andLike("username", "%" + username + "%");
+        return userMapper.selectByExample(example);
     }
 
     @Override

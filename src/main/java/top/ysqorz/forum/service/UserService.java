@@ -55,6 +55,16 @@ public interface UserService {
     User getUserByEmail(String email);
 
     /**
+     * 根据手机号查询用户
+     */
+    User getUserByPhone(String phone);
+
+    /**
+     * 根据用户名模糊匹配用户
+     */
+    List<User> getUsersLikeUsername(String username);
+
+    /**
      * 后台用户管理
      */
     List<UserDTO> getMyUserList(QueryUserCondition conditions);

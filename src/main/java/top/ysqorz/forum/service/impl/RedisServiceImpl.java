@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.dto.WeekTopPostDTO;
 import top.ysqorz.forum.im.IMUtils;
@@ -137,7 +138,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void bindWsServer(ChannelType channelType, String groupId) {
-        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType.name(), groupId);
+        String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
         stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), 1);
         Long expire = stringRedisTemplate.getExpire(key);
         // 由于缓存不是绝对准确的，可能因为某个服务挂了，导致Redis缓存不准确，从而会将消息转发到已经挂掉的服务上
@@ -150,17 +151,34 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void removeWsServer(ChannelType channelType, String groupId) {
-        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType.name(), groupId);
+        String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
         stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), -1);
     }
 
     @Override
     public Set<String> getWsServers(ChannelType channelType, String groupId) {
-        String key = String.format(Constant.REDIS_KEY_USER_WS, channelType.name(), groupId);
+        String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
         Map<Object, Object> hash = stringRedisTemplate.opsForHash().entries(key); // 使用 redisTemplate 反序列化报错
         return hash.entrySet().stream().filter(entry -> Integer.parseInt((String) entry.getValue()) > 0)
                 .map(entry -> (String) entry.getKey())
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public boolean isUserOnline(Integer userId) {
+        String key = String.format(Constant.REDIS_KEY_IM_WS, ChannelType.CHAT.name(), userId);
+        Map<Object, Object> hash = stringRedisTemplate.opsForHash().entries(key); // 使用 redisTemplate 反序列化报错
+        boolean isOnline = false;
+        if (!ObjectUtils.isEmpty(hash)) {
+            for (Map.Entry<Object, Object> entry : hash.entrySet()) {
+                int wsCount = Integer.parseInt((String) entry.getValue());
+                if (wsCount > 0) {
+                    isOnline = true;
+                    break;
+                }
+            }
+        }
+        return isOnline;
     }
 
 }
