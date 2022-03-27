@@ -24,7 +24,7 @@ public interface ChatService {
     /**
      * 申请添加好友
      */
-    StatusCode applyFriend(Integer receiverId, String content);
+    StatusCode applyFriend(Integer receiverId,  Integer friendGroupId, String content);
 
     /**
      *根据两个人的用户id查找好友申请
@@ -34,7 +34,7 @@ public interface ChatService {
     /**
      * 添加一条好友申请记录
      */
-    void addFriendApply(Integer receiverId, String content);
+    void addFriendApply(Integer receiverId, Integer friendGroupId, String content);
 
     /**
      * 根据id删除好友申请
@@ -44,5 +44,10 @@ public interface ChatService {
     /**
      * 根据id修改好友申请的内容
      */
-    void updateFriendApplyById(Integer friendApplyId, String content);
+    void updateFriendApplyById(Integer friendApplyId, Integer friendGroupId, String content);
+
+    /**
+     * 好友分组的id是否非法
+     */
+    boolean isInvalidFriendGroup(Integer friendGroupId);
 }

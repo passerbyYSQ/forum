@@ -11,7 +11,7 @@
     }
     ,"friend": [{
       "groupname": "知名人物"
-      ,"id": 0
+      ,"id": 1
       ,"list": [{
         "username": "贤心"
         ,"id": "100001"
@@ -41,7 +41,7 @@
       }]
     },{
       "groupname": "网红声优"
-      ,"id": 1
+      ,"id": 2
       ,"list": [{
         "username": "罗玉凤"
         ,"id": "121286"
@@ -70,7 +70,7 @@
       }]
     },{
       "groupname": "女神艺人"
-      ,"id": 2
+      ,"id": 3
       ,"list": [{
         "username": "王祖贤"
         ,"id": "76543"

@@ -1,14 +1,11 @@
 package top.ysqorz.forum.po;
 
+import java.time.LocalDateTime;
+import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -30,6 +27,12 @@ public class ChatFriendApply {
      */
     @Column(name = "receiver_id")
     private Integer receiverId;
+
+    /**
+     * 好友分组的id。如果为null表示未分组
+     */
+    @Column(name = "friend_group_id")
+    private Integer friendGroupId;
 
     /**
      * 好友申请的内容

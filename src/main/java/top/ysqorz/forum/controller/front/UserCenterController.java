@@ -78,14 +78,13 @@ public class UserCenterController {
         }
         User me = userService.getUserById(ShiroUtils.getUserId());
 
-        String salt = me.getLoginSalt();
-        String encryptPwd = userService.encryptLoginPwd(dto.getPassword(), salt);
+        String encryptPwd = userService.encryptLoginPwd(dto.getPassword(), me.getLoginSalt());
         if (!me.getEmail().equals(dto.getEmail()) ||
                 !me.getPassword().equals(encryptPwd)) {
             return ResultModel.failed(StatusCode.ACCOUNT_OR_PASSWORD_INCORRECT); // 邮箱或密码错误
         }
 
-        String newEncryptPwd = userService.encryptLoginPwd(dto.getNewPassword(), salt);
+        String newEncryptPwd = userService.encryptLoginPwd(dto.getNewPassword(), me.getLoginSalt());
         User record = new User();
         record.setId(me.getId())
                 .setPassword(newEncryptPwd);

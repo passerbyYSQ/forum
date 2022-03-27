@@ -64,12 +64,16 @@
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
-    layui.use(['layim'], function () {
-        var $ = layui.$
-            , admin = layui.admin
-            , element = layui.element
-            , router = layui.router();
+    layui.use(['layim', 'app'], function () {
+        var $ = layui.$,
+            admin = layui.admin,
+            element = layui.element,
+            router = layui.router(),
+            app = layui.app;
 
+        window.testParentFunc = function () {
+            alert('父页面弹出');
+        };
 
         var layim = layui.layim;
 
@@ -218,6 +222,26 @@
             }
         });
 
+        window.applyFriend = function (userId, username, photo) {
+            layim.add({
+                type: 'friend',
+                username,
+                avatar: photo,
+                submit: function (group, remark, index) {
+                    app.ajax('/chat/friend/apply', {
+                        receiverId: userId,
+                        friendGroupId: parseInt(group),
+                        content: remark,
+                    }, function (res) {
+                        layer.msg('好友申请已发送，请等待对方确认', {
+                            icon: 1, shade: 0.5
+                        }, function () {
+                            layer.close(index);
+                        });
+                    });
+                }
+            });
+        };
 
         //面板外的操作
         var $ = layui.jquery, active = {
@@ -274,6 +298,7 @@
                     , content: "临时：" + new Date().getTime()
                 });
             }
+            // 发送好友申请
             , add: function () {
                 //实际使用时数据由动态获得
                 layim.add({

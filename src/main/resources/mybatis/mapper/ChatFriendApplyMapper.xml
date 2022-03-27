@@ -8,6 +8,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="sender_id" jdbcType="INTEGER" property="senderId" />
     <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
+    <result column="friend_group_id" jdbcType="INTEGER" property="friendGroupId" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="apply_time" jdbcType="TIMESTAMP" property="applyTime" />

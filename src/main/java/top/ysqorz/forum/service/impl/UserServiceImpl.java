@@ -15,6 +15,7 @@ import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.*;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
@@ -41,7 +42,7 @@ import java.util.Map;
  * @author 阿灿
  * @create 2021-05-10 16:10
  */
-@Service // 不要忘了
+@Service
 public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
@@ -94,16 +95,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<ChatUserCardDTO> getUserCardsLikeUsername(String username) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("myId", ShiroUtils.getUserId());
+        param.put("username", username);
+        return userMapper.selectUserCardsLikeUsername(param);
+    }
+
+    @Override
     public List<UserDTO> getMyUserList(QueryUserCondition conditions) {
         //System.out.println(conditions);
         return userMapper.selectAllUser(conditions);
     }
 
     @Override
-    public int updatePsw(Integer userId) {
+    public int updatePsw(Integer userId, String loginSalt) {
         User record = new User();
         record.setId(userId);
-        record.setPassword("123456"); // TODO ERROR,需要加密后
+        record.setPassword(this.encryptLoginPwd("123456", loginSalt));
         return userMapper.updateByPrimaryKeySelective(record);
     }
 

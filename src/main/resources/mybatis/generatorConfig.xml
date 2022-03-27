@@ -119,7 +119,8 @@
 <!--        <table tableName="db_file" />-->
 <!--        <table tableName="chat_friend" />-->
 <!--        <table tableName="chat_friend_apply" />-->
-        <table tableName="chat_friend_msg" />
+<!--        <table tableName="chat_friend_msg" />-->
+        <table tableName="chat_friend_group" />
     </context>
 
 </generatorConfiguration>

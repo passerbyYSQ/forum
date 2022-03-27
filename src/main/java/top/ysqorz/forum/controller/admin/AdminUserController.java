@@ -61,7 +61,7 @@ public class AdminUserController {
         if (ObjectUtils.isEmpty(user)) {
             ResultModel.failed(StatusCode.USER_NOT_EXIST);
         }
-        int i = userService.updatePsw(user.getId());
+        int i = userService.updatePsw(user.getId(), user.getLoginSalt());
         return ResultModel.success();
     }
 

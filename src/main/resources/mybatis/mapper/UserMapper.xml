@@ -60,12 +60,12 @@
         on (u.id=b.user_id and #{now} between b.start_time and b.end_time)
         where 1=1
         <if test="username!=null and username!=''">
-            <bind name="paran_username" value="'%'+username+'%'" />
-            and username like #{paran_username}
+            <bind name="param_username" value="'%'+username+'%'" />
+            and username like #{param_username}
         </if>
         <if test="phone!=null and phone!=''">
-            <bind name="paran_phone" value="'%'+phone+'%'" />
-            and phone like #{paran_phone}
+            <bind name="param_phone" value="'%'+phone+'%'" />
+            and phone like #{param_phone}
         </if>
         <if test="state==1 and startTime!=null">
             and register_time between #{startTime} and #{endTime}
@@ -112,6 +112,16 @@
     <select id="selectHomeInformationById" parameterType="Integer" resultMap="HomeInformation">
         select id, photo, username, gender, reward_points, register_time, position, description, fans_count
         from user where id = ${visitId}
+    </select>
+
+    <select id="selectUserCardsLikeUsername" resultType="top.ysqorz.forum.dto.resp.ChatUserCardDTO" parameterType="map">
+        <bind name="param_username" value="'%' + username + '%'" />
+        select u.id, photo, username, cf.alias, gender, description as `desc`,
+               if(cf.id, true, false) as isChatFriend
+        from user u
+        left join chat_friend cf on cf.my_id = #{myId} and cf.friend_id = u.id
+        where u.id != #{myId} and username like #{param_username}
+        order by last_login_time desc
     </select>
 
     <update id="updateAndAddFansCount" parameterType="Integer">

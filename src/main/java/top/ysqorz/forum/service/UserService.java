@@ -2,6 +2,7 @@ package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
@@ -65,6 +66,11 @@ public interface UserService {
     List<User> getUsersLikeUsername(String username, boolean isExcludeMe);
 
     /**
+     * 根据用户名模糊匹配用户
+     */
+    List<ChatUserCardDTO> getUserCardsLikeUsername(String username);
+
+    /**
      * 后台用户管理
      */
     List<UserDTO> getMyUserList(QueryUserCondition conditions);
@@ -72,7 +78,7 @@ public interface UserService {
     /**
      * 重置密码
      */
-    int updatePsw(Integer userId);
+    int updatePsw(Integer userId, String loginSalt);
 
     /**
      * 修改用户

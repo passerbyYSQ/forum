@@ -2,10 +2,7 @@ package top.ysqorz.forum.controller.front;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
@@ -58,8 +55,9 @@ public class ChatController {
      * 申请添加好友
      */
     @ResponseBody
-    @GetMapping("/friend/apply")
-    public ResultModel applyFiend(@NotNull Integer receiverId, @RequestParam(defaultValue = "") String content) {
-        return ResultModel.wrap(chatService.applyFriend(receiverId, content));
+    @PostMapping("/friend/apply")
+    public ResultModel applyFiend(@NotNull Integer receiverId, @NotNull Integer friendGroupId,
+                                  @RequestParam(defaultValue = "") String content) {
+        return ResultModel.wrap(chatService.applyFriend(receiverId, friendGroupId, content));
     }
 }

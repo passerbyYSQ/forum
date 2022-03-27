@@ -32,6 +32,12 @@ public class ChatFriend {
     private Integer friendId;
 
     /**
+     * 好友分组的id。如果为null表示未分组
+     */
+    @Column(name = "friend_group_id")
+    private Integer friendGroupId;
+
+    /**
      * 好友的备注名
      */
     private String alias;
