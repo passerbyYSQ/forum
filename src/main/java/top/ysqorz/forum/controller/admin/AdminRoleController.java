@@ -1,17 +1,16 @@
 package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.PermZTreeNode;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.PermZTreeNode;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
@@ -139,17 +138,11 @@ public class AdminRoleController {
         if (count < 1) {
             count = 10;
         }
-
         // 紧跟在这个方法后的第一个MyBatis 查询方法会被进行分页
         PageHelper.startPage(page, count);
         // 该查询被分页
         List<Role> roleList = roleService.getRoleList(roleName);
-
-        PageInfo<Role> pageInfo = new PageInfo<>(roleList);
-        // 获取必需的分页属性
-        PageData<Role> pageData = new PageData<>(pageInfo, roleList);
-
-        return ResultModel.success(pageData);
+        return ResultModel.success(new PageData<>(roleList));
     }
 
 }

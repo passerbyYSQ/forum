@@ -1,7 +1,6 @@
 package top.ysqorz.forum.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -192,8 +191,7 @@ public class CommentServiceImpl implements CommentService {
             firstComment.setIsPostCreator(isPostCreator);
         }
 
-        PageInfo<FirstCommentDTO> pageInfo = new PageInfo<>(firstComments);
-        return new PageData<>(pageInfo, firstComments);
+        return new PageData<>(firstComments);
     }
 
 
@@ -214,8 +212,7 @@ public class CommentServiceImpl implements CommentService {
             secondCreator.setLevel(6);
             secondComment.setIsPostCreator(secondCreator.getId().equals(post.getCreatorId()));
         }
-        PageInfo<SecondCommentDTO> pageInfo = new PageInfo<>(secondCommentList);
-        return new PageData<>(pageInfo, secondCommentList);
+        return new PageData<>(secondCommentList);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
@@ -43,9 +42,7 @@ public class AdminPostController {
         condition.generateOrderByStr(); // 校验参数，并拼接order by部分的字符串
         PageHelper.startPage(page, count); // 里面会做page的越界纠正
         List<PostDTO> postList = postService.getPostList(condition);
-        PageInfo<PostDTO> pageInfo = new PageInfo<>(postList);
-        PageData<PostDTO> pageData = new PageData<>(pageInfo, postList);
-        return ResultModel.success(pageData);
+        return ResultModel.success(new PageData<>(postList));
     }
 
     /**

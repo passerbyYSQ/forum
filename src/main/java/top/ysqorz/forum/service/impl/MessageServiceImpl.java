@@ -1,7 +1,6 @@
 package top.ysqorz.forum.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -35,10 +34,8 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public PageData<MessageListDTO> getMegList(Integer page, Integer count, Integer conditions) {
-
         PageHelper.startPage(page, count);
         List<MessageListDTO> megList;
-        //        ShiroUtils.getUserId()
         if (conditions == 0) {
             megList = commentNotificationMapper.getMegList(ShiroUtils.getUserId());
         } else {
@@ -52,11 +49,8 @@ public class MessageServiceImpl implements MessageService {
                 }
                 meg.setMyContent(content);
             }
-
         }
-
-        PageInfo<MessageListDTO> pageInfo = new PageInfo<>(megList);
-        return new PageData<>(pageInfo, megList);
+        return new PageData<>(megList);
     }
 
     @Override

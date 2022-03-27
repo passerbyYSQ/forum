@@ -69,7 +69,7 @@ public class CacheConfig extends CachingConfigurerSupport {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTimeSerializer dateTimeSerializer = new LocalDateTimeSerializer(dateTimeFormatter);
         LocalDateTimeDeserializer dateTimeDeserializer = new LocalDateTimeDeserializer(dateTimeFormatter);
-        return builder.serializationInclusion(JsonInclude.Include.NON_NULL)
+        return builder.serializationInclusion(JsonInclude.Include.NON_NULL) // 不序列化空的字段
                 .serializerByType(LocalDateTime.class, dateTimeSerializer)
                 .deserializerByType(LocalDateTime.class, dateTimeDeserializer)
                 .createXmlMapper(false)

@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -8,6 +9,7 @@ import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.ChatFriendApplyMapper;
 import top.ysqorz.forum.dao.ChatFriendMapper;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
@@ -42,7 +44,7 @@ public class ChatServiceImpl implements ChatService {
      * 暂不支持状态条件的筛选，故status暂时没用到
      */
     @Override
-    public List<ChatUserCardDTO> getChatUserCards(String keyword, String status, Integer page, Integer count) {
+    public PageData<ChatUserCardDTO> getChatUserCards(String keyword, String status, Integer page, Integer count) {
         List<User> userList = new ArrayList<>();
         User accurateUser = null; // 精确结果
         if (keyword.matches(Constant.REGEX_PHONE)) {
@@ -50,23 +52,29 @@ public class ChatServiceImpl implements ChatService {
         } else if (keyword.matches(Constant.REGEX_EMAIL)) {
             accurateUser = userService.getUserByEmail(keyword);
         }
+
+        Page pageInfo = PageHelper.startPage(page, count); // 开启分页
         if (!ObjectUtils.isEmpty(accurateUser)) { // 能够精确查找到，直接返回
             userList.add(accurateUser);
         } else { // 模糊匹配
-            PageHelper.startPage(page, count); // 分页
-            userList = userService.getUsersLikeUsername(keyword);
+            userList = userService.getUsersLikeUsername(keyword, true);
         }
 
         ChatService chatService = this;
-        return userList.stream().map(user -> {
+        List<ChatUserCardDTO> userCards = userList.stream().map(user -> {
             ChatUserCardDTO userCard = new ChatUserCardDTO(user);
             ChatFriend chatFriend = chatService.getChatFriendByBothIds(user.getId());
             boolean isOnline = redisService.isUserOnline(user.getId());
             userCard.setIsChatFriend(!ObjectUtils.isEmpty(chatFriend))
-                    .setAlias(chatFriend.getAlias())
                     .setStatus(isOnline ? "online" : "offline");
+            if (!ObjectUtils.isEmpty(chatFriend)) {
+                userCard.setAlias(chatFriend.getAlias());
+            }
             return userCard;
         }).collect(Collectors.toList());
+        // 注意，userCards中无丢失了分页信息，userList中才有分页信息
+        // PageData<ChatUserCardDTO> pageData = new PageData<>(userCards);
+        return new PageData<>(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), userCards);
     }
 
     @Override
@@ -91,6 +99,7 @@ public class ChatServiceImpl implements ChatService {
         ChatFriendApply friendApply = this.getFriendApplyByBothIds(receiverId);
         if (ObjectUtils.isEmpty(friendApply)) { // 不存在，则插入新的记录
             this.addFriendApply(receiverId, content);
+            // TODO 消息推送
         } else {
             // 好友同意和拒绝后，对方签收后才删除对应；忽略后，立即删除
             // 已经存在申请记录，可能是：1.接收者同意或者拒绝，但发送者还没签收；2.接收者尚未处理；

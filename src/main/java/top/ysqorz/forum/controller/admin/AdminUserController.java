@@ -1,7 +1,6 @@
 package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,11 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.dto.BlackInfoDTO;
+import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.QueryUserCondition;
+import top.ysqorz.forum.dto.UserDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
-import top.ysqorz.forum.dto.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -46,15 +48,7 @@ public class AdminUserController {
         PageHelper.startPage(page, limit);
         //  PageHelper.clearPage(); //不加报错
         List<UserDTO> myUserList = userService.getMyUserList(conditions);
-        // List<User> userList = userService.getUserList(conditions);
-        PageInfo<UserDTO> pageInfo = new PageInfo<>(myUserList);
-        PageData<UserDTO> pageData = new PageData<>();
-        pageData.setList(myUserList);
-        pageData.setTotal(pageInfo.getTotal());
-        pageData.setPage(pageInfo.getPageNum());
-        pageData.setCount(pageInfo.getPageSize());
-
-        return ResultModel.success(pageData);
+        return ResultModel.success(new PageData<>(myUserList));
     }
 
     /**
@@ -134,15 +128,8 @@ public class AdminUserController {
             limit = 10;
         }
         PageHelper.startPage(page, limit);
-        List<Role> role = userService.getRoleByUserId(userId);
-        PageInfo<Role> pageInfo = new PageInfo<>(role);
-        PageData<Role> pageData = new PageData<>();
-        pageData.setList(role);
-        pageData.setTotal(pageInfo.getTotal());
-        pageData.setPage(pageInfo.getPageNum());
-        pageData.setCount(pageInfo.getPageSize());
-
-        return ResultModel.success(pageData);
+        List<Role> roles = userService.getRoleByUserId(userId);
+        return ResultModel.success(new PageData<>(roles));
     }
 
     /**

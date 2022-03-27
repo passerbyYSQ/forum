@@ -1,8 +1,8 @@
 package top.ysqorz.forum.dto;
 
 import com.github.pagehelper.PageInfo;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -12,20 +12,23 @@ import java.util.List;
  * @author passerbyYSQ
  * @create 2021-02-02 23:45
  */
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class PageData<T> {
     private Integer page; // 返回给前端的，被纠正的当前页。可能因为越界而被纠正
     private Integer count; // 每一页显示的记录数。前端不传，会赋默认值
     private Long total; // 总记录数
     private List<T> list; // 当前页的列表数据
 
-
-    public PageData() {
-    }
-
-    public PageData(PageInfo pageInfo, List<T> list) {
-        this(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), list);
+    /**
+     * 注意是list必须是查询数据库返回的List，否则是没有分页信息的
+     */
+    public PageData(List<T> list) {
+        PageInfo<T> pageInfo = new PageInfo<>(list);
+        this.page = pageInfo.getPageNum();
+        this.count = pageInfo.getPageSize();
+        this.total = pageInfo.getTotal();
+        this.list = list;
     }
 
     public PageData(Integer page, Integer count, Long total, List<T> list) {
@@ -34,5 +37,4 @@ public class PageData<T> {
         this.total = total;
         this.list = list;
     }
-
 }

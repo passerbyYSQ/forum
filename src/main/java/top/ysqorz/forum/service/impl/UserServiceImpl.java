@@ -1,7 +1,6 @@
 package top.ysqorz.forum.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
@@ -83,9 +82,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsersLikeUsername(String username) {
+    public List<User> getUsersLikeUsername(String username, boolean isExcludeMe) {
         Example example = new Example(User.class);
-        example.createCriteria().andLike("username", "%" + username + "%");
+        example.orderBy("lastLoginTime").desc();
+        Example.Criteria criteria = example.createCriteria();
+        if (isExcludeMe) {
+            criteria.andNotEqualTo("id", ShiroUtils.getUserId());
+        }
+        criteria.andLike("username", "%" + username + "%");
         return userMapper.selectByExample(example);
     }
 
@@ -99,7 +103,7 @@ public class UserServiceImpl implements UserService {
     public int updatePsw(Integer userId) {
         User record = new User();
         record.setId(userId);
-        record.setPassword("123456");
+        record.setPassword("123456"); // TODO ERROR,需要加密后
         return userMapper.updateByPrimaryKeySelective(record);
     }
 
@@ -186,10 +190,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(RegisterDTO dto) {
-
         User user = new User();
         user.setEmail(dto.getEmail());
-        user.setUsername(dto.getUsername());
+        user.setUsername(dto.getUsername().trim());
 
         // 8个字符的随机字符串，作为加密登录的随机盐。
         String salt = RandomUtils.generateStr(8);
@@ -400,8 +403,7 @@ public class UserServiceImpl implements UserService {
     public PageData<PostDTO> getIndexPost(Integer visitId, Integer page, Integer count) {
         PageHelper.startPage(page, count);
         List<PostDTO> postDTOList = this.getPostInformation(visitId);
-        PageInfo<PostDTO> pageInfo = new PageInfo<>(postDTOList);
-        return new PageData<>(pageInfo, postDTOList);
+        return new PageData<>(postDTOList);
     }
 
     @Override
@@ -417,8 +419,7 @@ public class UserServiceImpl implements UserService {
             firstCommentDTO.setContent(content);
             firstCommentDTO.setTimeDifference(timeDifferenceCalculate(firstCommentDTO.getCreateTime()));
         }
-        PageInfo<FirstCommentDTO> commentInfo = new PageInfo<>(firstCommentDTOList);
-        return new PageData<>(commentInfo, firstCommentDTOList);
+        return new PageData<>(firstCommentDTOList);
     }
 
     @Override

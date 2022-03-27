@@ -99,8 +99,7 @@ public class CommentController {
         if (count < 1) {
             count = 1;
         }
-        PageData<FirstCommentDTO> commentList =
-                commentService.getFirstCommentList(post, page, count, isTimeAsc);
+        PageData<FirstCommentDTO> commentList = commentService.getFirstCommentList(post, page, count, isTimeAsc);
         return ResultModel.success(commentList);
     }
 
@@ -116,8 +115,7 @@ public class CommentController {
         if (count < 1) {
             count = 1;
         }
-        PageData<SecondCommentDTO> secondCommentList =
-                commentService.getSecondCommentList(firstComment, page, count);
+        PageData<SecondCommentDTO> secondCommentList = commentService.getSecondCommentList(firstComment, page, count);
         return ResultModel.success(secondCommentList);
     }
 
@@ -126,7 +124,6 @@ public class CommentController {
         int count = commentService.getFrontFirstCommentCount(firstCommentId);
         return  count != -1 ? ResultModel.success(count) :
                 ResultModel.failed(StatusCode.FIRST_COMMENT_NOT_EXIST);
-
     }
 
     @GetMapping("/second/frontCount")

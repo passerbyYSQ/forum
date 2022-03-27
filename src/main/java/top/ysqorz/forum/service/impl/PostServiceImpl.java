@@ -1,7 +1,6 @@
 package top.ysqorz.forum.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -325,8 +324,7 @@ public class PostServiceImpl implements PostService {
             post.setIsHot(top5.contains(post.getId()));
         }
         // List<User> userList = userService.getUserList(conditions);
-        PageInfo<PostDTO> pageInfo = new PageInfo<>(postList);
-        return new PageData<>(pageInfo, postList);
+        return new PageData<>(postList);
     }
 
 }

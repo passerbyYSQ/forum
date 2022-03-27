@@ -5,14 +5,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.service.ChatService;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author passerbyYSQ
@@ -46,9 +46,10 @@ public class ChatController {
      * @param keyword   关键词。手机号，邮箱，用户名
      * @param status    状态。all，online，offline
      */
+    @ResponseBody
     @GetMapping("/search/user")
-    public ResultModel<List<ChatUserCardDTO>> searchUser(
-            @NotBlank String keyword, @RequestParam(defaultValue = "all") String status,
+    public ResultModel<PageData<ChatUserCardDTO>> searchUser(
+            @RequestParam(defaultValue = "") String keyword, @RequestParam(defaultValue = "all") String status,
              @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "8") Integer count) {
         return ResultModel.success(chatService.getChatUserCards(keyword, status, page, count));
     }
@@ -56,6 +57,7 @@ public class ChatController {
     /**
      * 申请添加好友
      */
+    @ResponseBody
     @GetMapping("/friend/apply")
     public ResultModel applyFiend(@NotNull Integer receiverId, @RequestParam(defaultValue = "") String content) {
         return ResultModel.wrap(chatService.applyFriend(receiverId, content));

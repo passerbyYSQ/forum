@@ -1,11 +1,10 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
-
-import java.util.List;
 
 /**
  * @author passerbyYSQ
@@ -15,7 +14,7 @@ public interface ChatService {
     /**
      * 查找用户，用于添加好友
      */
-    List<ChatUserCardDTO> getChatUserCards(String keyword, String status, Integer page, Integer count);
+    PageData<ChatUserCardDTO> getChatUserCards(String keyword, String status, Integer page, Integer count);
 
     /**
      * 根据两个人的用户id查找好友关系

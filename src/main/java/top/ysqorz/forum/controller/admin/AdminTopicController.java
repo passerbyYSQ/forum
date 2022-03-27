@@ -1,17 +1,16 @@
 package top.ysqorz.forum.controller.admin;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.po.Topic;
-import top.ysqorz.forum.service.TopicService;
-import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.TopicDTO;
+import top.ysqorz.forum.po.Topic;
+import top.ysqorz.forum.service.TopicService;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -39,14 +38,7 @@ public class AdminTopicController {
         }
         PageHelper.startPage(page, limit);
         List<TopicDTO> allTopic = topicService.getAllTopic(topicName);
-        PageInfo<TopicDTO> pageInfo = new PageInfo<>(allTopic);
-        PageData<TopicDTO> pageData = new PageData<>();
-        pageData.setList(allTopic);
-        pageData.setTotal(pageInfo.getTotal());
-        pageData.setPage(pageInfo.getPageNum());
-        pageData.setCount(pageInfo.getPageSize());
-
-        return ResultModel.success(pageData);
+        return ResultModel.success(new PageData<>(allTopic));
     }
 
 

@@ -62,7 +62,7 @@ public interface UserService {
     /**
      * 根据用户名模糊匹配用户
      */
-    List<User> getUsersLikeUsername(String username);
+    List<User> getUsersLikeUsername(String username, boolean isExcludeMe);
 
     /**
      * 后台用户管理

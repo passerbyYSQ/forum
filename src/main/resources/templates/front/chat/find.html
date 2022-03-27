@@ -98,30 +98,30 @@
                     <form class="layui-form toolbar" style="padding: 8px 0 12px 0;">
                         <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label w-auto">用户名:</label>
+                                <label class="layui-form-label w-auto">关键词:</label>
                                 <div class="layui-input-inline">
-                                    <input name="username" class="layui-input" placeholder="输入用户名"/>
+                                    <input name="keyword" class="layui-input" placeholder="邮箱、手机号、用户名"/>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label w-auto">状态:</label>
                                 <div class="layui-input-inline">
-                                    <select name="sex">
-                                        <option value="">所有</option>
-                                        <option value="男">在线</option>
-                                        <option value="女">离线</option>
+                                    <select name="status">
+                                        <option value="all">所有</option>
+                                        <option value="online">在线</option>
+                                        <option value="offline">离线</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label w-auto"></label>
-                                <button class="layui-btn icon-btn" lay-filter="userTbSearch" lay-submit>
+                                <button class="layui-btn icon-btn" lay-filter="userSearch" lay-submit>
                                     <i class="layui-icon">&#xe615;</i>搜索
                                 </button>
                             </div>
                         </div>
                     </form>
-                    <div class="layui-row layui-col-space30" style="padding: 0 8px;" id="demoCardList1"></div>
+                    <div class="layui-row layui-col-space30" style="padding: 0 8px;" id="userCardList"></div>
                 </div>
                 <div class="layui-tab-item">
                     <div class="layui-row layui-col-space30" id="demoCardList2"></div>
@@ -132,30 +132,44 @@
 </div>
 
 <!-- 应用模板 -->
-<script type="text/html" id="demoCardItem1">
+<script type="text/html" id="userCardItem">
     <div class="layui-col-md3 layui-col-sm6">
         <div class="application-list-item">
             <div class="application-list-item-header">
-                <img class="head" src="{{d.head}}"/>
+                <img class="head" src="{{d.photo}}"/>
                 <div>
                     <div class="application-list-item-title ellipsis-1-line">
-                        <span>别的就开始v别的口碑v</span>
+                        <span>{{d.alias || d.username}}</span>
                         <span class="application-list-item-icons">
-							<i class="layui-icon layui-icon-share" lay-tips="分享" lay-offset="0,-8px"></i>
-							<i class="layui-icon layui-icon-share" lay-tips="申请好友" lay-offset="0,-8px"></i>
-							<i class="layui-icon layui-icon-more"></i>
+                            <!-- 性别 -->
+                            {{# if (d.gender === 0) { }}
+                            <i class="layui-icon layui-icon-male" style="color: #1E9FFF;" lay-tips="男生" lay-offset="0,-8px"></i>
+                            {{# } else if (d.gender === 1) { }}
+                            <i class="layui-icon layui-icon-female" style="color: #FF5722;" lay-tips="女生" lay-offset="0,-8px"></i>
+                            {{# } else { }}
+							<i class="layui-icon layui-icon-help" style="color: #ccc;" lay-tips="保密" lay-offset="0,-8px"></i>
+                            {{# } }}
+                            <!-- 状态 -->
+                            {{# if (d.status === 'online') { }}
+                            <span class="layui-icon layim-status-online" lay-tips="在线" lay-offset="0,-8px">&#xe617;</span>
+                            {{# } else { }}
+                            <span class="layui-icon" style="color: #fda56c" lay-tips="离线" lay-offset="0,-8px">&#xe60f;</span>
+                            {{# } }}
 						</span>
                     </div>
-                    <p class="application-list-item-desc ellipsis-2-lines">个人描述个人描述个人描述个人描述个人描述个人描述个人描述个人描述个人描述个人描述</p>
+                    <p class="application-list-item-desc ellipsis-2-lines">{{d.desc || '暂无描述'}}</p>
                 </div>
             </div>
             <div class="application-list-item-tool">
-                <span class="application-list-item-tool-item" lay-event="share">
+                <span class="application-list-item-tool-item" lay-event="follow">
                     <i class="layui-icon layui-icon-star" lay-tips="关注" lay-offset="0,-8px"></i>
-<!--                    <i class="layui-icon layui-icon-share" lay-tips="分享" lay-offset="0,-8px"></i>-->
                 </span>
-                <span class="application-list-item-tool-item" lay-event="more">
+                <span class="application-list-item-tool-item" lay-event="applyFriend">
+                    {{# if (!d.isChatFriend) { }}
                     <i class="layui-icon layui-icon-add-circle" lay-tips="申请好友" lay-offset="0,-8px"></i>
+                    {{# } else { }}
+                    <i class="layui-icon layui-icon-friends" lay-tips="已是好友" lay-offset="0,-8px"></i>
+                    {{# } }}
                 </span>
             </div>
         </div>
@@ -166,40 +180,62 @@
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
-    layui.use(['layer', 'dataGrid', 'element', 'dropdown'], function () {
+    layui.use(['layer', 'dataGrid', 'element', 'form', 'app'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var dataGrid = layui.dataGrid;
+        var form = layui.form;
+        var app = layui.app;
 
-        /** 应用 */
-        $.get('/admin/json/data-grid3.json', function (res) {
-            dataGrid.render({
-                elem: '#demoCardList1',
-                templet: '#demoCardItem1',
-                data: res.data,
-                page: {limit: 8, limits: [8, 16, 24, 32, 40]},
-            });
+        var userCardDataGrid;
+
+        form.on('submit(userSearch)', function (data) {
+           console.log(data.field);
+           if (userCardDataGrid) { // reload
+               userCardDataGrid.reload({
+                   where: data.field
+               });
+           } else { // render
+               userCardDataGrid = dataGrid.render({
+                   elem: '#userCardList',
+                   templet: '#userCardItem',
+                   url: '/chat/search/user',
+                   where: data.field,
+                   request: { limitName: 'count' }, //每页数据量的参数名，默认：limit
+                   parseData: function (res) {
+                       return {
+                           "code": res.code === 2000 ? 0 : -1, //解析接口状态
+                           "msg": res.msg, //解析提示文本
+                           "count": res.data.total, //解析数据长度
+                           "data": res.data.list //解析数据列表
+                       };
+                   },
+                   page: {
+                       limit: 8,
+                       limits: [8, 16, 24]
+                   },
+               });
+           }
+           return false; // 阻止表单提交导致刷新页面
         });
 
-        dataGrid.on('tool(demoCardList1)', function (obj) {
-            if (obj.event === 'download') {
-                layer.msg('点击了下载');
-            } else if (obj.event === 'edit') {
-                layer.msg('编辑');
-            } else if (obj.event === 'share') {
-                layer.msg('点击了分享');
-            } else if (obj.event === 'item1') {
-                layer.msg('点击了1st menu item');
-            } else if (obj.event === 'item2') {
-                layer.msg('点击了2nd menu item');
-            } else if (obj.event === 'item3') {
-                layer.msg('点击了3rd menu item');
+        dataGrid.on('tool(userCardList)', function (obj) {
+            console.log(obj);
+            if (obj.event === 'follow') {
+                layer.msg('点击了关注');
+            } else if (obj.event === 'applyFriend') {
+                // layer.msg('申请好友');
+                applyFriend(obj.data)
             }
         });
 
-        dataGrid.on('item(demoCardList1)', function (obj) {
-            layer.msg('点击了第' + (obj.index + 1) + '个');
-        });
+        function applyFriend(data) {
+            if (data.isChatFriend) {
+                layer.msg('已是好友');
+                return;
+            }
+            console.log('--');
+        }
     });
 </script>
 </body>
