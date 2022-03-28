@@ -8,8 +8,8 @@ import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.po.DanmuMsg;
-import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
+import top.ysqorz.forum.shiro.LoginUser;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 import top.ysqorz.forum.utils.SpringUtils;
@@ -32,7 +32,7 @@ public class DanmuMsgHandler extends NonFunctionalMsgHandler<DanmuMsg> {
     }
 
     @Override
-    protected DanmuMsg processData(DanmuMsg danmu, User user) {
+    protected DanmuMsg processData(DanmuMsg danmu, LoginUser user) {
         if (ObjectUtils.isEmpty(danmu.getContent()) || danmu.getVideoId() == null) {
             return null;
         }

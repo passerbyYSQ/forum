@@ -2,6 +2,7 @@ package top.ysqorz.forum.po;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import top.ysqorz.forum.shiro.LoginUser;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
@@ -56,7 +57,7 @@ public class DanmuMsg {
         String username;
         String photo;
 
-        public DanmuCreator(User user) {
+        public DanmuCreator(LoginUser user) {
             this.userId = user.getId();
             this.username = user.getUsername();
             this.photo = user.getPhoto();

@@ -1,6 +1,7 @@
 package top.ysqorz.forum.shiro;
 
 import org.apache.shiro.authc.HostAuthenticationToken;
+import top.ysqorz.forum.utils.JwtUtils;
 
 /**
  * 或者直接实现AuthenticationToken也可以
@@ -36,7 +37,7 @@ public class JwtToken implements HostAuthenticationToken {
      */
     @Override
     public Object getPrincipal() {
-        return token;
+        return Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
     }
 
     /**

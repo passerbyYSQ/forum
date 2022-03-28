@@ -72,8 +72,7 @@ public class AdminUserController {
     @PostMapping("/cancelBlock")
     public ResultModel cancelBlock(@RequestParam("userId") @NotNull Integer userId) {
         int i = userService.cancelBlock(userId);
-        return i == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.USER_NOT_BLOCK);
+        return i == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.USER_NOT_BLOCK);
     }
 
     /**
@@ -84,8 +83,7 @@ public class AdminUserController {
     public ResultModel block(@Validated(Blacklist.Add.class) Blacklist blacklist) {
         //System.out.println(blacklist);
         int i = userService.block(blacklist);
-        return i == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.USERNAME_IS_EXIST);
+        return i == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.USERNAME_EXIST);
 
     }
 
@@ -110,9 +108,8 @@ public class AdminUserController {
         if (userService.getUserById(userId) == null) {
             return ResultModel.failed(StatusCode.USER_NOT_EXIST);
         }
-        int i = userService.addRoleForUser(roleIds, userId);
-        return i == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.USERNAME_IS_EXIST);
+        userService.addRoleForUser(roleIds, userId);
+        return ResultModel.success();
     }
 
     /**
@@ -139,9 +136,11 @@ public class AdminUserController {
     @PostMapping("/delRole")
     public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) {
-        int i = userService.delRoleForUser(roleIds, userId);
-        return i == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.USERNAME_IS_EXIST);
+        if (userService.getUserById(userId) == null) {
+            return ResultModel.failed(StatusCode.USER_NOT_EXIST);
+        }
+        userService.delRoleForUser(roleIds, userId);
+        return ResultModel.success();
     }
 
 }

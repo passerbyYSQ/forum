@@ -91,48 +91,48 @@ public class ShiroConfig {
 
     /**
      * 设置请求的过滤规则
-     * @return
+     * 如果要完全禁用session（不会生产JSESSIONID且使用Session会报错），需要使用noSessionCreation过滤器
      */
     @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
 
-        chain.addPathDefinition("/", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/index", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/index/list", "noSessionCreation,jwtAuth[permissive]");
+        chain.addPathDefinition("/", "jwtAuth[permissive]");
+        chain.addPathDefinition("/index", "jwtAuth[permissive]");
+        chain.addPathDefinition("/index/list", "jwtAuth[permissive]");
         // 除了浏览帖子特殊（不登录也行，只是数据不一样），发帖、修改、删除帖子等其他操作都需要登录
-        chain.addPathDefinition("/video/**", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/post/detail/**", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/post/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/attend", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/chat/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/user/logout", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/user/center/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/user/oauth/**/callback", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/user/home/**", "noSessionCreation,jwtAuth[permissive]");
-        chain.addPathDefinition("/user/**", "noSessionCreation,anon");
-        chain.addPathDefinition("/upload/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/meg/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/comment/**/publish", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/comment/delete", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/video/**", "jwtAuth[permissive]");
+        chain.addPathDefinition("/post/detail/**", "jwtAuth[permissive]");
+        chain.addPathDefinition("/post/**", "jwtAuth");
+        chain.addPathDefinition("/attend", "jwtAuth");
+        chain.addPathDefinition("/chat/**", "jwtAuth");
+        chain.addPathDefinition("/user/logout", "jwtAuth");
+        chain.addPathDefinition("/user/center/**", "jwtAuth");
+        chain.addPathDefinition("/user/oauth/**/callback", "jwtAuth[permissive]");
+        chain.addPathDefinition("/user/home/**", "jwtAuth[permissive]");
+        chain.addPathDefinition("/user/**", "anon");
+        chain.addPathDefinition("/upload/**", "jwtAuth");
+        chain.addPathDefinition("/meg/**", "jwtAuth");
+        chain.addPathDefinition("/comment/**/publish", "jwtAuth");
+        chain.addPathDefinition("/comment/delete", "jwtAuth");
 
-        chain.addPathDefinition("/im/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/im/**", "jwtAuth");
 
-        chain.addPathDefinition("/admin/assets/**", "noSessionCreation,anon");
-        chain.addPathDefinition("/admin", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/admin/index", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/admin/console/**", "noSessionCreation,jwtAuth");
-        chain.addPathDefinition("/admin/system/**", "noSessionCreation,jwtAuth");
+        chain.addPathDefinition("/admin/assets/**", "anon");
+        chain.addPathDefinition("/admin", "jwtAuth");
+        chain.addPathDefinition("/admin/index", "jwtAuth");
+        chain.addPathDefinition("/admin/console/**", "jwtAuth");
+        chain.addPathDefinition("/admin/system/**", "jwtAuth");
 
         // 放行静态资源。但是admin也把后台给放行了。之后再做修正
-        chain.addPathDefinition("/front/**", "noSessionCreation,anon");
-        chain.addPathDefinition("/captcha/**", "noSessionCreation,anon");
-        chain.addPathDefinition("/test/**", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
+        chain.addPathDefinition("/front/**", "anon");
+        chain.addPathDefinition("/captcha/**", "anon");
+        chain.addPathDefinition("/test/**", "anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
 
 //        // 注意第2个参数的"jwtAuth"需要与上面的 filters.put("jwtAuth", new JwtAuthenticatingFilter()); 一致
 //        // 做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
-//        chainDefinition.addPathDefinition("/user/logout", "noSessionCreation,jwtAuth[permissive]");
-//        chainDefinition.addPathDefinition("/**", "noSessionCreation,jwtAuth"); // 默认进行用户鉴权
+//        chainDefinition.addPathDefinition("/user/logout", "jwtAuth[permissive]");
+//        chainDefinition.addPathDefinition("/**", "jwtAuth"); // 默认进行用户鉴权
         return chain;
     }
 

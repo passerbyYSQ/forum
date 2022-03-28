@@ -6,8 +6,8 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
-import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
+import top.ysqorz.forum.shiro.LoginUser;
 import top.ysqorz.forum.utils.SpringUtils;
 
 import java.util.HashSet;
@@ -105,7 +105,7 @@ public class MsgCenter {
         first.push(msg, sourceChannelId);
     }
 
-    public void remoteDispatch(MsgModel msg, String sourceChannelId, User user) { // source user
+    public void remoteDispatch(MsgModel msg, String sourceChannelId, LoginUser user) { // source user
         first.remoteDispatch(msg, sourceChannelId, user);
     }
 

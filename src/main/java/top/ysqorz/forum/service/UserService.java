@@ -31,14 +31,14 @@ public interface UserService {
     int updateRewardPoints(Integer userId, Integer num);
 
     /**
-     * 退出登录的时候，需要清空Jwt的salt
+     * 修改生产jwt的随机盐
      */
-    int updateJwtSalt(Integer userId, String jwtSalt);
+    void updateJwtSalt(Integer userId, String jwtSalt);
 
     /**
      * 登录
      */
-    String login(User user, HttpServletResponse response);
+    String login(Integer userId, String loginSalt, HttpServletResponse response);
 
     /**
      * 退出登录
@@ -113,7 +113,7 @@ public interface UserService {
     /**
      * 为某一用户添加角色
      */
-    int addRoleForUser(Integer[] roleIds, Integer userId);
+    void addRoleForUser(Integer[] roleIds, Integer userId);
 
     /**
      * 查询用户已有角色
@@ -123,7 +123,7 @@ public interface UserService {
     /**
      * 删除用户已分配角色
      */
-    int delRoleForUser(Integer[] roleIds, Integer userId);
+    void delRoleForUser(Integer[] roleIds, Integer userId);
 
     /**
      * 注册
@@ -144,13 +144,6 @@ public interface UserService {
      * 百度授权
      */
     User oauth2Baidu(String code) throws IOException;
-
-    /**
-     * 清除上一次shiro的认证和授权缓存（实现单账号登录）。
-     * 没有办法直接操作缓存，而是采取先login再logout的方式，
-     * 让shiro帮我们清除缓存
-     */
-    void clearShiroCache(User user);
 
     SimpleUserDTO getSimpleUser(Integer userId);
 

@@ -5,7 +5,7 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.shiro.LoginUser;
 
 /**
  * @author passerbyYSQ
@@ -29,7 +29,7 @@ public class PingPongMsgHandler extends MsgHandler<MsgModel> {
     }
 
     @Override
-    protected boolean doHandle0(MsgModel msg, Channel channel, User loginUser) {
+    protected boolean doHandle0(MsgModel msg, Channel channel, LoginUser loginUser) {
         // 必须在TailHandler之前消费PING消息，否则PING消息会流指TailHandler导致channel被关闭
         channel.writeAndFlush(IMUtils.createTextFrame(MsgType.PONG));
         return true;

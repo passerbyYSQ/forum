@@ -9,6 +9,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
@@ -44,8 +45,7 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String token = (String) principals.getPrimaryPrincipal();
-        Integer userId = Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
+        Integer userId = (Integer) principals.getPrimaryPrincipal();
         List<top.ysqorz.forum.po.Resource> resourceList =
                 authorityService.getAuthorityList(null);
         List<Role> roles = roleService.getRoleByUserId(userId);
@@ -72,11 +72,14 @@ public class JwtRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 //        JwtToken jwtToken = (JwtToken) token;
         // 取决于JwtToken的getPrincipal()
-        String tokenStr = (String) token.getPrincipal();
+        String tokenStr = (String) token.getCredentials();
         Integer userId = Integer.valueOf(JwtUtils.getClaimByKey(tokenStr, "userId"));
 
         // 根据token中的username去数据库查询用户信息，并封装成SimpleAuthenticationInfo（认证信息）给Matcher去校验
         User user = userService.getUserById(userId);
+        if (ObjectUtils.isEmpty(user)) {
+            return null;
+        }
         /*
         注意第一个参数必须是与token.getPrincipal()，否则在remove缓存时的key，会与put的时候的key不一样
         从而导致退出的时候无法remove掉缓存。
@@ -91,11 +94,7 @@ public class JwtRealm extends AuthorizingRealm {
         json序列化。但我个人不建议使用json，用json无非是为了可视化，意义不大，但是由于java是强类型语言，
         反序列化的时候可能就会出问题
          */
-        AuthenticationInfo info = new SimpleAuthenticationInfo(token.getPrincipal(), user, this.getName());
-        if (getCredentialsMatcher().doCredentialsMatch(token, info)) {
-            return info;
-        }
-
-        return null;
+        LoginUser loginUser = new LoginUser(user, tokenStr);
+        return new SimpleAuthenticationInfo(token.getPrincipal(), loginUser, this.getName()); // loginUser必须实现序列化接口
     }
 }

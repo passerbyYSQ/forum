@@ -43,7 +43,7 @@ public enum StatusCode {
     CSRF_ATTACK(6007, "正在受到CSRF攻击"),
 
     // 用户相关
-    USERNAME_IS_EXIST(6101, "用户名已存在"),
+    USERNAME_EXIST(6101, "用户名已存在"),
     USER_NOT_EXIST(6102, "用户不存在"), // 可能是userId错误
     USER_NOT_BLOCK(6103, "用户当前不处于封禁状态"),
     USER_NOT_LOGIN(6104, "用户未登录"),

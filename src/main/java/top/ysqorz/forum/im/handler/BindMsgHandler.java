@@ -7,7 +7,7 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.shiro.LoginUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class BindMsgHandler extends MsgHandler<MsgModel> {
     }
 
     @Override
-    protected boolean doHandle0(MsgModel msg, Channel channel, User loginUser) {
+    protected boolean doHandle0(MsgModel msg, Channel channel, LoginUser loginUser) {
         JsonNode dataNode = msg.transformToDataNode(); // 能来到这，一定是BIND类型且携带了token，dataNode一定不为空
         if (ObjectUtils.isEmpty(msg.getChannelType()) || !dataNode.has("groupId")) {
             return true;

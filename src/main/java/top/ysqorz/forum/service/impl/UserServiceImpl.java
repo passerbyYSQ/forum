@@ -20,6 +20,7 @@ import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
 import top.ysqorz.forum.po.*;
+import top.ysqorz.forum.service.RoleService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.JwtToken;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -50,6 +51,8 @@ public class UserServiceImpl implements UserService {
     private BlacklistMapper blacklistMapper;
     @Resource
     private RoleMapper roleMapper;
+    @Resource
+    private RoleService roleService;
     @Resource
     private UserRoleMapper userRoleMapper;
     @Resource
@@ -159,13 +162,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional // 开启事务操作
     @Override
-    public int addRoleForUser(Integer[] roleIds, Integer userId) {
+    public void addRoleForUser(Integer[] roleIds, Integer userId) {
         for (Integer roleId : roleIds) {
-            Example example2 = new Example(Role.class);
-            example2.createCriteria().andEqualTo("id", roleId);
-            Role role = roleMapper.selectOneByExample(example2);
+            Role role = roleService.getRoleById(roleId);
             if (role == null) {
-                throw new ParameterErrorException("角色不存在");
+                throw new ParameterErrorException(StatusCode.ROLE_NOT_EXIST.getMsg());
             }
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)
@@ -178,7 +179,8 @@ public class UserServiceImpl implements UserService {
                 userRoleMapper.insert(userRole);
             }
         }
-        return 1;
+        // 清除授权缓存
+        ShiroUtils.clearUserAuthorizationCache(userId);
     }
 
     @Override
@@ -187,14 +189,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int delRoleForUser(Integer[] roleIds, Integer userId) {
+    public void delRoleForUser(Integer[] roleIds, Integer userId) {
         for (Integer roleId : roleIds) {
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)
                     .andEqualTo("roleId", roleId);
             userRoleMapper.deleteByExample(example);
         }
-        return 1;
+        // 清除授权缓存
+        ShiroUtils.clearUserAuthorizationCache(userId);
     }
 
     @Override
@@ -204,13 +207,13 @@ public class UserServiceImpl implements UserService {
         user.setUsername(dto.getUsername().trim());
 
         // 8个字符的随机字符串，作为加密登录的随机盐。
-        String salt = RandomUtils.generateStr(8);
+        String loginSalt = RandomUtils.generateStr(8);
         // 保存到user表，以后每次密码登录的时候，需要使用
-        user.setLoginSalt(salt);
+        user.setLoginSalt(loginSalt);
 
         // Md5Hash默认将随机盐拼接到源字符串的前面，然后使用md5加密，再经过x次的哈希散列
         // 第三个参数（hashIterations）：哈希散列的次数
-        String encryptPwd = this.encryptLoginPwd(dto.getPassword(), user.getLoginSalt());
+        String encryptPwd = this.encryptLoginPwd(dto.getPassword(), loginSalt);
         // 保存加密后的密码
         user.setPassword(encryptPwd)
                 .setRegisterTime(LocalDateTime.now())
@@ -332,18 +335,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void clearShiroCache(User user) {
-        // 旧的盐未被清空说明，已经登录尚未退出
-        if (!ObjectUtils.isEmpty(user.getJwtSalt())) {
-            // 根据旧盐再一次生成旧的token
-            JwtToken oldToken = this.generateJwtToken(user.getId(), user.getJwtSalt());
-            Subject subject = SecurityUtils.getSubject();
-            subject.login(oldToken);
-            this.logout(); // 先用旧的token登录再退出，从而清除掉旧token的缓存
-        }
-    }
-
-    @Override
     public SimpleUserDTO getSimpleUser(Integer userId) {
         SimpleUserDTO simpleUserDTO = userMapper.selectSimpleUserById(userId);
         simpleUserDTO.setLevel(6); // TODO 根据积分计算level
@@ -432,13 +423,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(User user, HttpServletResponse response) {
-//        String jwtSecret = RandomUtils.generateStr(8);
-        // 更新数据库中的jwt salt
-//        this.updateJwtSalt(user.getId(), jwtSecret); // jwt_salt已无用
+    public String login(Integer userId, String loginSalt, HttpServletResponse response) {
+//        String jwtSalt = RandomUtils.generateStr(8);
+//        this.updateJwtSalt(userId, jwtSalt);  // jwtSalt已弃用
 
         // shiro login
-        JwtToken jwtToken = this.generateJwtToken(user.getId(), user.getLoginSalt());
+        JwtToken jwtToken = this.generateJwtToken(userId, loginSalt);
         Subject subject = SecurityUtils.getSubject();
         subject.login(jwtToken);
 
@@ -448,6 +438,7 @@ public class UserServiceImpl implements UserService {
         cookie.setMaxAge((int) Constant.DURATION_JWT.getSeconds());
         cookie.setPath("/"); // ！！！
         response.addCookie(cookie);
+        response.setHeader("token", token);
 
         return token;
     }
@@ -461,8 +452,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JwtToken generateJwtToken(Integer userId, String jwtSalt) {
-        String jwt = JwtUtils.generateJwt("userId", userId.toString(),
-                jwtSalt, Constant.DURATION_JWT.toMillis());
+        String jwt = JwtUtils.generateJwt("userId", userId.toString(), jwtSalt, Constant.DURATION_JWT.toMillis());
         return new JwtToken(jwt);
     }
 
@@ -480,12 +470,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int updateJwtSalt(Integer userId, String jwtSalt) {
+    public void updateJwtSalt(Integer userId, String jwtSalt) {
         User record = new User();
         record.setId(userId);
         record.setJwtSalt(jwtSalt);
         record.setLastLoginTime(LocalDateTime.now());
-        return userMapper.updateByPrimaryKeySelective(record);
+        userMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override

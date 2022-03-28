@@ -9,6 +9,7 @@ import top.ysqorz.forum.im.entity.*;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.UserService;
+import top.ysqorz.forum.shiro.LoginUser;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.JwtUtils;
@@ -71,7 +72,7 @@ public abstract class MsgHandler<DataType> {
         }
     }
 
-    public void remoteDispatch(MsgModel msg, String sourceChannelId, User user) {
+    public void remoteDispatch(MsgModel msg, String sourceChannelId, LoginUser user) {
         if (checkMsgType(msg)) {
             DataType data = transformData(msg);
             if (data == null) {
@@ -143,24 +144,27 @@ public abstract class MsgHandler<DataType> {
     }
 
     private boolean doHandle(MsgModel msg, Channel channel) {
-        User loginUser = null;
+        LoginUser loginUser = null;
         if (isNeedLoginUserInfo) {
             // Integer userId = ShiroUtils.getUserId();
+            String token = null;
             Integer userId = IMUtils.getUserIdFromChannel(channel);
             if (userId == null) { // 没有绑定时发送消息
                 JsonNode dataNode = msg.transformToDataNode(); // PING消息dataNode为null但又能执行到此处
                 if (dataNode != null && dataNode.has("token")) {
-                    String token = dataNode.get("token").asText();
+                    token = dataNode.get("token").asText();
                     userId = Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
                 }
             }
-            loginUser = getUserById(userId);
+            User user = getUserById(userId);
+            loginUser = new LoginUser(user, token);
         }
         DataType data = transformData(msg);
         if (data != null) {
             data = processData(data, loginUser);
+            return doHandle0(data, channel, loginUser);
         }
-        return data != null && doHandle0(data, channel, loginUser);
+        return false;
     }
 
     private User getUserById(Integer userId) {
@@ -190,7 +194,7 @@ public abstract class MsgHandler<DataType> {
 
     protected abstract DataType transformData(MsgModel msg); // must implement
 
-    protected DataType processData(DataType data, User user) {
+    protected DataType processData(DataType data, LoginUser user) {
         return data; // 默认不处理直接返回
     }
 
@@ -203,7 +207,7 @@ public abstract class MsgHandler<DataType> {
      *
      * @return true：消费完成，不继续往下投递；false：未消费完成，继续往下投递
      */
-    protected abstract boolean doHandle0(DataType data, Channel channel, User loginUser);
+    protected abstract boolean doHandle0(DataType data, Channel channel, LoginUser loginUser);
 
     class PushApiCallback implements OkHttpUtils.ApiCallback {
         DataType data;

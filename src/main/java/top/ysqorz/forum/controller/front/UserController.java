@@ -141,8 +141,7 @@ public class UserController {
             return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
 
-//        userService.clearShiroCache(user);
-        String token = userService.login(user, response);
+        String token = userService.login(user.getId(), user.getLoginSalt(), response);
 
         String originReferer = CommonUtils.getUrlParam(referer, "referer");
         if (ObjectUtils.isEmpty(originReferer)) {
@@ -233,10 +232,8 @@ public class UserController {
             }
         }
         if (StatusCode.SUCCESS.equals(code)) { // 成功
-            // 清除shiro的缓存，实现单账号登录
-//            userService.clearShiroCache(user);
             // 签发我们自己的token
-            userService.login(user, response);
+            userService.login(user.getId(), user.getLoginSalt(), response);
             // 重定向携带token
             //redirectAttributes.addAttribute("token", token);
             // redirect:后不要加 "/"

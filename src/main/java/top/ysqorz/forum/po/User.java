@@ -9,7 +9,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -18,10 +17,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @EqualsAndHashCode
 @Table(name = "user")
-public class User implements Serializable {
+public class User {
 
-
-    private static final long serialVersionUID = 1L;
     /**
      * 用户id
      */
@@ -56,7 +53,7 @@ public class User implements Serializable {
 
     /**
      * 生成jwt的随机盐
-     * @deprecated 不实现单账号登录，此字段无用，已废弃
+     * @deprecated 弃用。因为每次login的jwtSalt都不一样，导致同一个账号无法多地登录
      */
     @Column(name = "jwt_salt")
     private String jwtSalt;
