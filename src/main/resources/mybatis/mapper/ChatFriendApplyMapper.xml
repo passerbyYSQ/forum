@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.ChatFriendApplyMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.ChatFriendApply">
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.ChatFriendApply">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="sender_id" jdbcType="INTEGER" property="senderId"/>
+        <result column="receiver_id" jdbcType="INTEGER" property="receiverId"/>
+        <result column="friend_group_id" jdbcType="INTEGER" property="friendGroupId"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="apply_time" jdbcType="TIMESTAMP" property="applyTime"/>
+    </resultMap>
+
     <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
-    <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
-    <result column="friend_group_id" jdbcType="INTEGER" property="friendGroupId" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="apply_time" jdbcType="TIMESTAMP" property="applyTime" />
-  </resultMap>
+    发送者是我的，说明肯定是已经被处理过的（拒绝或者同意）；接收者是我的，肯定是尚未处理的（需要我处理的），此时status肯定为null。
+    order by status asc：是让后者排列在前面
+     -->
+    <select id="selectFriendApplyNotifications" resultType="top.ysqorz.forum.dto.resp.ChatFriendApplyDTO"
+            parameterType="Integer">
+      select cfa.id as applyId, sender_id, receiver_id, username, photo,
+             description as sign, content, status, apply_time as modifyTime
+      from chat_friend_apply as cfa
+      left join user as u on u.id = if(receiver_id != #{myId}, receiver_id, sender_id)
+      where (receiver_id = #{myId} and isnull(status)) or (sender_id = #{myId} and status in (0, 1))
+      order by status, apply_time desc
+    </select>
 </mapper>

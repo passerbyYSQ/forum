@@ -135,7 +135,7 @@
             //,notice: true //是否开启桌面消息提醒，默认false
             //,voice: false //声音提醒，默认开启，声音文件为：default.mp3
 
-            , msgbox: '/admin/assets/libs/layui/css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+            , msgbox: '/chat/msgbox' //消息盒子页面地址，若不开启，剔除该项即可
             , find: '/chat/find' //发现页面地址，若不开启，剔除该项即可
             , chatLog: '/admin/assets/libs/layui/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
 
@@ -222,6 +222,7 @@
             }
         });
 
+        // 发送好友申请
         window.applyFriend = function (userId, username, photo) {
             layim.add({
                 type: 'friend',
@@ -238,6 +239,39 @@
                         }, function () {
                             layer.close(index);
                         });
+                    });
+                }
+            });
+        };
+
+        // 同意添加好友
+        window.addFriend = function (applyId, user, callback) {
+            layim.setFriendGroup({
+                type: 'friend',
+                username: user.username,
+                avatar: user.photo,
+                group: layim.cache().friend, // 获取分组
+                submit: function (group, index) {
+                    app.ajax('/chat/apply/process', {
+                        friendApplyId: applyId,
+                        friendGroupId: parseInt(group),
+                        action: 'agree'
+                    }, function (res) {
+                        // 将好友追加到主面板
+                        layim.addList({
+                            type: 'friend',
+                            username: user.username,
+                            avatar: user.photo,
+                            groupid: group, //所在的分组id
+                            id: user.id,  //好友ID
+                            sign: user.sign //好友签名
+                        });
+                        layer.msg('已成功添加好友', {
+                            icon: 1, shade: 0.5
+                        }, function () {
+                            layer.close(index);
+                        });
+                        callback && callback();
                     });
                 }
             });
@@ -360,6 +394,7 @@
                     }
                 });
             }
+            // 同意添加好友
             , addFriend: function () {
                 var user = {
                     type: 'friend'

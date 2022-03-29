@@ -5,6 +5,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.service.ChatService;
 
@@ -39,9 +40,17 @@ public class ChatController {
     }
 
     /**
+     * 消息盒子的页面，显示好友申请的通知
+     */
+    @GetMapping("/msgbox")
+    public String msgBoxPage() {
+        return "front/chat/msgbox";
+    }
+
+    /**
      * 查找用户，添加好友。暂不支持状态（在线/离线）条件
      * @param keyword   关键词。手机号，邮箱，用户名
-     * @param status    状态。all，online，offline
+     * @param status    状态。all, online, offline
      */
     @ResponseBody
     @GetMapping("/search/user")
@@ -59,5 +68,26 @@ public class ChatController {
     public ResultModel applyFiend(@NotNull Integer receiverId, @NotNull Integer friendGroupId,
                                   @RequestParam(defaultValue = "") String content) {
         return ResultModel.wrap(chatService.applyFriend(receiverId, friendGroupId, content));
+    }
+
+    /**
+     * 好友申请的消息通知列表
+     */
+    @ResponseBody
+    @GetMapping("/notification")
+    public ResultModel<PageData<ChatFriendApplyDTO>> notification(@RequestParam(defaultValue = "1") Integer page,
+                                                              @RequestParam(defaultValue = "8") Integer count) {
+        return ResultModel.success(chatService.getFriendApplyNotifications(page, count));
+    }
+
+    /**
+     * 处理好友申请
+     * @param action    agree, refuse, ignore
+     */
+    @ResponseBody
+    @PostMapping("/apply/process")
+    public ResultModel processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
+                                          @NotNull String action) {
+        return ResultModel.wrap(chatService.processFriendApply(friendApplyId, friendGroupId, action));
     }
 }

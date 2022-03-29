@@ -3,6 +3,7 @@ package top.ysqorz.forum.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
@@ -11,6 +12,7 @@ import top.ysqorz.forum.dao.ChatFriendApplyMapper;
 import top.ysqorz.forum.dao.ChatFriendGroupMapper;
 import top.ysqorz.forum.dao.ChatFriendMapper;
 import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
@@ -70,7 +72,7 @@ public class ChatServiceImpl implements ChatService {
         }
 
         for (ChatUserCardDTO userCard : userCards) {
-            boolean isOnline = redisService.isUserOnline(userCard.getId());
+            boolean isOnline = redisService.isUserOnline(userCard.getUserId());
             userCard.setStatus(isOnline ? "online" : "offline");
         }
         // 注意，userCards中无丢失了分页信息，userList中才有分页信息
@@ -123,6 +125,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public void addChatFriend(Integer myId, Integer friendId, Integer friendGroupId) {
+        ChatFriend chatFriend = new ChatFriend();
+        chatFriend.setMyId(myId)
+                .setFriendId(friendId)
+                .setFriendGroupId(friendGroupId)
+                .setCreateTime(LocalDateTime.now());
+        chatFriendMapper.insert(chatFriend);
+    }
+
+    @Override
     public StatusCode applyFriend(Integer receiverId, Integer friendGroupId, String content) {
         if (this.isInvalidFriendGroup(friendGroupId)) { // 检查好友分组id是否非法
             return StatusCode.CHAT_FRIEND_GROUP_INVALID;
@@ -164,6 +176,11 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public ChatFriendApply getFriendApplyById(Integer friendApplyId) {
+        return chatFriendApplyMapper.selectByPrimaryKey(friendApplyId);
+    }
+
+    @Override
     public void addFriendApply(Integer receiverId, Integer friendGroupId, String content) {
         ChatFriendApply friendApply = new ChatFriendApply();
         friendApply.setSenderId(ShiroUtils.getUserId())
@@ -191,8 +208,64 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public void updateFriendApplyStatusById(Integer friendApplyId, Byte status) {
+        ChatFriendApply friendApply = new ChatFriendApply();
+        friendApply.setId(friendApplyId)
+                .setStatus(status)
+                .setApplyTime(LocalDateTime.now()); // 更新处理时间
+        chatFriendApplyMapper.updateByPrimaryKeySelective(friendApply); // 注意，Selective更新
+    }
+
+    @Override
     public boolean isInvalidFriendGroup(Integer friendGroupId) {
+        if (ObjectUtils.isEmpty(friendGroupId)) {
+            return true; // 非法
+        }
         ChatFriendGroup friendGroup = chatFriendGroupMapper.selectByPrimaryKey(friendGroupId);
         return ObjectUtils.isEmpty(friendGroup) || !friendGroup.getUserId().equals(ShiroUtils.getUserId());
+    }
+
+    @Override
+    public PageData<ChatFriendApplyDTO> getFriendApplyNotifications(Integer page, Integer count) {
+        PageHelper.startPage(page, count);
+        Integer myId = ShiroUtils.getUserId();
+        List<ChatFriendApplyDTO> friendApplyList = chatFriendApplyMapper.selectFriendApplyNotifications(myId);
+        for (ChatFriendApplyDTO apply : friendApplyList) {
+            if (myId.equals(apply.getSenderId())) {
+                apply.setSenderId(null); // null字段不会被序列化
+            }
+            if (myId.equals(apply.getReceiverId())) {
+                apply.setReceiverId(null);
+            }
+        }
+        return new PageData<>(friendApplyList);
+    }
+
+    @Override
+    @Transactional // 添加事务处理
+    public StatusCode processFriendApply(Integer friendApplyId, Integer friendGroupId, String action) {
+        ChatFriendApply apply = this.getFriendApplyById(friendApplyId);
+        Integer myId = ShiroUtils.getUserId();
+        if (ObjectUtils.isEmpty(apply) || !apply.getReceiverId().equals(myId) // 接收者是我才能处理
+                || !ObjectUtils.isEmpty(apply.getStatus())) {
+            return StatusCode.CHAT_FRIEND_APPLY_INVALID;
+        }
+        if ("ignore".equalsIgnoreCase(action)) {
+            this.deleteFriendApplyById(friendApplyId); // 忽略直接删除
+        } else if ("refuse".equalsIgnoreCase(action)) {
+            this.updateFriendApplyStatusById(friendApplyId, (byte) 0);
+            // 拒绝后，需要等对方签收后再删除
+            // TODO 消息推送
+        } else if ("agree".equalsIgnoreCase(action)) {
+            if (this.isInvalidFriendGroup(friendGroupId)) {
+                return StatusCode.CHAT_FRIEND_GROUP_INVALID; // 好友分组非法
+            }
+            this.updateFriendApplyStatusById(friendApplyId, (byte) 1);
+            this.addChatFriend(myId, apply.getSenderId(), friendGroupId);
+            this.addChatFriend(apply.getSenderId(), myId, apply.getFriendGroupId());
+            // 同意后，需要等对方签收后再删除
+            // TODO 消息推送
+        }
+        return StatusCode.SUCCESS;
     }
 }
