@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
+import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.service.ChatService;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -89,5 +91,27 @@ public class ChatController {
     public ResultModel processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
                                           @NotNull String action) {
         return ResultModel.wrap(chatService.processFriendApply(friendApplyId, friendGroupId, action));
+    }
+
+    /**
+     * 签收好友申请的通知
+     * @param friendApplyIds    用逗号分隔。形如：1,2,3
+     */
+    @ResponseBody
+    @PostMapping("/apply/sign")
+    public ResultModel signNotification(@NotBlank String friendApplyIds) {
+        chatService.signFriendApplyNotifications(friendApplyIds);
+        return ResultModel.success();
+    }
+
+    /**
+     * 查询在线聊天相关的列表信息
+     */
+    @ResponseBody
+    @GetMapping("/list")
+    public ResultModel<ChatListDTO> chatList() {
+        ResultModel<ChatListDTO> result = ResultModel.success(chatService.getChatList());
+        result.setCode(0); // 前端LayIM的限制
+        return result;
     }
 }

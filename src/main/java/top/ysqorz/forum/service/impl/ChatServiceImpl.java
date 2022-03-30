@@ -13,6 +13,7 @@ import top.ysqorz.forum.dao.ChatFriendGroupMapper;
 import top.ysqorz.forum.dao.ChatFriendMapper;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
+import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
@@ -26,7 +27,10 @@ import top.ysqorz.forum.shiro.ShiroUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author passerbyYSQ
@@ -267,5 +271,43 @@ public class ChatServiceImpl implements ChatService {
             // TODO 消息推送
         }
         return StatusCode.SUCCESS;
+    }
+
+    @Override
+    public void signFriendApplyNotifications(String friendApplyIds) {
+        Set<Integer> applyIdSets = Arrays.stream(friendApplyIds.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Integer::valueOf)
+                .collect(Collectors.toSet());
+        if (!applyIdSets.isEmpty()) {
+            Example example = new Example(ChatFriendApply.class);
+            // where sender_id = #{myId} and status in (0, 1) and id in (1,2,3)
+            example.createCriteria().andEqualTo("senderId", ShiroUtils.getUserId())
+                    .andIn("status", Arrays.asList(0, 1))
+                    .andIn("id", applyIdSets);
+            chatFriendApplyMapper.deleteByExample(example);
+        }
+    }
+
+    @Override
+    public ChatListDTO getChatList() {
+        ChatListDTO chatListDTO = new ChatListDTO();
+        Integer myId = ShiroUtils.getUserId();
+        // 我的信息
+        User me = userService.getUserById(myId);
+        chatListDTO.setMine(new ChatListDTO.ChatFriendDTO(me));
+        // 好友列表
+        List<ChatListDTO.ChatFriendGroupDTO> friendGroupList = chatFriendGroupMapper.selectChatFriendList(myId);
+        for (ChatListDTO.ChatFriendGroupDTO friendGroup : friendGroupList) {
+            for (ChatListDTO.ChatFriendDTO friend : friendGroup.getList()) {
+                boolean isOnline = redisService.isUserOnline(friend.getId());
+                friend.setStatus(isOnline ? "online" : "offline");
+            }
+        }
+        chatListDTO.setFriend(friendGroupList);
+        // TODO 群聊列表
+        chatListDTO.setGroup(new ArrayList<>());
+        return chatListDTO;
     }
 }

@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>消息盒子</title>
     <link rel="stylesheet" th:href="@{/admin/assets/libs/layui/css/layui.css}" href="../res/layui/css/layui.css">
-    <link rel="stylesheet" th:href="@{/admin/assets/module/admin.css(v=318)}" href="admin/assets/module/admin.css?v=318">
-    <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
     <style>
         .layim-msgbox {
             margin: 15px;
@@ -71,7 +69,7 @@
         }
     </style>
 </head>
-<body style="margin-top: 0;">
+<body>
 
 <ul class="layim-msgbox" id="msgNotificationList"></ul>
 
@@ -110,9 +108,8 @@
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
-    layui.use(['layim', 'flow', 'app', 'layer', 'dropdown', 'element'], function () {
-        var layim = layui.layim,
-            layer = layui.layer,
+    layui.use(['laytpl', 'flow', 'app', 'layer'], function () {
+        var layer = layui.layer,
             laytpl = layui.laytpl,
             $ = layui.jquery,
             flow = layui.flow,

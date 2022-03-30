@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.ChatFriendGroupMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.ChatFriendGroup">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.ChatFriendGroup">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="group_name" jdbcType="VARCHAR" property="groupName"/>
+    </resultMap>
+
+    <resultMap id="chatFriendGroup" type="top.ysqorz.forum.dto.resp.ChatListDTO$ChatFriendGroupDTO">
+        <id column="groupId" jdbcType="INTEGER" property="id"/>
+        <result column="group_name" jdbcType="VARCHAR" property="groupname"/>
+        <collection property="list" ofType="top.ysqorz.forum.dto.resp.ChatListDTO$ChatFriendDTO">
+            <id column="friendId" jdbcType="INTEGER" property="id"/>
+            <result column="username" jdbcType="VARCHAR" property="username"/>
+            <result column="alias" jdbcType="VARCHAR" property="alias"/>
+            <result column="photo" jdbcType="VARCHAR" property="avatar"/>
+            <result column="description" jdbcType="VARCHAR" property="sign"/>
+        </collection>
+    </resultMap>
+    <select id="selectChatFriendList" resultMap="chatFriendGroup">
+        select u.id as friendId, username, photo, description, alias, cfg.id as groupId, group_name
+        from chat_friend_group as cfg
+        left join chat_friend as cf on cfg.id = cf.friend_group_id and  cfg.user_id = cf.my_id
+        left join user as u on cf.friend_id = u.id
+        where cfg.user_id = #{myId}
+        order by last_login_time desc
+    </select>
 </mapper>

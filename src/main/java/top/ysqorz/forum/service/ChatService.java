@@ -3,6 +3,7 @@ package top.ysqorz.forum.service;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
+import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
@@ -78,4 +79,15 @@ public interface ChatService {
      * @param action    agree, refuse, ignore
      */
     StatusCode processFriendApply(Integer friendApplyId, Integer friendGroupId, String action);
+
+    /**
+     * 签收好友申请的通知
+     * @param friendApplyIds    用逗号分隔。形如：1,2,3
+     */
+    void signFriendApplyNotifications(String friendApplyIds);
+
+    /**
+     * 查询好友列表
+     */
+    ChatListDTO getChatList();
 }

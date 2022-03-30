@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 30/03/2022 00:05:59
+ Date: 31/03/2022 00:32:45
 */
 
 SET NAMES utf8mb4;
@@ -27,7 +27,7 @@ CREATE TABLE `attendance`  (
   `attend_date` date NOT NULL COMMENT '签到的日期，独立出来方便查询',
   `attend_time` time(0) NOT NULL COMMENT '签到的时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 46 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of attendance
@@ -72,6 +72,7 @@ INSERT INTO `attendance` VALUES (41, 26, '2022-03-24', '20:07:05');
 INSERT INTO `attendance` VALUES (42, 26, '2022-03-25', '00:45:27');
 INSERT INTO `attendance` VALUES (43, 28, '2022-03-28', '19:00:22');
 INSERT INTO `attendance` VALUES (44, 26, '2022-03-28', '19:44:34');
+INSERT INTO `attendance` VALUES (45, 26, '2022-03-30', '16:53:53');
 
 -- ----------------------------
 -- Table structure for blacklist
@@ -124,12 +125,14 @@ CREATE TABLE `chat_friend`  (
   `alias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '好友的备注名',
   `create_time` datetime(0) NOT NULL COMMENT '成为好友额时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友关系表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友关系表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of chat_friend
 -- ----------------------------
 INSERT INTO `chat_friend` VALUES (1, 26, 21, 1, '【YSQ】', '2022-03-27 18:16:01');
+INSERT INTO `chat_friend` VALUES (6, 26, 23, 1, NULL, '2022-03-30 23:39:14');
+INSERT INTO `chat_friend` VALUES (7, 23, 26, 3, NULL, '2022-03-30 23:39:15');
 
 -- ----------------------------
 -- Table structure for chat_friend_apply
@@ -153,7 +156,7 @@ INSERT INTO `chat_friend_apply` VALUES (1, 26, 23, 1, '哈哈哈哈哈哈哈哈�
 INSERT INTO `chat_friend_apply` VALUES (2, 26, 28, 1, '你好啊', 1, '2022-03-29 21:06:00');
 INSERT INTO `chat_friend_apply` VALUES (3, 21, 26, 1, '你好。。。', NULL, '2022-03-29 21:07:19');
 INSERT INTO `chat_friend_apply` VALUES (4, 22, 26, 1, '交个朋友呗！！！', NULL, '2022-03-29 21:08:03');
-INSERT INTO `chat_friend_apply` VALUES (6, 23, 26, 2, '【有效测试数据】', NULL, '2022-03-30 00:04:09');
+INSERT INTO `chat_friend_apply` VALUES (6, 23, 26, 3, '【有效测试数据】', 1, '2022-03-30 23:39:14');
 
 -- ----------------------------
 -- Table structure for chat_friend_group
@@ -170,7 +173,7 @@ CREATE TABLE `chat_friend_group`  (
 -- Records of chat_friend_group
 -- ----------------------------
 INSERT INTO `chat_friend_group` VALUES (1, 26, '分组1');
-INSERT INTO `chat_friend_group` VALUES (2, 23, '分组2');
+INSERT INTO `chat_friend_group` VALUES (2, 26, '分组2');
 INSERT INTO `chat_friend_group` VALUES (3, 23, '分组3');
 
 -- ----------------------------
@@ -623,7 +626,7 @@ CREATE TABLE `points_record`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '积分变化的描述',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 46 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积分奖励记录\r\n' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 47 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积分奖励记录\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of points_record
@@ -673,6 +676,7 @@ INSERT INTO `points_record` VALUES (42, 26, 1, '签到', '2022-03-24 20:07:05');
 INSERT INTO `points_record` VALUES (43, 26, 2, '签到', '2022-03-25 00:45:27');
 INSERT INTO `points_record` VALUES (44, 28, 1, '签到', '2022-03-28 19:00:22');
 INSERT INTO `points_record` VALUES (45, 26, 1, '签到', '2022-03-28 19:44:34');
+INSERT INTO `points_record` VALUES (46, 26, 1, '签到', '2022-03-30 16:53:54');
 
 -- ----------------------------
 -- Table structure for points_type
@@ -1110,10 +1114,10 @@ INSERT INTO `user` VALUES (17, '断分', '17', '17', '2', '2', '2', 2, '/admin/a
 INSERT INTO `user` VALUES (18, '是个', '18', '18', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-17 14:51:34', '2021-05-11 14:51:36', '2021-05-03 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (19, '代国防', '19', '19', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-08-21 14:51:34', '2021-04-28 14:51:36', '2021-02-18 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (20, '三个地方', '20', '20', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-24 14:51:34', '2021-05-11 14:51:36', '2021-03-12 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
-INSERT INTO `user` VALUES (21, 'ysq', '1@qq.com', NULL, '3f54a72d01674b033327ab34ae5010e0', 'MOTciA8o', 'cAr!U-Bv', 3, 'https://gitee.com/assets/no_portrait.png', NULL, NULL, NULL, '2021-06-04 14:58:23', '2021-06-04 14:58:23', '2022-02-03 21:11:08', '2022-02-03 21:11:21', 1, 30, 2, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (21, 'ysq', '1@qq.com', NULL, '3f54a72d01674b033327ab34ae5010e0', 'MOTciA8o', 'cAr!U-Bv', 3, '/admin/assets/images/defaultUserPhoto.jpg', '我是YSQ!!!!!', NULL, NULL, '2021-06-04 14:58:23', '2021-06-04 14:58:23', '2022-02-03 21:11:08', '2022-02-03 21:11:21', 1, 30, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (22, 'passerbyYSQ', '', NULL, '', 'ad^R9%UP', '(+&iC)e&', 0, 'https://gitee.com/assets/no_portrait.png', '', '2021-07-10', '广东省/肇庆市/封开县', '2021-06-14 15:54:53', '2021-06-14 15:54:53', '2021-07-12 13:08:31', '2022-02-21 00:29:25', 2, 11, 1, 7369646, NULL, NULL);
-INSERT INTO `user` VALUES (23, '过路人', '', NULL, '', 'emNiOgun', 'l#xv3)Jw', 0, 'http://thirdqq.qlogo.cn/g?b=oidb&k=nMMFjagOIQXoHlwJUfHHsA&s=40&t=1582654446', NULL, NULL, NULL, '2021-06-17 21:31:40', '2021-06-17 21:31:40', '2021-07-05 15:40:05', '2021-07-05 15:41:42', 2, 4, 0, NULL, '1AF065CF5F865B4146F7F69A1AFCC60D', NULL);
-INSERT INTO `user` VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', '^(=QAv6(', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361', '我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！', '2021-07-10', '广东省/广州市/天河区', '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-03-28 19:08:32', '2022-03-28 19:44:34', 1, 58, 1, NULL, NULL, '421602246');
+INSERT INTO `user` VALUES (23, '过路人', '', NULL, '', 'emNiOgun', 'l#xv3)Jw', 0, 'http://thirdqq.qlogo.cn/g?b=oidb&k=nMMFjagOIQXoHlwJUfHHsA&s=40&t=1582654446', '过路人。。。', NULL, NULL, '2021-06-17 21:31:40', '2021-06-17 21:31:40', '2021-07-05 15:40:05', '2021-07-05 15:41:42', 2, 4, 0, NULL, '1AF065CF5F865B4146F7F69A1AFCC60D', NULL);
+INSERT INTO `user` VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', '^(=QAv6(', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361', '我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！', '2021-07-10', '广东省/广州市/天河区', '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-03-28 19:08:32', '2022-03-30 16:53:53', 1, 59, 1, NULL, NULL, '421602246');
 INSERT INTO `user` VALUES (27, 'ligouzi', '2403298783@qq.com', NULL, '22bb34a6e77baab53ebf873afdfa34bd', 'KB%OApta', 'BNk$@YeY', 3, '/admin/assets/images/defaultUserPhoto.jpg', NULL, NULL, NULL, '2021-07-06 16:15:34', '2021-07-06 16:15:34', '2021-07-10 10:09:47', '2021-07-06 16:34:15', 1, 2, 0, NULL, NULL, '');
 INSERT INTO `user` VALUES (28, 'test123', '123@qq.com', NULL, 'b2793335f43645fd8e00c7d18e14e05f', '123', '', 0, '/admin/assets/images/defaultUserPhoto.jpg', NULL, NULL, NULL, '2022-03-27 17:59:07', '2022-03-27 17:59:13', '2022-03-28 19:00:42', '2022-03-28 19:00:22', 1, 1, 0, NULL, NULL, '');
 

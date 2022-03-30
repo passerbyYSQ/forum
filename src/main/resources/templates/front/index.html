@@ -726,6 +726,13 @@
 
         $("#btnRefreshGird").click(function () {
             label.reload();
+            if (conditon.labelsId) { // 刷新标签时如果，标签条件不为空则重置，并刷新帖子列表
+                conditon.labelsId = "";
+                insTb.reload({
+                    where: conditon,
+                    page: {curr: 1}
+                });
+            }
         });
 
         form.on('checkbox(label)', function (data) {
@@ -734,10 +741,8 @@
 
         form.on('submit(labelButton)', function (data) {
             // console.log(data.field);
-            conditon.labelsId="";
-            for (let i in data.field) {
-                conditon.labelsId = conditon.labelsId + "," + data.field[i];
-            }
+            conditon.labelsId = "";
+            conditon.labelsId += Object.values(data.field).join();
             console.log(conditon);
             insTb.reload({
                 where: conditon,
