@@ -12,4 +12,11 @@
         <result column="alias" jdbcType="VARCHAR" property="alias"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
+
+    <select id="selectChatFriendsWithoutGroup" resultType="top.ysqorz.forum.dto.resp.ChatListDTO$ChatFriendDTO">
+        select u.id, username, alias, photo as avatar, description as sign
+        from chat_friend as cf
+        left join user as u on cf.friend_id = u.id
+        where my_id = #{myId} and isnull(friend_group_id)
+    </select>
 </mapper>

@@ -23,6 +23,7 @@ import top.ysqorz.forum.service.ChatService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.utils.CommonUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author passerbyYSQ
@@ -65,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
         Page pageInfo = PageHelper.startPage(page, count); // 开启分页
         if (!ObjectUtils.isEmpty(accurateUser)) { // 能够精确查找到
             ChatUserCardDTO userCard = new ChatUserCardDTO(accurateUser);
-            ChatFriend chatFriend = this.getChatFriendByBothIds(accurateUser.getId());
+            ChatFriend chatFriend = this.getMyChatFriendById(accurateUser.getId());
             userCard.setIsChatFriend(!ObjectUtils.isEmpty(chatFriend));
             if (!ObjectUtils.isEmpty(chatFriend)) {
                 userCard.setAlias(chatFriend.getAlias());
@@ -105,7 +105,7 @@ public class ChatServiceImpl implements ChatService {
         ChatService chatService = this;
         List<ChatUserCardDTO> userCards = userList.stream().map(user -> {
             ChatUserCardDTO userCard = new ChatUserCardDTO(user);
-            ChatFriend chatFriend = chatService.getChatFriendByBothIds(user.getId());
+            ChatFriend chatFriend = chatService.getMyChatFriendById(user.getId());
             boolean isOnline = redisService.isUserOnline(user.getId());
             userCard.setIsChatFriend(!ObjectUtils.isEmpty(chatFriend))
                     .setStatus(isOnline ? "online" : "offline");
@@ -121,7 +121,7 @@ public class ChatServiceImpl implements ChatService {
     */
 
     @Override
-    public ChatFriend getChatFriendByBothIds(Integer friendId) {
+    public ChatFriend getMyChatFriendById(Integer friendId) {
         Example example = new Example(ChatFriend.class);
         example.createCriteria().andEqualTo("myId", ShiroUtils.getUserId())
                 .andEqualTo("friendId", friendId);
@@ -147,12 +147,12 @@ public class ChatServiceImpl implements ChatService {
         if (ObjectUtils.isEmpty(receiver)) { // 确保插入到数据库的receiverId是正确的
             return StatusCode.USER_NOT_EXIST;
         }
-        ChatFriend chatFriend = this.getChatFriendByBothIds(receiverId);
+        ChatFriend chatFriend = this.getMyChatFriendById(receiverId);
         if (!ObjectUtils.isEmpty(chatFriend)) { // 已经是好友，不能发送申请
             return StatusCode.CHAT_ALREADY_FRIEND;
         }
 
-        ChatFriendApply friendApply = this.getFriendApplyByBothIds(receiverId);
+        ChatFriendApply friendApply = this.getFriendApplySentBySelf(receiverId);
         if (ObjectUtils.isEmpty(friendApply)) { // 不存在，则插入新的记录
             this.addFriendApply(receiverId, friendGroupId, content);
             // TODO 消息推送
@@ -162,7 +162,7 @@ public class ChatServiceImpl implements ChatService {
 
             // 1.status不为null，代表接收者尚已经处理该申请（拒绝，因为如果是好友在前面已经被return了）
             if (friendApply.getStatus() != null) {
-                this.deleteFriendApplyById(friendApply.getId());
+                chatFriendApplyMapper.deleteByPrimaryKey(friendApply.getId());
                 return StatusCode.CHAT_FRIEND_APPLY_REFUSED;
             }
             // 2.接收者尚未处理该申请
@@ -172,9 +172,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatFriendApply getFriendApplyByBothIds(Integer receiverId) {
+    public ChatFriendApply getFriendApplySentBySelf(Integer receiverId) {
         Example example = new Example(ChatFriendApply.class);
-        example.createCriteria().andEqualTo("senderId", ShiroUtils.getUserId()) // sender is me
+        example.createCriteria().andEqualTo("senderId", ShiroUtils.getUserId()) // sender is self
                 .andEqualTo("receiverId", receiverId);
         return chatFriendApplyMapper.selectOneByExample(example);
     }
@@ -194,11 +194,6 @@ public class ChatServiceImpl implements ChatService {
                 .setApplyTime(LocalDateTime.now());
         // 不需要设置status，因为status为null，代表接收者尚未处理该申请
         chatFriendApplyMapper.insert(friendApply);
-    }
-
-    @Override
-    public void deleteFriendApplyById(Integer friendApplyId) {
-        chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId);
     }
 
     @Override
@@ -223,7 +218,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public boolean isInvalidFriendGroup(Integer friendGroupId) {
         if (ObjectUtils.isEmpty(friendGroupId)) {
-            return true; // 非法
+            return false; // null表示未分组，不是非法
         }
         ChatFriendGroup friendGroup = chatFriendGroupMapper.selectByPrimaryKey(friendGroupId);
         return ObjectUtils.isEmpty(friendGroup) || !friendGroup.getUserId().equals(ShiroUtils.getUserId());
@@ -255,7 +250,7 @@ public class ChatServiceImpl implements ChatService {
             return StatusCode.CHAT_FRIEND_APPLY_INVALID;
         }
         if ("ignore".equalsIgnoreCase(action)) {
-            this.deleteFriendApplyById(friendApplyId); // 忽略直接删除
+            chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId); // 忽略直接删除
         } else if ("refuse".equalsIgnoreCase(action)) {
             this.updateFriendApplyStatusById(friendApplyId, (byte) 0);
             // 拒绝后，需要等对方签收后再删除
@@ -275,11 +270,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void signFriendApplyNotifications(String friendApplyIds) {
-        Set<Integer> applyIdSets = Arrays.stream(friendApplyIds.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(Integer::valueOf)
-                .collect(Collectors.toSet());
+        Set<Integer> applyIdSets = CommonUtils.splitIdStr(friendApplyIds);
         if (!applyIdSets.isEmpty()) {
             Example example = new Example(ChatFriendApply.class);
             // where sender_id = #{myId} and status in (0, 1) and id in (1,2,3)
@@ -295,10 +286,11 @@ public class ChatServiceImpl implements ChatService {
         ChatListDTO chatListDTO = new ChatListDTO();
         Integer myId = ShiroUtils.getUserId();
         // 我的信息
-        User me = userService.getUserById(myId);
-        chatListDTO.setMine(new ChatListDTO.ChatFriendDTO(me));
+        User self = userService.getUserById(myId);
+        chatListDTO.setMine(new ChatListDTO.ChatFriendDTO(self));
         // 好友列表
-        List<ChatListDTO.ChatFriendGroupDTO> friendGroupList = chatFriendGroupMapper.selectChatFriendList(myId);
+        List<ChatListDTO.ChatFriendGroupDTO> friendGroupList = chatFriendGroupMapper.selectFriendGroupList(myId);
+        friendGroupList.add(this.getChatFriendsWithoutGroup()); // 未分组
         for (ChatListDTO.ChatFriendGroupDTO friendGroup : friendGroupList) {
             for (ChatListDTO.ChatFriendDTO friend : friendGroup.getList()) {
                 boolean isOnline = redisService.isUserOnline(friend.getId());
@@ -309,5 +301,100 @@ public class ChatServiceImpl implements ChatService {
         // TODO 群聊列表
         chatListDTO.setGroup(new ArrayList<>());
         return chatListDTO;
+    }
+
+    @Override
+    public ChatListDTO.ChatFriendGroupDTO getChatFriendsWithoutGroup() {
+        List<ChatListDTO.ChatFriendDTO> friends = chatFriendMapper.selectChatFriendsWithoutGroup(ShiroUtils.getUserId());
+        ChatListDTO.ChatFriendGroupDTO friendGroup = new ChatListDTO.ChatFriendGroupDTO();
+        friendGroup.setId(-1)
+                .setGroupname("未分组")
+                .setList(friends);
+        return friendGroup;
+    }
+
+    @Override
+    public StatusCode createFriendGroup(String friendGroupName) {
+        ChatFriendGroup friendGroup = this.getFriendGroupByName(friendGroupName);
+        if (!ObjectUtils.isEmpty(friendGroup) || "未分组".equals(friendGroupName)) {
+            return StatusCode.CHAT_FRIEND_GROUP_EXIST;
+        }
+        ChatFriendGroup newFriendGroup = new ChatFriendGroup();
+        newFriendGroup.setGroupName(friendGroupName)
+                .setUserId(ShiroUtils.getUserId());
+        chatFriendGroupMapper.insert(newFriendGroup);
+        return StatusCode.SUCCESS;
+    }
+
+    @Override
+    public ChatFriendGroup getFriendGroupByName(String friendGroupName) {
+        Example example = new Example(ChatFriendGroup.class);
+        example.createCriteria().andEqualTo("userId", ShiroUtils.getUserId())
+                .andEqualTo("groupName", friendGroupName);
+        return chatFriendGroupMapper.selectOneByExample(example);
+    }
+
+    @Override
+    public void updateGroupOfFriends(Set<Integer> friendIdSet, Integer targetFriendGroupId) {
+        ChatFriend record = new ChatFriend();
+        record.setFriendGroupId(targetFriendGroupId);
+        Example example = new Example(ChatFriend.class);
+        example.createCriteria().andEqualTo("myId", ShiroUtils.getUserId())
+                .andIn("friendId", friendIdSet);
+        chatFriendMapper.updateByExampleSelective(record, example);
+    }
+
+    @Override
+    public void updateGroupOfFriends(Integer sourceFriendGroupId, Integer targetFriendGroupId) {
+        ChatFriend record = new ChatFriend();
+        record.setFriendGroupId(targetFriendGroupId);
+        Example example = new Example(ChatFriend.class);
+        example.createCriteria().andEqualTo("myId", ShiroUtils.getUserId())
+                .andEqualTo("friendGroupId", sourceFriendGroupId);
+        chatFriendMapper.updateByExampleSelective(record, example);
+    }
+
+    @Override
+    @Transactional
+    public StatusCode deleteFriendGroup(Integer friendGroupId) {
+        if (ObjectUtils.isEmpty(friendGroupId) || this.isInvalidFriendGroup(friendGroupId)) {
+            return StatusCode.CHAT_FRIEND_GROUP_INVALID;
+        }
+        chatFriendGroupMapper.deleteByPrimaryKey(friendGroupId);
+        this.updateGroupOfFriends(friendGroupId, null); // 原分组下的所有好友都变成未分组
+        return StatusCode.SUCCESS;
+    }
+
+    @Override
+    public StatusCode moveFriendToGroup(String friendIds, Integer targetFriendGroupId) {
+        if (this.isInvalidFriendGroup(targetFriendGroupId)) {
+            return StatusCode.CHAT_FRIEND_GROUP_INVALID;
+        }
+        Set<Integer> friendIdSet = CommonUtils.splitIdStr(friendIds);
+        if (!friendIdSet.isEmpty()) {
+            this.updateGroupOfFriends(friendIdSet, targetFriendGroupId); // 更改好友的分组
+        }
+        return StatusCode.SUCCESS;
+    }
+
+    @Override
+    public void deleteChatFriendByBothIds(Integer myId, Integer friendId) {
+        Example example = new Example(ChatFriend.class);
+        example.createCriteria().andEqualTo("myId", myId)
+                .andEqualTo("friendId", friendId);
+        chatFriendMapper.deleteByExample(example);
+    }
+
+    @Override
+    @Transactional
+    public StatusCode deleteChatFriend(Integer friendId) {
+        ChatFriend friend = this.getMyChatFriendById(friendId);
+        if (ObjectUtils.isEmpty(friend)) {
+            return StatusCode.CHAT_FRIEND_NOT_EXIST;
+        }
+        Integer myId = ShiroUtils.getUserId();
+        this.deleteChatFriendByBothIds(myId, friendId);
+        this.deleteChatFriendByBothIds(friendId, myId); // 同时将自己从对方好友列表中删除
+        return StatusCode.SUCCESS;
     }
 }

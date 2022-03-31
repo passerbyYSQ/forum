@@ -1,5 +1,6 @@
 package top.ysqorz.forum.controller.front;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -113,5 +114,44 @@ public class ChatController {
         ResultModel<ChatListDTO> result = ResultModel.success(chatService.getChatList());
         result.setCode(0); // 前端LayIM的限制
         return result;
+    }
+
+    /**
+     * 新建好友分组
+     */
+    @ResponseBody
+    @PostMapping("/friend/group/create")
+    public ResultModel createFriendGroup(@NotBlank @Length(max = 16) String friendGroupName) {
+        return ResultModel.wrap(chatService.createFriendGroup(friendGroupName));
+    }
+
+    /**
+     * 删除好友分组
+     */
+    @ResponseBody
+    @PostMapping("/friend/group/delete")
+    public ResultModel deleteFriendGroup(@NotNull Integer friendGroupId) {
+        return ResultModel.wrap(chatService.deleteFriendGroup(friendGroupId));
+    }
+
+    /**
+     * 移动好友至指定分组
+     * @param friendIds                 好友的用户id，用逗号分隔。形如：1,2,3
+     * @param targetFriendGroupId       如果缺省，则全部移动至"未分组"
+     */
+    @ResponseBody
+    @PostMapping("/friend/move")
+    public ResultModel moveFriend(@NotBlank String friendIds, Integer targetFriendGroupId) {
+        return ResultModel.wrap(chatService.moveFriendToGroup(friendIds, targetFriendGroupId));
+    }
+
+    /**
+     * 删除好友
+     * @param friendId      好友的用户id，而非好友关系id
+     */
+    @ResponseBody
+    @PostMapping("/friend/delete")
+    public ResultModel deleteFriend(@NotNull Integer friendId) {
+        return ResultModel.wrap(chatService.deleteChatFriend(friendId));
     }
 }

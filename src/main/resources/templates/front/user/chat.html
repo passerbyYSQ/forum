@@ -64,12 +64,13 @@
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
-    layui.use(['layim', 'app'], function () {
+    layui.use(['layim', 'app', 'contextMenu'], function () {
         var $ = layui.$,
             admin = layui.admin,
             element = layui.element,
             router = layui.router(),
-            app = layui.app;
+            app = layui.app,
+            contextMenu = layui.contextMenu;
 
         window.testParentFunc = function () {
             alert('父页面弹出');
@@ -94,8 +95,8 @@
         layim.config({
             //初始化接口
             init: {
-                url: '/chat/list'
-                , data: {}
+                url: '/chat/list',
+                data: {}
             }
             //查看群员接口
             , members: {
@@ -165,6 +166,7 @@
         layim.on('ready', function (res) {
             //console.log(res.mine);
             layim.msgbox(5); //模拟消息盒子有新消息，实际使用时，一般是动态获得
+            initFriendContextMenu();
         });
         //监听发送消息
         layim.on('sendMessage', function (data) {
@@ -276,6 +278,57 @@
                 }
             });
         };
+
+        // 初始化邮件菜单
+        function initFriendContextMenu () {
+            let createGroup = {
+                icon: 'layui-icon layui-icon-add-circle',
+                name: '创建分组',
+                click: function () {
+                    alert('创建分组');
+                }
+            };
+            let blankCtxMenus = [{
+                icon: 'layui-icon layui-icon-refresh',
+                name: '刷新好友列表',
+                click: function () {
+                    alert('刷新好友列表');
+                }
+            }, createGroup];
+            let groupCtxMenus = [createGroup, {
+                icon: 'layui-icon layui-icon-delete',
+                name: '删除分组',
+                click: function (ev1, ev2) {
+                    let groupLi = $(ev2.currentTarget);
+                    let groupId = groupLi.children('h5').data("id");
+                    alert('分组id：' + groupId);
+                }
+            }];
+            let subs = layim.cache().friend.map(item => {
+                return {
+                    id: item.id,
+                    name: item.groupname,
+                    click: function () {
+                        alert('分组id：' + this.id);
+                    }
+                }
+            });
+            let friendCtxMenus = [{
+                icon: 'layui-icon layui-icon-delete',
+                name: '删除好友',
+                click: function (ev1, ev2) {
+                    let userId = $(ev2.currentTarget).data("id");
+                    alert('好友id：' + userId);
+                }
+            }, {
+                icon: 'layui-icon layui-icon-next',
+                name: '移动至',
+                subs
+            }];
+            contextMenu.bind('ul.layim-list-friend', blankCtxMenus);
+            contextMenu.bind('ul.layim-list-friend > li', groupCtxMenus);
+            contextMenu.bind('ul.layui-layim-list > li[data-type="friend"]', friendCtxMenus);
+        }
 
         //面板外的操作
         var $ = layui.jquery, active = {

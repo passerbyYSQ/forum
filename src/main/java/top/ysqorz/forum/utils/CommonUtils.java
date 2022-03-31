@@ -12,10 +12,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +21,19 @@ import java.util.regex.Pattern;
  * @create 2021-06-19 23:15
  */
 public class CommonUtils {
+
+    public static Set<Integer> splitIdStr(String idStr) {
+        String[] ids = idStr.split(",");
+        Set<Integer> idSet = new HashSet<>();
+        for (String id : ids) {
+            String temp = id.trim();
+            if (temp.isEmpty() || Integer.parseInt(temp) <= 0) {
+                continue;
+            }
+            idSet.add(Integer.valueOf(temp));
+        }
+        return idSet;
+    }
 
     public static void writeJson(HttpServletResponse httpResponse, ResultModel result) {
         httpResponse.setCharacterEncoding("UTF-8");

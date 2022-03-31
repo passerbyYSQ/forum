@@ -10,5 +10,5 @@ public interface ChatFriendGroupMapper extends BaseMapper<ChatFriendGroup> {
     /**
      * 查询好友列表
      */
-    List<ChatListDTO.ChatFriendGroupDTO> selectChatFriendList(Integer myId);
+    List<ChatListDTO.ChatFriendGroupDTO> selectFriendGroupList(Integer myId);
 }

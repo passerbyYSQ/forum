@@ -21,7 +21,7 @@
             <result column="description" jdbcType="VARCHAR" property="sign"/>
         </collection>
     </resultMap>
-    <select id="selectChatFriendList" resultMap="chatFriendGroup">
+    <select id="selectFriendGroupList" resultMap="chatFriendGroup">
         select u.id as friendId, username, photo, description, alias, cfg.id as groupId, group_name
         from chat_friend_group as cfg
         left join chat_friend as cf on cfg.id = cf.friend_group_id and  cfg.user_id = cf.my_id

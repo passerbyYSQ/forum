@@ -96,6 +96,8 @@ public enum StatusCode {
     CHAT_FRIEND_APPLY_REFUSED(6804, "好友申请已被拒绝，请重新发送申请"),
     CHAT_FRIEND_GROUP_INVALID(6805, "好友分组id非法"),
     CHAT_FRIEND_APPLY_INVALID(6806, "好友申请id非法"),
+    CHAT_FRIEND_GROUP_EXIST(6807, "好友分组已存在"),
+    CHAT_FRIEND_NOT_EXIST(6808, "好友不存在"),
 
     // 文件相关
     VIDEO_NOT_EXIST(6900, "视频不存在"),
