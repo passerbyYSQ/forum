@@ -25,12 +25,14 @@ public class MsgModel {
     private Object data;
 
     public MsgModel(MsgType msgType, Object data) {
-        this(msgType.name(), null, data);
+        this(msgType, null, data);
     }
 
-    public MsgModel(String msgType, String channelType, Object data) {
-        this.msgType = msgType;
-        this.channelType = channelType;
+    public MsgModel(MsgType msgType, ChannelType channelType, Object data) {
+        this.msgType = msgType.name();
+        if (!ObjectUtils.isEmpty(channelType)) {
+            this.channelType = channelType.name();
+        }
         this.data = data;
     }
 

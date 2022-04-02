@@ -4,7 +4,6 @@ import io.netty.channel.Channel;
 import top.ysqorz.forum.im.entity.AsyncInsertTask;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.shiro.LoginUser;
 
 import java.util.Set;
 
@@ -27,19 +26,11 @@ public abstract class NonFunctionalMsgHandler<DataType> extends MsgHandler<DataT
      * 分布式版需要使用remoteDispatch和push两个方法，不使用handle方法
      */
     @Override
-    protected boolean doHandle0(DataType data, Channel channel, LoginUser loginUser) {
+    protected boolean doHandle0(DataType data, Channel channel) {
         this.doSave(data);
         this.doPush(data, channel.id().asLongText());
         return true;
     }
-
-    /**
-     * 加强规范。transformData后得到的pojo需要经过处理，才能插入到数据库
-     * 如果数据不合法，则return null
-     * 如果不需要处理，直接return data
-     */
-    @Override
-    protected abstract DataType processData(DataType data, LoginUser user);
 
     /**
      * 加强规范。分布式下转发消息需要从Redis查询出目标服务，必须实现此方法

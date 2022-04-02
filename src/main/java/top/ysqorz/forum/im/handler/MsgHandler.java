@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import lombok.Data;
 import okhttp3.Call;
+import org.springframework.core.ResolvableType;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.*;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.UserService;
-import top.ysqorz.forum.shiro.LoginUser;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.JwtUtils;
@@ -32,7 +32,6 @@ public abstract class MsgHandler<DataType> {
     private ChannelType channelType;
     // 下一个消息处理器
     private MsgHandler next;
-    private boolean isNeedLoginUserInfo;
     // 该类型消息的所有通道。子类使用
     protected ChannelMap channelMap;
     // 线程池异步消费数据库操作。子类使用
@@ -43,13 +42,8 @@ public abstract class MsgHandler<DataType> {
     }
 
     public MsgHandler(MsgType msgType, ChannelType channelType) {
-        this(msgType, channelType, false);
-    }
-
-    public MsgHandler(MsgType msgType, ChannelType channelType, boolean isNeedLoginUserInfo) {
         this.msgType = msgType;
         this.channelType = channelType;
-        this.isNeedLoginUserInfo = isNeedLoginUserInfo;
     }
 
     public void handle(MsgModel msg, Channel channel) {
@@ -62,7 +56,7 @@ public abstract class MsgHandler<DataType> {
 
     public void push(MsgModel msg, String sourceChannelId) { // msg.data is completed
         if (checkMsgType(msg)) {
-            DataType data = transformData(msg);
+            DataType data = transformData(msg); // data is DataType
             if (data == null) {
                 return;
             }
@@ -72,13 +66,9 @@ public abstract class MsgHandler<DataType> {
         }
     }
 
-    public void remoteDispatch(MsgModel msg, String sourceChannelId, LoginUser user) {
+    public void remoteDispatch(MsgModel msg, String sourceChannelId) {
         if (checkMsgType(msg)) {
-            DataType data = transformData(msg);
-            if (data == null) {
-                return;
-            }
-            data = processData(data, user);
+            DataType data = transformData(msg); // data is DataType
             if (data == null) {
                 return;
             }
@@ -103,7 +93,7 @@ public abstract class MsgHandler<DataType> {
                 }
             }
         } else if (next != null) {
-            next.remoteDispatch(msg, sourceChannelId, user);
+            next.remoteDispatch(msg, sourceChannelId);
         }
     }
 
@@ -144,35 +134,12 @@ public abstract class MsgHandler<DataType> {
     }
 
     private boolean doHandle(MsgModel msg, Channel channel) {
-        LoginUser loginUser = null;
-        if (isNeedLoginUserInfo) {
-            // Integer userId = ShiroUtils.getUserId();
-            String token = null;
-            Integer userId = IMUtils.getUserIdFromChannel(channel);
-            if (userId == null) { // 没有绑定时发送消息
-                JsonNode dataNode = msg.transformToDataNode(); // PING消息dataNode为null但又能执行到此处
-                if (dataNode != null && dataNode.has("token")) {
-                    token = dataNode.get("token").asText();
-                    userId = Integer.valueOf(JwtUtils.getClaimByKey(token, "userId"));
-                }
-            }
-            User user = getUserById(userId);
-            loginUser = new LoginUser(user, token);
-        }
-        DataType data = transformData(msg);
+        channel.attr(IMUtils.ALL_IDLE_KEY).set(0);  // 有合法消息可消费，重置空闲次数
+        DataType data = transformData(msg); // data is JsonNode
         if (data != null) {
-            data = processData(data, loginUser);
-            return doHandle0(data, channel, loginUser);
+            return doHandle0(data, channel);
         }
         return false;
-    }
-
-    private User getUserById(Integer userId) {
-        if (userId == null) {
-            return null;
-        }
-        UserService userService = SpringUtils.getBean(UserService.class);
-        return userService.getUserById(userId);
     }
 
     // data is completed
@@ -192,14 +159,31 @@ public abstract class MsgHandler<DataType> {
         return null;
     }
 
-    protected abstract DataType transformData(MsgModel msg); // must implement
-
-    protected DataType processData(DataType data, LoginUser user) {
-        return data; // 默认不处理直接返回
-    }
-
     protected AsyncInsertTask createAsyncInsertTask(DataType data) {
         return null;
+    }
+
+    private User getUserById(Integer userId) {
+        if (userId == null) {
+            return null;
+        }
+        UserService userService = SpringUtils.getBean(UserService.class);
+        return userService.getUserById(userId);
+    }
+
+    private DataType transformData(MsgModel msg) {
+        ResolvableType resolvableType = ResolvableType.forClass(this.getClass());
+        ResolvableType[] types = resolvableType.getSuperType().getGenerics();
+        Class<DataType> clazz = (Class<DataType>) types[0].resolve(); // 只有一个泛型，且需是参数类型
+        if (MsgModel.class.equals(clazz)) {
+            return clazz.cast(msg); // 如果需要整个MsgModel直接返回
+        }
+        // 转换data部分
+        // 由于远程转发，序列化成Object对象后实际类型是LinkedHashMap，这个时候强转类型报错
+        // java.lang.ClassCastException: Cannot cast java.util.LinkedHashMap to top.ysqorz.forum.po.DanmuMsg
+        // clazz.cast(msg.getData());
+        // 解决方法：LinkedHashMap => JsonNode => 指定类型
+        return JsonUtils.nodeToObj(msg.transformToDataNode(), clazz);
     }
 
     /**
@@ -207,7 +191,7 @@ public abstract class MsgHandler<DataType> {
      *
      * @return true：消费完成，不继续往下投递；false：未消费完成，继续往下投递
      */
-    protected abstract boolean doHandle0(DataType data, Channel channel, LoginUser loginUser);
+    protected abstract boolean doHandle0(DataType data, Channel channel);
 
     class PushApiCallback implements OkHttpUtils.ApiCallback {
         DataType data;

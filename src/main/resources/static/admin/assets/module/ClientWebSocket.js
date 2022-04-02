@@ -60,7 +60,7 @@ layui.define(['app'], function (exports) {
             app.ajax('/im/send', {
                 msgJson: JSON.stringify(msg),
                 channelId: this.channelId
-            }, null, 'post', failedCallback, false);
+            }, null, 'POST', failedCallback, false);
         }
 
         send(msg) { // MsgObj

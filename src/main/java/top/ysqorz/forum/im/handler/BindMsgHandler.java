@@ -7,7 +7,7 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.shiro.LoginUser;
+import top.ysqorz.forum.utils.JwtUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,22 +21,19 @@ import java.util.Map;
 public class BindMsgHandler extends MsgHandler<MsgModel> {
 
     public BindMsgHandler() {
-        super(MsgType.BIND, null, true);
+        super(MsgType.BIND, null);
     }
 
     @Override
-    protected MsgModel transformData(MsgModel msg) {
-        return msg; // must return msg, or doHandle0 do not invoke
-    }
-
-    @Override
-    protected boolean doHandle0(MsgModel msg, Channel channel, LoginUser loginUser) {
+    protected boolean doHandle0(MsgModel msg, Channel channel) {
         JsonNode dataNode = msg.transformToDataNode(); // 能来到这，一定是BIND类型且携带了token，dataNode一定不为空
         if (ObjectUtils.isEmpty(msg.getChannelType()) || !dataNode.has("groupId")) {
             return true;
         }
         String groupId = dataNode.get("groupId").asText();
-        MsgCenter.getInstance().bind(ChannelType.valueOf(msg.getChannelType()), loginUser.getId(), groupId, channel);
+        ChannelType channelType = ChannelType.valueOf(msg.getChannelType());
+        String userId = JwtUtils.getClaimByKey(dataNode.get("token").asText(), "userId");
+        MsgCenter.getInstance().bind(channelType, Integer.valueOf(userId), groupId, channel);
         // 回送channelId
         Map<String, String> data = new HashMap<>();
         data.put("channelId", channel.id().asLongText());

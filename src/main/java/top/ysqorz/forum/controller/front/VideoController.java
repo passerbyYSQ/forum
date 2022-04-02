@@ -1,13 +1,12 @@
 package top.ysqorz.forum.controller.front;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.po.DanmuMsg;
@@ -16,6 +15,7 @@ import top.ysqorz.forum.service.DanmuService;
 import top.ysqorz.forum.service.VideoService;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -31,6 +31,13 @@ public class VideoController {
     private VideoService videoService;
     @Resource
     private DanmuService danmuService;
+
+    @ResponseBody
+    @PostMapping("/danmu/send")
+    public ResultModel sendDanmu(@NotNull Integer videoId, @Length(max = 255) String content,
+                                 @Range Long startMs, @NotBlank String channelId) {
+        return ResultModel.wrap(danmuService.sendDanmu(videoId, content, startMs, channelId));
+    }
 
     @GetMapping("/{videoId}")
     public String display(@PathVariable @NotNull Integer videoId, Model model) {

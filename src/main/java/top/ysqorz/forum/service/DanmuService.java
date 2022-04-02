@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.po.DanmuMsg;
 
 import java.util.List;
@@ -11,4 +12,6 @@ import java.util.List;
 public interface DanmuService {
 
     List<DanmuMsg> getDanmuListByVideoId(Integer videoId);
+
+    StatusCode sendDanmu(Integer videoId, String content, Long startMs, String sourceChannelId);
 }

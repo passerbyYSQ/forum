@@ -59,7 +59,7 @@ public class ChatController {
     @ResponseBody
     @GetMapping("/search/user")
     public ResultModel<PageData<ChatUserCardDTO>> searchUser(
-            @RequestParam(defaultValue = "") String keyword, @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "") @Length(max = 16) String keyword, @RequestParam(defaultValue = "all") String status,
              @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "8") Integer count) {
         return ResultModel.success(chatService.getChatUserCards(keyword, status, page, count));
     }
@@ -91,7 +91,7 @@ public class ChatController {
     @ResponseBody
     @PostMapping("/apply/process")
     public ResultModel processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
-                                          @NotNull String action) {
+                                          @NotBlank String action) {
         return ResultModel.wrap(chatService.processFriendApply(friendApplyId, friendGroupId, action));
     }
 
@@ -122,7 +122,7 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/group/create")
-    public ResultModel<ChatFriendGroup> createFriendGroup(@NotBlank @Length(max = 16) String friendGroupName) {
+    public ResultModel<ChatFriendGroup> createFriendGroup(@Length(max = 16) String friendGroupName) {
         return chatService.createFriendGroup(friendGroupName);
     }
 

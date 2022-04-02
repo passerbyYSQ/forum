@@ -158,15 +158,19 @@
 
         function pushMsg(id, txt, startMs) {
             if (socket) {
-                var msg = new Msg(app.MSG_TYPE.DANMU, {
+                // var msg = new Msg(app.MSG_TYPE.DANMU, {
+                //     content: txt,
+                //     startMs,
+                //     videoId: currVideoId
+                // });
+                // socket.send(msg);
+                // socket.sendByHttp(msg, function (res) { });
+                app.ajax('/video/danmu/send', {
+                    videoId: currVideoId,
                     content: txt,
                     startMs,
-                    videoId: currVideoId
-                });
-                // socket.send(msg);
-                socket.sendByHttp(msg, function (res) {
-                    // revoke danmu
-                });
+                    channelId: socket.channelId
+                }, null, 'POST', null, false);
             }
         }
 
@@ -214,7 +218,7 @@
                     if (!txt) {
                         return;
                     }
-                    var startMs = playerObj.currentTime * 1000;
+                    var startMs = Math.floor(playerObj.currentTime * 1000);
                     var danmu = sendDanmu({content: txt, startMs});
                     pushMsg(danmu.id, txt, startMs);
                     console.log('发送成功', danmu);

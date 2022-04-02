@@ -26,13 +26,7 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
             Channel channel = ctx.channel();
             String channelId = channel.id().asLongText();
 
-            if (event.state() == IdleState.READER_IDLE) {
-//                log.info("channel进入[读]空闲状态：{}", channelId);
-            } else if (event.state() == IdleState.WRITER_IDLE) {
-//                log.info("channel进入[写]空闲状态：{}", channelId);
-                channel.writeAndFlush(IMUtils.createTextFrame(MsgType.PONG));
-                resetChannelAllIdleCount(channel);
-            } else if (event.state() == IdleState.ALL_IDLE) {
+            if (event.state() == IdleState.ALL_IDLE) {
                 log.info("channel进入[读写]空闲状态：{}", channelId);
                 Integer allIdleCount = channel.attr(IMUtils.ALL_IDLE_KEY).get();
                 if (Integer.valueOf(3).equals(allIdleCount)) { // >=3
@@ -46,21 +40,5 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
         } else {
             super.userEventTriggered(ctx, evt);
         }
-    }
-
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // 一旦有消息可读，包括但不限于PING消息，都打破了空闲状态的嫌疑，重置allIdleCount为0
-        resetChannelAllIdleCount(ctx.channel());
-        super.channelRead(ctx, msg);
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        resetChannelAllIdleCount(ctx.channel());
-    }
-
-    public static void resetChannelAllIdleCount(Channel channel) {
-        channel.attr(IMUtils.ALL_IDLE_KEY).set(0);
     }
 }

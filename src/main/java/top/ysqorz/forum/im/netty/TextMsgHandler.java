@@ -5,7 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
+import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.im.handler.MsgCenter;
 import top.ysqorz.forum.utils.JsonUtils;
 
@@ -25,7 +27,7 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
         }
         String msgType = msgNode.get("msgType").asText();
         String channelType = msgNode.get("channelType").asText();
-        MsgModel msg = new MsgModel(msgType, channelType, msgNode.get("data"));
+        MsgModel msg = new MsgModel(MsgType.valueOf(msgType), ChannelType.valueOf(channelType), msgNode.get("data"));
         MsgCenter.getInstance().handle(msg, ctx.channel());
     }
 
