@@ -94,8 +94,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AuthorizationException.class)
     public ModelAndView handlerAuthorizationException(AuthorizationException e, HttpServletRequest request) {
-        return wrapModelAndView(
-                ResultModel.failed(403, e.getMessage()), request);
+        return wrapModelAndView(ResultModel.failed(403, e.getMessage()), request);
     }
 
 

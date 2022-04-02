@@ -9,6 +9,7 @@ import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.po.ChatFriendGroup;
 import top.ysqorz.forum.service.ChatService;
 
 import javax.annotation.Resource;
@@ -121,8 +122,8 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/group/create")
-    public ResultModel createFriendGroup(@NotBlank @Length(max = 16) String friendGroupName) {
-        return ResultModel.wrap(chatService.createFriendGroup(friendGroupName));
+    public ResultModel<ChatFriendGroup> createFriendGroup(@NotBlank @Length(max = 16) String friendGroupName) {
+        return chatService.createFriendGroup(friendGroupName);
     }
 
     /**

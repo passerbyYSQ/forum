@@ -160,8 +160,8 @@
         var action = {
             //同意
             agree: function (btn, applyId) {
-                parent.addFriend(applyId, users[applyId], function () {
-                    btn.parent().html('已同意');
+                parent.addFriend(applyId, users[applyId], function (res) {
+                    btn.parent().html(res.code === 2000 ? '已同意' : res.msg);
                 });
             },
             //拒绝

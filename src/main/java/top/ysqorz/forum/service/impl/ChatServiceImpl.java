@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
+import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.ChatFriendApplyMapper;
 import top.ysqorz.forum.dao.ChatFriendGroupMapper;
@@ -259,6 +260,11 @@ public class ChatServiceImpl implements ChatService {
             if (this.isInvalidFriendGroup(friendGroupId)) {
                 return StatusCode.CHAT_FRIEND_GROUP_INVALID; // 好友分组非法
             }
+            ChatFriend chatFriend = this.getMyChatFriendById(apply.getSenderId());
+            if (!ObjectUtils.isEmpty(chatFriend)) { // 已经是好友，不能添加，把好友申请给删除
+                chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId);
+                return StatusCode.CHAT_ALREADY_FRIEND;
+            }
             this.updateFriendApplyStatusById(friendApplyId, (byte) 1);
             this.addChatFriend(myId, apply.getSenderId(), friendGroupId);
             this.addChatFriend(apply.getSenderId(), myId, apply.getFriendGroupId());
@@ -314,16 +320,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public StatusCode createFriendGroup(String friendGroupName) {
+    public ResultModel<ChatFriendGroup> createFriendGroup(String friendGroupName) {
         ChatFriendGroup friendGroup = this.getFriendGroupByName(friendGroupName);
         if (!ObjectUtils.isEmpty(friendGroup) || "未分组".equals(friendGroupName)) {
-            return StatusCode.CHAT_FRIEND_GROUP_EXIST;
+            return ResultModel.failed(StatusCode.CHAT_FRIEND_GROUP_EXIST);
         }
         ChatFriendGroup newFriendGroup = new ChatFriendGroup();
-        newFriendGroup.setGroupName(friendGroupName)
+        newFriendGroup.setGroupName(friendGroupName.trim())
                 .setUserId(ShiroUtils.getUserId());
-        chatFriendGroupMapper.insert(newFriendGroup);
-        return StatusCode.SUCCESS;
+        chatFriendGroupMapper.insertUseGeneratedKeys(newFriendGroup);
+        return ResultModel.success(newFriendGroup);
     }
 
     @Override
@@ -335,33 +341,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void updateGroupOfFriends(Set<Integer> friendIdSet, Integer targetFriendGroupId) {
-        ChatFriend record = new ChatFriend();
-        record.setFriendGroupId(targetFriendGroupId);
-        Example example = new Example(ChatFriend.class);
-        example.createCriteria().andEqualTo("myId", ShiroUtils.getUserId())
-                .andIn("friendId", friendIdSet);
-        chatFriendMapper.updateByExampleSelective(record, example);
-    }
-
-    @Override
-    public void updateGroupOfFriends(Integer sourceFriendGroupId, Integer targetFriendGroupId) {
-        ChatFriend record = new ChatFriend();
-        record.setFriendGroupId(targetFriendGroupId);
-        Example example = new Example(ChatFriend.class);
-        example.createCriteria().andEqualTo("myId", ShiroUtils.getUserId())
-                .andEqualTo("friendGroupId", sourceFriendGroupId);
-        chatFriendMapper.updateByExampleSelective(record, example);
-    }
-
-    @Override
     @Transactional
     public StatusCode deleteFriendGroup(Integer friendGroupId) {
-        if (ObjectUtils.isEmpty(friendGroupId) || this.isInvalidFriendGroup(friendGroupId)) {
+        if (ObjectUtils.isEmpty(friendGroupId) || this.isInvalidFriendGroup(friendGroupId)) { // 已经判断了分组是我的
             return StatusCode.CHAT_FRIEND_GROUP_INVALID;
         }
         chatFriendGroupMapper.deleteByPrimaryKey(friendGroupId);
-        this.updateGroupOfFriends(friendGroupId, null); // 原分组下的所有好友都变成未分组
+        chatFriendMapper.unGroupFriendsByGroupId(friendGroupId, null); // 原分组下的所有好友都变成未分组
         return StatusCode.SUCCESS;
     }
 
@@ -372,7 +358,8 @@ public class ChatServiceImpl implements ChatService {
         }
         Set<Integer> friendIdSet = CommonUtils.splitIdStr(friendIds);
         if (!friendIdSet.isEmpty()) {
-            this.updateGroupOfFriends(friendIdSet, targetFriendGroupId); // 更改好友的分组
+            // 更改好友的分组。主要写SQL条件的时候要判断是我的好友才能更改
+            chatFriendMapper.updateGroupOfFriends(friendIdSet, targetFriendGroupId, ShiroUtils.getUserId());
         }
         return StatusCode.SUCCESS;
     }
@@ -395,6 +382,7 @@ public class ChatServiceImpl implements ChatService {
         Integer myId = ShiroUtils.getUserId();
         this.deleteChatFriendByBothIds(myId, friendId);
         this.deleteChatFriendByBothIds(friendId, myId); // 同时将自己从对方好友列表中删除
+        // TODO 消息推送，将自己从对方好友列表中删除
         return StatusCode.SUCCESS;
     }
 }

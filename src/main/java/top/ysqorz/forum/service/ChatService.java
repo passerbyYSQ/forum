@@ -1,5 +1,6 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
@@ -41,16 +42,6 @@ public interface ChatService {
      * 添加好友关系
      */
     void addChatFriend(Integer myId, Integer friendId, Integer friendGroupId);
-
-    /**
-     * 更新某些好友的分组
-     */
-    void updateGroupOfFriends(Set<Integer> friendIdSet, Integer targetFriendGroupId);
-
-    /**
-     * 将一组好友转移至其他组
-     */
-    void updateGroupOfFriends(Integer sourceFriendGroupId, Integer targetFriendGroupId);
 
     /**
      * 申请添加好友
@@ -117,7 +108,7 @@ public interface ChatService {
     /**
      * 创建好友分组
      */
-    StatusCode createFriendGroup(String friendGroupName);
+    ResultModel<ChatFriendGroup> createFriendGroup(String friendGroupName);
 
     /**
      * 移动好友至指定分组

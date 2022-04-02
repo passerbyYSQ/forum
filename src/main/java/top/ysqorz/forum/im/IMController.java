@@ -45,7 +45,7 @@ public class IMController {
             return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
         }
         MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getLoginUser());
-        return null;
+        return ResultModel.success();
     }
 
     /**

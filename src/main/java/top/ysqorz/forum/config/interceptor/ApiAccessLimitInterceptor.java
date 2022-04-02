@@ -1,9 +1,9 @@
 package top.ysqorz.forum.config.interceptor;
 
-import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.utils.CommonUtils;
 
 import javax.annotation.Resource;
@@ -27,14 +27,16 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                             Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String ip = CommonUtils.getIpFromRequest(request);
         String accessKey = "API:" + request.getServletPath() + ":" + ip;
         String remained = stringRedisTemplate.opsForValue().get(accessKey);
         if (remained != null && Integer.parseInt(remained) <= 0) {
             String msg = "访问" + request.getServletPath() + "过于频繁，已被拦截";
-            throw new AuthorizationException(msg);
+            // 此处无法被GlobalExceptionHandler所捕获，但能被SpringBoot的默认异常处理所捕获
+            // throw new AuthorizationException(msg);
+            CommonUtils.writeJson(response, ResultModel.failed(403, msg));
+            return false;
         }
         // 60为剩余次数，过期时间为1分钟。如果已经设置，不会重复set
         stringRedisTemplate.opsForValue()

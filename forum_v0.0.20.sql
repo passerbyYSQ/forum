@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 31/03/2022 00:32:45
+ Date: 02/04/2022 17:35:53
 */
 
 SET NAMES utf8mb4;
@@ -125,14 +125,17 @@ CREATE TABLE `chat_friend`  (
   `alias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '好友的备注名',
   `create_time` datetime(0) NOT NULL COMMENT '成为好友额时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友关系表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友关系表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of chat_friend
 -- ----------------------------
-INSERT INTO `chat_friend` VALUES (1, 26, 21, 1, '【YSQ】', '2022-03-27 18:16:01');
-INSERT INTO `chat_friend` VALUES (6, 26, 23, 1, NULL, '2022-03-30 23:39:14');
-INSERT INTO `chat_friend` VALUES (7, 23, 26, 3, NULL, '2022-03-30 23:39:15');
+INSERT INTO `chat_friend` VALUES (9, 26, 23, NULL, NULL, '2022-04-02 15:41:02');
+INSERT INTO `chat_friend` VALUES (10, 23, 26, NULL, NULL, '2022-04-02 15:42:16');
+INSERT INTO `chat_friend` VALUES (13, 26, 21, 19, NULL, '2022-04-02 16:41:12');
+INSERT INTO `chat_friend` VALUES (14, 21, 26, NULL, NULL, '2022-04-02 16:41:25');
+INSERT INTO `chat_friend` VALUES (15, 26, 27, 19, NULL, '2022-04-02 16:42:05');
+INSERT INTO `chat_friend` VALUES (16, 27, 16, NULL, NULL, '2022-04-02 16:42:15');
 
 -- ----------------------------
 -- Table structure for chat_friend_apply
@@ -147,16 +150,16 @@ CREATE TABLE `chat_friend_apply`  (
   `status` tinyint(4) NULL DEFAULT NULL COMMENT '状态。0：拒绝；1：同意',
   `apply_time` datetime(0) NOT NULL COMMENT '申请时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友申请表。好友同意和拒绝后，对方签收后才删除对应；忽略后，立即删除' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友申请表。好友同意和拒绝后，对方签收后才删除对应；忽略后，立即删除' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of chat_friend_apply
 -- ----------------------------
 INSERT INTO `chat_friend_apply` VALUES (1, 26, 23, 1, '哈哈哈哈哈哈哈哈哈哈', 0, '2022-03-27 22:16:10');
 INSERT INTO `chat_friend_apply` VALUES (2, 26, 28, 1, '你好啊', 1, '2022-03-29 21:06:00');
-INSERT INTO `chat_friend_apply` VALUES (3, 21, 26, 1, '你好。。。', NULL, '2022-03-29 21:07:19');
 INSERT INTO `chat_friend_apply` VALUES (4, 22, 26, 1, '交个朋友呗！！！', NULL, '2022-03-29 21:08:03');
 INSERT INTO `chat_friend_apply` VALUES (6, 23, 26, 3, '【有效测试数据】', 1, '2022-03-30 23:39:14');
+INSERT INTO `chat_friend_apply` VALUES (8, 21, 26, NULL, '已经是好友', NULL, '2022-04-02 17:07:58');
 
 -- ----------------------------
 -- Table structure for chat_friend_group
@@ -167,14 +170,15 @@ CREATE TABLE `chat_friend_group`  (
   `user_id` int(11) NOT NULL,
   `group_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '好友分组的名称',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友分组表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友分组表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of chat_friend_group
 -- ----------------------------
-INSERT INTO `chat_friend_group` VALUES (1, 26, '分组1');
-INSERT INTO `chat_friend_group` VALUES (2, 26, '分组2');
 INSERT INTO `chat_friend_group` VALUES (3, 23, '分组3');
+INSERT INTO `chat_friend_group` VALUES (19, 26, '随便');
+INSERT INTO `chat_friend_group` VALUES (20, 26, '【测试分组】');
+INSERT INTO `chat_friend_group` VALUES (21, 26, '右键');
 
 -- ----------------------------
 -- Table structure for chat_friend_msg
@@ -1117,7 +1121,7 @@ INSERT INTO `user` VALUES (20, '三个地方', '20', '20', '123456', '2', '2', 2
 INSERT INTO `user` VALUES (21, 'ysq', '1@qq.com', NULL, '3f54a72d01674b033327ab34ae5010e0', 'MOTciA8o', 'cAr!U-Bv', 3, '/admin/assets/images/defaultUserPhoto.jpg', '我是YSQ!!!!!', NULL, NULL, '2021-06-04 14:58:23', '2021-06-04 14:58:23', '2022-02-03 21:11:08', '2022-02-03 21:11:21', 1, 30, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (22, 'passerbyYSQ', '', NULL, '', 'ad^R9%UP', '(+&iC)e&', 0, 'https://gitee.com/assets/no_portrait.png', '', '2021-07-10', '广东省/肇庆市/封开县', '2021-06-14 15:54:53', '2021-06-14 15:54:53', '2021-07-12 13:08:31', '2022-02-21 00:29:25', 2, 11, 1, 7369646, NULL, NULL);
 INSERT INTO `user` VALUES (23, '过路人', '', NULL, '', 'emNiOgun', 'l#xv3)Jw', 0, 'http://thirdqq.qlogo.cn/g?b=oidb&k=nMMFjagOIQXoHlwJUfHHsA&s=40&t=1582654446', '过路人。。。', NULL, NULL, '2021-06-17 21:31:40', '2021-06-17 21:31:40', '2021-07-05 15:40:05', '2021-07-05 15:41:42', 2, 4, 0, NULL, '1AF065CF5F865B4146F7F69A1AFCC60D', NULL);
-INSERT INTO `user` VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', '^(=QAv6(', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361', '我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！我是最靓的仔！！！！', '2021-07-10', '广东省/广州市/天河区', '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-03-28 19:08:32', '2022-03-30 16:53:53', 1, 59, 1, NULL, NULL, '421602246');
+INSERT INTO `user` VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', '^(=QAv6(', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361', '【我是帅锅】', '2021-07-10', '广东省/广州市/天河区', '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-03-28 19:08:32', '2022-03-30 16:53:53', 1, 59, 1, NULL, NULL, '421602246');
 INSERT INTO `user` VALUES (27, 'ligouzi', '2403298783@qq.com', NULL, '22bb34a6e77baab53ebf873afdfa34bd', 'KB%OApta', 'BNk$@YeY', 3, '/admin/assets/images/defaultUserPhoto.jpg', NULL, NULL, NULL, '2021-07-06 16:15:34', '2021-07-06 16:15:34', '2021-07-10 10:09:47', '2021-07-06 16:34:15', 1, 2, 0, NULL, NULL, '');
 INSERT INTO `user` VALUES (28, 'test123', '123@qq.com', NULL, 'b2793335f43645fd8e00c7d18e14e05f', '123', '', 0, '/admin/assets/images/defaultUserPhoto.jpg', NULL, NULL, NULL, '2022-03-27 17:59:07', '2022-03-27 17:59:13', '2022-03-28 19:00:42', '2022-03-28 19:00:22', 1, 1, 0, NULL, NULL, '');
 

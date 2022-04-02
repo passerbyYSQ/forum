@@ -97,8 +97,7 @@ public class UserCenterController {
     public ResultModel updatePersonalInfo(User user) {
         user.setId(ShiroUtils.getUserId());
         int cnt = userService.updateUserById(user);
-        return cnt == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.INFO_UPDATE_FAILED);
+        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.INFO_UPDATE_FAILED);
     }
 
     @PostMapping("/uploadFaceImage")

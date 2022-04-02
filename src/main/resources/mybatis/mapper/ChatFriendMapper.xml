@@ -13,6 +13,17 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
 
+    <update id="unGroupFriendsByGroupId">
+        update chat_friend set friend_group_id = #{targetFriendGroupId} where friend_group_id = #{sourceFriendGroupId}
+    </update>
+    <update id="updateGroupOfFriends">
+        update chat_friend set friend_group_id = #{targetFriendGroupId} where my_id = #{myId}
+        and friend_id in
+        <foreach collection="friendIdSet" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
     <select id="selectChatFriendsWithoutGroup" resultType="top.ysqorz.forum.dto.resp.ChatListDTO$ChatFriendDTO">
         select u.id, username, alias, photo as avatar, description as sign
         from chat_friend as cf
