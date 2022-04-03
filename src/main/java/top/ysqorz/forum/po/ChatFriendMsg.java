@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "chat_friend_msg")
 public class ChatFriendMsg {
     @Id
-    private Integer id;
+    private String id;
 
     /**
      * 发送者的用户id

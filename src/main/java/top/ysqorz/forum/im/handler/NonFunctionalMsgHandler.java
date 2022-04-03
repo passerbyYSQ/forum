@@ -46,6 +46,7 @@ public abstract class NonFunctionalMsgHandler<DataType> extends MsgHandler<DataT
 
     /**
      * 加强规范。业务类型的消息需要存储到数据库，必须实现此方法
+     * AsyncInsertTask的泛型不一定是DataType
      */
     @Override
     protected abstract AsyncInsertTask createAsyncInsertTask(DataType data);

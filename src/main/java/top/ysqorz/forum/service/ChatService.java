@@ -10,8 +10,6 @@ import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
 import top.ysqorz.forum.po.ChatFriendGroup;
 
-import java.util.Set;
-
 /**
  * @author passerbyYSQ
  * @create 2022-03-26 16:23
@@ -127,5 +125,13 @@ public interface ChatService {
      */
     StatusCode deleteChatFriend(Integer friendId);
 
+    /**
+     * 发送好友私聊消息
+     */
+    StatusCode sendChatFriendMsg(Integer friendId, String content, String sourceChannelId);
 
+    /**
+     * 签收聊天消息
+     */
+    void signChatFriendMsg(String msgIds);
 }

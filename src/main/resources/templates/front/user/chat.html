@@ -92,16 +92,15 @@
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
-    layui.use(['layim', 'app', 'contextMenu', 'admin', 'form', 'laytpl'], function () {
+    layui.use(['layim', 'app', 'contextMenu', 'admin', 'form', 'laytpl', 'ClientWebSocket'], function () {
         var $ = layui.$,
             admin = layui.admin,
-            element = layui.element,
-            router = layui.router(),
             app = layui.app,
             contextMenu = layui.contextMenu,
             layim = layui.layim,
             form = layui.form,
             laytpl = layui.laytpl;
+        var socket;
 
         //演示自动回复
         var autoReplay = [
@@ -127,11 +126,10 @@
             , members: {
                 url: '/admin/json/layim/getMembers.json'
                 , data: {}
-            }
-
-            , uploadImage: {
-                url: '' //（返回的数据格式见下文）
-                , type: '' //默认post
+            },
+             uploadImage: {
+                url: '/chat/upload/image',
+                type: 'POST' // 默认post
             }
             , uploadFile: {
                 url: '' //（返回的数据格式见下文）
@@ -195,39 +193,20 @@
             //console.log(res.mine);
             layim.msgbox(5); //模拟消息盒子有新消息，实际使用时，一般是动态获得
             initFriendContextMenu();
+            initSocket();
         });
         //监听发送消息
         layim.on('sendMessage', function (data) {
-            var To = data.to;
-            //console.log(data);
-
-            if (To.type === 'friend') {
-                layim.setChatStatus('<span style="color:#FF5722;">对方正在输入。。。</span>');
+            let { mine: self, to } = data;
+            if (to.type === 'friend') {
+                app.ajax('/chat/friend/msg/send', {
+                    friendId: to.id,
+                    content: self.content,
+                    channelId: socket.channelId
+                }, null, 'POST', function (res) {
+                    // TODO 发送失败需要做出界面提示
+                }, false);
             }
-
-            //演示自动回复
-            setTimeout(function () {
-                var obj = {};
-                if (To.type === 'group') {
-                    obj = {
-                        username: '模拟群员' + (Math.random() * 100 | 0)
-                        , avatar: layui.cache.dir + 'images/face/' + (Math.random() * 72 | 0) + '.gif'
-                        , id: To.id
-                        , type: To.type
-                        , content: autoReplay[Math.random() * 9 | 0]
-                    }
-                } else {
-                    obj = {
-                        username: To.name
-                        , avatar: To.avatar
-                        , id: To.id
-                        , type: To.type
-                        , content: autoReplay[Math.random() * 9 | 0]
-                    }
-                    layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
-                }
-                layim.getMessage(obj);
-            }, 1000);
         });
         //监听查看群员
         layim.on('members', function (data) {
@@ -251,6 +230,30 @@
                 });
             }
         });
+
+        // 初始化WebSocket
+        function initSocket() {
+            let onMsgReceived = function (msg) {
+                let { msgType, data } = msg;
+                if (msgType === app.MSG_TYPE.CHAT_FRIEND && data.receiverId === layim.cache().mine.id) {
+                    let { friend, groupId } = findFriendFromCache(data.senderId);
+                    layim.getMessage({
+                        username: friend.username,
+                        avatar: friend.avatar,
+                        id: friend.id,
+                        type: 'friend',
+                        content: data.content,
+                        timestamp: data.createTime
+                    });
+                    // TODO 签收消息
+                }
+            };
+            socket = new layui.ClientWebSocket({
+                channelType: app.CHANNEL_TYPE.CHAT,
+                groupId: layim.cache().mine.id,
+                onMsgReceived: onMsgReceived.bind(this)
+            });
+        }
 
         // 发送好友申请
         window.applyFriend = function (userId, username, photo) {
@@ -459,14 +462,7 @@
                     click: function (ev1, ev2) {
                         let friendName = $(ev2.currentTarget).children('span:first').text();
                         let friendId = $(ev2.currentTarget).data('id');
-                        let friend, sourceGroupId;
-                        for (let group of layim.cache().friend) {
-                            friend = group.list.find(item => item.id === parseInt(friendId));
-                            if (friend) {
-                                sourceGroupId = group.id;
-                                break;
-                            }
-                        }
+                        let { friend, groupId: sourceGroupId } = findFriendFromCache(friendId);
                         let targetGroupId = this.id;
                         if (parseInt(sourceGroupId) === parseInt(targetGroupId)) {
                             app.errorNotice('无须移动');
@@ -492,6 +488,19 @@
             contextMenu.bind('ul.layim-list-friend', blankCtxMenus);
             contextMenu.bind('ul.layim-list-friend > li', groupCtxMenus);
             contextMenu.bind('ul.layui-layim-list > li[data-type="friend"]', friendCtxMenus);
+        }
+
+        // 根据用户id查询好友信息
+        function findFriendFromCache(friendId) {
+            let friend, groupId;
+            for (let group of layim.cache().friend) {
+                friend = group.list.find(item => item.id === parseInt(friendId));
+                if (friend) {
+                    groupId = group.id;
+                    break;
+                }
+            }
+            return { friend, groupId };
         }
 
         //面板外的操作

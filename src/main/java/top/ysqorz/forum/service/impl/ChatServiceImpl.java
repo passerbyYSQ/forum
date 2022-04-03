@@ -12,26 +12,26 @@ import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.ChatFriendApplyMapper;
 import top.ysqorz.forum.dao.ChatFriendGroupMapper;
 import top.ysqorz.forum.dao.ChatFriendMapper;
+import top.ysqorz.forum.dao.ChatFriendMsgMapper;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
-import top.ysqorz.forum.po.ChatFriend;
-import top.ysqorz.forum.po.ChatFriendApply;
-import top.ysqorz.forum.po.ChatFriendGroup;
-import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.im.entity.ChannelType;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.MsgType;
+import top.ysqorz.forum.im.handler.MsgCenter;
+import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.ChatService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.CommonUtils;
+import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author passerbyYSQ
@@ -49,6 +49,8 @@ public class ChatServiceImpl implements ChatService {
     private ChatFriendApplyMapper chatFriendApplyMapper;
     @Resource
     private ChatFriendGroupMapper chatFriendGroupMapper;
+    @Resource
+    private ChatFriendMsgMapper chatFriendMsgMapper;
 
     /**
      * TODO 暂不支持状态条件的筛选，故status暂时没用到
@@ -384,5 +386,43 @@ public class ChatServiceImpl implements ChatService {
         this.deleteChatFriendByBothIds(friendId, myId); // 同时将自己从对方好友列表中删除
         // TODO 消息推送，将自己从对方好友列表中删除
         return StatusCode.SUCCESS;
+    }
+
+    @Override
+    public StatusCode sendChatFriendMsg(Integer friendId, String content, String sourceChannelId) {
+        ChatFriend friend = this.getMyChatFriendById(friendId);
+        if (ObjectUtils.isEmpty(friend)) {
+            return StatusCode.CHAT_FRIEND_NOT_EXIST;
+        }
+        ChatFriendMsg msg = new ChatFriendMsg();
+        msg.setId(RandomUtils.generateUUID())
+                .setContent(content)
+                .setSenderId(ShiroUtils.getUserId())
+                .setReceiverId(friendId)
+                .setCreateTime(LocalDateTime.now())
+                .setSignFlag((byte) 0);
+        MsgModel msgModel = new MsgModel(MsgType.CHAT_FRIEND, ChannelType.CHAT, msg);
+        MsgCenter.getInstance().remoteDispatch(msgModel, sourceChannelId);
+        return StatusCode.SUCCESS;
+    }
+
+    @Override
+    public void signChatFriendMsg(String msgIds) {
+        Set<String> msgIdSet = new HashSet<>();
+        String[] msgIdArr = msgIds.split(",");
+        for (String msgId : msgIdArr) {
+            if (msgId.trim().isEmpty()) {
+                continue;
+            }
+            msgIdSet.add(msgId.trim());
+        }
+        Example example = new Example(ChatFriendMsg.class);
+        example.createCriteria()
+                .andEqualTo("receiverId", ShiroUtils.getUserId()) // 接收者是我
+                .andEqualTo("signFlag", 0) // 未签收
+                .andIn("id", msgIdSet);
+        ChatFriendMsg record = new ChatFriendMsg();
+        record.setSignFlag((byte) 1);
+        chatFriendMsgMapper.updateByExampleSelective(record, example);
     }
 }

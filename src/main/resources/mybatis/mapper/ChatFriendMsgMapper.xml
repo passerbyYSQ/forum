@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="sender_id" jdbcType="INTEGER" property="senderId" />
     <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
     <result column="content" jdbcType="VARCHAR" property="content" />

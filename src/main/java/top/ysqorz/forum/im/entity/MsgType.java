@@ -12,8 +12,8 @@ public enum MsgType {
     CLOSE,
     // 业务类型的消息
     DANMU,
-    SINGLE_CHAT,
-    GROUP_CHAT;
+    CHAT_FRIEND,
+    CHAT_GROUP;
 
     public static boolean isFunctionalType(MsgType type) {
         MsgType[] funcTypes = new MsgType[]{BIND, PING, PONG, CLOSE};

@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.common.Constant;
+import top.ysqorz.forum.im.handler.ChatFriendMsgHandler;
 import top.ysqorz.forum.im.handler.DanmuMsgHandler;
 import top.ysqorz.forum.im.handler.MsgCenter;
 
@@ -63,7 +64,9 @@ public class WebSocketServer implements ChannelFutureListener {
 
 
     private void initMsgHandlers() {
-        MsgCenter.getInstance().addHandlerAtLast(new DanmuMsgHandler());
+        MsgCenter.getInstance()
+                .addHandlerAtLast(new DanmuMsgHandler())
+                .addHandlerAtLast(new ChatFriendMsgHandler());
         log.info("消息处理器初始化成功");
     }
 }

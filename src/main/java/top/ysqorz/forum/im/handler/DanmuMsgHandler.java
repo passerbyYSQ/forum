@@ -20,9 +20,9 @@ public class DanmuMsgHandler extends NonFunctionalMsgHandler<DanmuMsg> {
     }
 
     @Override
-    protected Set<String> queryServersChannelLocated(DanmuMsg msg) {
+    protected Set<String> queryServersChannelLocated(DanmuMsg danmu) {
         RedisService redisService = SpringUtils.getBean(RedisService.class);
-        return redisService.getWsServers(this.getChannelType(), msg.getVideoId().toString());
+        return redisService.getWsServers(this.getChannelType(), danmu.getVideoId().toString());
     }
 
     @Override

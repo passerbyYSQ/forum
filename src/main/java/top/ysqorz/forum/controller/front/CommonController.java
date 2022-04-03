@@ -38,8 +38,7 @@ public class CommonController {
      * 前后台公用的上传的图片的接口
      */
     @PostMapping("/upload/image")
-    public ResultModel<UploadResult> uploadImage(@NotNull MultipartFile image)
-            throws IOException  {
+    public ResultModel<UploadResult> uploadImage(@NotNull MultipartFile image) throws IOException  {
         ImageUploader imageUploader = new ImageUploader(image, aliyunOssRepository);
         UploadResult uploadResult = imageUploader.upload();
         return ResultModel.success(uploadResult);

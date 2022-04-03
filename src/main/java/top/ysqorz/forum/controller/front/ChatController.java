@@ -4,17 +4,24 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.UploadResult;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriendGroup;
 import top.ysqorz.forum.service.ChatService;
+import top.ysqorz.forum.upload.UploadRepository;
+import top.ysqorz.forum.upload.uploader.ImageUploader;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author passerbyYSQ
@@ -26,6 +33,9 @@ import javax.validation.constraints.NotNull;
 public class ChatController {
     @Resource
     private ChatService chatService;
+    // 暂时使用阿里云OSS
+    @Resource
+    private UploadRepository aliyunOssRepository;
 
     /**
      * 个人中心私聊页面
@@ -154,5 +164,42 @@ public class ChatController {
     @PostMapping("/friend/delete")
     public ResultModel deleteFriend(@NotNull Integer friendId) {
         return ResultModel.wrap(chatService.deleteChatFriend(friendId));
+    }
+
+    /**
+     * 发送好友私聊消息
+     */
+    @ResponseBody
+    @PostMapping("/friend/msg/send")
+    public ResultModel sendChatFriendMsg(@NotNull Integer friendId, @Length(max = 10000) String content,
+                                         @NotBlank String channelId) {
+       return ResultModel.wrap(chatService.sendChatFriendMsg(friendId, content, channelId));
+    }
+
+    /**
+     * 签收多条聊天消息
+     * @param msgIds    需要签收的消息的id。用逗号分隔，形如：id1,id2
+     */
+    @ResponseBody
+    @PostMapping("/friend/msg/sign")
+    public ResultModel signChatFriendMsg(@NotBlank String msgIds) {
+        chatService.signChatFriendMsg(msgIds);
+        return ResultModel.success();
+    }
+
+    /**
+     * 聊天图片。由于前端LayIM的数据格式限制，需要专门写一个接口
+     */
+    @ResponseBody
+    @PostMapping("/upload/image")
+    public ResultModel<Map<String, Object>> uploadChatImage(@RequestParam(name = "file") @NotNull MultipartFile image)
+            throws IOException {
+        ImageUploader imageUploader = new ImageUploader(image, aliyunOssRepository);
+        UploadResult uploaded = imageUploader.upload();
+        Map<String, Object> data = new HashMap<>();
+        data.put("src", uploaded.getUrl()[0]);
+        ResultModel<Map<String, Object>> result = ResultModel.success(data);
+        result.setCode(0);
+        return result;
     }
 }
