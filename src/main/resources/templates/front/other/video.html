@@ -150,7 +150,8 @@
             if (!danmuMsg.id) {
                 danmu.style = meDanmuStyle; // 如果id不存在说明是自己发的弹幕
             } else {
-                danmuNotice(danmuMsg);
+                let { creator: { photo, username }, content } = danmuMsg;
+                app.noticeFromUser(photo, username, content);
             }
             playerObj.danmu.sendComment(danmu);
             return danmu;
@@ -239,31 +240,6 @@
                 div.appendChild(btn);
                 return div;
             }
-        }
-
-        function danmuNotice(danmu) {
-            notice.show({
-                image: danmu.creator.photo,
-                imageWidth: 71,
-                maxWidth: '300px',
-                theme: 'light',
-                animateInside: false,
-                layout: '2',
-                rtl: false,
-                displayMode: '0',
-                balloon: false,
-                position: 'topRight',
-                transitionIn: 'fadeInLeft',
-                transitionOut: 'fadeOutRight',
-                audio: '',
-                timeout: '5000',
-                progressBar: true,
-                // noticeType: "success",
-                title: danmu.creator.username,
-                message: danmu.content,
-                pauseOnHover: false,
-                resetOnHover: false
-            })
         }
     });
 </script>

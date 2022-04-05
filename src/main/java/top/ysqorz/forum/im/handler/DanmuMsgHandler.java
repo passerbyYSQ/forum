@@ -27,7 +27,7 @@ public class DanmuMsgHandler extends NonFunctionalMsgHandler<DanmuMsg> {
 
     @Override
     protected void doPush(DanmuMsg danmu, String sourceChannelId) {  // data is completed
-        this.channelMap.pushToGroup(danmu, sourceChannelId, danmu.getVideoId().toString());
+        this.channelMap.pushToGroup(this.getMsgType(), danmu, sourceChannelId, danmu.getVideoId().toString());
     }
 
     @Override

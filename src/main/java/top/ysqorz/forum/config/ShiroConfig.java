@@ -9,6 +9,7 @@ import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -61,8 +62,8 @@ public class ShiroConfig {
     }
 
     @Bean
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(
-            DefaultWebSecurityManager securityManager, ShiroFilterChainDefinition chainDefinition) {
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(DefaultWebSecurityManager securityManager,
+                                                         ShiroFilterChainDefinition chainDefinition) {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
 
         // 必须的设置。我们自定义的Realm此时已经被设置到securityManager中了
@@ -81,11 +82,13 @@ public class ShiroConfig {
     }
 
     @Bean
-    public DefaultWebSecurityManager shiroSecurityManager(@Qualifier("jwtRealm") Realm jwtRealm) {
+    public DefaultWebSecurityManager shiroSecurityManager(@Qualifier("jwtRealm") Realm jwtRealm,
+                                                          DefaultWebSessionManager sessionManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 所有的Realm都用这个全局缓存。不生效，需要在realm中设置缓存。原因暂时搞不懂。
 //        securityManager.setCacheManager(new EhCacheManager());
         securityManager.setRealms(Collections.singletonList(jwtRealm));
+        securityManager.setSessionManager(sessionManager);
         return securityManager;
     }
 
@@ -206,11 +209,17 @@ public class ShiroConfig {
         return sessionStorageEvaluator;
     }
 
+    @Bean
+    public DefaultWebSessionManager sessionManager() {
+        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        sessionManager.setSessionIdUrlRewritingEnabled(false);
+        sessionManager.setSessionIdCookieEnabled(true);
+        return sessionManager;
+    }
     /**
      * shiro的全局缓存管理器
      * @return
      */
-
 //    @Bean
 //    public CacheManager ehCacheManager() {
 //        return new EhCacheManager();

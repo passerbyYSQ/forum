@@ -9,6 +9,10 @@ import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
 import top.ysqorz.forum.po.ChatFriendGroup;
+import top.ysqorz.forum.po.ChatFriendMsg;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author passerbyYSQ
@@ -25,6 +29,11 @@ public interface ChatService {
      * 根据两个人的用户id查找好友关系
      */
     ChatFriend getMyChatFriendById(Integer friendId);
+
+    /**
+     * 获取指定用户所有好友的用户id
+     */
+    Set<Integer> getAllFriendUserIds(Integer userId);
 
     /**
      * 根据两个人的用户id删除好友关系
@@ -134,4 +143,6 @@ public interface ChatService {
      * 签收聊天消息
      */
     void signChatFriendMsg(String msgIds);
+
+    List<ChatFriendMsg> getNotSignedChatFriendMsg();
 }

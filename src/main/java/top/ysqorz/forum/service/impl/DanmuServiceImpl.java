@@ -56,7 +56,7 @@ public class DanmuServiceImpl implements DanmuService {
                 .setCreateTime(LocalDateTime.now())
                 .setStartMs(Math.max(startMs, 0)); // 负数时做纠正
         MsgModel msg = new MsgModel(MsgType.DANMU, ChannelType.DANMU, danmu);
-        MsgCenter.getInstance().remoteDispatch(msg, sourceChannelId);
+        MsgCenter.getInstance().remoteDispatch(msg, sourceChannelId, ShiroUtils.getToken());
         return StatusCode.SUCCESS;
     }
 }

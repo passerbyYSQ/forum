@@ -6,9 +6,11 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.entity.OnOffLineAware;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.SpringUtils;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +59,7 @@ public class MsgCenter {
         ChannelMap channelMap = typeToChannels.get(channelType);
         // 如果该channelType的channelMap不存在则创建，否则使用已创建的。因为可能多个handler共用一个channelMap
         if (channelMap == null) {
-            channelMap = new ChannelMap(handler.getMsgType(), handler.getChannelType());
+            channelMap = new ChannelMap(handler.getChannelType());
             typeToChannels.put(channelType, channelMap);
         }
 
@@ -70,14 +72,16 @@ public class MsgCenter {
         return instance;
     }
 
-    public void bind(ChannelType channelType, Integer userId, String groupId, Channel channel) {
+    public void bind(ChannelType channelType, String token, String groupId, Channel channel) {
         ChannelMap channelMap = typeToChannels.get(channelType.name());
         if (channelMap != null) {
-            channelMap.bind(userId, groupId, channel);
+            channelMap.bind(token, groupId, channel);
             int count = channelCount.incrementAndGet();
             log.info("绑定成功，当前通道数：{}", count);
             RedisService redisService = SpringUtils.getBean(RedisService.class);
             redisService.bindWsServer(channelType, groupId);
+            // 调用实现了OnOffLineAware接口的handler的online()方法
+            invokeOnOffLineAware(channelType, token, "online");
         }
     }
 
@@ -92,7 +96,26 @@ public class MsgCenter {
                 RedisService redisService = SpringUtils.getBean(RedisService.class);
                 String groupId = IMUtils.getGroupIdFromChannel(channel);
                 redisService.removeWsServer(ChannelType.valueOf(channelType), groupId);
+                // 调用实现了OnOffLineAware接口的handler的online()方法
+                String token = IMUtils.getTokenFromChannel(channel);
+                invokeOnOffLineAware(ChannelType.valueOf(channelType), token, "offline");
             }
+        }
+    }
+
+    private void invokeOnOffLineAware(ChannelType channelType, String token, String methodName) {
+        // BindMsgHandler(first) -> PingPongMsgHandler -> xxxHandler(tail) -> TailHandler
+        MsgHandler p = first.getNext().getNext();
+        while (p != null && !(p instanceof TailHandler)) {
+            if (p instanceof OnOffLineAware && p.getChannelType().equals(channelType)) {
+                try {
+                    Method onlineMethod = p.getClass().getMethod(methodName, String.class);
+                    onlineMethod.invoke(p, token);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            p = p.getNext();
         }
     }
 
@@ -104,8 +127,8 @@ public class MsgCenter {
         first.push(msg, sourceChannelId);
     }
 
-    public void remoteDispatch(MsgModel msg, String sourceChannelId) { // source user
-        first.remoteDispatch(msg, sourceChannelId);
+    public void remoteDispatch(MsgModel msg, String sourceChannelId, String token) { // source user
+        first.remoteDispatch(msg, sourceChannelId, token);
     }
 
     public ChannelMap getChannelMap(String channelType) {

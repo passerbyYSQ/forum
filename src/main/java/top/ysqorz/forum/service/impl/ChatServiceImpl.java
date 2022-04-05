@@ -32,6 +32,7 @@ import top.ysqorz.forum.utils.RandomUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author passerbyYSQ
@@ -51,6 +52,15 @@ public class ChatServiceImpl implements ChatService {
     private ChatFriendGroupMapper chatFriendGroupMapper;
     @Resource
     private ChatFriendMsgMapper chatFriendMsgMapper;
+
+    @Override
+    public Set<Integer> getAllFriendUserIds(Integer userId) {
+        Example example = new Example(ChatFriend.class);
+        example.selectProperties("friendId")
+                .createCriteria().andEqualTo("myId", userId);
+        List<ChatFriend> chatFriends = chatFriendMapper.selectByExample(example);
+        return chatFriends.stream().map(ChatFriend::getFriendId).collect(Collectors.toSet());
+    }
 
     /**
      * TODO 暂不支持状态条件的筛选，故status暂时没用到
@@ -402,8 +412,19 @@ public class ChatServiceImpl implements ChatService {
                 .setCreateTime(LocalDateTime.now())
                 .setSignFlag((byte) 0);
         MsgModel msgModel = new MsgModel(MsgType.CHAT_FRIEND, ChannelType.CHAT, msg);
-        MsgCenter.getInstance().remoteDispatch(msgModel, sourceChannelId);
+        MsgCenter.getInstance().remoteDispatch(msgModel, sourceChannelId, ShiroUtils.getToken());
         return StatusCode.SUCCESS;
+    }
+
+    @Override
+    public List<ChatFriendMsg> getNotSignedChatFriendMsg() {
+        Example example = new Example(ChatFriendMsg.class);
+        example.selectProperties("id", "senderId", "content", "createTime")
+                .orderBy("createTime").asc();
+        example.createCriteria()
+                .andEqualTo("receiverId", ShiroUtils.getUserId())
+                .andEqualTo("signFlag", 0);
+        return chatFriendMsgMapper.selectByExample(example);
     }
 
     @Override

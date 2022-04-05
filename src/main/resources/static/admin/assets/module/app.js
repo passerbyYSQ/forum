@@ -19,7 +19,8 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
             CLOSE: 'CLOSE',
             DANMU: 'DANMU',
             CHAT_FRIEND: 'CHAT_FRIEND',
-            CHAT_GROUP: 'CHAT_GROUP'
+            CHAT_GROUP: 'CHAT_GROUP',
+            CHAT_NOTIFICATION: 'CHAT_NOTIFICATION'
         },
 
         CHANNEL_TYPE: {
@@ -71,6 +72,31 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
         // loading
         showLoading: function () {
             notice.msg('加载中...', {icon: 4, close: true});
+        },
+
+        noticeFromUser: function (image, title, content) {
+            notice.show({
+                image,
+                imageWidth: 71,
+                maxWidth: '300px',
+                theme: 'light',
+                animateInside: false,
+                layout: '2',
+                rtl: false,
+                displayMode: '0',
+                balloon: false,
+                position: 'topRight',
+                transitionIn: 'fadeInLeft',
+                transitionOut: 'fadeOutRight',
+                audio: '',
+                timeout: '5000',
+                progressBar: true,
+                // noticeType: "success",
+                title,
+                message: content,
+                pauseOnHover: false,
+                resetOnHover: false
+            });
         },
 
         // 字符数

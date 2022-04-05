@@ -12,6 +12,7 @@ import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.po.ChatFriendGroup;
+import top.ysqorz.forum.po.ChatFriendMsg;
 import top.ysqorz.forum.service.ChatService;
 import top.ysqorz.forum.upload.UploadRepository;
 import top.ysqorz.forum.upload.uploader.ImageUploader;
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -185,6 +187,15 @@ public class ChatController {
     public ResultModel signChatFriendMsg(@NotBlank String msgIds) {
         chatService.signChatFriendMsg(msgIds);
         return ResultModel.success();
+    }
+
+    /**
+     * 获取未签收的好友私聊消息
+     */
+    @ResponseBody
+    @GetMapping("/friend/msg/not_signed")
+    public ResultModel<List<ChatFriendMsg>> getNotSignedChatFriendMsg() {
+        return ResultModel.success(chatService.getNotSignedChatFriendMsg());
     }
 
     /**

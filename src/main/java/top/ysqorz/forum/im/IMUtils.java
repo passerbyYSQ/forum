@@ -20,7 +20,7 @@ import java.security.NoSuchAlgorithmException;
  * @create 2022-01-25 19:12
  */
 public class IMUtils {
-    public static final AttributeKey<Integer> USER_ID_KEY = AttributeKey.valueOf("userId");
+    public static final AttributeKey<String> TOKEN_KEY = AttributeKey.valueOf("token");
     public static final AttributeKey<String> GROUP_ID_KEY = AttributeKey.valueOf("groupId");
     public static final AttributeKey<String> CHANNEL_TYPE_KEY = AttributeKey.valueOf("channelType");
     public static final AttributeKey<Integer> ALL_IDLE_KEY = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
@@ -55,8 +55,8 @@ public class IMUtils {
         return createTextFrame(type, null);
     }
 
-    public static Integer getUserIdFromChannel(Channel channel) {
-        return channel.attr(USER_ID_KEY).get();
+    public static String getTokenFromChannel(Channel channel) {
+        return channel.attr(TOKEN_KEY).get();
     }
 
     public static String getChannelTypeFromChannel(Channel channel) {

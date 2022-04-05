@@ -13,6 +13,7 @@ import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.im.handler.MsgCenter;
 import top.ysqorz.forum.service.IMService;
+import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 
 import javax.annotation.Resource;
@@ -44,7 +45,7 @@ public class IMController {
         if (MsgType.isFunctionalType(MsgType.valueOf(msg.getMsgType()))) { // 如果非法type会抛出异常
             return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
         }
-        MsgCenter.getInstance().remoteDispatch(msg, channelId);
+        MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getToken());
         return ResultModel.success();
     }
 
@@ -52,7 +53,7 @@ public class IMController {
      * 转交给 MsgCenter push
      */
     @PostMapping("/push")
-    public ResultModel pushMsg(@NotBlank  String msgJson, @NotBlank  String channelId) { // source channel
+    public ResultModel pushMsg(@NotBlank String msgJson, String channelId) { // source channel
         MsgModel msg = JsonUtils.jsonToObj(HtmlUtils.htmlUnescape(msgJson), MsgModel.class);
         MsgCenter.getInstance().push(msg, channelId);
         return ResultModel.success();

@@ -3,6 +3,7 @@ package top.ysqorz.forum.im.handler;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import org.springframework.core.ResolvableType;
 import top.ysqorz.forum.im.IMUtils;
@@ -10,7 +11,6 @@ import top.ysqorz.forum.im.entity.*;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.UserService;
-import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.JwtUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @create 2022-01-11 23:57
  */
 @Data
+@Slf4j
 public abstract class MsgHandler<DataType> {
     // 能够处理的消息类型
     private MsgType msgType;
@@ -66,34 +67,41 @@ public abstract class MsgHandler<DataType> {
         }
     }
 
-    public void remoteDispatch(MsgModel msg, String sourceChannelId) {
+    public void remoteDispatch(MsgModel msg, String sourceChannelId, String token) {
         if (checkMsgType(msg)) {
             DataType data = transformData(msg); // data is DataType
             if (data == null) {
                 return;
             }
-            Set<String> servers = queryServersChannelLocated(data);
-            if (servers == null) {
-                return;
-            }
             // 保存到数据库
             doSave(data);
             msg.setData(data); // completed data
-            IMService imService = SpringUtils.getBean(IMService.class);
-            Set<String> imServers = new HashSet<>(imService.getIMServerIpList()); // web servers
-            // 分发到各个服务器，然后进行推送
-            for (String server : servers) {
-                if (imServers.contains(server)) { // 如果服务是正常，才转发
-                    String api = String.format("http://%s/im/push", server); // 如果设置了context-path，此处需要改动
-                    OkHttpUtils.builder().url(api)
-                            .addHeader("token", ShiroUtils.getToken())
-                            .addParam("msgJson", JsonUtils.objectToJson(msg))
-                            .addParam("channelId", sourceChannelId)
-                            .post(false).async(new PushApiCallback(data));
-                }
-            }
+            doRemoteDispatch(msg, sourceChannelId, token);
         } else if (next != null) {
-            next.remoteDispatch(msg, sourceChannelId);
+            next.remoteDispatch(msg, sourceChannelId, token);
+        }
+    }
+
+    protected void doRemoteDispatch(MsgModel msg, String sourceChannelId, String token) {
+        DataType data = (DataType) msg.getData();
+        Set<String> servers = queryServersChannelLocated(data);
+        if (servers == null) {
+            return;
+        }
+        IMService imService = SpringUtils.getBean(IMService.class);
+        Set<String> imServers = new HashSet<>(imService.getIMServerIpList()); // web servers
+        // 分发到各个服务器，然后进行推送
+        for (String server : servers) {
+            if (imServers.contains(server)) { // 如果服务是正常，才转发
+                String api = String.format("http://%s/im/push", server); // 如果设置了context-path，此处需要改动
+                OkHttpUtils okHttp = OkHttpUtils.builder().url(api)
+                        .addHeader("token", token)
+                        .addParam("msgJson", JsonUtils.objectToJson(msg));
+                if (sourceChannelId != null) {
+                    okHttp.addParam("channelId", sourceChannelId);
+                }
+                okHttp.post(false).async(new PushApiCallback(data));
+            }
         }
     }
 
@@ -202,12 +210,12 @@ public abstract class MsgHandler<DataType> {
 
         @Override
         public void onSucceed(Call call, String bodyJson) {
-            // do nothing
+            log.info(bodyJson);
         }
 
         @Override
         public void onFailed(Call call, String errorMsg) {
-            // TODO retry
+            log.error(errorMsg);
         }
     }
 }

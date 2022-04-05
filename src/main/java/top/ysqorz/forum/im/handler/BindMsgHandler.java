@@ -7,7 +7,6 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.utils.JwtUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +31,8 @@ public class BindMsgHandler extends MsgHandler<MsgModel> {
         }
         String groupId = dataNode.get("groupId").asText();
         ChannelType channelType = ChannelType.valueOf(msg.getChannelType());
-        String userId = JwtUtils.getClaimByKey(dataNode.get("token").asText(), "userId");
-        MsgCenter.getInstance().bind(channelType, Integer.valueOf(userId), groupId, channel);
+        String token = dataNode.get("token").asText();
+        MsgCenter.getInstance().bind(channelType, token, groupId, channel);
         // 回送channelId
         Map<String, String> data = new HashMap<>();
         data.put("channelId", channel.id().asLongText());
