@@ -1,0 +1,2 @@
+# 修改Github自动识别的项目语言类型
+*.js linguist-language=Java
