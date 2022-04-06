@@ -114,9 +114,9 @@
         from user where id = ${visitId}
     </select>
 
-    <select id="selectUserCardsLikeUsername" resultType="top.ysqorz.forum.dto.resp.ChatUserCardDTO" parameterType="map">
+    <select id="selectUserCardsLikeUsername" resultType="top.ysqorz.forum.dto.resp.ChatUserCardDTO">
         <bind name="param_username" value="'%' + username + '%'" />
-        select u.id, photo, username, cf.alias, gender, description as `desc`,
+        select u.id as userId, photo, username, cf.alias, gender, description as `desc`,
                if(cf.id, true, false) as isChatFriend
         from user u
         left join chat_friend cf on cf.my_id = #{myId} and cf.friend_id = u.id

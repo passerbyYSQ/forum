@@ -16,6 +16,7 @@ import top.ysqorz.forum.dao.ChatFriendMsgMapper;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatListDTO;
+import top.ysqorz.forum.dto.resp.ChatNotificationDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
@@ -168,7 +169,6 @@ public class ChatServiceImpl implements ChatService {
         ChatFriendApply friendApply = this.getFriendApplySentBySelf(receiverId);
         if (ObjectUtils.isEmpty(friendApply)) { // 不存在，则插入新的记录
             this.addFriendApply(receiverId, friendGroupId, content);
-            // TODO 消息推送
         } else {
             // 好友同意和拒绝后，对方签收后才删除对应；忽略后，立即删除
             // 已经存在申请记录，可能是：1.接收者同意或者拒绝，但发送者还没签收；2.接收者尚未处理；
@@ -176,11 +176,12 @@ public class ChatServiceImpl implements ChatService {
             // 1.status不为null，代表接收者尚已经处理该申请（拒绝，因为如果是好友在前面已经被return了）
             if (friendApply.getStatus() != null) {
                 chatFriendApplyMapper.deleteByPrimaryKey(friendApply.getId());
-                return StatusCode.CHAT_FRIEND_APPLY_REFUSED;
+                return StatusCode.CHAT_FRIEND_APPLY_PROCESSED;
             }
             // 2.接收者尚未处理该申请
             this.updateFriendApplyById(friendApply.getId(), friendGroupId, content);
         }
+        this.pushMsgBoxCount(receiverId); // 推送对方，消息盒子有新增消息
         return StatusCode.SUCCESS;
     }
 
@@ -254,6 +255,17 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public void pushMsgBoxCount(Integer userId) {
+        ChatNotificationDTO notification = new ChatNotificationDTO();
+        notification.setReceiverId(userId)
+                .setSenderId(0) // 系统消息
+                .setAction("msg_box")
+                .addPayload("count", this.getMsgBoxMsgCount(userId));
+        MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
+        MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+    }
+
+    @Override
     @Transactional // 添加事务处理
     public StatusCode processFriendApply(Integer friendApplyId, Integer friendGroupId, String action) {
         ChatFriendApply apply = this.getFriendApplyById(friendApplyId);
@@ -265,10 +277,11 @@ public class ChatServiceImpl implements ChatService {
         if ("ignore".equalsIgnoreCase(action)) {
             chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId); // 忽略直接删除
         } else if ("refuse".equalsIgnoreCase(action)) {
-            this.updateFriendApplyStatusById(friendApplyId, (byte) 0);
             // 拒绝后，需要等对方签收后再删除
-            // TODO 消息推送
+            this.updateFriendApplyStatusById(friendApplyId, (byte) 0);
+            this.pushMsgBoxCount(apply.getSenderId());
         } else if ("agree".equalsIgnoreCase(action)) {
+            // 同意后，需要等对方签收后再删除
             if (this.isInvalidFriendGroup(friendGroupId)) {
                 return StatusCode.CHAT_FRIEND_GROUP_INVALID; // 好友分组非法
             }
@@ -277,11 +290,24 @@ public class ChatServiceImpl implements ChatService {
                 chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId);
                 return StatusCode.CHAT_ALREADY_FRIEND;
             }
+            Integer toGroupId = apply.getFriendGroupId();
             this.updateFriendApplyStatusById(friendApplyId, (byte) 1);
             this.addChatFriend(myId, apply.getSenderId(), friendGroupId);
-            this.addChatFriend(apply.getSenderId(), myId, apply.getFriendGroupId());
-            // 同意后，需要等对方签收后再删除
-            // TODO 消息推送
+            this.addChatFriend(apply.getSenderId(), myId, toGroupId);
+            // 消息推送，将自己添加到对方好友列表中
+            User friendUser = userService.getUserById(apply.getSenderId());
+            ChatNotificationDTO notification = new ChatNotificationDTO();
+            notification.setReceiverId(friendUser.getId())
+                    .setSenderId(myId)
+                    .setAction("add_friend")
+                    .addPayload("username", friendUser.getUsername())
+                    .addPayload("avatar", friendUser.getPhoto())
+                    .addPayload("sign", friendUser.getDescription())
+                    .addPayload("groupid", ObjectUtils.isEmpty(toGroupId) ? -1 : toGroupId);
+            MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
+            MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+            // 推送消息盒子数量变化
+            this.pushMsgBoxCount(friendUser.getId());
         }
         return StatusCode.SUCCESS;
     }
@@ -300,12 +326,31 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public Integer getMsgBoxMsgCount(Integer myId) {
+        Example example = new Example(ChatFriendApply.class);
+        // 我需要处理的好友申请
+        example.createCriteria()
+                .andEqualTo("receiverId", myId)
+                .andIsNull("status");
+        // 我发送的，已被对方处理的好友申请
+        Example.Criteria processedByOther = example.createCriteria()
+                .andEqualTo("senderId", myId)
+                .andIn("status", Arrays.asList(0, 1));
+        example.or(processedByOther);
+        return chatFriendApplyMapper.selectCountByExample(example);
+    }
+
+    @Override
     public ChatListDTO getChatList() {
         ChatListDTO chatListDTO = new ChatListDTO();
         Integer myId = ShiroUtils.getUserId();
         // 我的信息
-        User self = userService.getUserById(myId);
-        chatListDTO.setMine(new ChatListDTO.ChatFriendDTO(self));
+        User selfUser = userService.getUserById(myId);
+        ChatListDTO.ChatFriendDTO self = new ChatListDTO.ChatFriendDTO(selfUser);
+        Map<String, Object> extra = new HashMap<>();
+        extra.put("msgBox", this.getMsgBoxMsgCount(myId)); // 消息盒子的消息数量
+        self.setExtra(extra);
+        chatListDTO.setMine(self);
         // 好友列表
         List<ChatListDTO.ChatFriendGroupDTO> friendGroupList = chatFriendGroupMapper.selectFriendGroupList(myId);
         friendGroupList.add(this.getChatFriendsWithoutGroup()); // 未分组
@@ -394,7 +439,13 @@ public class ChatServiceImpl implements ChatService {
         Integer myId = ShiroUtils.getUserId();
         this.deleteChatFriendByBothIds(myId, friendId);
         this.deleteChatFriendByBothIds(friendId, myId); // 同时将自己从对方好友列表中删除
-        // TODO 消息推送，将自己从对方好友列表中删除
+        // 消息推送，将自己从对方好友列表中删除
+        ChatNotificationDTO notification = new ChatNotificationDTO();
+        notification.setReceiverId(friendId)
+                .setSenderId(myId)
+                .setAction("delete_friend");
+        MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
+        MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
         return StatusCode.SUCCESS;
     }
 

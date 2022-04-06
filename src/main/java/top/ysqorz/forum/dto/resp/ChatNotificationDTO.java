@@ -20,6 +20,10 @@ public class ChatNotificationDTO {
     private LocalDateTime time;
     private Map<String, Object> payload = new HashMap<>();
 
+    public ChatNotificationDTO() {
+        this.time = LocalDateTime.now();
+    }
+
     public ChatNotificationDTO addPayload(String key, Object value) {
         payload.put(key, value);
         return this;

@@ -55,7 +55,8 @@ public class GlobalExceptionHandler {
         while (iterator.hasNext()) {
             ConstraintViolation<?> cvl = iterator.next();
             errorMsg.append(cvl.getPropertyPath().toString().split("\\.")[1]) // .需要转义
-                    .append(cvl.getMessage());
+                    .append(cvl.getMessage())
+                    .append(";");
         }
         ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(),
                 errorMsg.toString());

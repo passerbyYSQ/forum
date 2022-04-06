@@ -81,7 +81,7 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/apply")
-    public ResultModel applyFiend(@NotNull Integer receiverId, @NotNull Integer friendGroupId,
+    public ResultModel applyFiend(@NotNull Integer receiverId, Integer friendGroupId, // 允许为空，未分组就为空
                                   @RequestParam(defaultValue = "") String content) {
         return ResultModel.wrap(chatService.applyFriend(receiverId, friendGroupId, content));
     }

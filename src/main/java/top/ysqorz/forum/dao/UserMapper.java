@@ -33,5 +33,5 @@ public interface UserMapper extends BaseMapper<User> {
     /**
      * 根据用户名模糊匹配用户
      */
-    List<ChatUserCardDTO> selectUserCardsLikeUsername(Map<String, Object> param);
+    List<ChatUserCardDTO> selectUserCardsLikeUsername(Integer myId, String username);
 }

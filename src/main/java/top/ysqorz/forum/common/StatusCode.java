@@ -93,7 +93,7 @@ public enum StatusCode {
     NOT_SUPPORT_FUNC_TYPE(6801, "不支持功能类型的消息"),
     REMOTE_FORWARD_MSG_FAILED(6802, "远程调用API转发消息失败"),
     CHAT_ALREADY_FRIEND(6803, "已经是好友"),
-    CHAT_FRIEND_APPLY_REFUSED(6804, "好友申请已被拒绝，请重新发送申请"),
+    CHAT_FRIEND_APPLY_PROCESSED(6804, "好友申请已被处理，请重新发送申请"),
     CHAT_FRIEND_GROUP_INVALID(6805, "好友分组id非法"),
     CHAT_FRIEND_APPLY_INVALID(6806, "好友申请id非法"),
     CHAT_FRIEND_GROUP_EXIST(6807, "好友分组已存在"),

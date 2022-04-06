@@ -99,10 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<ChatUserCardDTO> getUserCardsLikeUsername(String username) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("myId", ShiroUtils.getUserId());
-        param.put("username", username);
-        return userMapper.selectUserCardsLikeUsername(param);
+        return userMapper.selectUserCardsLikeUsername(ShiroUtils.getUserId(), username);
     }
 
     @Override

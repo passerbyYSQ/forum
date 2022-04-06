@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import top.ysqorz.forum.po.User;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author passerbyYSQ
@@ -36,6 +37,7 @@ public class ChatListDTO {
         private String avatar;
         private String sign;
         private String status; // online, offline
+        private Map<String, Object> extra;
 
         public ChatFriendDTO(User user) {
             this.id = user.getId();

@@ -56,6 +56,11 @@ public interface ChatService {
     StatusCode applyFriend(Integer receiverId,  Integer friendGroupId, String content);
 
     /**
+     * 查询消息盒子的消息数量
+     */
+    Integer getMsgBoxMsgCount(Integer myId);
+
+    /**
      *根据两个人的用户id查找好友申请
      */
     ChatFriendApply getFriendApplySentBySelf(Integer receiverId);
@@ -100,6 +105,11 @@ public interface ChatService {
      * @param action    agree, refuse, ignore
      */
     StatusCode processFriendApply(Integer friendApplyId, Integer friendGroupId, String action);
+
+    /**
+     * 消息盒子的数量变化后，推送消息
+     */
+    void pushMsgBoxCount(Integer userId);
 
     /**
      * 签收好友申请的通知
