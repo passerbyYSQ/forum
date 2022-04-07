@@ -154,5 +154,13 @@ public interface ChatService {
      */
     void signChatFriendMsg(String msgIds);
 
+    /**
+     * 获取没有签收的好友聊天消息
+     */
     List<ChatFriendMsg> getNotSignedChatFriendMsg();
+
+    /**
+     * 获取跟某个好友的聊天历史记录
+     */
+    ResultModel<PageData<ChatFriendMsg>> getChatHistoryWithFriend(Integer friendId, Integer page, Integer count);
 }

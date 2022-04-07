@@ -118,7 +118,7 @@
             //voice: false, //声音提醒，默认开启，声音文件为：default.mp3
             msgbox: '/chat/msgbox',  //消息盒子页面地址，若不开启，剔除该项即可
             find: '/chat/find',  //发现页面地址，若不开启，剔除该项即可
-            chatLog: '/admin/assets/libs/layui/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
+            chatLog: '/chat/chatlog' //聊天记录页面地址，若不开启，剔除该项即可
         });
         //监听签名修改
         layim.on('sign', function (value) {
@@ -139,7 +139,10 @@
         });
         //监听layim建立就绪
         layim.on('ready', function (res) {
-            layim.msgbox(res.mine.extra.msgBox); // 消息盒子的消息数量
+            let msgBox = res.mine.extra.msgBox;
+            if (msgBox > 0) {
+                layim.msgbox(msgBox); // 消息盒子的消息数量
+            }
             initFriendContextMenu();
             initSocket();
             pullNotSignedChatFriendMsg();
@@ -477,7 +480,7 @@
         }
 
         // 根据用户id查询好友信息
-        function findFriendFromCache(friendId) {
+        window.findFriendFromCache = function (friendId) {
             let friend, groupId;
             for (let group of layim.cache().friend) {
                 friend = group.list.find(item => item.id === parseInt(friendId));

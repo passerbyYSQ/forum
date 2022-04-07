@@ -123,9 +123,9 @@
                 page: page || 1,
                 count: 8
             }, function (res) {
-                var data = res.data;
+                let { total, count, list } = res.data;
                 // 记录用户信息
-                for (let item of data.list) {
+                for (let item of list) {
                     users[item.applyId] = {
                         id: item.senderId || item.receiverId,
                         username: item.username,
@@ -134,8 +134,7 @@
                     }
                 }
                 // TODO 签收消息
-
-                callback && callback(data.list, Math.ceil(data.total / data.count));
+                callback && callback(list, Math.ceil(total / count));
             }, 'GET');
         };
 

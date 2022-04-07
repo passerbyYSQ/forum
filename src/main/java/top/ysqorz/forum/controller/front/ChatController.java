@@ -64,6 +64,14 @@ public class ChatController {
     }
 
     /**
+     * 好友聊天历史页面
+     */
+    @GetMapping("/chatlog")
+    public String historyPage() {
+        return "front/chat/chatlog";
+    }
+
+    /**
      * 查找用户，添加好友。暂不支持状态（在线/离线）条件
      * @param keyword   关键词。手机号，邮箱，用户名
      * @param status    状态。all, online, offline
@@ -196,6 +204,17 @@ public class ChatController {
     @GetMapping("/friend/msg/not_signed")
     public ResultModel<List<ChatFriendMsg>> getNotSignedChatFriendMsg() {
         return ResultModel.success(chatService.getNotSignedChatFriendMsg());
+    }
+
+    /**
+     * 与好友的聊天历史记录
+     */
+    @ResponseBody
+    @GetMapping("/friend/msg/history")
+    public ResultModel<PageData<ChatFriendMsg>> getChatHistoryWithFriend(@NotNull Integer friendId,
+                                                                         @RequestParam(defaultValue = "1") Integer page,
+                                                                         @RequestParam(defaultValue = "8") Integer count) {
+        return chatService.getChatHistoryWithFriend(friendId, page, count);
     }
 
     /**

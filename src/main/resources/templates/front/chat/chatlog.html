@@ -1,0 +1,108 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>好友聊天记录</title>
+    <link rel="stylesheet" th:href="@{/admin/assets/libs/layui/css/layui.css}" href="../res/layui/css/layui.css">
+    <link rel="stylesheet" th:href="@{/front/res/css/global.css}" href="../res/css/global.css">
+    <style>
+        body .layim-chat-main {
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layim-chat-main">
+    <ul id="msgHistoryList"></ul>
+</div>
+
+<textarea title="消息模版" id="msgHistoryItem" style="display:none;">
+{{# layui.each(d.data, function(index, item) {
+  if (item.id == parent.layui.layim.cache().mine.id) { }}
+    <li class="layim-chat-mine">
+        <div class="layim-chat-user">
+            <img src="{{ item.avatar }}"><cite><i>{{ item.createTime }}</i>{{ item.username }}</cite>
+        </div>
+        <div class="layim-chat-text">{{ layui.layim.content(item.content) }}</div>
+    </li>
+  {{# } else { }}
+    <li>
+        <div class="layim-chat-user">
+            <img src="{{ item.avatar }}"><cite>{{ item.username }}<i>{{ item.createTime }}</i></cite>
+        </div>
+        <div class="layim-chat-text">{{ layui.layim.content(item.content) }}</div>
+    </li>
+  {{# }
+}); }}
+</textarea>
+
+<script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
+<script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
+<script>
+    layui.use(['layim', 'laytpl', 'app', 'flow'], function () {
+        var laytpl = layui.laytpl,
+            $ = layui.jquery,
+            flow = layui.flow,
+            app = layui.app;
+
+        renderHistory();
+
+        function renderHistory() {
+            let id = app.getUrlParam('id');
+            let type = app.getUrlParam('type');
+            if (!id || !type) {
+                return;
+            }
+            let renderNextPage;
+            if (type === 'friend') {
+                renderNextPage = function (page, callback) {
+                    app.ajax('/chat/friend/msg/history', {
+                        page: page || 1,
+                        count: 8,
+                        friendId: parseInt(id)
+                    }, function (res) {
+                        let { friend, groupId } = parent.findFriendFromCache(id);
+                        let self = parent.layui.layim.cache().mine;
+                        let { total, count, list } = res.data;
+                        list = list.map(item => {
+                            let res = {
+                                createTime: app.formatDateTime(item.createTime),
+                                content: item.content
+                            };
+                            let user = item.senderId === self.id ? {
+                                id: self.id,
+                                username: self.username,
+                                avatar: self.avatar
+                            } : {
+                                id: friend.id,
+                                username: friend.username,
+                                avatar: friend.avatar
+                            };
+                            Object.assign(res, user);
+                            return res;
+                        });
+                        console.log(list);
+                        callback && callback(list, Math.ceil(total / count));
+                    }, 'GET');
+                }
+            } else {
+                // TODO 群聊历史记录
+            }
+            //消息信息流
+            flow.load({
+                elem: '#msgHistoryList',  //流加载容器
+                isAuto: true, // true：到底页面底端自动加载下一页；false：点击'加载更多'才会加载下一页
+                done: function (page, next) { //加载下一页
+                    renderNextPage(page, function (data, pages) { // data为当前页数据，pages为总页数
+                        let html = laytpl(msgHistoryItem.value).render({ data, page });
+                        next(html, page < pages);
+                    });
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

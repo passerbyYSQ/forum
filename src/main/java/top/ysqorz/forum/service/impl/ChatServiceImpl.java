@@ -230,6 +230,28 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public ResultModel<PageData<ChatFriendMsg>> getChatHistoryWithFriend(Integer friendId, Integer page, Integer count) {
+        ChatFriend friend = this.getMyChatFriendById(friendId);
+        if (ObjectUtils.isEmpty(friend)) {
+            return ResultModel.failed(StatusCode.CHAT_FRIEND_NOT_EXIST);
+        }
+        PageHelper.startPage(page, count); // 开启分页
+        Example example = new Example(ChatFriendMsg.class);
+        Integer myId = ShiroUtils.getUserId();
+        example.selectProperties("content", "createTime", "senderId", "receiverId") // 其他空字段不会被序列化
+                .orderBy("createTime").desc(); // 降序
+        example.createCriteria()
+                .andEqualTo("senderId", myId) // 我发的
+                .andEqualTo("receiverId", friendId);
+        Example.Criteria sentByFriend = example.createCriteria()
+                .andEqualTo("senderId", friendId) // 好友发的
+                .andEqualTo("receiverId", myId);
+        example.or(sentByFriend);
+        List<ChatFriendMsg> history = chatFriendMsgMapper.selectByExample(example);
+        return ResultModel.success(new PageData<>(history));
+    }
+
+    @Override
     public boolean isInvalidFriendGroup(Integer friendGroupId) {
         if (ObjectUtils.isEmpty(friendGroupId)) {
             return false; // null表示未分组，不是非法

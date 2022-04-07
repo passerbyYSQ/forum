@@ -16,6 +16,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -50,13 +51,14 @@ public class CacheConfig extends CachingConfigurerSupport {
         template.setConnectionFactory(factory);
 
         StringRedisSerializer stringSerializer = stringSerializer();
+        GenericToStringSerializer genericToStringSerializer = genericToStringSerializer();
 
-        //template.setValueSerializer(jacksonSerial);
         // 使用StringRedisSerializer来序列化和反序列化redis的key值
         template.setKeySerializer(stringSerializer);
+        template.setValueSerializer(genericToStringSerializer);
         // 设置hash key 和value序列化模式
         template.setHashKeySerializer(stringSerializer);
-        //template.setHashValueSerializer(jacksonSerial);
+        template.setHashValueSerializer(genericToStringSerializer);
 
         // 其他采用默认序列化方式（jdk）
         template.afterPropertiesSet();
@@ -104,6 +106,10 @@ public class CacheConfig extends CachingConfigurerSupport {
     // string序列化
     public StringRedisSerializer stringSerializer() {
         return new StringRedisSerializer();
+    }
+
+    public GenericToStringSerializer genericToStringSerializer() {
+        return new GenericToStringSerializer(Object.class);
     }
 
 }

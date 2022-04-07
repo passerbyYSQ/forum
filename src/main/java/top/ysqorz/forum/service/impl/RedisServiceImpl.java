@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.common.Constant;
@@ -16,6 +17,7 @@ import top.ysqorz.forum.utils.DateTimeUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -136,23 +138,46 @@ public class RedisServiceImpl implements RedisService {
         return set != null && set.size() != 0;
     }
 
+    /**
+     * 当服务宕机时导致在线长连接关闭，Redis中的对应缓存没有扣减，导致数量偏大，这个可以允许，只能通过重建缓存来纠正
+     */
     @Override
     public void bindWsServer(ChannelType channelType, String groupId) {
+        int randMinutes = RandomUtils.generateInt(30);
+        // 次日凌晨两点多
+        LocalDateTime expireTime = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(2, randMinutes));
+        Long seconds = Duration.between(LocalDateTime.now(), expireTime).getSeconds();
+        String lua = "redis.call('hincrby', KEYS[1], KEYS[2], 1) " +
+                "if (redis.call('ttl', KEYS[1]) == -1) then " +
+                "redis.call('expire', KEYS[1], ARGV[1]) end";
+        DefaultRedisScript<Void> script = new DefaultRedisScript<>(lua, Void.class);
         String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
-        stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), 1);
-        Long expire = stringRedisTemplate.getExpire(key);
-        // 由于缓存不是绝对准确的，可能因为某个服务挂了，导致Redis缓存不准确，从而会将消息转发到已经挂掉的服务上
-        if (Long.valueOf(-1).equals(expire)) { // 故缓存需要设置超时时间，定时重建缓存
-            int randMinutes = RandomUtils.generateInt(30);
-            LocalDateTime expireTime = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(2, randMinutes));
-            stringRedisTemplate.expireAt(key, DateTimeUtils.toInstant(expireTime)); // 次日凌晨两点多过期
-        }
+        String hashKey = IMUtils.getWebServer();
+        // ERR value is not an integer or out of range
+        // https://blog.csdn.net/weixin_42829048/article/details/83989784
+        redisTemplate.execute(script, Arrays.asList(key, hashKey), seconds);
     }
 
+    /**
+     * 当缓存过期后，在线长连接才关闭，会导致缓存出现负数。因此为0时不能扣减，需要补偿纠正
+     */
     @Override
     public void removeWsServer(ChannelType channelType, String groupId) {
+        // 使用字符串拼接lua脚本时，注意每一行后加空格隔开
+        String lua = "local val = redis.call('hget', KEYS[1], KEYS[2]) " +
+                "if (val and tonumber(val) > 0) then " +
+                "redis.call('hset', KEYS[1], KEYS[2], tonumber(val) - 1) " +
+                "return true " +
+                "else " +
+                "return false " +
+                "end";
+        DefaultRedisScript<Boolean> script = new DefaultRedisScript<>(lua, Boolean.class);
         String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
-        stringRedisTemplate.opsForHash().increment(key, IMUtils.getWebServer(), -1);
+        String hashKey = IMUtils.getWebServer();
+        Boolean res = redisTemplate.execute(script, Arrays.asList(key, hashKey));
+        if (Boolean.FALSE.equals(res)) {
+            log.info("二级Map {} --> {} 为0时出现扣减", key, hashKey);
+        }
     }
 
     @Override
