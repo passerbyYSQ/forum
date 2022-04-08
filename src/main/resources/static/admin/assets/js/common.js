@@ -21,7 +21,7 @@ layui.config({  // common.js是配置layui扩展模块的目录，每个页面�
     var $ = layui.jquery,
         app = layui.app;
 
-    formatDateTime($, app);
+    init($, app);
 
     // 授权登录成功后刷新，去掉url参数
     oauthRefresh(app);
@@ -30,12 +30,22 @@ layui.config({  // common.js是配置layui扩展模块的目录，每个页面�
     extendDate();
 });
 
-function formatDateTime($, app) {
+function init($, app) {
     // 格式化时间
     var dateTimeElem = $(".datetime");
     if (app.isNotNull(dateTimeElem)) {
         dateTimeElem.text(app.formatDateTime(dateTimeElem.text()));
     }
+
+    // 手机设备的简单适配
+    var treeMobile = $('.site-tree-mobile'),
+        shadeMobile = $('.site-mobile-shade');
+    treeMobile.on('click', function () {
+        $('body').addClass('site-mobile');
+    });
+    shadeMobile.on('click', function () {
+        $('body').removeClass('site-mobile');
+    });
 }
 
 function oauthRefresh(app) {

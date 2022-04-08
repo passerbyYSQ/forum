@@ -28,18 +28,21 @@ public class ChannelMap {
     }
 
     public void bind(String token, String groupId, Channel channel) {
-        Set<Channel> channels = channelMap.get(groupId);
         // 往channel里面存储额外信息，实现双向绑定，以便能通过能够移除Map中的channel
         channel.attr(IMUtils.TOKEN_KEY).set(token);
         channel.attr(IMUtils.GROUP_ID_KEY).set(groupId);
         channel.attr(IMUtils.CHANNEL_TYPE_KEY).set(channelType.name());
+        // 双重检测锁
+        Set<Channel> channels = channelMap.get(groupId);
         if (channels == null) {
-            Set<Channel> newChannels = new HashSet<>();
-            newChannels.add(channel);
-            channelMap.put(groupId, newChannels);
-        } else {
-            channels.add(channel);
+            synchronized (this) {
+                if (channels == null) {
+                    channels = new HashSet<>();
+                    channelMap.put(groupId, channels);
+                }
+            }
         }
+        channels.add(channel);
         channelCount.incrementAndGet();
     }
 
@@ -49,6 +52,9 @@ public class ChannelMap {
             Set<Channel> channels = channelMap.get(groupId);
             if (channels != null) {
                 channels.remove(channel);
+                if (channels.size() == 0) {
+                    channelMap.remove(groupId);
+                }
                 channelCount.decrementAndGet();
             }
         }

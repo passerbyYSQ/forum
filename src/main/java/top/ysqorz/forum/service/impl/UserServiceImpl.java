@@ -420,8 +420,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(Integer userId, String loginSalt, HttpServletResponse response) {
-//        String jwtSalt = RandomUtils.generateStr(8);
-//        this.updateJwtSalt(userId, jwtSalt);  // jwtSalt已弃用
+        this.updateLastLoginTime(userId);
 
         // shiro login
         JwtToken jwtToken = this.generateJwtToken(userId, loginSalt);
@@ -441,8 +440,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout() {
+        this.updateLastLoginTime(ShiroUtils.getUserId());
         Subject subject = SecurityUtils.getSubject();
-//        this.updateJwtSalt(ShiroUtils.getUserId(), "");
         subject.logout();
     }
 
@@ -466,11 +465,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateJwtSalt(Integer userId, String jwtSalt) {
+    public void updateLastLoginTime(Integer userId) {
         User record = new User();
-        record.setId(userId);
-        record.setJwtSalt(jwtSalt);
-        record.setLastLoginTime(LocalDateTime.now());
+        record.setId(userId).setLastLoginTime(LocalDateTime.now());
         userMapper.updateByPrimaryKeySelective(record);
     }
 

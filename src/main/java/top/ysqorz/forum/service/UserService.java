@@ -31,9 +31,9 @@ public interface UserService {
     int updateRewardPoints(Integer userId, Integer num);
 
     /**
-     * 修改生产jwt的随机盐
+     * 更新最后一次登录的时间
      */
-    void updateJwtSalt(Integer userId, String jwtSalt);
+    void updateLastLoginTime(Integer userId);
 
     /**
      * 登录
