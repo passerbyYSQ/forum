@@ -146,16 +146,16 @@ public class RedisServiceImpl implements RedisService {
         int randMinutes = RandomUtils.generateInt(30);
         // 次日凌晨两点多
         LocalDateTime expireTime = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(2, randMinutes));
-        Long seconds = Duration.between(LocalDateTime.now(), expireTime).getSeconds();
+        long seconds = Duration.between(LocalDateTime.now(), expireTime).getSeconds();
         String lua = "redis.call('hincrby', KEYS[1], KEYS[2], 1) " +
                 "if (redis.call('ttl', KEYS[1]) == -1) then " +
                 "redis.call('expire', KEYS[1], ARGV[1]) end";
         DefaultRedisScript<Void> script = new DefaultRedisScript<>(lua, Void.class);
         String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
         String hashKey = IMUtils.getWebServer();
-        // ERR value is not an integer or out of range
+        // 使用RedisTemplate进行incrby操作会报错：ERR value is not an integer or out of range
         // https://blog.csdn.net/weixin_42829048/article/details/83989784
-        redisTemplate.execute(script, Arrays.asList(key, hashKey), seconds);
+        stringRedisTemplate.execute(script, Arrays.asList(key, hashKey), String.valueOf(seconds));
     }
 
     /**

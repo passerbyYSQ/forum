@@ -278,11 +278,15 @@
                 avatar: user.photo,
                 group: layim.cache().friend, // 获取分组
                 submit: function (group, index) {
-                    app.ajax('/chat/apply/process', {
+                    let param = {
                         friendApplyId: applyId,
                         friendGroupId: parseInt(group),
                         action: 'agree'
-                    }, function (res) {
+                    };
+                    if (param.friendGroupId === -1) { // 未分组
+                        delete param.friendGroupId;
+                    }
+                    app.ajax('/chat/apply/process', param, function (res) {
                         // 将好友追加到主面板
                         layim.addList({
                             type: 'friend',

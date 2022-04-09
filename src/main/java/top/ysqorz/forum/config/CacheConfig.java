@@ -51,14 +51,13 @@ public class CacheConfig extends CachingConfigurerSupport {
         template.setConnectionFactory(factory);
 
         StringRedisSerializer stringSerializer = stringSerializer();
-        GenericToStringSerializer genericToStringSerializer = genericToStringSerializer();
 
         // 使用StringRedisSerializer来序列化和反序列化redis的key值
         template.setKeySerializer(stringSerializer);
-        template.setValueSerializer(genericToStringSerializer);
+        // template.setValueSerializer(genericToStringSerializer);
         // 设置hash key 和value序列化模式
         template.setHashKeySerializer(stringSerializer);
-        template.setHashValueSerializer(genericToStringSerializer);
+        // template.setHashValueSerializer(genericToStringSerializer);
 
         // 其他采用默认序列化方式（jdk）
         template.afterPropertiesSet();

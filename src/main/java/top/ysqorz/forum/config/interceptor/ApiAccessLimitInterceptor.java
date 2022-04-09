@@ -39,8 +39,7 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
             return false;
         }
         // 60为剩余次数，过期时间为1分钟。如果已经设置，不会重复set
-        stringRedisTemplate.opsForValue()
-                .setIfAbsent(accessKey, "60", Duration.ofMinutes(1));
+        stringRedisTemplate.opsForValue().setIfAbsent(accessKey, "60", Duration.ofMinutes(1));
         // 次数-1
         stringRedisTemplate.opsForValue().decrement(accessKey, 1);
         return true;
