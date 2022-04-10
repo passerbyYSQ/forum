@@ -3,6 +3,7 @@ package top.ysqorz.forum.service;
 import top.ysqorz.forum.dto.WeekTopPostDTO;
 import top.ysqorz.forum.im.entity.ChannelType;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
@@ -59,6 +60,16 @@ public interface RedisService {
     void removeWsServer(ChannelType channelType, String groupId);
 
     Set<String> getWsServers(ChannelType channelType, String groupId);
+
+    /**
+     * 通过Redis缓存IP访问接口的记录。如果频率过高，则限制一段时间内不允许访问
+     * @param key       API:接口的路径:客户端ip
+     * @param maxCount  duration时长内允许的最大次数
+     * @param duration  时长
+     * @param blackDuration 封禁时长
+     * @return          true：放行；false：拦截
+     */
+    Boolean recordIpAccessAPI(String key, Integer maxCount, Duration duration, Duration blackDuration);
 
     /**
      * 判断用户是否在线。判断该用户是否有WebSocket通道

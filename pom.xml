@@ -18,6 +18,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<guava.version>19.0</guava.version>
         <netty.version>4.1.50.Final</netty.version>
 		<!-- 版本过高，连接时会出现两次报错，然后才连接成功 -->
 		<curator.version>5.0.0</curator.version>
@@ -39,6 +40,12 @@
 	</properties>
 
 	<dependencies>
+		<!-- 本地缓存需要 -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.curator/curator-recipes -->
 		<dependency>
 			<groupId>org.apache.curator</groupId>

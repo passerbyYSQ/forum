@@ -73,8 +73,7 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public boolean tryAddPostVisitIp(String ipAddress, Integer postId) {
         String key = String.format(Constant.REDIS_KEY_POST_VISIT, postId, ipAddress);
-        return redisTemplate.opsForValue()
-                .setIfAbsent(key, "", Constant.DURATION_POST_VISIT);
+        return redisTemplate.opsForValue().setIfAbsent(key, "", Constant.DURATION_POST_VISIT);
     }
 
     @Override
@@ -146,16 +145,16 @@ public class RedisServiceImpl implements RedisService {
         int randMinutes = RandomUtils.generateInt(30);
         // 次日凌晨两点多
         LocalDateTime expireTime = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(2, randMinutes));
-        long seconds = Duration.between(LocalDateTime.now(), expireTime).getSeconds();
+        long millis = Duration.between(LocalDateTime.now(), expireTime).toMillis();
         String lua = "redis.call('hincrby', KEYS[1], KEYS[2], 1) " +
                 "if (redis.call('ttl', KEYS[1]) == -1) then " +
-                "redis.call('expire', KEYS[1], ARGV[1]) end";
+                "redis.call('pexpire', KEYS[1], ARGV[1]) end";
         DefaultRedisScript<Void> script = new DefaultRedisScript<>(lua, Void.class);
         String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
         String hashKey = IMUtils.getWebServer();
         // 使用RedisTemplate进行incrby操作会报错：ERR value is not an integer or out of range
         // https://blog.csdn.net/weixin_42829048/article/details/83989784
-        stringRedisTemplate.execute(script, Arrays.asList(key, hashKey), String.valueOf(seconds));
+        stringRedisTemplate.execute(script, Arrays.asList(key, hashKey), String.valueOf(millis));
     }
 
     /**
@@ -187,6 +186,23 @@ public class RedisServiceImpl implements RedisService {
         return hash.entrySet().stream().filter(entry -> Integer.parseInt((String) entry.getValue()) > 0)
                 .map(entry -> (String) entry.getKey())
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Boolean recordIpAccessAPI(String key, Integer maxCount, Duration duration, Duration blackDuration) {
+        String lua = "redis.call('set', KEYS[1], ARGV[1], 'NX', 'PX', ARGV[2]) " +
+                "local remained = tonumber(redis.call('decr', KEYS[1])) " +
+                "if (remained < 0) then " +
+                "return false " +
+                "else " +
+                "if (remained == 0) then " +
+                "redis.call('pexpire', KEYS[1], ARGV[3]) " +
+                "end " +
+                "return true " +
+                "end";
+        DefaultRedisScript<Boolean> script = new DefaultRedisScript<>(lua, Boolean.class);
+        return stringRedisTemplate.execute(script, Collections.singletonList(key), String.valueOf(maxCount),
+                String.valueOf(duration.toMillis()), String.valueOf(blackDuration.toMillis()));
     }
 
     @Override
