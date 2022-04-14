@@ -1,7 +1,6 @@
 package top.ysqorz.forum.upload.uploader;
 
-import top.ysqorz.forum.common.FileUploadException;
-import top.ysqorz.forum.dto.UploadResult;
+import top.ysqorz.forum.dto.resp.UploadResult;
 
 import java.io.IOException;
 

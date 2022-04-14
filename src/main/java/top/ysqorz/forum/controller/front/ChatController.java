@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.UploadResult;
+import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.ChatListDTO;
 import top.ysqorz.forum.dto.resp.ChatUserCardDTO;

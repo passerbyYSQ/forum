@@ -1,7 +1,7 @@
 package top.ysqorz.forum.dao;
 
 import top.ysqorz.forum.common.BaseMapper;
-import top.ysqorz.forum.dto.MessageListDTO;
+import top.ysqorz.forum.dto.resp.MessageListDTO;
 import top.ysqorz.forum.po.CommentNotification;
 
 import java.util.List;

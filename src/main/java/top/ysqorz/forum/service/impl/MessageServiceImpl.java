@@ -9,7 +9,7 @@ import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
 import top.ysqorz.forum.dao.SecondCommentMapper;
-import top.ysqorz.forum.dto.MessageListDTO;
+import top.ysqorz.forum.dto.resp.MessageListDTO;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.po.CommentNotification;
 import top.ysqorz.forum.service.MessageService;

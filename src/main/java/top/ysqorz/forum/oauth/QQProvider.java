@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import top.ysqorz.forum.dto.QQUserDTO;
+import top.ysqorz.forum.dto.resp.QQUserDTO;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 

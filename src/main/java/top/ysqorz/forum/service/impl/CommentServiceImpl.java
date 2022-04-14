@@ -10,10 +10,11 @@ import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
 import top.ysqorz.forum.dao.SecondCommentMapper;
-import top.ysqorz.forum.dto.FirstCommentDTO;
+import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.SecondCommentDTO;
-import top.ysqorz.forum.dto.SimpleUserDTO;
+import top.ysqorz.forum.dto.resp.SecondCommentDTO;
+import top.ysqorz.forum.dto.resp.SimpleUserDTO;
+import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
 import top.ysqorz.forum.po.CommentNotification;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
@@ -26,9 +27,8 @@ import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author passerbyYSQ
@@ -36,7 +36,6 @@ import java.util.Map;
  */
 @Service
 public class CommentServiceImpl implements CommentService {
-
     @Resource
     private FirstCommentMapper firstCommentMapper;
     @Resource
@@ -49,6 +48,30 @@ public class CommentServiceImpl implements CommentService {
     private RewardPointsAction rewardPointsAction;
     @Resource
     private PermManager permManager;
+
+    @Override
+    public List<RecentCommentUserDTO> getRecentCommentUsers() {
+        int count = 12;
+        List<RecentCommentUserDTO> firstCommentUsers = firstCommentMapper.selectRecentCommentUsers(count);
+        List<RecentCommentUserDTO> secondCommentUsers = secondCommentMapper.selectRecentCommentUsers(count);
+        List<RecentCommentUserDTO> total = new ArrayList<>(firstCommentUsers);
+        total.addAll(secondCommentUsers);
+        Comparator<RecentCommentUserDTO> ascComparator = Comparator.comparing(RecentCommentUserDTO::getLastCommentTime);
+        // 由于评论分布到两张表中，极端情况下count条记录全部来源与其中一张表
+        // 所以两张表分别聚合降序后取count条记录，在内存中合并后再做一次聚合降序，取出前count条记录
+        // https://blog.csdn.net/weixin_46244732/article/details/122498257
+        Map<String, Optional<RecentCommentUserDTO>> collectedMap = total.stream()
+                .collect(
+                        Collectors.groupingBy(RecentCommentUserDTO::getUserId, Collectors.maxBy(ascComparator))
+                );
+        return collectedMap.values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                // 降序
+                .sorted((user1, user2) -> user2.getLastCommentTime().compareTo(user1.getLastCommentTime()))
+                .limit(count)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public int getFrontFirstCommentCount(Integer firstCommentId) {

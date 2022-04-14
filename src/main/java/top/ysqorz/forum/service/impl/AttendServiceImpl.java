@@ -5,7 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.dao.AttendanceMapper;
-import top.ysqorz.forum.dto.AttendDTO;
+import top.ysqorz.forum.dto.resp.AttendDTO;
+import top.ysqorz.forum.dto.resp.AttendCardDTO;
 import top.ysqorz.forum.po.Attendance;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.AttendService;
@@ -26,13 +27,44 @@ import java.util.Map;
  */
 @Service
 public class AttendServiceImpl implements AttendService {
-
-    @Resource
-    private AttendanceMapper attendanceMapper;
     @Resource
     private UserService userService;
     @Resource
+    private AttendanceMapper attendanceMapper;
+    @Resource
     private RewardPointsAction rewardPointsAction;
+
+    @Override
+    public AttendCardDTO getTodayAttendCard() {
+        AttendCardDTO attendCard = new AttendCardDTO(); // 空参构造已经赋初始值
+        if (ShiroUtils.isAuthenticated()) {
+            Integer myId = ShiroUtils.getUserId();
+            attendCard.setUserId(myId);
+
+            User self = userService.getUserById(myId);
+            LocalDateTime lastAttendTime = self.getLastAttendTime();
+            boolean isAttendToday = !ObjectUtils.isEmpty(lastAttendTime) &&
+                    LocalDate.now().equals(lastAttendTime.toLocalDate());
+            attendCard.setIsAttendToady(isAttendToday);
+
+            if (isAttendToday) { // 今天已签到
+                Integer rank = this.attendRankNum(myId, lastAttendTime);
+                attendCard.setAttendRank(rank); // 今天的签到排名
+            }
+
+            // 由于连续签到的天数在用户下一次签到时才会重置，此处需要做纠正
+            // 上一次签到时间是昨天之前，则连续签到的天数为0
+            boolean isAttendYesterday = !ObjectUtils.isEmpty(lastAttendTime) &&
+                    LocalDate.now().equals(lastAttendTime.toLocalDate());
+            if (isAttendYesterday || isAttendToday) {
+                attendCard.setConsecutiveAttendDays(self.getConsecutiveAttendDays());
+            }
+        }
+        // 已签到的人数
+        Integer attendCount = this.attendedCount(LocalDateTime.now());
+        attendCard.setAttendCount(attendCount);
+        return attendCard;
+    }
 
     @Override
     public Attendance getMyAttendToday() {
@@ -77,11 +109,13 @@ public class AttendServiceImpl implements AttendService {
 
         // 今天第几个签到。一定要放在 insert 和 update 之后
         Integer rank = this.attendRankNum(myId, now);
+        Integer attendCount = this.attendedCount(now);
 
         AttendDTO attendDTO = new AttendDTO();
-        attendDTO.setAttendDateTime(now);
-        attendDTO.setRank(rank);
-        attendDTO.setConsecutiveAttendDays(days);
+        attendDTO.setAttendDateTime(now)
+                .setRank(rank)
+                .setConsecutiveAttendDays(days)
+                .setAttendCount(attendCount);
         return attendDTO;
     }
 

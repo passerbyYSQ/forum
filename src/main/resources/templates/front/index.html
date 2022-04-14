@@ -175,9 +175,9 @@
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
 
             <!-- 用户登入后显示 -->
-            <li th:if="${myUser.id!=null}" class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
+            <li th:if="${attendCard.userId}" class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
                     href="user/index.html">我发表的贴</a></li>
-            <li th:if="${myUser.id!=null}" class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
+            <li th:if="${attendCard.userId}" class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a
                     href="user/index.html#collection">我收藏的贴</a></li>
         </ul>
 
@@ -242,15 +242,15 @@
                     <a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>
                     <i class="fly-mid"></i>
                     <a href="javascript:showRankDialog();" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>
-                    <span th:if="${myUser.id}" class="fly-signin-days">已连续签到
-                        <cite id="consecutiveAttendDays" th:text="${myUser.consecutiveAttendDays}">16</cite>天
+                    <span th:if="${attendCard.userId}" class="fly-signin-days">已连续签到
+                        <cite id="consecutiveAttendDays" th:text="${attendCard.consecutiveAttendDays}">16</cite>天
                     </span>
                 </div>
                 <div class="fly-panel-main fly-signin-main">
-                    <button th:if="${!isAttendToady}" class="layui-btn layui-btn-danger" onclick="attend(this)" id="LAY_signin">今日签到</button>
+                    <button th:if="${!attendCard.isAttendToady}" class="layui-btn layui-btn-danger" onclick="attend(this)" id="LAY_signin">今日签到</button>
                     <!-- 已签到状态 -->
-                    <button th:if="${isAttendToady}" class="layui-btn layui-btn-disabled">今日第 [[${attendRank}]] 个签到</button>
-                    <span>今日已有<cite>[[${attendCount}]]</cite>个人签到</span>
+                    <button th:if="${attendCard.isAttendToady}" class="layui-btn layui-btn-disabled disabled">今日第 [[${attendCard.attendRank}]] 个签到</button>
+                    <span>今日已有<cite id="attendCount">[[${attendCard.attendCount}]]</cite>个人签到</span>
                 </div>
             </div>
 
@@ -260,6 +260,13 @@
                 <!-- 无数据时 -->
                 <div th:if="${!isHaveWeekHotPost}" class="fly-panel-main">没有相关数据</div>
             </dl>
+
+            <div class="fly-panel fly-rank fly-rank-reply">
+                <h3 class="fly-panel-title">最新评论用户</h3>
+                <dl id="recentCommentUserList">
+                    <!--<i class="layui-icon fly-loading">&#xe63d;</i>-->
+                </dl>
+            </div>
 
             <div class="fly-panel">
                 <h3 class="fly-panel-title">温馨通道</h3>
@@ -287,73 +294,6 @@
                             仓库，欢迎Star</a>
                     </li>
                 </ul>
-            </div>
-
-            <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
-                <h3 class="fly-panel-title">回贴周榜</h3>
-                <dl>
-                    <!--<i class="layui-icon fly-loading">&#xe63d;</i>-->
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                    <dd>
-                        <a href="user/home.html">
-                            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>贤心</cite><i>106次回答</i>
-                        </a>
-                    </dd>
-                </dl>
             </div>
 
             <div class="fly-panel">
@@ -510,6 +450,15 @@
     </dd>
 </script>
 
+<!-- 最新评论的用户的模板 -->
+<script type="text/html" id="recentCommentUserItem">
+    <dd>
+        <a href="/user/home/{{d.userId}}" target="_blank">
+            <img src="{{d.photo}}"><cite>{{d.username}}</cite><i>{{d.lastCommentTime}}</i>
+         </a>
+    </dd>
+</script>
+
 <script type="text/javascript" th:src="@{/admin/assets/libs/layui/layui.js}" src="assets/libs/layui/layui.js"></script>
 <script type="text/javascript" th:src="@{/admin/assets/js/common.js(v=318)}" src="assets/js/common.js?v=318"></script>
 <script>
@@ -527,7 +476,6 @@
             isHighQuality: "0",
             topicId: "",
         };
-
 
         // rank dialog
         window.showRankDialog = function () {
@@ -581,12 +529,7 @@
                                 "data": res.data //解析数据列表
                             };
                         },
-                        page: false,
-                        done: function (res, curr, count) {
-                            // 数据渲染完的回调
-                            console.log(res);
-                            console.log("--------");
-                        }
+                        page: false
                     });
                     dataGridMap.set(elems[idx], grid);
                 }
@@ -597,11 +540,13 @@
         window.attend = function (obj) {
             app.ajax('/attend', {}, function (res) {
                 console.log(res);
-                app.successNotice('签到成功，今日第 ' + res.data.rank + ' 个签到');
-                $(obj).text('今日第' + res.data.rank + '个签到');
+                let { rank, consecutiveAttendDays, attendCount } = res.data;
+                app.successNotice('签到成功，今日第 ' + rank + ' 个签到');
+                $(obj).text('今日第' + rank + '个签到');
                 $(obj).removeClass('layui-btn-danger');
                 $(obj).addClass('layui-btn-disabled');
-                $('#consecutiveAttendDays').text(res.data.consecutiveAttendDays);
+                $('#consecutiveAttendDays').text(consecutiveAttendDays);
+                $('#attendCount').text(attendCount);
             });
         };
 
@@ -645,7 +590,6 @@
             $(dom).addClass("layui-this");
         };
 
-
         /** 文章 */
         var insTb = dataGrid.render({
             elem: '#demoCardList3',
@@ -657,8 +601,7 @@
             where: {orderByStr: 'top_weight desc, last_comment_time desc'},
             parseData: function (res) { //res 即为原始返回的数据
                 console.log(res);
-                var list = res.data.list;
-                list.map(item => {
+                let list = res.data.list.map(item => {
                     item.lastCommentTime = app.formatDateTime(item.lastCommentTime);
                     return item;
                 });
@@ -666,7 +609,7 @@
                     "code": res.code, //解析接口状态
                     "msg": res.message, //解析提示文本
                     "count": res.data.total, //解析数据长度
-                    "data": res.data.list //解析数据列表
+                    "data": list //解析数据列表
                 };
             },
             // where: {token: 'sasasas', id: 123},
@@ -768,6 +711,25 @@
             }
         });
 
+        /* 最新评论的用户 */
+        dataGrid.render({
+            elem: '#recentCommentUserList',
+            templet: '#recentCommentUserItem',
+            url: '/comment/user/recent',
+            page: false,
+            parseData: function (res) {
+                let list = res.data.map(item => {
+                    item.lastCommentTime = app.formatDateTime(item.lastCommentTime);
+                    return item;
+                });
+                return {
+                    "code": res.code === 2000 ? 0 : 1, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.data.length, //解析数据长度
+                    "data": list //解析数据列表
+                };
+            }
+        });
     });
 
 </script>

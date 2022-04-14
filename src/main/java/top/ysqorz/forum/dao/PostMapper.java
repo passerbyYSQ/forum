@@ -1,8 +1,8 @@
 package top.ysqorz.forum.dao;
 
 import top.ysqorz.forum.common.BaseMapper;
-import top.ysqorz.forum.dto.QueryPostCondition;
-import top.ysqorz.forum.dto.PostDTO;
+import top.ysqorz.forum.dto.req.QueryPostCondition;
+import top.ysqorz.forum.dto.resp.PostDTO;
 import top.ysqorz.forum.po.Post;
 
 import java.util.List;

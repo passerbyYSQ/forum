@@ -7,6 +7,8 @@ import org.springframework.beans.BeanUtils;
 import top.ysqorz.forum.po.User;
 
 /**
+ * 查找页面的用户卡片信息
+ *
  * @author passerbyYSQ
  * @create 2022-03-26 16:52
  */

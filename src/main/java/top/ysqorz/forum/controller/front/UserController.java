@@ -11,6 +11,12 @@ import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.req.LoginDTO;
+import top.ysqorz.forum.dto.req.RegisterDTO;
+import top.ysqorz.forum.dto.resp.FirstCommentDTO;
+import top.ysqorz.forum.dto.resp.PostDTO;
+import top.ysqorz.forum.dto.resp.SimpleUserDTO;
+import top.ysqorz.forum.dto.resp.UserLoginInfo;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
@@ -305,8 +311,8 @@ public class UserController {
     @ResponseBody
     @GetMapping("/home/{visitId}/comment")
     public ResultModel<PageData<FirstCommentDTO>> getFirstCommentList(@RequestParam(defaultValue = "3") Integer limit,
-                                                              @RequestParam(defaultValue = "1") Integer page,
-                                                              @PathVariable Integer visitId){
+                                                                      @RequestParam(defaultValue = "1") Integer page,
+                                                                      @PathVariable Integer visitId){
         if(limit <= 0){
             limit = 3;
         }

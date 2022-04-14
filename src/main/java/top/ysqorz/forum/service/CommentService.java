@@ -1,12 +1,15 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.FirstCommentDTO;
+import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.SecondCommentDTO;
+import top.ysqorz.forum.dto.resp.SecondCommentDTO;
+import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
+
+import java.util.List;
 
 /**
  * @author passerbyYSQ
@@ -51,4 +54,9 @@ public interface CommentService {
      * 删除一级、二级评论
      */
     StatusCode deleteCommentById(Integer commentId, String type);
+
+    /**
+     * 获取最近发表评论的用户
+     */
+    List<RecentCommentUserDTO> getRecentCommentUsers();
 }

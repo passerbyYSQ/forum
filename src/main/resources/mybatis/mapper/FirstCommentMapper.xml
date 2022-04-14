@@ -1,64 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.FirstCommentMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.FirstComment">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="post_id" jdbcType="INTEGER" property="postId" />
-    <result column="floor_num" jdbcType="INTEGER" property="floorNum" />
-    <result column="second_comment_count" jdbcType="INTEGER" property="secondCommentCount" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.FirstComment">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="post_id" jdbcType="INTEGER" property="postId"/>
+        <result column="floor_num" jdbcType="INTEGER" property="floorNum"/>
+        <result column="second_comment_count" jdbcType="INTEGER" property="secondCommentCount"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+    </resultMap>
 
-  <insert id="addFirstCommentUseGeneratedKeys" parameterType="top.ysqorz.forum.po.FirstComment"
-          useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-    insert into first_comment
+    <insert id="addFirstCommentUseGeneratedKeys" parameterType="top.ysqorz.forum.po.FirstComment"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into first_comment
         (user_id, content, post_id, floor_num, second_comment_count, create_time)
-    values ( #{userId}, #{content}, #{postId},
-            (select ifnull(max(floor_num), 0) + 1 from first_comment fc where fc.post_id = #{postId} ),
-            0, now())
-  </insert>
+        values (#{userId}, #{content}, #{postId},
+                (select ifnull(max(floor_num), 0) + 1 from first_comment fc where fc.post_id = #{postId}),
+                0, now())
+    </insert>
 
 
-  <resultMap id="firstCommentDTO" type="top.ysqorz.forum.dto.FirstCommentDTO">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="floor_num" jdbcType="INTEGER" property="floorNum" />
-    <result column="second_comment_count" jdbcType="INTEGER" property="secondCommentCount" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
-    <!-- 把creator_id传过去 -->
-    <association property="creator" column="user_id"
-                 javaType="top.ysqorz.forum.dto.SimpleUserDTO"
-                 select="top.ysqorz.forum.dao.UserMapper.selectSimpleUserById" />
-  </resultMap>
-  <select id="selectFirstCommentList" parameterType="map" resultMap="firstCommentDTO">
+    <resultMap id="firstCommentDTO" type="top.ysqorz.forum.dto.resp.FirstCommentDTO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="floor_num" jdbcType="INTEGER" property="floorNum"/>
+        <result column="second_comment_count" jdbcType="INTEGER" property="secondCommentCount"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <!-- 把creator_id传过去 -->
+        <association property="creator" column="user_id"
+                     javaType="top.ysqorz.forum.dto.resp.SimpleUserDTO"
+                     select="top.ysqorz.forum.dao.UserMapper.selectSimpleUserById"/>
+    </resultMap>
+    <select id="selectFirstCommentList" parameterType="map" resultMap="firstCommentDTO">
         select id, user_id, content, floor_num, second_comment_count, create_time
         from first_comment
         where post_id = #{postId}
         order by ${orderByStr}
-  </select>
+    </select>
 
-    <resultMap id="HomeFirstComment" type="top.ysqorz.forum.dto.FirstCommentDTO">
-        <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-        <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <resultMap id="HomeFirstComment" type="top.ysqorz.forum.dto.resp.FirstCommentDTO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
         <result column="post_id" jdbcType="INTEGER" property="postId"/>
         <result column="post_title" jdbcType="VARCHAR" property="postTitle"/>
     </resultMap>
     <select id="selectFirstCommentListByUserId" parameterType="Integer" resultMap="HomeFirstComment">
-        select fc.id id, fc.create_time create_time,
-        fc.content content, p.id post_id, p.title post_title
-        from first_comment as fc, post as p
-        where fc.user_id = ${userId} and p.id = fc.post_id
+        select fc.id          id,
+               fc.create_time create_time,
+               fc.content     content,
+               p.id           post_id,
+               p.title        post_title
+        from first_comment as fc,
+             post as p
+        where fc.user_id = ${userId}
+          and p.id = fc.post_id
         order by create_time DESC
     </select>
 
+    <select id="selectRecentCommentUsers" resultType="top.ysqorz.forum.dto.resp.RecentCommentUserDTO">
+        select user_id, username, photo, max(create_time) as lastCommentTime
+        from first_comment as fc
+                 left join user as u on fc.user_id = u.id
+        group by fc.user_id
+        order by max(fc.create_time) desc
+        limit #{count}
+    </select>
+
     <update id="addSecondCommentCount" parameterType="map">
-        update first_comment set second_comment_count = second_comment_count + #{dif}
+        update first_comment
+        set second_comment_count = second_comment_count + #{dif}
         where id = #{firstCommentId}
     </update>
 </mapper>

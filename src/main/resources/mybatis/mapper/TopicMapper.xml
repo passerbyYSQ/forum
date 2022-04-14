@@ -14,7 +14,7 @@
     <result column="sort_weight" jdbcType="INTEGER" property="sortWeight"/>
     <result column="archive" jdbcType="TINYINT" property="archive"/>
   </resultMap>
-  <resultMap id="allTopic" type="top.ysqorz.forum.dto.TopicDTO">
+  <resultMap id="allTopic" type="top.ysqorz.forum.dto.resp.TopicDTO">
     <id column="id" jdbcType="INTEGER" property="id"/>
     <result column="topic_name" jdbcType="VARCHAR" property="topicName"/>
     <result column="description" jdbcType="VARCHAR" property="description"/>

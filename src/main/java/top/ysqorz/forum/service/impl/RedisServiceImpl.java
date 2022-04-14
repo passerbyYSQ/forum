@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.common.Constant;
-import top.ysqorz.forum.dto.WeekTopPostDTO;
+import top.ysqorz.forum.dto.resp.WeekTopPostDTO;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.service.PostService;

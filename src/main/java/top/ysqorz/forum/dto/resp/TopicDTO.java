@@ -1,4 +1,4 @@
-package top.ysqorz.forum.dto;
+package top.ysqorz.forum.dto.resp;
 
 import lombok.Getter;
 import lombok.Setter;

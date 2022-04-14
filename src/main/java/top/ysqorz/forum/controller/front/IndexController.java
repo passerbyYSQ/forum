@@ -11,18 +11,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.req.QueryPostCondition;
+import top.ysqorz.forum.dto.resp.AttendCardDTO;
+import top.ysqorz.forum.dto.resp.AttendDTO;
+import top.ysqorz.forum.dto.resp.PostDTO;
+import top.ysqorz.forum.dto.resp.WeekTopPostDTO;
 import top.ysqorz.forum.po.Attendance;
 import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.*;
-import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -32,11 +34,8 @@ import java.util.List;
 @Controller
 @Validated
 public class IndexController {
-
     @Resource
     private PostService postService;
-    @Resource
-    private UserService userService;
     @Resource
     private TopicService topicService;
     @Resource
@@ -49,29 +48,12 @@ public class IndexController {
     // 注意不要这么写 {"/", "/index"}，这样写 /admin 访问不了，要 /admin/ 才能访问
     @GetMapping({"", "/index"})
     public String index(Model model) {
-        SimpleUserDTO loginUser = userService.getLoginUser();
-        model.addAttribute("myUser", loginUser);
-
-        boolean isAttendToady = false;
-        if (ShiroUtils.isAuthenticated()) { // 已登录
-            LocalDateTime lastTime = loginUser.getLastAttendTime();
-            isAttendToady = !ObjectUtils.isEmpty(lastTime) &&
-                    LocalDate.now().equals(lastTime.toLocalDate());
-            if (isAttendToady) { // 今天签到了
-                Integer rank = attendService.attendRankNum(loginUser.getId(), lastTime);
-                model.addAttribute("attendRank", rank); // 签到排名
-            }
-        }
-        model.addAttribute("isAttendToady", isAttendToady); // 今天是否签到
-
-        // 已签到的人数
-        Integer attendCount = attendService.attendedCount(LocalDateTime.now());
-        model.addAttribute("attendCount", attendCount);
-
+        // 签到情况
+        AttendCardDTO attendCard = attendService.getTodayAttendCard();
+        model.addAttribute("attendCard", attendCard);
         // 话题
         List<Topic> allTopic = topicService.getTopicByHot();
         model.addAttribute("topics", allTopic);
-
         // 热议周榜是否有信息
         Boolean isHaveWeekHotPost = redisService.isHaveWeekHotPost();
         model.addAttribute("isHaveWeekHotPost", isHaveWeekHotPost);

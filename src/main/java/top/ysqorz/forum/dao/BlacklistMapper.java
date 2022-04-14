@@ -2,7 +2,7 @@ package top.ysqorz.forum.dao;
 
 import top.ysqorz.forum.common.BaseMapper;
 import top.ysqorz.forum.po.Blacklist;
-import top.ysqorz.forum.dto.BlackInfoDTO;
+import top.ysqorz.forum.dto.resp.BlackInfoDTO;
 
 import java.time.LocalDateTime;
 

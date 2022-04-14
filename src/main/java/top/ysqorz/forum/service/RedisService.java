@@ -1,6 +1,6 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.dto.WeekTopPostDTO;
+import top.ysqorz.forum.dto.resp.WeekTopPostDTO;
 import top.ysqorz.forum.im.entity.ChannelType;
 
 import java.time.Duration;

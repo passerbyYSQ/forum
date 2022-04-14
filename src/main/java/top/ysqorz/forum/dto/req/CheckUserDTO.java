@@ -1,4 +1,4 @@
-package top.ysqorz.forum.dto;
+package top.ysqorz.forum.dto.req;
 
 import lombok.Data;
 

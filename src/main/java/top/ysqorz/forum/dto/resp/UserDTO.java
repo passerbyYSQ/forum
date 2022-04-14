@@ -1,4 +1,4 @@
-package top.ysqorz.forum.dto;
+package top.ysqorz.forum.dto.resp;
 
 import lombok.Data;
 import top.ysqorz.forum.po.Role;

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 在线聊天的消息通知模型
+ *
  * @author passerbyYSQ
  * @create 2022-04-05 15:42
  */

@@ -1,4 +1,4 @@
-package top.ysqorz.forum.dto;
+package top.ysqorz.forum.dto.resp;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -29,8 +29,6 @@ public class SimpleUserDTO {
     private LocalDateTime lastLoginTime;//最后登录时间
 
     private Integer blackId; // 当前是否处于封禁  ！！！
-    private Integer consecutiveAttendDays; // 最近一次连续签到的天数
-    private LocalDateTime lastAttendTime; // 上一次签到的时间
 
     private Integer newMeg;//新消息 ！！！
 

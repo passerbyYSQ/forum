@@ -6,10 +6,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.FirstCommentDTO;
+import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.PublishFirstCommentDTO;
-import top.ysqorz.forum.dto.SecondCommentDTO;
+import top.ysqorz.forum.dto.req.PublishFirstCommentDTO;
+import top.ysqorz.forum.dto.resp.SecondCommentDTO;
+import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
@@ -21,6 +22,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,13 +33,20 @@ import java.util.Map;
 @ResponseBody
 @RequestMapping("/comment")
 public class CommentController {
-
     @Resource
     private RedisService redisService;
     @Resource
     private CommentService commentService;
     @Resource
     private PostService postService;
+
+    /**
+     * 获取最近发表评论的用户
+     */
+    @GetMapping("/user/recent")
+    public ResultModel<List<RecentCommentUserDTO>> recentCommentUser() {
+        return ResultModel.success(commentService.getRecentCommentUsers());
+    }
 
     @PostMapping("/first/publish")
     public ResultModel publishFirstComment(@Validated PublishFirstCommentDTO dto) {

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.TopicDTO;
+import top.ysqorz.forum.dto.resp.TopicDTO;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
 

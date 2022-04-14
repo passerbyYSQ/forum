@@ -2,7 +2,10 @@ package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
-import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.dto.req.CheckUserDTO;
+import top.ysqorz.forum.dto.req.QueryUserCondition;
+import top.ysqorz.forum.dto.req.RegisterDTO;
+import top.ysqorz.forum.dto.resp.*;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;

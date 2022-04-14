@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.ResultModel;
-import top.ysqorz.forum.dto.UploadResult;
+import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.upload.UploadRepository;
 import top.ysqorz.forum.upload.uploader.ImageUploader;

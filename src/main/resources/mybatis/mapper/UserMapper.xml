@@ -28,7 +28,7 @@
     <result column="qq_id" jdbcType="VARCHAR" property="qqId" />
 	<result column="baidu_id" jdbcType="VARCHAR" property="baiduId" />
   </resultMap>
-    <resultMap id="allUserAndRole" type="top.ysqorz.forum.dto.UserDTO">
+    <resultMap id="allUserAndRole" type="top.ysqorz.forum.dto.resp.UserDTO">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="email" jdbcType="VARCHAR" property="email" />
@@ -42,7 +42,7 @@
                     select="top.ysqorz.forum.dao.UserRoleMapper.getRoleByUserId">
         </collection>
     </resultMap>
-    <resultMap id="simpleUser" type="top.ysqorz.forum.dto.SimpleUserDTO">
+    <resultMap id="simpleUser" type="top.ysqorz.forum.dto.resp.SimpleUserDTO">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="gender" jdbcType="TINYINT" property="gender" />
@@ -53,7 +53,7 @@
         <result column="consecutive_attend_days" jdbcType="INTEGER" property="consecutiveAttendDays" />
     </resultMap>
 
-    <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.QueryUserCondition" resultMap="allUserAndRole">
+    <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.req.QueryUserCondition" resultMap="allUserAndRole">
         select u.id as id,username,email,phone,photo,gender,register_time,last_login_time,b.id as black_id
         from user u
         left join blacklist b
@@ -88,16 +88,14 @@
                gender,
                photo,
                reward_points,
-               b.id as black_id,
-               consecutive_attend_days,
-               last_attend_time
+               b.id as black_id
         from user u
         left join blacklist b on
             (u.id = b.user_id and #{now} between b.start_time and b.end_time)
         where u.id = ${userId}
     </select>
 
-    <resultMap id = "HomeInformation" type="top.ysqorz.forum.dto.SimpleUserDTO">
+    <resultMap id = "HomeInformation" type="top.ysqorz.forum.dto.resp.SimpleUserDTO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="photo" jdbcType="VARCHAR" property="photo"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>

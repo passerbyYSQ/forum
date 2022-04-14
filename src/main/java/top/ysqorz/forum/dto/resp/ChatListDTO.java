@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 在线聊天页面初始数据
+ *
  * @author passerbyYSQ
  * @create 2022-03-30 19:51
  */

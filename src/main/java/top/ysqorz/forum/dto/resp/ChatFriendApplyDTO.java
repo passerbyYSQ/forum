@@ -6,6 +6,8 @@ import lombok.experimental.Accessors;
 import java.time.LocalDateTime;
 
 /**
+ * 消息盒子的好友申请通知
+ *
  * @author passerbyYSQ
  * @create 2022-03-29 16:04
  */

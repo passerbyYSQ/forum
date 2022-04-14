@@ -14,7 +14,7 @@
         <result column="reason" jdbcType="VARCHAR" property="reason"/>
         <result column="is_read" jdbcType="TINYINT" property="isRead"/>
     </resultMap>
-    <select id="getBlockInfo" resultType="top.ysqorz.forum.dto.BlackInfoDTO">
+    <select id="getBlockInfo" resultType="top.ysqorz.forum.dto.resp.BlackInfoDTO">
         select u.username username, iu.username adminname, start_time, end_time, reason
         from blacklist b
                  join user u on u.id = b.user_id

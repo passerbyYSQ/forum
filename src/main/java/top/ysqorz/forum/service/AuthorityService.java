@@ -1,7 +1,7 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.po.Resource;
-import top.ysqorz.forum.dto.QueryAuthorityCondition;
+import top.ysqorz.forum.dto.req.QueryAuthorityCondition;
 
 import java.util.List;
 

@@ -2,6 +2,10 @@ package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.req.PublishPostDTO;
+import top.ysqorz.forum.dto.req.QueryPostCondition;
+import top.ysqorz.forum.dto.resp.PostDTO;
+import top.ysqorz.forum.dto.resp.PostDetailDTO;
 import top.ysqorz.forum.po.Like;
 import top.ysqorz.forum.po.Post;
 

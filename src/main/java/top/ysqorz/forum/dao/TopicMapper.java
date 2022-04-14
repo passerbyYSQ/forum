@@ -2,7 +2,7 @@ package top.ysqorz.forum.dao;
 
 import top.ysqorz.forum.common.BaseMapper;
 import top.ysqorz.forum.po.Topic;
-import top.ysqorz.forum.dto.TopicDTO;
+import top.ysqorz.forum.dto.resp.TopicDTO;
 
 import java.util.List;
 import java.util.Map;

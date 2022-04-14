@@ -1,7 +1,7 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.po.Topic;
-import top.ysqorz.forum.dto.TopicDTO;
+import top.ysqorz.forum.dto.resp.TopicDTO;
 
 import java.util.List;
 

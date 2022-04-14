@@ -1,6 +1,6 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.dto.MessageListDTO;
+import top.ysqorz.forum.dto.resp.MessageListDTO;
 import top.ysqorz.forum.dto.PageData;
 
 /**

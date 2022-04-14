@@ -45,7 +45,7 @@
     from toady_rank_ids tri
     left join user u on tri.user_id = u.id
     -->
-  <select id="rankList" parameterType="Integer" resultType="top.ysqorz.forum.dto.AttendDTO">
+  <select id="rankList" parameterType="Integer" resultType="top.ysqorz.forum.dto.resp.AttendDTO">
       select user_id, username, photo, attend_time,
               (select count(*) + 1
                 from attendance a2
@@ -78,7 +78,7 @@
     from consecutive_rank_ids cri
     -->
   <select id="consecutiveDaysRankList" parameterType="map"
-          resultType="top.ysqorz.forum.dto.AttendDTO">
+          resultType="top.ysqorz.forum.dto.resp.AttendDTO">
       select id as user_id, username, photo,
              consecutive_attend_days,
              (select count(*) + 1

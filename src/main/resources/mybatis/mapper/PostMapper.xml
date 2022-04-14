@@ -30,7 +30,7 @@
     </select>
 
 
-    <resultMap id="post" type="top.ysqorz.forum.dto.PostDTO">
+    <resultMap id="post" type="top.ysqorz.forum.dto.resp.PostDTO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="topic" jdbcType="INTEGER" property="topic"/>
@@ -47,7 +47,7 @@
         <result column="last_comment_time" jdbcType="TIMESTAMP" property="lastCommentTime"/>
         <!-- 把creator_id传过去 -->
         <association property="creator" column="creator_id"
-                     javaType="top.ysqorz.forum.dto.SimpleUserDTO"
+                     javaType="top.ysqorz.forum.dto.resp.SimpleUserDTO"
                      select="top.ysqorz.forum.dao.UserMapper.selectSimpleUserById" />
         <!-- 把postId传过去 -->
         <collection property="labelList" ofType="top.ysqorz.forum.po.Label" column="id"
@@ -56,7 +56,7 @@
     </resultMap>
 
     <select id="selectListByConditions" resultMap="post"
-            parameterType="top.ysqorz.forum.dto.QueryPostCondition">
+            parameterType="top.ysqorz.forum.dto.req.QueryPostCondition">
         select distinct p.id, title,
                 topic_name topic,
                 creator_id,
@@ -116,7 +116,7 @@
         </if>
     </select>
 
-    <resultMap id="homePost" type="top.ysqorz.forum.dto.PostDTO">
+    <resultMap id="homePost" type="top.ysqorz.forum.dto.resp.PostDTO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
@@ -125,7 +125,7 @@
         <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
     </resultMap>
 
-    <select id="selectListByCreatorId" resultType="top.ysqorz.forum.dto.PostDTO" parameterType="Integer">
+    <select id="selectListByCreatorId" resultType="top.ysqorz.forum.dto.resp.PostDTO" parameterType="Integer">
         select id, title, create_time, visit_count, comment_count, is_high_quality
         from post where creator_id = ${creatorId}
         order by is_high_quality desc,create_time desc

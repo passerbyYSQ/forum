@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.PostDTO;
-import top.ysqorz.forum.dto.QueryPostCondition;
+import top.ysqorz.forum.dto.resp.PostDTO;
+import top.ysqorz.forum.dto.req.QueryPostCondition;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.service.PostService;
 

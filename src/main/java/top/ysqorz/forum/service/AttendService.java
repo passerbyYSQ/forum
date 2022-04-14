@@ -1,6 +1,7 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.dto.AttendDTO;
+import top.ysqorz.forum.dto.resp.AttendDTO;
+import top.ysqorz.forum.dto.resp.AttendCardDTO;
 import top.ysqorz.forum.po.Attendance;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,11 @@ import java.util.List;
  * @create 2021-07-03 23:51
  */
 public interface AttendService {
+    /**
+     * 今天的签到情况
+     */
+    AttendCardDTO getTodayAttendCard();
+
     /**
      * 当前用户今天的签到记录
      */

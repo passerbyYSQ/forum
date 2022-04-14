@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.service.AuthorityService;
-import top.ysqorz.forum.dto.QueryAuthorityCondition;
+import top.ysqorz.forum.dto.req.QueryAuthorityCondition;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 

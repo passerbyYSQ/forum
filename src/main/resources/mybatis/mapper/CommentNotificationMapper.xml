@@ -15,7 +15,7 @@
         <result column="is_read" jdbcType="TINYINT" property="isRead"/>
     </resultMap>
 
-    <select id="getMegList" resultType="top.ysqorz.forum.dto.MessageListDTO">
+    <select id="getMegList" resultType="top.ysqorz.forum.dto.resp.MessageListDTO">
         select u.username,
                u.photo,
                c.create_time createTime,
@@ -32,7 +32,7 @@
           and is_read = 0
         order by c.create_time desc
     </select>
-    <select id="getMegReply" resultType="top.ysqorz.forum.dto.MessageListDTO">
+    <select id="getMegReply" resultType="top.ysqorz.forum.dto.resp.MessageListDTO">
         select u.username,
                u.photo,
                c.create_time                                 as createTime,

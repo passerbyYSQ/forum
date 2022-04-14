@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.PermZTreeNode;
+import top.ysqorz.forum.dto.resp.PermZTreeNode;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;

@@ -3,7 +3,7 @@ package top.ysqorz.forum.oauth;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import top.ysqorz.forum.dto.BaiduUserDTO;
+import top.ysqorz.forum.dto.resp.BaiduUserDTO;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 

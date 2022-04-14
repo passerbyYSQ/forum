@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.SecondCommentMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.SecondComment">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="first_comment_id" jdbcType="INTEGER" property="firstCommentId" />
-    <result column="quote_second_comment_id" jdbcType="INTEGER" property="quoteSecondCommentId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.SecondComment">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="first_comment_id" jdbcType="INTEGER" property="firstCommentId"/>
+        <result column="quote_second_comment_id" jdbcType="INTEGER" property="quoteSecondCommentId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+    </resultMap>
 
-  <resultMap id="secondComment" type="top.ysqorz.forum.dto.SecondCommentDTO">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="quote_second_comment_id" jdbcType="INTEGER" property="quoteSecondCommentId" />
-    <result column="repliedCreatorId" jdbcType="VARCHAR" property="repliedCreatorId" />
-    <result column="repliedCreator" jdbcType="INTEGER" property="repliedCreator" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
-    <association property="creator" column="user_id"
-                 javaType="top.ysqorz.forum.dto.SimpleUserDTO"
-                 select="top.ysqorz.forum.dao.UserMapper.selectSimpleUserById" />
-  </resultMap>
+    <resultMap id="secondComment" type="top.ysqorz.forum.dto.resp.SecondCommentDTO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="quote_second_comment_id" jdbcType="INTEGER" property="quoteSecondCommentId"/>
+        <result column="repliedCreatorId" jdbcType="VARCHAR" property="repliedCreatorId"/>
+        <result column="repliedCreator" jdbcType="INTEGER" property="repliedCreator"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <association property="creator" column="user_id"
+                     javaType="top.ysqorz.forum.dto.resp.SimpleUserDTO"
+                     select="top.ysqorz.forum.dao.UserMapper.selectSimpleUserById"/>
+    </resultMap>
 
-  <select id="selectSecondCommentList" parameterType="Integer" resultMap="secondComment">
-      select sc1.id,
-             sc1.user_id,
-             sc1.content,
-             sc1.quote_second_comment_id,
-             u.id       repliedCreatorId,
-             u.username repliedCreator,
-             sc1.create_time
-      from second_comment sc1
-               left join second_comment sc2 on sc2.id = sc1.quote_second_comment_id
-               left join user u on sc2.user_id = u.id
-      where sc1.first_comment_id = #{firstCommentId}
-      order by sc1.create_time desc
-  </select>
+    <select id="selectSecondCommentList" parameterType="Integer" resultMap="secondComment">
+        select sc1.id,
+               sc1.user_id,
+               sc1.content,
+               sc1.quote_second_comment_id,
+               u.id       repliedCreatorId,
+               u.username repliedCreator,
+               sc1.create_time
+        from second_comment sc1
+                 left join second_comment sc2 on sc2.id = sc1.quote_second_comment_id
+                 left join user u on sc2.user_id = u.id
+        where sc1.first_comment_id = #{firstCommentId}
+        order by sc1.create_time desc
+    </select>
 
+    <select id="selectRecentCommentUsers" resultType="top.ysqorz.forum.dto.resp.RecentCommentUserDTO">
+        select user_id, username, photo, max(create_time) as lastCommentTime
+        from second_comment as sc
+                 left join user as u on sc.user_id = u.id
+        group by sc.user_id
+        order by max(sc.create_time) desc
+        limit #{count}
+    </select>
 </mapper>
