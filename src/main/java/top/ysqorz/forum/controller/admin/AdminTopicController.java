@@ -22,13 +22,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/system/topic")
 public class AdminTopicController {
-
     @Autowired
     private TopicService topicService;
 
     /**
      * 获取Topic数据
      */
+    @RequiresPermissions("topic:view")
     @GetMapping("/table")
     public ResultModel<PageData<TopicDTO>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
                                                           @RequestParam(defaultValue = "1") Integer page,
@@ -58,8 +58,7 @@ public class AdminTopicController {
     @PostMapping("/update")
     public ResultModel updateTopic(@Validated(Topic.Update.class) Topic topic) {
         int cnt = topicService.updateTopic(topic);
-        return cnt == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.TOPIC_NOT_EXIST);
+        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.TOPIC_NOT_EXIST);
     }
 
     /**
@@ -69,12 +68,11 @@ public class AdminTopicController {
      * @param state
      * @return
      */
-    @RequiresPermissions("topic:file")
+    @RequiresPermissions("topic:archive")
     @PostMapping("/archive")
     public ResultModel archive(@NotNull Integer id, @NotNull Integer state) {
         int cnt = topicService.archive(id, state);
-        return cnt == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.PARAM_NOT_COMPLETED);
+        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.PARAM_NOT_COMPLETED);
     }
 
 

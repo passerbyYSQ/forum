@@ -35,14 +35,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin/system/role")
 @Validated
 public class AdminRoleController {
-
     @Autowired
     private RoleService roleService;
-
     @Autowired
     private AuthorityService authorityService;
 
-    @RequiresPermissions("role:del")
+    @RequiresPermissions("role:delete")
     @PostMapping("/del")
     public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds) {
         roleService.delRoleWithPerms(roleIds);
@@ -56,8 +54,7 @@ public class AdminRoleController {
     @PostMapping("/update")
     public ResultModel updateRole(@Validated(Role.Update.class) Role role) {
         int cnt = roleService.updateRoleById(role);
-        return cnt == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.ROLE_NOT_EXIST); // 修改失败，可能是角色不存在
+        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.ROLE_NOT_EXIST); // 修改失败，可能是角色不存在
     }
 
     /**
@@ -72,7 +69,7 @@ public class AdminRoleController {
     /**
      * 分配权限
      */
-    @RequiresPermissions("role:allot")
+    @RequiresPermissions("role:allotPerm")
     @PostMapping("/assign")
     public ResultModel assignPerms(@NotNull Integer roleId,
            @RequestParam(value = "permIds[]", defaultValue = "") Integer[] permIds) {
@@ -106,7 +103,7 @@ public class AdminRoleController {
     /**
      * 某个角色的权限树
      */
-    @RequiresPermissions("role:allot")
+    @RequiresPermissions("perm:view")
     @GetMapping("/perm")
     public ResultModel<List<PermZTreeNode>> rolePermList(@NotNull Integer roleId) {
         Role role = roleService.getRoleById(roleId);
@@ -129,6 +126,7 @@ public class AdminRoleController {
     /**
      * 角色列表
      */
+    @RequiresPermissions("role:view")
     @GetMapping("/list")
     public ResultModel<PageData<Role>> roleList(
             @RequestParam(defaultValue = "1") Integer page, // 当前页
@@ -144,5 +142,4 @@ public class AdminRoleController {
         List<Role> roleList = roleService.getRoleList(roleName);
         return ResultModel.success(new PageData<>(roleList));
     }
-
 }

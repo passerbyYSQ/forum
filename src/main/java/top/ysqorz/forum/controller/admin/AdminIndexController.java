@@ -32,7 +32,7 @@ public class AdminIndexController {
     /**
      * 权限管理页面
      */
-    @RequiresPermissions("admin:access")
+    @RequiresPermissions("perm:view")
     @GetMapping("/system/authorities")
     public String authoritiesPage() {
         return "admin/system/authorities";
@@ -41,7 +41,7 @@ public class AdminIndexController {
     /**
      * 角色管理页面
      */
-    @RequiresPermissions("admin:access")
+    @RequiresPermissions("role:view")
     @GetMapping("/system/role")
     public String rolePage() {
         return "admin/system/role";
@@ -51,7 +51,7 @@ public class AdminIndexController {
     /**
      * 用户管理界面
      */
-    @RequiresPermissions("admin:access")
+    @RequiresPermissions("user:view")
     @GetMapping("/system/user")
     public String userPage() {
         return "admin/system/user";
@@ -60,7 +60,7 @@ public class AdminIndexController {
     /**
      * 话题管理
      */
-    @RequiresPermissions("admin:access")
+    @RequiresPermissions("topic:view")
     @GetMapping("/system/topic")
     public String topicPage() {
         return "admin/system/topic";
@@ -69,7 +69,7 @@ public class AdminIndexController {
     /**
      * 帖子管理
      */
-    @RequiresPermissions("admin:access")
+    @RequiresPermissions("post:view")
     @GetMapping("/system/post")
     public String postPage() {
         return "admin/system/post";

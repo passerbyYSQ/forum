@@ -27,10 +27,10 @@ import java.util.List;
 @ResponseBody
 @RequestMapping("/admin/system/post")
 public class AdminPostController {
-
     @Resource
     private PostService postService;
 
+    @RequiresPermissions("post:view")
     @GetMapping("/list")
     public ResultModel<PageData<PostDTO>> postList(
             @RequestParam(defaultValue = "1") Integer page, // 当前页
@@ -55,8 +55,7 @@ public class AdminPostController {
         Post post = new Post();
         post.setId(postId).setTopWeight(topWeight);
         int cnt = postService.updatePostById(post);
-        return cnt == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
+        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
     }
 
     /**
@@ -68,8 +67,7 @@ public class AdminPostController {
         Post post = new Post();
         post.setId(postId).setIsLocked((byte) (isLock ? 1 : 0));
         int cnt = postService.updatePostById(post);
-        return cnt == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
+        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.POST_NOT_EXIST); // 帖子不存在
     }
 
     /**
@@ -86,5 +84,4 @@ public class AdminPostController {
         postService.changeHighQuality(post.getCreatorId(), postId, isHighQuality);
         return ResultModel.success();
     }
-
 }

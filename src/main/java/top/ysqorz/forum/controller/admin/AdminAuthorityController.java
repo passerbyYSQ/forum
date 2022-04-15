@@ -1,5 +1,6 @@
 package top.ysqorz.forum.controller.admin;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
@@ -25,13 +26,13 @@ import java.util.List;
 @RequestMapping("/admin/system/authorities")
 @Validated
 public class AdminAuthorityController {
-
     @Autowired
     private AuthorityService authorityService;
 
     /**
      * 获取权限树形数据。树形结构不需要在后端形成，前端会生成
      */
+    @RequiresPermissions("perm:view")
     @GetMapping("/tree")
     public ResultModel<List<Resource>> authorityTree(QueryAuthorityCondition conditions) {
         return ResultModel.success(authorityService.getAuthorityList(conditions));
@@ -40,18 +41,13 @@ public class AdminAuthorityController {
     /**
      * 新增权限
      */
+    @RequiresPermissions("perm:add")
     @PostMapping("/add")
     public ResultModel<Resource> addAuthority(@Validated(Resource.Add.class) Resource resource) {
-        // 根据权限名查找
-        Resource res = authorityService.getAuthorityByName(resource.getName());
-        if (!ObjectUtils.isEmpty(res)) {
-            return ResultModel.failed(StatusCode.AUTHORITY_NAME_EXIST); // 权限名称存在
-        }
-        // 插入新记录
-        res = authorityService.addAuthority(resource);
-        return ResultModel.success(res);
+        return ResultModel.success( authorityService.addAuthority(resource));
     }
 
+    @RequiresPermissions("perm:update")
     @PostMapping("/update")
     public ResultModel updateAuthority(@Validated(Resource.Update.class) Resource resource) {
         if (ObjectUtils.isEmpty(authorityService.getAuthorityById(resource.getId()))) {
@@ -79,8 +75,7 @@ public class AdminAuthorityController {
         }
 
         int cnt = authorityService.updateAuthorityById(resource);
-        return cnt == 1 ? ResultModel.success() :
-                ResultModel.failed(StatusCode.AUTHORITY_UPDATE_FAILED);
+        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.AUTHORITY_UPDATE_FAILED);
     }
 
     /**
@@ -88,11 +83,10 @@ public class AdminAuthorityController {
      * @param authorityIds  id经过前端的筛选，传过来的一定是叶子节点的数据。
      *                      当然后端校验才是最安全的，可以在后端校验安全后才删除。暂时不考虑，直接删除
      */
+    @RequiresPermissions("perm:delete")
     @PostMapping("/del")
     public ResultModel delAuthority(@RequestParam("authorityIds[]") @NotEmpty Integer[] authorityIds) {
         int cnt = authorityService.delAuthorityById(authorityIds);
-        return cnt == authorityIds.length ? ResultModel.success() :
-                ResultModel.failed(StatusCode.AUTHORITY_DEL_FAILED);
+        return cnt == authorityIds.length ? ResultModel.success() : ResultModel.failed(StatusCode.AUTHORITY_DEL_FAILED);
     }
-
 }

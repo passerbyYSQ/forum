@@ -38,6 +38,7 @@ public class AdminUserController {
     /**
      * 获取User数据
      */
+    @RequiresPermissions("user:view")
     @GetMapping("/table")
     public ResultModel<PageData<UserDTO>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
                                                          @RequestParam(defaultValue = "1") Integer page,
@@ -54,7 +55,7 @@ public class AdminUserController {
     /**
      * 重置密码
      */
-    @RequiresPermissions("user:reset")
+    @RequiresPermissions("user:resetPwd")
     @PostMapping("/resetPsw")
     public ResultModel ResetPsw(@RequestParam("userId") @NotNull Integer userId) {
         User user = userService.getUserById(userId);
@@ -81,7 +82,6 @@ public class AdminUserController {
     @RequiresPermissions("user:blacklist")
     @PostMapping("/block")
     public ResultModel block(@Validated(Blacklist.Add.class) Blacklist blacklist) {
-        //System.out.println(blacklist);
         int i = userService.block(blacklist);
         return i == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.USERNAME_EXIST);
 
@@ -101,7 +101,7 @@ public class AdminUserController {
     /**
      * 添加角色
      */
-    @RequiresPermissions("user:allot")
+    @RequiresPermissions("user:allotRole")
     @PostMapping("/addRole")
     public ResultModel addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) throws ParameterErrorException {
@@ -115,12 +115,11 @@ public class AdminUserController {
     /**
      * 查询每个用户所分配的角色
      */
+    @RequiresPermissions("role:view")
     @GetMapping("/getRoleByUserId")
     public ResultModel<PageData<Role>> getRoleByUserId(@RequestParam(defaultValue = "10") Integer limit,
                                                        @RequestParam(defaultValue = "1") Integer page,
                                                        @RequestParam("userId") @NotNull Integer userId) {
-
-        //System.out.println(conditions);
         if (limit <= 0) {
             limit = 10;
         }
@@ -132,7 +131,7 @@ public class AdminUserController {
     /**
      * 删除角色
      */
-    @RequiresPermissions("user:del")
+    @RequiresPermissions("user:deleteRole")
     @PostMapping("/delRole")
     public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) {
@@ -142,5 +141,4 @@ public class AdminUserController {
         userService.delRoleForUser(roleIds, userId);
         return ResultModel.success();
     }
-
 }
