@@ -1,8 +1,8 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
-import top.ysqorz.forum.po.RoleResource;
 
 import java.util.List;
 import java.util.Set;
@@ -28,14 +28,29 @@ public interface RoleService {
     Role addRole(Role role);
 
     /**
-     * 分配权限。往role_resource批量插入记录
+     * 分配权限
      */
-    void assignPerms(List<RoleResource> roleResourceList);
+    StatusCode assignPerms(Integer roleId, Integer[] permIds);
 
     /**
      * 删除角色的所有权限
      */
     void delPermsByRoleId(Integer roleId);
+
+    /**
+     * 根据roleIds删除role_resource表中相关的记录
+     */
+    void delPermsByRoleIds(List<Integer> roleIds);
+
+    /**
+     * 根据roleIds删除user_role表中相关的记录
+     */
+    void delUserRoleRelationsByRoleIds(List<Integer> roleIds);
+
+    /**
+     * 根据roleIds删除role表中相关的记录
+     */
+    void delRolesByRoleIds(List<Integer> roleIds);
 
     /**
      * 某个角色拥有的所有权限的id

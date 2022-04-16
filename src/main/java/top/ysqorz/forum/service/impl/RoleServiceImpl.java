@@ -3,18 +3,22 @@ package top.ysqorz.forum.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.po.Resource;
-import top.ysqorz.forum.service.RoleService;
-import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.dao.RoleMapper;
 import top.ysqorz.forum.dao.RoleResourceMapper;
+import top.ysqorz.forum.dao.UserRoleMapper;
+import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.RoleResource;
+import top.ysqorz.forum.po.UserRole;
+import top.ysqorz.forum.service.AuthorityService;
+import top.ysqorz.forum.service.RoleService;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,26 +29,46 @@ import java.util.stream.Collectors;
  */
 @Service
 public class RoleServiceImpl implements RoleService {
-
     @Autowired
     private RoleMapper roleMapper;
-
     @Autowired
     private RoleResourceMapper roleResourceMapper;
+    @Autowired
+    private UserRoleMapper userRoleMapper;
+    @Autowired
+    private AuthorityService authorityService;
+
+    @Override
+    public void delPermsByRoleIds(List<Integer> roleIds) {
+        Example example = new Example(RoleResource.class);
+        example.createCriteria().andIn("roleId", roleIds);
+        roleResourceMapper.deleteByExample(example);
+    }
+
+    @Override
+    public void delUserRoleRelationsByRoleIds(List<Integer> roleIds) {
+        Example example = new Example(UserRole.class);
+        example.createCriteria().andIn("roleId", roleIds);
+        userRoleMapper.deleteByExample(example);
+    }
+
+    @Override
+    public void delRolesByRoleIds(List<Integer> roleIds) {
+        Example example = new Example(Role.class);
+        example.createCriteria().andIn("id", roleIds);
+        roleMapper.deleteByExample(example);
+    }
 
     @Transactional // 开启事务操作
     @Override
     public void delRoleWithPerms(Integer[] roleIds) {
-        for (Integer roleId : roleIds) {
-            // 注意删除的先后顺序
-            // 先删除role_resource表中该角色相关的记录
-            this.delPermsByRoleId(roleId);
-            // 再删除角色
-            int cnt = roleMapper.deleteByPrimaryKey(roleId);
-            if (cnt != 1) { // 只要有一个角色不存在，抛出异常回滚所有操作
-                throw new ParameterErrorException(StatusCode.ROLE_NOT_EXIST.getMsg());
-            }
-        }
+        // 删除role_resource表中该角色相的关记录
+        List<Integer> roleIdList = Arrays.asList(roleIds);
+        this.delPermsByRoleIds(roleIdList);
+        // 删除user_role表中该角色的相关记录
+        this.delUserRoleRelationsByRoleIds(roleIdList);
+        // 删除role表的相关记录
+        this.delRolesByRoleIds(roleIdList);
     }
 
     @Override
@@ -60,8 +84,33 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void assignPerms(List<RoleResource> roleResourceList) {
-        roleResourceMapper.insertList(roleResourceList);
+    @Transactional
+    public StatusCode assignPerms(Integer roleId, Integer[] permIds) {
+        Role role = this.getRoleById(roleId);
+        if (ObjectUtils.isEmpty(role)) {
+            return StatusCode.ROLE_NOT_EXIST; // 角色不存在
+        }
+
+        // 删除原本的所有权限
+        this.delPermsByRoleId(roleId);
+
+        if (!ObjectUtils.isEmpty(permIds)) {
+            // 所有的权限id（正确的）
+            List<Resource> permList = authorityService.getAuthorityList(null);
+            Set<Integer> allPermIds = permList.stream()
+                    .map(Resource::getId).collect(Collectors.toSet());
+
+            // 筛选掉非法的permId，只留下合法的权限id
+            List<RoleResource> roleResourceList = Arrays.stream(permIds)
+                    .filter(allPermIds::contains) // true表示留下
+                    .map(permId -> new RoleResource(roleId, permId))
+                    .collect(Collectors.toList());
+
+            // 分配权限。往role_resource批量插入记录
+            roleResourceMapper.insertList(roleResourceList);
+        }
+
+        return StatusCode.SUCCESS;
     }
 
     @Override

@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 15/04/2022 23:44:44
+ Date: 16/04/2022 21:36:39
 */
 
 SET NAMES utf8mb4;
@@ -27,7 +27,7 @@ CREATE TABLE `attendance`  (
   `attend_date` date NOT NULL COMMENT '签到的日期，独立出来方便查询',
   `attend_time` time(0) NOT NULL COMMENT '签到的时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 56 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 59 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of attendance
@@ -83,6 +83,9 @@ INSERT INTO `attendance` VALUES (52, 26, '2022-04-14', '15:13:16');
 INSERT INTO `attendance` VALUES (53, 21, '2022-04-14', '17:41:23');
 INSERT INTO `attendance` VALUES (54, 26, '2022-04-15', '01:00:35');
 INSERT INTO `attendance` VALUES (55, 21, '2022-04-15', '01:29:39');
+INSERT INTO `attendance` VALUES (56, 21, '2022-04-16', '00:00:27');
+INSERT INTO `attendance` VALUES (57, 26, '2022-04-16', '15:49:14');
+INSERT INTO `attendance` VALUES (58, 22, '2022-04-16', '15:57:07');
 
 -- ----------------------------
 -- Table structure for blacklist
@@ -661,13 +664,12 @@ CREATE TABLE `like`  (
   `is_read` tinyint(4) NOT NULL COMMENT '是否已读',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `post_id`(`post_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '点赞' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 61 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '点赞' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of like
 -- ----------------------------
 INSERT INTO `like` VALUES (6, 22, 1, '2021-06-20 10:32:09', 0);
-INSERT INTO `like` VALUES (13, 22, 11, '2021-06-22 09:42:41', 0);
 INSERT INTO `like` VALUES (19, 26, 13, '2021-06-24 20:57:33', 0);
 INSERT INTO `like` VALUES (20, 26, 14, '2021-06-30 15:50:55', 0);
 INSERT INTO `like` VALUES (21, 26, 12, '2021-06-30 23:12:38', 0);
@@ -682,10 +684,11 @@ INSERT INTO `like` VALUES (29, 21, 2, '2021-07-04 15:11:44', 0);
 INSERT INTO `like` VALUES (30, 21, 8, '2021-07-04 15:19:54', 0);
 INSERT INTO `like` VALUES (31, 23, 8, '2021-07-05 15:43:22', 0);
 INSERT INTO `like` VALUES (32, 26, 11, '2021-07-12 12:34:15', 0);
-INSERT INTO `like` VALUES (35, 26, 2, '2021-10-18 20:38:06', 0);
 INSERT INTO `like` VALUES (36, 26, 16, '2021-10-19 19:53:56', 0);
 INSERT INTO `like` VALUES (37, 21, 16, '2021-10-19 19:55:45', 0);
 INSERT INTO `like` VALUES (38, 26, 17, '2021-10-19 23:33:24', 0);
+INSERT INTO `like` VALUES (48, 21, 13, '2022-04-16 02:48:50', 0);
+INSERT INTO `like` VALUES (58, 22, 11, '2022-04-16 16:20:39', 0);
 
 -- ----------------------------
 -- Table structure for points_record
@@ -698,7 +701,7 @@ CREATE TABLE `points_record`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '积分变化的描述',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 59 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积分奖励记录\r\n' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积分奖励记录\r\n' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of points_record
@@ -761,6 +764,9 @@ INSERT INTO `points_record` VALUES (55, 21, 1, '签到', '2022-04-14 17:41:23');
 INSERT INTO `points_record` VALUES (56, 26, 2, '签到', '2022-04-15 01:00:35');
 INSERT INTO `points_record` VALUES (57, 21, 2, '签到', '2022-04-15 01:29:39');
 INSERT INTO `points_record` VALUES (58, 21, 5, '精品帖', '2022-04-15 23:29:21');
+INSERT INTO `points_record` VALUES (59, 21, 2, '签到', '2022-04-16 00:00:27');
+INSERT INTO `points_record` VALUES (60, 26, 2, '签到', '2022-04-16 15:49:14');
+INSERT INTO `points_record` VALUES (61, 22, 1, '签到', '2022-04-16 15:57:07');
 
 -- ----------------------------
 -- Table structure for points_type
@@ -807,7 +813,7 @@ CREATE TABLE `post`  (
 -- Records of post
 -- ----------------------------
 INSERT INTO `post` VALUES (1, '测试1111111', '<p>测试1111111说的不是吧微软</p>', 1, 1, '2021-05-25 21:13:29', '2021-05-25 21:13:29', 11, 1, 0, 0, 0, 0, 0, '2021-07-01 23:28:43', 0);
-INSERT INTO `post` VALUES (2, '测试标题', '<p>asvdv</p>\n<p><a href=\"/video/1\" target=\"_blank\" rel=\"noopener\">视频弹幕</a></p>\n<p><a href=\"localhost:8080/video/1\" target=\"_blank\" rel=\"noopener\">补全</a></p>\n<p>&nbsp;</p>\n<p><a href=\"localhost:8080/video/1\">补全链接</a></p>\n<p>&nbsp;</p>\n<p><a href=\"/video/1\">绝对路径</a></p>', 1, 1, '2021-05-25 22:58:29', '2022-02-18 22:46:12', 230, 3, 3, 53, 1, 1, 34, '2021-07-01 21:52:16', 0);
+INSERT INTO `post` VALUES (2, '测试标题', '<p>asvdv</p>\n<p><a href=\"/video/1\" target=\"_blank\" rel=\"noopener\">视频弹幕</a></p>\n<p><a href=\"localhost:8080/video/1\" target=\"_blank\" rel=\"noopener\">补全</a></p>\n<p>&nbsp;</p>\n<p><a href=\"localhost:8080/video/1\">补全链接</a></p>\n<p>&nbsp;</p>\n<p><a href=\"/video/1\">绝对路径</a></p>', 1, 1, '2021-05-25 22:58:29', '2022-02-18 22:46:12', 232, 2, 3, 53, 1, 1, 34, '2021-07-01 21:52:16', 0);
 INSERT INTO `post` VALUES (3, '这是一条非常重要的通知！！！', '<p><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/fc8ef26c62b94b9dbcad19570d9a6880.jpg?timestamp=1621955365165\" width=\"800\" /></p>\n<h1>欢迎。。。</h1>\n<p>&nbsp;</p>\n<table style=\"border-collapse: collapse; width: 100%;\" border=\"1\">\n<tbody>\n<tr>\n<td style=\"width: 50%;\">1</td>\n<td style=\"width: 50%;\">2</td>\n</tr>\n<tr>\n<td style=\"width: 50%;\">3</td>\n<td style=\"width: 50%;\">&nbsp;</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>\n<p><span style=\"font-size: 36pt;\">😂</span></p>\n<p><span style=\"font-size: 14pt;\">你好</span></p>', 1, 2, '2021-05-25 23:11:16', '2021-05-25 23:11:16', 9, 0, 0, 0, 0, 0, 0, '2021-07-01 23:28:47', 0);
 INSERT INTO `post` VALUES (4, '我是真的帅', '<p>我是真的帅</p>', 1, 2, '2021-05-25 23:13:02', '2021-05-25 23:13:02', 2, 0, 0, 0, 0, 0, 0, '2021-07-01 23:28:50', 1);
 INSERT INTO `post` VALUES (5, '测试标签提示', '<p>测试标签提示测试标签提示测试标签提示</p>', 1, 1, '2021-05-28 23:29:21', '2021-05-28 23:29:21', 1, 0, 0, 0, 0, 0, 0, '2021-07-01 23:28:53', 67);
@@ -816,9 +822,9 @@ INSERT INTO `post` VALUES (7, 'asvwev', '<p>erberb</p>', 1, 1, '2021-06-12 16:46
 INSERT INTO `post` VALUES (8, '【测试】锁定', '<blockquote>\n<p>【测试】锁定【测试】锁定【测试】锁定【测试】锁定</p>\n</blockquote>\n<p>&nbsp;</p>\n<h1><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/4206857946a94d639751220e1ba1036a.png?timestamp=1623502282211\" alt=\"Logo\" width=\"194\" height=\"146\" /><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/22d4b8bb504c447ca52b7b550180af0f.png?timestamp=1625211592797\" alt=\"dfnfd\" width=\"730\" height=\"781\" /></h1>\n<h1><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/e5914597f0d24ef9a3399cda535518a8.png?timestamp=1625211664578\" alt=\"ltlt\" width=\"800\" height=\"496\" /></h1>\n<h1>标题</h1>\n<p style=\"padding-left: 40px;\">你好</p>\n<p>&nbsp;</p>\n<p style=\"padding-left: 80px;\">&nbsp;</p>', 1, 1, '2021-06-12 16:53:28', '2021-07-02 23:55:29', 15, 3, 1, 1, 0, 0, 0, '2021-07-02 23:57:16', 23);
 INSERT INTO `post` VALUES (9, '测试验证码测试验证码测试验证码', '<p>测试验证码测试验证码测试验证码</p>\n<p>&nbsp;</p>\n<p style=\"text-align: right;\">测试验证码测试验证码</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<p>测试验证码测试验证码</p>', 1, 1, '2021-06-14 23:56:31', '2021-06-14 23:56:31', 5, 1, 0, 0, 0, 1, 0, '2021-07-01 23:29:05', 2);
 INSERT INTO `post` VALUES (10, '测试权限', '<p>测试权限</p>\n<p>&nbsp;</p>\n<p>测试权限</p>', 1, 1, '2021-06-18 21:36:33', '2021-06-18 21:36:33', 4, 0, 0, 0, 0, 1, 0, '2021-07-01 23:29:07', 1);
-INSERT INTO `post` VALUES (11, '测试登录后发帖，测试修改时间', '<p><span style=\"color: #e03e2d;\">测试登录后发帖测试登录后发帖测试登录后发帖</span></p>\n<ol>\n<li>Sfgss</li>\n<li>sdvsd</li>\n<li>svsd</li>\n<li>&nbsp;</li>\n</ol>\n<p style=\"text-align: right;\">测试登录后发帖测试登录后发帖测试登录后发帖</p>', 22, 1, '2021-06-18 21:41:46', '2021-06-20 00:22:34', 69, 3, 1, 7, 1, 0, 99, '2021-07-04 21:31:25', 2);
+INSERT INTO `post` VALUES (11, '测试登录后发帖，测试修改时间', '<p><span style=\"color: #e03e2d;\">测试登录后发帖测试登录后发帖测试登录后发帖</span></p>\n<ol>\n<li>Sfgss</li>\n<li>sdvsd</li>\n<li>svsd</li>\n<li>&nbsp;</li>\n</ol>\n<p style=\"text-align: right;\">测试登录后发帖测试登录后发帖测试登录后发帖</p>', 22, 1, '2021-06-18 21:41:46', '2021-06-20 00:22:34', 75, 3, 1, 7, 1, 0, 99, '2021-07-04 21:31:25', 2);
 INSERT INTO `post` VALUES (12, '测试发帖', '<p>测试发帖测试发帖测试发帖测试发帖</p>', 22, 1, '2021-06-18 23:27:03', '2021-06-18 23:27:03', 19, 2, 2, 7, 0, 0, 0, '2021-07-02 11:56:33', 0);
-INSERT INTO `post` VALUES (13, '测试代码高亮', '<p>哈哈哈哈</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<pre class=\"language-java\"><code>package top.ysqorz.forum.config;\n\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.format.FormatterRegistry;\nimport org.springframework.web.servlet.config.annotation.CorsRegistry;\nimport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;\n\n/**\n * @author passerbyYSQ\n * @create 2021-01-29 14:41\n */\n@Configuration\npublic class WebMvcConfig implements WebMvcConfigurer {\n\n    /**\n     * 前后端分离需要解决跨域问题\n     */\n    @Override\n    public void addCorsMappings(CorsRegistry registry) {\n        registry.addMapping(\"/**\")\n                .allowedOrigins(\"*\")  // 放行哪些原始域\n                .allowCredentials(true) // 是否发送cookie\n                .allowedMethods(\"GET\", \"POST\", \"PUT\", \"OPTIONS\", \"DELETE\", \"PATCH\")\n                .exposedHeaders(\"*\")\n                .allowedHeaders(\"*\") // allowedHeaders是exposedHeaders的子集\n                .maxAge(3600); // 预检请求OPTIONS请求的缓存时间\n    }\n\n    /**\n     * 在参数绑定时，自定义String-&gt;String的转换器，\n     * 在转换逻辑中对参数值进行转义，从而达到防XSS的效果\n     */\n    @Override\n    public void addFormatters(FormatterRegistry registry) {\n        registry.addConverter(new EscapeStringConverter());\n        //registry.addFormatter(new LocalDateTimeFormatter());\n\n    }\n}\n</code></pre>', 26, 1, '2021-06-24 20:55:07', '2021-06-30 15:49:17', 41, 1, 1, 7, 1, 0, 99, '2021-06-30 12:48:18', 0);
+INSERT INTO `post` VALUES (13, '测试代码高亮', '<p>哈哈哈哈</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<pre class=\"language-java\"><code>package top.ysqorz.forum.config;\n\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.format.FormatterRegistry;\nimport org.springframework.web.servlet.config.annotation.CorsRegistry;\nimport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;\n\n/**\n * @author passerbyYSQ\n * @create 2021-01-29 14:41\n */\n@Configuration\npublic class WebMvcConfig implements WebMvcConfigurer {\n\n    /**\n     * 前后端分离需要解决跨域问题\n     */\n    @Override\n    public void addCorsMappings(CorsRegistry registry) {\n        registry.addMapping(\"/**\")\n                .allowedOrigins(\"*\")  // 放行哪些原始域\n                .allowCredentials(true) // 是否发送cookie\n                .allowedMethods(\"GET\", \"POST\", \"PUT\", \"OPTIONS\", \"DELETE\", \"PATCH\")\n                .exposedHeaders(\"*\")\n                .allowedHeaders(\"*\") // allowedHeaders是exposedHeaders的子集\n                .maxAge(3600); // 预检请求OPTIONS请求的缓存时间\n    }\n\n    /**\n     * 在参数绑定时，自定义String-&gt;String的转换器，\n     * 在转换逻辑中对参数值进行转义，从而达到防XSS的效果\n     */\n    @Override\n    public void addFormatters(FormatterRegistry registry) {\n        registry.addConverter(new EscapeStringConverter());\n        //registry.addFormatter(new LocalDateTimeFormatter());\n\n    }\n}\n</code></pre>', 26, 1, '2021-06-24 20:55:07', '2021-06-30 15:49:17', 46, 2, 1, 7, 1, 0, 99, '2021-06-30 12:48:18', 0);
 INSERT INTO `post` VALUES (14, 'sdbdsbsdb', '<p>sdvsdbsbvsdb</p>', 26, 1, '2021-06-30 15:50:50', '2021-06-30 15:50:50', 2, 1, 0, 0, 1, 0, 0, '2021-06-30 15:50:50', 0);
 INSERT INTO `post` VALUES (15, '测试冲突测试冲突测试冲突测试冲突', '<p>测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突测试冲突</p>\n<p><img src=\"https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/00ca8c0bf69c4ce095a338c76c427954.jpg?timestamp=1626061510024\" width=\"800\" height=\"450\" /></p>', 26, 1, '2021-07-12 11:41:13', '2021-07-12 11:45:44', 7, 0, 0, 3, 0, 0, 0, '2022-04-14 17:41:04', 0);
 INSERT INTO `post` VALUES (18, '测试删除帖子', '<p>为v为v我</p>', 21, 2, '2021-10-20 20:12:56', '2021-10-20 20:12:56', 29, 0, 1, 26, 0, 0, 0, '2021-10-20 23:30:40', 0);
@@ -885,7 +891,7 @@ CREATE TABLE `resource`  (
   `type` tinyint(4) NOT NULL COMMENT '类型。0：菜单，1：按钮',
   `sort_weight` int(11) NULL DEFAULT 0 COMMENT '排序权重',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 73 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 76 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '涉及权限的资源' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of resource
@@ -932,7 +938,7 @@ CREATE TABLE `role`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role
@@ -959,77 +965,76 @@ CREATE TABLE `role_resource`  (
   INDEX `resource_id`(`resource_id`) USING BTREE,
   INDEX `role_id`(`role_id`) USING BTREE,
   CONSTRAINT `role_resource_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 339 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表和资源表的关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 419 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表和资源表的关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role_resource
 -- ----------------------------
-INSERT INTO `role_resource` VALUES (1, 20, 15);
-INSERT INTO `role_resource` VALUES (228, 27, 1);
-INSERT INTO `role_resource` VALUES (229, 27, 72);
-INSERT INTO `role_resource` VALUES (230, 27, 20);
-INSERT INTO `role_resource` VALUES (231, 27, 48);
-INSERT INTO `role_resource` VALUES (232, 27, 49);
-INSERT INTO `role_resource` VALUES (233, 27, 50);
-INSERT INTO `role_resource` VALUES (234, 27, 51);
-INSERT INTO `role_resource` VALUES (235, 27, 52);
-INSERT INTO `role_resource` VALUES (236, 27, 25);
-INSERT INTO `role_resource` VALUES (237, 27, 53);
-INSERT INTO `role_resource` VALUES (238, 27, 54);
-INSERT INTO `role_resource` VALUES (239, 27, 55);
-INSERT INTO `role_resource` VALUES (240, 27, 56);
-INSERT INTO `role_resource` VALUES (241, 27, 57);
-INSERT INTO `role_resource` VALUES (242, 27, 43);
-INSERT INTO `role_resource` VALUES (243, 27, 58);
-INSERT INTO `role_resource` VALUES (244, 27, 59);
-INSERT INTO `role_resource` VALUES (245, 27, 60);
-INSERT INTO `role_resource` VALUES (246, 27, 61);
-INSERT INTO `role_resource` VALUES (247, 27, 30);
-INSERT INTO `role_resource` VALUES (248, 27, 62);
-INSERT INTO `role_resource` VALUES (249, 27, 63);
-INSERT INTO `role_resource` VALUES (250, 27, 64);
-INSERT INTO `role_resource` VALUES (251, 27, 65);
-INSERT INTO `role_resource` VALUES (252, 27, 16);
-INSERT INTO `role_resource` VALUES (253, 27, 66);
-INSERT INTO `role_resource` VALUES (254, 27, 67);
-INSERT INTO `role_resource` VALUES (255, 27, 68);
-INSERT INTO `role_resource` VALUES (256, 27, 69);
-INSERT INTO `role_resource` VALUES (257, 27, 70);
-INSERT INTO `role_resource` VALUES (258, 27, 71);
-INSERT INTO `role_resource` VALUES (283, 23, 1);
-INSERT INTO `role_resource` VALUES (284, 23, 72);
-INSERT INTO `role_resource` VALUES (285, 23, 20);
-INSERT INTO `role_resource` VALUES (286, 23, 48);
-INSERT INTO `role_resource` VALUES (287, 23, 25);
-INSERT INTO `role_resource` VALUES (288, 23, 53);
-INSERT INTO `role_resource` VALUES (289, 23, 43);
-INSERT INTO `role_resource` VALUES (290, 23, 58);
-INSERT INTO `role_resource` VALUES (291, 23, 30);
-INSERT INTO `role_resource` VALUES (292, 23, 62);
-INSERT INTO `role_resource` VALUES (293, 23, 16);
-INSERT INTO `role_resource` VALUES (294, 23, 66);
-INSERT INTO `role_resource` VALUES (317, 26, 1);
-INSERT INTO `role_resource` VALUES (318, 26, 72);
-INSERT INTO `role_resource` VALUES (319, 26, 20);
-INSERT INTO `role_resource` VALUES (320, 26, 48);
-INSERT INTO `role_resource` VALUES (321, 26, 51);
-INSERT INTO `role_resource` VALUES (322, 26, 52);
-INSERT INTO `role_resource` VALUES (323, 26, 25);
-INSERT INTO `role_resource` VALUES (324, 26, 53);
-INSERT INTO `role_resource` VALUES (325, 26, 43);
-INSERT INTO `role_resource` VALUES (326, 26, 58);
-INSERT INTO `role_resource` VALUES (327, 26, 30);
-INSERT INTO `role_resource` VALUES (328, 26, 62);
-INSERT INTO `role_resource` VALUES (329, 26, 63);
-INSERT INTO `role_resource` VALUES (330, 26, 64);
-INSERT INTO `role_resource` VALUES (331, 26, 65);
-INSERT INTO `role_resource` VALUES (332, 26, 16);
-INSERT INTO `role_resource` VALUES (333, 26, 66);
-INSERT INTO `role_resource` VALUES (334, 26, 67);
-INSERT INTO `role_resource` VALUES (335, 26, 68);
-INSERT INTO `role_resource` VALUES (336, 26, 69);
-INSERT INTO `role_resource` VALUES (337, 26, 70);
-INSERT INTO `role_resource` VALUES (338, 26, 71);
+INSERT INTO `role_resource` VALUES (339, 27, 1);
+INSERT INTO `role_resource` VALUES (340, 27, 72);
+INSERT INTO `role_resource` VALUES (341, 27, 20);
+INSERT INTO `role_resource` VALUES (342, 27, 48);
+INSERT INTO `role_resource` VALUES (343, 27, 49);
+INSERT INTO `role_resource` VALUES (344, 27, 50);
+INSERT INTO `role_resource` VALUES (345, 27, 51);
+INSERT INTO `role_resource` VALUES (346, 27, 52);
+INSERT INTO `role_resource` VALUES (347, 27, 25);
+INSERT INTO `role_resource` VALUES (348, 27, 53);
+INSERT INTO `role_resource` VALUES (349, 27, 54);
+INSERT INTO `role_resource` VALUES (350, 27, 55);
+INSERT INTO `role_resource` VALUES (351, 27, 56);
+INSERT INTO `role_resource` VALUES (352, 27, 57);
+INSERT INTO `role_resource` VALUES (353, 27, 43);
+INSERT INTO `role_resource` VALUES (354, 27, 58);
+INSERT INTO `role_resource` VALUES (355, 27, 59);
+INSERT INTO `role_resource` VALUES (356, 27, 60);
+INSERT INTO `role_resource` VALUES (357, 27, 61);
+INSERT INTO `role_resource` VALUES (358, 27, 30);
+INSERT INTO `role_resource` VALUES (359, 27, 62);
+INSERT INTO `role_resource` VALUES (360, 27, 63);
+INSERT INTO `role_resource` VALUES (361, 27, 64);
+INSERT INTO `role_resource` VALUES (362, 27, 65);
+INSERT INTO `role_resource` VALUES (363, 27, 16);
+INSERT INTO `role_resource` VALUES (364, 27, 66);
+INSERT INTO `role_resource` VALUES (365, 27, 67);
+INSERT INTO `role_resource` VALUES (366, 27, 68);
+INSERT INTO `role_resource` VALUES (367, 27, 69);
+INSERT INTO `role_resource` VALUES (368, 27, 70);
+INSERT INTO `role_resource` VALUES (369, 27, 71);
+INSERT INTO `role_resource` VALUES (370, 26, 1);
+INSERT INTO `role_resource` VALUES (371, 26, 72);
+INSERT INTO `role_resource` VALUES (372, 26, 20);
+INSERT INTO `role_resource` VALUES (373, 26, 48);
+INSERT INTO `role_resource` VALUES (374, 26, 51);
+INSERT INTO `role_resource` VALUES (375, 26, 52);
+INSERT INTO `role_resource` VALUES (376, 26, 25);
+INSERT INTO `role_resource` VALUES (377, 26, 53);
+INSERT INTO `role_resource` VALUES (378, 26, 43);
+INSERT INTO `role_resource` VALUES (379, 26, 58);
+INSERT INTO `role_resource` VALUES (380, 26, 30);
+INSERT INTO `role_resource` VALUES (381, 26, 62);
+INSERT INTO `role_resource` VALUES (382, 26, 63);
+INSERT INTO `role_resource` VALUES (383, 26, 64);
+INSERT INTO `role_resource` VALUES (384, 26, 65);
+INSERT INTO `role_resource` VALUES (385, 26, 16);
+INSERT INTO `role_resource` VALUES (386, 26, 66);
+INSERT INTO `role_resource` VALUES (387, 26, 67);
+INSERT INTO `role_resource` VALUES (388, 26, 68);
+INSERT INTO `role_resource` VALUES (389, 26, 69);
+INSERT INTO `role_resource` VALUES (390, 26, 70);
+INSERT INTO `role_resource` VALUES (391, 26, 71);
+INSERT INTO `role_resource` VALUES (392, 23, 1);
+INSERT INTO `role_resource` VALUES (393, 23, 72);
+INSERT INTO `role_resource` VALUES (394, 23, 20);
+INSERT INTO `role_resource` VALUES (395, 23, 48);
+INSERT INTO `role_resource` VALUES (396, 23, 25);
+INSERT INTO `role_resource` VALUES (397, 23, 53);
+INSERT INTO `role_resource` VALUES (398, 23, 43);
+INSERT INTO `role_resource` VALUES (399, 23, 58);
+INSERT INTO `role_resource` VALUES (400, 23, 30);
+INSERT INTO `role_resource` VALUES (401, 23, 62);
+INSERT INTO `role_resource` VALUES (402, 23, 16);
+INSERT INTO `role_resource` VALUES (403, 23, 66);
 
 -- ----------------------------
 -- Table structure for second_comment
@@ -1228,10 +1233,10 @@ INSERT INTO `user` VALUES (17, '断分', '17', '17', '2', '2', '2', 2, '/admin/a
 INSERT INTO `user` VALUES (18, '是个', '18', '18', '2', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-17 14:51:34', '2021-05-11 14:51:36', '2021-05-03 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (19, '代国防', '19', '19', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-08-21 14:51:34', '2021-04-28 14:51:36', '2021-02-18 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
 INSERT INTO `user` VALUES (20, '三个地方', '20', '20', '123456', '2', '2', 2, '/admin/assets/images/logo.png', '2', '2021-05-18', '2', '2021-07-24 14:51:34', '2021-05-11 14:51:36', '2021-03-12 14:51:39', NULL, 0, 2, 2, NULL, NULL, NULL);
-INSERT INTO `user` VALUES (21, 'ysq', '1@qq.com', NULL, '3f54a72d01674b033327ab34ae5010e0', 'MOTciA8o', 'cAr!U-Bv', 3, '/admin/assets/images/defaultUserPhoto.jpg', '我是YSQ!!!!!', NULL, NULL, '2021-06-04 14:58:23', '2021-06-04 14:58:23', '2022-04-09 23:53:07', '2022-04-15 01:29:39', 2, 44, 2, NULL, NULL, NULL);
-INSERT INTO `user` VALUES (22, 'passerbyYSQ', '', NULL, '', 'ad^R9%UP', '(+&iC)e&', 0, 'https://gitee.com/assets/no_portrait.png', '', '2021-07-10', '广东省/肇庆市/封开县', '2021-06-14 15:54:53', '2021-06-14 15:54:53', '2021-07-12 13:08:31', '2022-02-21 00:29:25', 2, 11, 2, 7369646, NULL, NULL);
+INSERT INTO `user` VALUES (21, 'ysq', '1@qq.com', NULL, '3f54a72d01674b033327ab34ae5010e0', 'MOTciA8o', 'cAr!U-Bv', 3, '/admin/assets/images/defaultUserPhoto.jpg', '我是YSQ!!!!!', NULL, NULL, '2021-06-04 14:58:23', '2021-06-04 14:58:23', '2022-04-16 00:00:25', '2022-04-16 00:00:27', 3, 46, 2, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (22, 'passerbyYSQ', '', NULL, '', 'ad^R9%UP', '(+&iC)e&', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/5151c990b20b470293232448371e4570.jpeg?timestamp=1650097921439', '', '2021-07-10', '广东省/肇庆市/封开县', '2021-06-14 15:54:53', '2021-06-14 15:54:53', '2022-04-16 19:55:02', '2022-04-16 15:57:07', 1, 12, 2, 7369646, NULL, NULL);
 INSERT INTO `user` VALUES (23, '过路人', '', NULL, '', 'emNiOgun', 'l#xv3)Jw', 0, 'http://thirdqq.qlogo.cn/g?b=oidb&k=nMMFjagOIQXoHlwJUfHHsA&s=40&t=1582654446', '过路人。。。', NULL, NULL, '2021-06-17 21:31:40', '2021-06-17 21:31:40', '2021-07-05 15:40:05', '2021-07-05 15:41:42', 2, 4, 0, NULL, '1AF065CF5F865B4146F7F69A1AFCC60D', NULL);
-INSERT INTO `user` VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', '^(=QAv6(', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361', '【我是帅锅】', '2021-07-10', '广东省/广州市/天河区', '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-04-09 23:50:36', '2022-04-15 01:00:35', 2, 65, 1, NULL, NULL, '421602246');
+INSERT INTO `user` VALUES (26, '子华粉丝', '233@qq.com', NULL, '3f6a37cc275a2c5b77f1b06920a6d5c7', 'Wyn5(thK', '^(=QAv6(', 0, 'https://webchat-ysq.oss-cn-shenzhen.aliyuncs.com/images/553fad416da24fc8aff1e41a3755a101.png?timestamp=1625904434361', '【我是帅锅】', '2021-07-10', '广东省/广州市/天河区', '2021-06-22 23:29:59', '2021-06-22 23:29:59', '2022-04-16 19:55:13', '2022-04-16 15:49:14', 3, 67, 1, NULL, NULL, '421602246');
 INSERT INTO `user` VALUES (27, 'ligouzi', '2403298783@qq.com', NULL, '22bb34a6e77baab53ebf873afdfa34bd', 'KB%OApta', 'BNk$@YeY', 3, '/admin/assets/images/defaultUserPhoto.jpg', NULL, NULL, NULL, '2021-07-06 16:15:34', '2021-07-06 16:15:34', '2021-07-10 10:09:47', '2021-07-06 16:34:15', 1, 2, 0, NULL, NULL, '');
 INSERT INTO `user` VALUES (28, 'test123', '123@qq.com', NULL, 'b2793335f43645fd8e00c7d18e14e05f', '123', '', 0, '/admin/assets/images/defaultUserPhoto.jpg', NULL, NULL, NULL, '2022-03-27 17:59:07', '2022-03-27 17:59:13', '2022-03-28 19:00:42', '2022-03-28 19:00:22', 1, 1, 0, NULL, NULL, '');
 
@@ -1247,47 +1252,12 @@ CREATE TABLE `user_role`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`user_id`) USING BTREE,
   INDEX `role_id`(`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 69 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 72 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '管理员表和角色表的关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_role
 -- ----------------------------
-INSERT INTO `user_role` VALUES (25, 3, 2, '2021-05-20 15:55:17');
-INSERT INTO `user_role` VALUES (26, 3, 3, '2021-05-20 15:55:17');
-INSERT INTO `user_role` VALUES (27, 4, 3, '2021-05-20 15:56:35');
-INSERT INTO `user_role` VALUES (28, 5, 2, '2021-05-20 15:56:39');
-INSERT INTO `user_role` VALUES (29, 5, 3, '2021-05-20 15:56:39');
-INSERT INTO `user_role` VALUES (32, 1, 17, '2021-05-20 15:57:35');
-INSERT INTO `user_role` VALUES (33, 4, 2, '2021-05-20 16:57:10');
-INSERT INTO `user_role` VALUES (34, 5, 17, '2021-05-20 16:57:17');
-INSERT INTO `user_role` VALUES (35, 1, 18, '2021-05-20 17:00:07');
-INSERT INTO `user_role` VALUES (36, 1, 19, '2021-05-20 17:00:07');
-INSERT INTO `user_role` VALUES (37, 1, 20, '2021-05-20 17:00:07');
-INSERT INTO `user_role` VALUES (39, 2, 3, '2021-05-20 17:28:18');
-INSERT INTO `user_role` VALUES (40, 2, 17, '2021-05-20 17:28:18');
-INSERT INTO `user_role` VALUES (42, 2, 19, '2021-05-20 17:28:18');
-INSERT INTO `user_role` VALUES (44, 7, 2, '2021-05-20 17:28:40');
-INSERT INTO `user_role` VALUES (45, 7, 3, '2021-05-20 17:28:40');
-INSERT INTO `user_role` VALUES (46, 7, 17, '2021-05-20 17:28:40');
-INSERT INTO `user_role` VALUES (47, 7, 18, '2021-05-20 17:28:40');
-INSERT INTO `user_role` VALUES (48, 7, 19, '2021-05-20 17:28:40');
-INSERT INTO `user_role` VALUES (49, 7, 20, '2021-05-20 17:28:40');
-INSERT INTO `user_role` VALUES (50, 8, 2, '2021-05-20 17:29:35');
-INSERT INTO `user_role` VALUES (52, 11, 2, '2021-05-21 22:11:54');
-INSERT INTO `user_role` VALUES (53, 11, 3, '2021-05-21 22:11:54');
-INSERT INTO `user_role` VALUES (54, 11, 17, '2021-05-21 22:11:54');
-INSERT INTO `user_role` VALUES (55, 11, 18, '2021-05-21 22:11:54');
-INSERT INTO `user_role` VALUES (56, 11, 19, '2021-05-21 22:11:54');
-INSERT INTO `user_role` VALUES (57, 11, 20, '2021-05-21 22:11:54');
-INSERT INTO `user_role` VALUES (58, 10, 2, '2021-05-22 00:30:39');
-INSERT INTO `user_role` VALUES (59, 10, 3, '2021-05-22 00:30:39');
-INSERT INTO `user_role` VALUES (60, 10, 17, '2021-05-22 00:30:39');
-INSERT INTO `user_role` VALUES (62, 19, 3, '2021-05-22 00:31:10');
-INSERT INTO `user_role` VALUES (64, 19, 2, '2021-05-27 23:42:43');
-INSERT INTO `user_role` VALUES (65, 26, 27, '2021-06-30 22:04:40');
-INSERT INTO `user_role` VALUES (66, 22, 23, '2021-07-01 12:16:58');
-INSERT INTO `user_role` VALUES (67, 27, 27, '2021-07-09 17:55:04');
-INSERT INTO `user_role` VALUES (68, 21, 23, '2022-04-15 23:07:45');
+INSERT INTO `user_role` VALUES (69, 26, 27, '2022-04-16 19:52:37');
 
 -- ----------------------------
 -- Table structure for video

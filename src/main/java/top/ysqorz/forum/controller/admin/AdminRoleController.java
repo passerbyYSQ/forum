@@ -13,13 +13,11 @@ import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.PermZTreeNode;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
-import top.ysqorz.forum.po.RoleResource;
 import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.service.RoleService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,31 +71,7 @@ public class AdminRoleController {
     @PostMapping("/assign")
     public ResultModel assignPerms(@NotNull Integer roleId,
            @RequestParam(value = "permIds[]", defaultValue = "") Integer[] permIds) {
-        Role role = roleService.getRoleById(roleId);
-        if (ObjectUtils.isEmpty(role)) {
-            return ResultModel.failed(StatusCode.ROLE_NOT_EXIST); // 角色不存在
-        }
-
-        // 删除原本的所有权限
-        roleService.delPermsByRoleId(roleId);
-
-        if (!ObjectUtils.isEmpty(permIds)) {
-            // 所有的权限id（正确的）
-            List<Resource> permList = authorityService.getAuthorityList(null);
-            Set<Integer> correctPermIds = permList.stream()
-                    .map(Resource::getId).collect(Collectors.toSet());
-
-            // 筛选掉非法的permId，只留下合法的权限id
-            List<RoleResource> roleResourceList = Arrays.stream(permIds)
-                    .filter(correctPermIds::contains) // true表示留下
-                    .map(permId -> new RoleResource(roleId, permId))
-                    .collect(Collectors.toList());
-
-            // 分配权限。往role_resource批量插入记录
-            roleService.assignPerms(roleResourceList);
-        }
-
-        return ResultModel.success();
+        return ResultModel.wrap(roleService.assignPerms(roleId, permIds));
     }
 
     /**

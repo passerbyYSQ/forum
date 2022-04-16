@@ -1,6 +1,7 @@
 package top.ysqorz.forum.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.TreeBuilder;
@@ -73,8 +74,9 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
+    @Transactional
     public int delAuthorityById(Integer[] authorityIds) {
-        List<Resource> resourceList = getAuthorityList(null);
+        List<Resource> resourceList = this.getAuthorityList(null);
         TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0);
         // 筛选出合法id，只有是叶子节点才删。非叶子节点不删除
         List<Integer> ids = Arrays.stream(authorityIds)
@@ -84,11 +86,13 @@ public class AuthorityServiceImpl implements AuthorityService {
         if (ids.isEmpty()) {
             return 0;
         }
-        // 先删除角色和权限相关联的映射
+        // 先删除角色和【叶子】权限相关联的映射，该角色和非叶子权限的映射可不删除，除了影响前端的勾选状态外，其他没有影响
+        // 因为给这个角色再分配时，会将原先该角色和对应权限的映射全部删除，再重新添加，此时会重新纠正
+        // 如果删除角色也会将该角色和对应权限的映射全部删除
         this.delRolePermRelationsByPermIds(ids);
         // 再删除权限
         Example example = new Example(Resource.class);
         example.createCriteria().andIn("id", ids); // 不能传入空的List，前面需要判断
-        return  resourceMapper.deleteByExample(example);
+        return resourceMapper.deleteByExample(example);
     }
 }
