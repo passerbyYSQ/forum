@@ -125,7 +125,7 @@
         <result column="is_high_quality" jdbcType="TINYINT" property="isHighQuality"/>
     </resultMap>
 
-    <select id="selectListByCreatorId" resultType="top.ysqorz.forum.dto.resp.PostDTO" parameterType="Integer">
+    <select id="selectPostListByCreatorId" resultType="top.ysqorz.forum.dto.resp.PostDTO" parameterType="Integer">
         select id, title, create_time, visit_count, comment_count, is_high_quality
         from post where creator_id = ${creatorId}
         order by is_high_quality desc,create_time desc

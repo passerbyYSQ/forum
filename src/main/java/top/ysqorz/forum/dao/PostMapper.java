@@ -21,5 +21,5 @@ public interface PostMapper extends BaseMapper<Post> {
 
     int addCollectCount(Map<String, Object> params);
 
-    List<PostDTO> selectListByCreatorId(Integer creatorId);
+    List<PostDTO> selectPostListByCreatorId(Integer creatorId);
 }

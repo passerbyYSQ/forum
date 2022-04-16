@@ -1,11 +1,8 @@
 package top.ysqorz.forum.service.impl;
 
-import com.github.pagehelper.PageHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -14,7 +11,6 @@ import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.*;
-import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.dto.req.CheckUserDTO;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
 import top.ysqorz.forum.dto.req.RegisterDTO;
@@ -35,9 +31,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -390,38 +384,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<PostDTO> getPostInformation(Integer visitId) {
-        List<PostDTO> postDTOList = postMapper.selectListByCreatorId(visitId);
-        for (PostDTO postDTO : postDTOList) {
-            postDTO.setTimeDifference(timeDifferenceCalculate(postDTO.getCreateTime()));
-        }
-        return postDTOList;
-    }
-
-    @Override
-    public PageData<PostDTO> getIndexPost(Integer visitId, Integer page, Integer count) {
-        PageHelper.startPage(page, count);
-        List<PostDTO> postDTOList = this.getPostInformation(visitId);
-        return new PageData<>(postDTOList);
-    }
-
-    @Override
-    public PageData<FirstCommentDTO> getIndexFirstComment(Integer visitId, Integer page, Integer count) {
-        PageHelper.startPage(page, count);
-        List<FirstCommentDTO> firstCommentDTOList = firstCommentMapper.selectFirstCommentListByUserId(visitId);
-        for (FirstCommentDTO firstCommentDTO : firstCommentDTOList) {
-            Document doc = Jsoup.parse(firstCommentDTO.getContent());
-            String content = doc.text();
-            if (content.length() >= 100) {
-                content = content.substring(0, 100);
-            }
-            firstCommentDTO.setContent(content);
-            firstCommentDTO.setTimeDifference(timeDifferenceCalculate(firstCommentDTO.getCreateTime()));
-        }
-        return new PageData<>(firstCommentDTOList);
-    }
-
-    @Override
     public String login(Integer userId, String loginSalt, HttpServletResponse response) {
         this.updateLastLoginTime(userId);
 
@@ -508,29 +470,5 @@ public class UserServiceImpl implements UserService {
         example.createCriteria().andEqualTo(property, bindNum);
         User user = userMapper.selectOneByExample(example);
         return user != null;
-    }
-
-    //      计算时间差
-    private String timeDifferenceCalculate(LocalDateTime createTime) {
-        Duration duration = Duration.between(createTime, LocalDateTime.now());
-        Long timeDifference = duration.toMinutes();
-        String timeDifferenceS;
-        if (timeDifference < 1) {
-            timeDifferenceS = "刚刚";
-        } else if (timeDifference >= 1 && timeDifference < 60) {
-            timeDifferenceS = timeDifference + "分钟前";
-        } else if (timeDifference >= 60 && timeDifference < 1440) {
-            timeDifference = timeDifference / 60;
-            timeDifferenceS = timeDifference + "小时前";
-        } else if (timeDifference >= 1440 && timeDifference < 43200) {
-            timeDifference = timeDifference / 1440;
-            timeDifferenceS = timeDifference + "天前";
-        } else if (timeDifference >= 43200 && timeDifference < 15768000) {
-            timeDifference = timeDifference / 43200;
-            timeDifferenceS = timeDifference + "月前";
-        } else {
-            timeDifferenceS = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(createTime);
-        }
-        return timeDifferenceS;
     }
 }

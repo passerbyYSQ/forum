@@ -1,11 +1,13 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.dto.req.CheckUserDTO;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
 import top.ysqorz.forum.dto.req.RegisterDTO;
-import top.ysqorz.forum.dto.resp.*;
+import top.ysqorz.forum.dto.resp.BlackInfoDTO;
+import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.SimpleUserDTO;
+import top.ysqorz.forum.dto.resp.UserDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
@@ -181,19 +183,4 @@ public interface UserService {
      * 删除关注
      */
     void deleteFollow(Integer visitId);
-
-    /**
-     * 查找用户下属帖子信息
-     */
-    List<PostDTO> getPostInformation(Integer visitId);
-
-    /**
-     * 用户主页返回的信息
-     */
-    PageData<PostDTO> getIndexPost(Integer visitId,Integer page, Integer count);
-
-    /**
-     * 获取回复信息
-     */
-    PageData<FirstCommentDTO> getIndexFirstComment(Integer visitId, Integer page, Integer count);
 }

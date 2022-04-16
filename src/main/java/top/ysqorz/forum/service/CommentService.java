@@ -59,4 +59,9 @@ public interface CommentService {
      * 获取最近发表评论的用户
      */
     List<RecentCommentUserDTO> getRecentCommentUsers();
+
+    /**
+     * 获取指定用户发布的一级评论，在个人主页中显示
+     */
+    PageData<FirstCommentDTO> getFirstCommentListByCreatorId(Integer userId, Integer page, Integer count);
 }

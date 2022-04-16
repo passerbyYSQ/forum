@@ -35,7 +35,7 @@ public interface RoleService {
     /**
      * 删除角色的所有权限
      */
-    void delRoleAllPerms(Integer roleId);
+    void delPermsByRoleId(Integer roleId);
 
     /**
      * 某个角色拥有的所有权限的id

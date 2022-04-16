@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.CheckUserDTO;
 import top.ysqorz.forum.dto.req.RegisterDTO;
 import top.ysqorz.forum.dto.resp.MessageListDTO;
@@ -101,7 +101,11 @@ public class UserCenterController {
     public ResultModel updatePersonalInfo(User user) {
         user.setId(ShiroUtils.getUserId());
         int cnt = userService.updateUserById(user);
-        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.INFO_UPDATE_FAILED);
+        if (cnt != 1) {
+            return ResultModel.failed(StatusCode.INFO_UPDATE_FAILED);
+        }
+        ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
+        return ResultModel.success();
     }
 
     @PostMapping("/uploadFaceImage")
@@ -113,6 +117,7 @@ public class UserCenterController {
         record.setId(ShiroUtils.getUserId())
                 .setPhoto(uploadResult.getUrl()[0]);
         userService.updateUserById(record);
+        ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
         return ResultModel.success(uploadResult);
     }
 
@@ -196,6 +201,7 @@ public class UserCenterController {
         record.setId(ShiroUtils.getUserId())
             .setPhone(checkUser.getNewPhone());
         userService.updateUserById(record);
+        ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
         return ResultModel.success();
     }
 
@@ -236,6 +242,7 @@ public class UserCenterController {
             record.setEmail(checkUser.getNewEmail());
         }
         userService.updateUserById(record);
+        ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
         return ResultModel.success();
     }
 

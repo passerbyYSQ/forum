@@ -19,9 +19,7 @@ public class LoginUser implements Serializable {
     private String username;
     private String email;
     private String phone;
-    private String password;
     private String loginSalt;
-    private String jwtSalt;
     private Byte gender;
     private String photo;
     private String token;

@@ -1,14 +1,15 @@
 package top.ysqorz.forum.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
-import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.dao.ResourceMapper;
-import top.ysqorz.forum.po.Resource;
+import top.ysqorz.forum.dao.RoleResourceMapper;
 import top.ysqorz.forum.dto.req.QueryAuthorityCondition;
+import top.ysqorz.forum.po.Resource;
+import top.ysqorz.forum.po.RoleResource;
+import top.ysqorz.forum.service.AuthorityService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,9 +21,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AuthorityServiceImpl implements AuthorityService {
-
-    @Autowired
+    @javax.annotation.Resource
     private ResourceMapper resourceMapper;
+    @javax.annotation.Resource
+    private RoleResourceMapper roleResourceMapper;
 
     @Override
     public List<Resource> getAuthorityList(QueryAuthorityCondition conditions) {
@@ -64,6 +66,13 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
+    public void delRolePermRelationsByPermIds(List<Integer> authorityIds) {
+        Example example = new Example(RoleResource.class);
+        example.createCriteria().andIn("resourceId", authorityIds);
+        roleResourceMapper.deleteByExample(example);
+    }
+
+    @Override
     public int delAuthorityById(Integer[] authorityIds) {
         List<Resource> resourceList = getAuthorityList(null);
         TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0);
@@ -75,9 +84,11 @@ public class AuthorityServiceImpl implements AuthorityService {
         if (ids.isEmpty()) {
             return 0;
         }
-
+        // 先删除角色和权限相关联的映射
+        this.delRolePermRelationsByPermIds(ids);
+        // 再删除权限
         Example example = new Example(Resource.class);
         example.createCriteria().andIn("id", ids); // 不能传入空的List，前面需要判断
-        return resourceMapper.deleteByExample(example);
+        return  resourceMapper.deleteByExample(example);
     }
 }

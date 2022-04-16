@@ -112,7 +112,7 @@
         <span class="layui-bg-red layui-badge">精</span>
         {{# } }}
         <a href="/post/detail/{{d.id}}" class="jie-title">{{d.title}}</a>
-        <i>{{d.timeDifference}}</i>
+        <i>{{d.createTime}}</i>
         <em class="layui-hide-xs">{{d.visitCount}}访问/ {{d.commentCount}}评论</em>
     </li>
 </script>
@@ -121,7 +121,7 @@
 <script type="text/html" id="demoComment">
     <li>
         <p>
-            <span>{{d.timeDifference}}</span>
+            <span>{{d.createTime}}</span>
             在<a href="/post/detail/{{d.id}}" target="_blank">{{d.postTitle}}</a>中评论：
         </p>
         <div class="home-dacontent ellipsis">
@@ -165,45 +165,45 @@
         var insTb = dataGrid.render({
             elem: '#detail',
             templet: '#demoDetail',
-            url: '/user/home/' + id + '/detail',
+            url: '/post/list/' + id,
             response: {
                 statusCode: 2000 //规定成功的状态码，默认：0
             },
             parseData: function (res) {
                 console.log(res);
-                var list = res.data.list;
-                list.map(item => {
+                let list = res.data.list.map(item => {
+                    item.createTime = app.formatDateTime(item.createTime);
                     return item;
                 });
                 return {
                     "code": res.code, //解析接口状态
                     "msg": res.message, //解析提示文本
                     "count": res.data.total, //解析数据长度
-                    "data": res.data.list //解析数据列表
+                    "data": list //解析数据列表
                 };
             },
-            page: true,
+            page: {limit: 5, limits: [5, 10, 20, 30, 40]}
         });
 
         /*评论*/
         var commentTb = dataGrid.render({
             elem: '#comment',
             templet: '#demoComment',
-            url: '/user/home/' + id + '/comment',
+            url: '/comment/list/' + id,
             response: {
                 statusCode: 2000 //规定成功的状态码，默认：0
             },
             parseData: function (res) {
                 console.log(res);
-                var list = res.data.list;
-                list.map(item => {
+                let list = res.data.list.map(item => {
+                    item.createTime = app.formatDateTime(item.createTime);
                     return item;
                 });
                 return {
                     "code": res.code, //解析接口状态
                     "msg": res.message, //解析提示文本
                     "count": res.data.total, //解析数据长度
-                    "data": res.data.list //解析数据列表
+                    "data": list //解析数据列表
                 };
             },
             page: {limit: 5, limits: [5, 10, 20, 30, 40]}

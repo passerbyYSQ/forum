@@ -1,7 +1,7 @@
 package top.ysqorz.forum.dto.resp;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.po.Post;
@@ -16,10 +16,9 @@ import java.util.List;
  * @author passerbyYSQ
  * @create 2021-06-07 10:54
  */
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class PostDTO {
-
     private Integer id; // 帖子id
     private String title; // 标题
     private String content; // 内容
@@ -34,7 +33,6 @@ public class PostDTO {
     private Byte isHighQuality; // 是否精品帖
     private Byte isLocked; // 是否锁定
     private Integer topWeight; // 置顶权重
-    private String timeDifference; //当前时间与创建时间的时间差
 
     private List<Label> labelList;  // 标签
     private List<String>  imagesList; //图片列表
@@ -44,9 +42,6 @@ public class PostDTO {
     // 因为：PostMapper.xml resultMap 没有做映射
     private Boolean isLike;
     private Boolean isHot;
-
-    public PostDTO() {
-    }
 
     public PostDTO(Post post, SimpleUserDTO creator, Topic topic, List<Label> labelList) {
         BeanUtils.copyProperties(post, this);

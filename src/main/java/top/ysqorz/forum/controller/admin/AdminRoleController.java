@@ -79,7 +79,7 @@ public class AdminRoleController {
         }
 
         // 删除原本的所有权限
-        roleService.delRoleAllPerms(roleId);
+        roleService.delPermsByRoleId(roleId);
 
         if (!ObjectUtils.isEmpty(permIds)) {
             // 所有的权限id（正确的）

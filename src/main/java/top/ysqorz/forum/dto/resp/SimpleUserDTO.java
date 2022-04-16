@@ -1,7 +1,7 @@
 package top.ysqorz.forum.dto.resp;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import top.ysqorz.forum.po.User;
 
@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
  * @author passerbyYSQ
  * @create 2021-06-18 23:46
  */
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class SimpleUserDTO {
     private Integer id;
     private String username;
@@ -31,9 +31,6 @@ public class SimpleUserDTO {
     private Integer blackId; // 当前是否处于封禁  ！！！
 
     private Integer newMeg;//新消息 ！！！
-
-    public SimpleUserDTO() {
-    }
 
     public SimpleUserDTO(User user) {
         BeanUtils.copyProperties(user, this);

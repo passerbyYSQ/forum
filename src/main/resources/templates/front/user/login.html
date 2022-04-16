@@ -252,14 +252,11 @@
                 // 业务成功（业务状态码）的回调
                 // layui.cache.user = res.data;
                 console.log(res);
-                var referer = res.data.referer;
-                delete res.data.referer;
-                localStorage.setItem("user", JSON.stringify(res.data));
+                let referer = res.data;
                 app.successNotice("登录成功");
                 setTimeout(function () {
                     window.location = referer;
                 }, 1000);
-                //location.reload();
             }, "post", function (res) {
                 // 业务失败的回调
                 // 模拟点击，刷新验证码

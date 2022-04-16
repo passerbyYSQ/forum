@@ -3,10 +3,12 @@ package top.ysqorz.forum.service.impl;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.dao.LikeMapper;
+import top.ysqorz.forum.dto.resp.PostDetailDTO;
 import top.ysqorz.forum.po.Like;
 import top.ysqorz.forum.service.LikeService;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author passerbyYSQ
@@ -14,13 +16,16 @@ import javax.annotation.Resource;
  */
 @Service
 public class LikeServiceImpl implements LikeService {
-
     @Resource
     private LikeMapper likeMapper;
-
     // 循环依赖
-//    @Resource
-//    private PostService postService;
+    //    @Resource
+    //    private PostService postService;
+
+    @Override
+    public List<PostDetailDTO.Liker> getLikerListByPostId(Integer postId, Integer count) {
+        return likeMapper.selectLikerListByPostId(postId, count);
+    }
 
     @Override
     public Like getLikeByUserIdAndPostId(Integer userId, Integer postId) {

@@ -45,7 +45,7 @@
   <select id="getHotTopic" resultType="top.ysqorz.forum.po.Topic">
     select t.*
     from topic t
-    order by sort_weight desc
+    order by sort_weight desc, create_time desc
     limit 0,5
   </select>
 

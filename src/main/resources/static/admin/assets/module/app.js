@@ -199,8 +199,16 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
 
         // 获取token
         getToken: function () {
-            var user = localStorage.getItem('user') || {};
+            var user = app.getLoginUser() || {};
             return app.getCookie('token') || user.token; // 优先从cookie中获取，因为cookie设置了过期时间，而localStorage却没有
+        },
+
+        getLoginUser: function () {
+            return JSON.parse(localStorage.getItem('user'));
+        },
+
+        saveLoginUser: function (user) {
+            localStorage.setItem('user', JSON.stringify(user));
         },
 
         getCookie: function (name) {
@@ -216,7 +224,7 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                         }, showLoading = true) { // 业务失败
             showLoading && app.showLoading();
 
-            var user = localStorage.getItem("user");
+            var user = app.getLoginUser();
             //var token;
             // if (app.isNotNull(user)) {
             //     token = user.token;
@@ -247,7 +255,7 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                         var header = xhr.getAllResponseHeaders();
                         if (app.isNotBlank(header.token)) { // 如果签发了新的token
                             user.token = header.token;
-                            localStorage.setItem("user", user);
+                            app.saveLoginUser(user);
                         }
                         successCallback && successCallback(res); // 业务成功
                     }

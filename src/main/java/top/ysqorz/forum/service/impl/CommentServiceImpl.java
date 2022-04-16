@@ -1,6 +1,8 @@
 package top.ysqorz.forum.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -10,11 +12,11 @@ import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
 import top.ysqorz.forum.dao.SecondCommentMapper;
-import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.resp.FirstCommentDTO;
+import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
 import top.ysqorz.forum.dto.resp.SecondCommentDTO;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
-import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
 import top.ysqorz.forum.po.CommentNotification;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
@@ -48,6 +50,21 @@ public class CommentServiceImpl implements CommentService {
     private RewardPointsAction rewardPointsAction;
     @Resource
     private PermManager permManager;
+
+    @Override
+    public PageData<FirstCommentDTO> getFirstCommentListByCreatorId(Integer userId, Integer page, Integer count) {
+        PageHelper.startPage(page, count);
+        List<FirstCommentDTO> firstCommentDTOList = firstCommentMapper.selectFirstCommentListByUserId(userId);
+        for (FirstCommentDTO firstCommentDTO : firstCommentDTOList) {
+            Document doc = Jsoup.parse(firstCommentDTO.getContent());
+            String content = doc.text();
+            if (content.length() >= 100) {
+                content = content.substring(0, 100);
+            }
+            firstCommentDTO.setContent(content);
+        }
+        return new PageData<>(firstCommentDTOList);
+    }
 
     @Override
     public List<RecentCommentUserDTO> getRecentCommentUsers() {

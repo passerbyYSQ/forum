@@ -10,13 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.*;
 import top.ysqorz.forum.dto.req.LoginDTO;
 import top.ysqorz.forum.dto.req.RegisterDTO;
-import top.ysqorz.forum.dto.resp.FirstCommentDTO;
-import top.ysqorz.forum.dto.resp.PostDTO;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
-import top.ysqorz.forum.dto.resp.UserLoginInfo;
 import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
@@ -126,7 +122,7 @@ public class UserController {
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResultModel<UserLoginInfo> login(@Validated LoginDTO dto, @RequestHeader(defaultValue = "") String referer,
+    public ResultModel<String> login(@Validated LoginDTO dto, @RequestHeader(defaultValue = "") String referer,
                                             HttpServletResponse response) {
         String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
@@ -160,7 +156,7 @@ public class UserController {
 
         // 将token放到请求头中，方便前端判断有无token刷新
         // 将常显的数据返回给前端缓存
-        return ResultModel.success(new UserLoginInfo(token, user, originReferer));
+        return ResultModel.success(originReferer);
     }
 
     /**
@@ -288,36 +284,5 @@ public class UserController {
             userService.deleteFollow(visitId);
         }
         return ResultModel.success();
-    }
-
-    /**
-     * 帖子分页
-     */
-    @ResponseBody
-    @GetMapping("/home/{visitId}/detail")
-    public ResultModel<PageData<PostDTO>> getPostList(@RequestParam(defaultValue = "10") Integer limit,
-                                                      @RequestParam(defaultValue = "1") Integer page,
-                                                      @PathVariable Integer visitId){
-        if(limit <= 0){
-            limit = 10;
-        }
-        PageData<PostDTO> indexPost = userService.getIndexPost(visitId, page, limit);
-        return ResultModel.success(indexPost);
-    }
-
-    /**
-     * 帖子分页
-     */
-    @ResponseBody
-    @GetMapping("/home/{visitId}/comment")
-    public ResultModel<PageData<FirstCommentDTO>> getFirstCommentList(@RequestParam(defaultValue = "3") Integer limit,
-                                                                      @RequestParam(defaultValue = "1") Integer page,
-                                                                      @PathVariable Integer visitId){
-        if(limit <= 0){
-            limit = 3;
-        }
-        System.out.println("limit=" + limit);
-        PageData<FirstCommentDTO> indexFirstComment = userService.getIndexFirstComment(visitId, page, limit);
-        return ResultModel.success(indexFirstComment);
     }
 }

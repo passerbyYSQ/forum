@@ -15,6 +15,21 @@
     <!--          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css">-->
 
     <style type="text/css">
+        /* 最新点赞用户 */
+        .ew-head-list {
+            margin-bottom: 20px;
+        }
+        .ew-head-list .ew-head-list-item {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+            margin-left: -10px;
+        }
+        .ew-head-list .ew-head-list-item:first-child {
+            margin-left: 0;
+        }
+
         .detail-about-reply {
             padding-right: 8px !important;
         }
@@ -270,6 +285,12 @@
                 </div>
 
                 <div class="post-footer">
+                    <div class="ew-head-list" id="likerList">
+                        <img th:each="liker : ${post.likerList}" class="ew-head-list-item"
+                             th:attr="lay-tips=${liker.username},data-uid=${liker.userId}"
+                             th:src="${liker.photo}" lay-offset="0,-5px"
+                             src="https://gw.alipayobjects.com/zos/rmsportal/ZiESqWwCXBRQoaPONSJe.png"/>
+                    </div>
                     <span th:if="${post.likeId == null}" title="点赞"
                           class="like layui-icon layui-icon-heart"><i th:text="${post.detail.likeCount}"></i></span>
                     <span th:if="${post.likeId}" title="取消点赞"
@@ -931,16 +952,21 @@
             }, function (res) {
                 var iElem = $(_this).children('i');
                 var num = parseInt(iElem.text());
+                let { userId, username, photo } = res.data;
                 if (isLike) { // 点赞成功
                     $(_this).removeClass("layui-icon-heart");
                     $(_this).addClass("layui-icon-heart-fill");
                     $(_this).css({"color": "#f47046"});
                     iElem.text(num + 1);
+                    let img = `<img class="ew-head-list-item" data-uid="${userId}" src="${photo}"
+                                lay-tips="${username}" lay-offset="0,-5px" />`;
+                    $('div.ew-head-list').prepend(img);
                 } else {
                     $(_this).removeClass("layui-icon-heart-fill");
                     $(_this).addClass("layui-icon-heart");
                     $(_this).removeAttr("style");
                     iElem.text(num - 1);
+                    $(`div.ew-head-list > img[data-uid=${userId}]`).remove();
                 }
             });
         });

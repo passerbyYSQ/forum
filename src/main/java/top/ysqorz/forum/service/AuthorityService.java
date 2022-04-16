@@ -41,4 +41,8 @@ public interface AuthorityService {
      */
     int delAuthorityById(Integer[] authorityIds);
 
+    /**
+     * 根据权限id删除角色和权限的关联
+     */
+    void delRolePermRelationsByPermIds(List<Integer> authorityIds);
 }

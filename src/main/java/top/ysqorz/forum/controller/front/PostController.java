@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.resp.PostDetailDTO;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.PublishPostDTO;
+import top.ysqorz.forum.dto.resp.PostDTO;
+import top.ysqorz.forum.dto.resp.PostDetailDTO;
 import top.ysqorz.forum.dto.resp.UpdatePostDTO;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
+import top.ysqorz.forum.shiro.LoginUser;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
@@ -25,6 +28,7 @@ import java.util.List;
 
 /**
  * 帖子相关的接口
+ *
  * @author passerbyYSQ
  * @create 2021-05-23 23:42
  */
@@ -32,7 +36,6 @@ import java.util.List;
 @RequestMapping("/post")
 @Validated // 与shiro权限注解冲突，导致页面转发404
 public class PostController {
-
     @Resource
     private TopicService topicService;
     @Resource
@@ -164,7 +167,7 @@ public class PostController {
         }
         // 不能修改其他人的帖子
         if (!(post.getCreatorId().equals(ShiroUtils.getUserId())
-            || ShiroUtils.hasPerm("post:update"))) {
+                || ShiroUtils.hasPerm("post:update"))) {
             throw new AuthorizationException();
         }
 
@@ -185,8 +188,7 @@ public class PostController {
 
     @PostMapping("/like")
     @ResponseBody
-    public ResultModel likePost(@RequestParam Integer postId,
-                                @RequestParam Boolean isLike) {
+    public ResultModel<PostDetailDTO.Liker> likePost(@RequestParam Integer postId, @RequestParam Boolean isLike) {
         Integer myId = ShiroUtils.getUserId();
         Like like = likeService.getLikeByUserIdAndPostId(myId, postId);
         // like != null && isLike = true ：不要重复点赞
@@ -199,13 +201,14 @@ public class PostController {
         } else {
             postService.cancelLike(like.getId(), postId); // likeId是可靠的
         }
-        return ResultModel.success();
+        LoginUser self = ShiroUtils.getLoginUser();
+        PostDetailDTO.Liker liker = new PostDetailDTO.Liker(self);
+        return ResultModel.success(liker);
     }
 
     @PostMapping("/collect")
     @ResponseBody
-    public ResultModel collectPost(@RequestParam Integer postId,
-                                   @RequestParam Boolean isCollect) {
+    public ResultModel collectPost(@RequestParam Integer postId, @RequestParam Boolean isCollect) {
         Integer myId = ShiroUtils.getUserId();
         Collect collect = collectService.getCollectByUserIdAndPostId(myId, postId);
         if (isCollect.equals(!ObjectUtils.isEmpty(collect))) {
@@ -226,7 +229,21 @@ public class PostController {
     @ResponseBody
     public ResultModel<List<Label>> getLabelsLikeName(String name,  // 可以不传，在service层判断了
                                                       @RequestParam(defaultValue = "1") Integer maxCount) { // 可以不传，有默认值
-
         return ResultModel.success(labelService.getLabelsLikeName(name, maxCount));
+    }
+
+    /**
+     * 帖子分页
+     */
+    @ResponseBody
+    @GetMapping("/list/{userId}")
+    public ResultModel<PageData<PostDTO>> getPostList(@RequestParam(defaultValue = "10") Integer limit,
+                                                      @RequestParam(defaultValue = "1") Integer page,
+                                                      @PathVariable Integer userId) {
+        if (limit <= 0) {
+            limit = 10;
+        }
+        PageData<PostDTO> postList = postService.getPostListByCreatorId(userId, page, limit);
+        return ResultModel.success(postList);
     }
 }

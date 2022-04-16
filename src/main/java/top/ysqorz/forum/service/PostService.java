@@ -81,4 +81,8 @@ public interface PostService {
      */
     PageData<PostDTO> getIndexPost(Integer page, Integer count, QueryPostCondition conditions);
 
+    /**
+     * 查询指定用户发布的帖子，在个人主页中显示
+     */
+    PageData<PostDTO> getPostListByCreatorId(Integer userId, Integer page, Integer count);
 }

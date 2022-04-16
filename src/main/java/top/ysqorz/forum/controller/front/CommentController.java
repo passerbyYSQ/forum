@@ -131,7 +131,7 @@ public class CommentController {
     @GetMapping("/first/frontCount")
     public ResultModel<Integer> getFrontFirstCommentCount(@RequestParam Integer firstCommentId) {
         int count = commentService.getFrontFirstCommentCount(firstCommentId);
-        return  count != -1 ? ResultModel.success(count) :
+        return count != -1 ? ResultModel.success(count) :
                 ResultModel.failed(StatusCode.FIRST_COMMENT_NOT_EXIST);
     }
 
@@ -144,11 +144,22 @@ public class CommentController {
         Map<String, Integer> data = new HashMap<>();
         data.put("firstCount", countArr[0]);
         data.put("secondCount", countArr[1]);
-        return  ResultModel.success(data);
+        return ResultModel.success(data);
     }
 
     @PostMapping("/delete")
     public ResultModel deleteComment(@NotNull Integer commentId, @NotBlank String type) {
         return ResultModel.wrap(commentService.deleteCommentById(commentId, type));
+    }
+
+    @GetMapping("/list/{userId}")
+    public ResultModel<PageData<FirstCommentDTO>> getFirstCommentList(@RequestParam(defaultValue = "3") Integer limit,
+                                                                      @RequestParam(defaultValue = "1") Integer page,
+                                                                      @PathVariable Integer userId) {
+        if (limit <= 0) {
+            limit = 10;
+        }
+        PageData<FirstCommentDTO> comments = commentService.getFirstCommentListByCreatorId(userId, page, limit);
+        return ResultModel.success(comments);
     }
 }

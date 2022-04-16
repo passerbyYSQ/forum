@@ -27,6 +27,14 @@ public class ShiroUtils {
     }
 
     /**
+     * 清除当前登录用户的认证信息
+     */
+    public static void clearCurrentUserAuthenticationCache() {
+        JwtRealm jwtRealm = SpringUtils.getBean(JwtRealm.class);
+        jwtRealm.getAuthenticationCache().remove(SecurityUtils.getSubject().getPrincipals());
+    }
+
+    /**
      * 如果Subject认证成功，此处必定可以取地userId
      */
     public static Integer getUserId() {

@@ -213,20 +213,18 @@ public class PostServiceImpl implements PostService {
             }
         }
 
+        // 点赞列表
+        List<PostDetailDTO.Liker> likerList = likeService.getLikerListByPostId(post.getId(), 16);
+        postDetailDTO.setLikerList(likerList);
+        // 权限
         boolean isCreator = creator.getId().equals(ShiroUtils.getUserId()); // 不登陆也不会报错
         postDetailDTO.setIsShowEdit(ShiroUtils.hasPerm("post:update") || isCreator); // 不登陆也会返回false
         postDetailDTO.setIsShowDelete(ShiroUtils.hasPerm("post:delete") || isCreator);
         postDetailDTO.setIsShowTop(ShiroUtils.hasPerm("post:top"));
         postDetailDTO.setIsShowQuality(ShiroUtils.hasPerm("post:quality"));
-
+        // 是否热门
         Set<Integer> top5 = redisService.hostPostDayRankTop(5);
         postDetailDTO.setIsHot(top5.contains(post.getId()));
-
-        // 评论列表由前端LayUI请求接口单独拉取
-//        PageData<FirstCommentDTO> commentList = commentService.getCommentListByPostId(
-//                post.getId(), page, count, isTimeAsc);
-//        postDetailDTO.setComments(commentList);
-
         return postDetailDTO;
     }
 
@@ -287,6 +285,13 @@ public class PostServiceImpl implements PostService {
         params.put("postId", postId);
         params.put("dif", dif);
         return postMapper.addLikeCount(params);
+    }
+
+    @Override
+    public PageData<PostDTO> getPostListByCreatorId(Integer userId, Integer page, Integer count) {
+        PageHelper.startPage(page, count);
+        List<PostDTO> postDTOList = postMapper.selectPostListByCreatorId(userId);
+        return new PageData<>(postDTOList);
     }
 
     @Override

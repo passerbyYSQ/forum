@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.service.RoleService;
 import top.ysqorz.forum.common.ParameterErrorException;
@@ -37,11 +38,11 @@ public class RoleServiceImpl implements RoleService {
         for (Integer roleId : roleIds) {
             // 注意删除的先后顺序
             // 先删除role_resource表中该角色相关的记录
-            this.delRoleAllPerms(roleId);
+            this.delPermsByRoleId(roleId);
             // 再删除角色
             int cnt = roleMapper.deleteByPrimaryKey(roleId);
             if (cnt != 1) { // 只要有一个角色不存在，抛出异常回滚所有操作
-                throw new ParameterErrorException("角色不存在");
+                throw new ParameterErrorException(StatusCode.ROLE_NOT_EXIST.getMsg());
             }
         }
     }
@@ -64,7 +65,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void delRoleAllPerms(Integer roleId) {
+    public void delPermsByRoleId(Integer roleId) {
         Example example = new Example(RoleResource.class);
         example.createCriteria().andEqualTo("roleId", roleId);
         roleResourceMapper.deleteByExample(example);
