@@ -10,10 +10,10 @@
         <result column="group_name" jdbcType="VARCHAR" property="groupName"/>
     </resultMap>
 
-    <resultMap id="chatFriendGroup" type="top.ysqorz.forum.dto.resp.ChatListDTO$ChatFriendGroupDTO">
+    <resultMap id="chatFriendGroup" type="top.ysqorz.forum.dto.resp.chat.ChatListDTO$ChatFriendGroupDTO">
         <id column="groupId" jdbcType="INTEGER" property="id"/>
         <result column="group_name" jdbcType="VARCHAR" property="groupname"/>
-        <collection property="list" ofType="top.ysqorz.forum.dto.resp.ChatListDTO$ChatFriendDTO">
+        <collection property="list" ofType="top.ysqorz.forum.dto.resp.chat.ChatListDTO$ChatFriendDTO">
             <id column="friendId" jdbcType="INTEGER" property="id"/>
             <result column="username" jdbcType="VARCHAR" property="username"/>
             <result column="alias" jdbcType="VARCHAR" property="alias"/>

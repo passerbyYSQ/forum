@@ -1,7 +1,7 @@
 package top.ysqorz.forum.dao;
 
 import top.ysqorz.forum.common.BaseMapper;
-import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO;
 import top.ysqorz.forum.po.ChatFriendApply;
 
 import java.util.List;

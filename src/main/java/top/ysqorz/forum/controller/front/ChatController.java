@@ -8,9 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.UploadResult;
-import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
-import top.ysqorz.forum.dto.resp.ChatListDTO;
-import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatListDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.chat.NotSignedChatFriendMsg;
 import top.ysqorz.forum.po.ChatFriendGroup;
 import top.ysqorz.forum.po.ChatFriendMsg;
 import top.ysqorz.forum.service.ChatService;
@@ -202,7 +203,7 @@ public class ChatController {
      */
     @ResponseBody
     @GetMapping("/friend/msg/not_signed")
-    public ResultModel<List<ChatFriendMsg>> getNotSignedChatFriendMsg() {
+    public ResultModel<List<NotSignedChatFriendMsg>> getNotSignedChatFriendMsg() {
         return ResultModel.success(chatService.getNotSignedChatFriendMsg());
     }
 

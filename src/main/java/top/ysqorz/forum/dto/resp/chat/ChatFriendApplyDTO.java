@@ -1,4 +1,4 @@
-package top.ysqorz.forum.dto.resp;
+package top.ysqorz.forum.dto.resp.chat;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

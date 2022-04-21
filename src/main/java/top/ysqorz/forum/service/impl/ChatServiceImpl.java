@@ -14,10 +14,7 @@ import top.ysqorz.forum.dao.ChatFriendGroupMapper;
 import top.ysqorz.forum.dao.ChatFriendMapper;
 import top.ysqorz.forum.dao.ChatFriendMsgMapper;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
-import top.ysqorz.forum.dto.resp.ChatListDTO;
-import top.ysqorz.forum.dto.resp.ChatNotificationDTO;
-import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.chat.*;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
@@ -490,14 +487,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatFriendMsg> getNotSignedChatFriendMsg() {
-        Example example = new Example(ChatFriendMsg.class);
-        example.selectProperties("id", "senderId", "content", "createTime")
-                .orderBy("createTime").asc();
-        example.createCriteria()
-                .andEqualTo("receiverId", ShiroUtils.getUserId())
-                .andEqualTo("signFlag", 0);
-        return chatFriendMsgMapper.selectByExample(example);
+    public List<NotSignedChatFriendMsg> getNotSignedChatFriendMsg() {
+        return chatFriendMsgMapper.selectNotSignedChatFriendMsg(ShiroUtils.getUserId());
     }
 
     @Override

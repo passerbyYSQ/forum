@@ -149,6 +149,10 @@
         });
         //监听发送消息
         layim.on('sendMessage', function (data) {
+            if (!socket.channelId) {
+                app.errorNotice('长连接已断开，请重新刷新页面');
+                return;
+            }
             let { mine: self, to } = data;
             if (to.type === 'friend') {
                 app.ajax('/chat/friend/msg/send', {
@@ -226,12 +230,13 @@
                 }
                 // 界面提醒
                 for (let msg of res.data) {
-                    // TODO 如果在签收之前，对方已经把我删除了，那么friend为空
-                    let { friend, groupId } = findFriendFromCache(msg.senderId);
+                    // 如果在签收之前，对方已经把我删除了，那么friend为空。故不用这种方式获取Friend信息，而由接口返回
+                    // let { friend, groupId } = findFriendFromCache(msg.sender.id);
+                    let sender = msg.sender;
                     layim.getMessage({
-                        username: friend.username,
-                        avatar: friend.avatar,
-                        id: friend.id,
+                        username: sender.username,
+                        avatar: sender.avatar,
+                        id: sender.id,
                         type: 'friend',
                         content: msg.content,
                         timestamp: msg.createTime

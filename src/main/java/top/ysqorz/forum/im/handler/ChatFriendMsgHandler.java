@@ -15,7 +15,7 @@ import java.util.Set;
  * @author passerbyYSQ
  * @create 2022-04-03 16:52
  */
-public class ChatFriendMsgHandler extends NonFunctionalMsgHandler<ChatFriendMsg> implements OnOffLineAware {
+public class ChatFriendMsgHandler extends NonFunctionalMsgHandler<ChatFriendMsg> {
 
     public ChatFriendMsgHandler() {
         super(MsgType.CHAT_FRIEND, ChannelType.CHAT);

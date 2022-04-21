@@ -1,6 +1,6 @@
 package top.ysqorz.forum.im.handler;
 
-import top.ysqorz.forum.dto.resp.ChatNotificationDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatNotificationDTO;
 import top.ysqorz.forum.im.entity.*;
 import top.ysqorz.forum.service.ChatService;
 import top.ysqorz.forum.service.RedisService;

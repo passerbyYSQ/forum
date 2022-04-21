@@ -112,7 +112,7 @@
         from user where id = ${visitId}
     </select>
 
-    <select id="selectUserCardsLikeUsername" resultType="top.ysqorz.forum.dto.resp.ChatUserCardDTO">
+    <select id="selectUserCardsLikeUsername" resultType="top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO">
         <bind name="param_username" value="'%' + username + '%'" />
         select u.id as userId, photo, username, cf.alias, gender, description as `desc`,
                if(cf.id, true, false) as isChatFriend

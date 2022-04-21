@@ -3,9 +3,10 @@ package top.ysqorz.forum.service;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.resp.ChatFriendApplyDTO;
-import top.ysqorz.forum.dto.resp.ChatListDTO;
-import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatListDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.chat.NotSignedChatFriendMsg;
 import top.ysqorz.forum.po.ChatFriend;
 import top.ysqorz.forum.po.ChatFriendApply;
 import top.ysqorz.forum.po.ChatFriendGroup;
@@ -157,7 +158,7 @@ public interface ChatService {
     /**
      * 获取没有签收的好友聊天消息
      */
-    List<ChatFriendMsg> getNotSignedChatFriendMsg();
+    List<NotSignedChatFriendMsg> getNotSignedChatFriendMsg();
 
     /**
      * 获取跟某个好友的聊天历史记录

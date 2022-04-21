@@ -56,6 +56,9 @@ layui.define(['app'], function (exports) {
             }
         }
 
+        /**
+         * @deprecated
+         */
         sendByHttp(msg, failedCallback) { // msgObj
             app.ajax('/im/send', {
                 msgJson: JSON.stringify(msg),
@@ -63,6 +66,9 @@ layui.define(['app'], function (exports) {
             }, null, 'POST', failedCallback, false);
         }
 
+        /**
+         * @deprecated
+         */
         send(msg) { // MsgObj
             if (!this.channelId) { // 未绑定不发送
                 return;
@@ -70,6 +76,9 @@ layui.define(['app'], function (exports) {
             this._trySend(msg, 1);
         }
 
+        /**
+         * @deprecated
+         */
         _trySend(msg, cnt) {
             if (cnt > 3) {
                 console.log('重试3次发送消息失败，丢弃消息', msg);

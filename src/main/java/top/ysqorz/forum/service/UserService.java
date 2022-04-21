@@ -5,7 +5,7 @@ import top.ysqorz.forum.dto.req.CheckUserDTO;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
 import top.ysqorz.forum.dto.req.RegisterDTO;
 import top.ysqorz.forum.dto.resp.BlackInfoDTO;
-import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
 import top.ysqorz.forum.dto.resp.UserDTO;
 import top.ysqorz.forum.po.Blacklist;

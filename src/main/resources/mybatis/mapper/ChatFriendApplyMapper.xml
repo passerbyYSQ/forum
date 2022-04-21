@@ -18,7 +18,7 @@
     发送者是我的，说明肯定是已经被处理过的（拒绝或者同意）；接收者是我的，肯定是尚未处理的（需要我处理的），此时status肯定为null。
     order by status asc：是让后者排列在前面
      -->
-    <select id="selectFriendApplyNotifications" resultType="top.ysqorz.forum.dto.resp.ChatFriendApplyDTO"
+    <select id="selectFriendApplyNotifications" resultType="top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO"
             parameterType="Integer">
       select cfa.id as applyId, sender_id, receiver_id, username, photo,
              description as sign, content, status, apply_time as modifyTime

@@ -2,7 +2,7 @@ package top.ysqorz.forum.dao;
 
 import org.apache.ibatis.annotations.Param;
 import top.ysqorz.forum.common.BaseMapper;
-import top.ysqorz.forum.dto.resp.ChatListDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatListDTO;
 import top.ysqorz.forum.po.ChatFriend;
 
 import java.util.List;

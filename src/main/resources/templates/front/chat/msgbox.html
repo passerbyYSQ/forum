@@ -124,6 +124,7 @@
                 count: 8
             }, function (res) {
                 let { total, count, list } = res.data;
+                let applyIds = [];
                 // 记录用户信息
                 for (let item of list) {
                     users[item.applyId] = {
@@ -131,9 +132,13 @@
                         username: item.username,
                         photo: item.photo,
                         sign: item.sign
-                    }
+                    };
+                    applyIds.push(item.applyId);
                 }
-                // TODO 签收消息
+                // 签收消息
+                if (applyIds.length > 0) {
+                    app.ajax('/chat/apply/sign', { friendApplyIds: applyIds.join() }, null, 'POST', null, false);
+                }
                 callback && callback(list, Math.ceil(total / count));
             }, 'GET');
         };

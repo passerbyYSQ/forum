@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.ysqorz.forum.dao.ChatFriendMsgMapper">
-  <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.ChatFriendMsg">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
-    <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="sign_flag" jdbcType="TINYINT" property="signFlag" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="top.ysqorz.forum.po.ChatFriendMsg">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="sender_id" jdbcType="INTEGER" property="senderId"/>
+        <result column="receiver_id" jdbcType="INTEGER" property="receiverId"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="sign_flag" jdbcType="TINYINT" property="signFlag"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <select id="selectNotSignedChatFriendMsg" resultType="top.ysqorz.forum.dto.resp.chat.NotSignedChatFriendMsg">
+        select cfm.id,
+               content,
+               create_time,
+               u.id     as "sender.id",
+               username as "sender.username",
+               photo    as "sender.avatar"
+        from chat_friend_msg as cfm
+                 left join user as u on cfm.sender_id = u.id
+        where receiver_id = #{myId}
+          and sign_flag = 0
+        order by create_time
+    </select>
 </mapper>

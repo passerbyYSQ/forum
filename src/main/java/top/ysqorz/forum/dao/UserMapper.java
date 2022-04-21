@@ -4,7 +4,7 @@ import top.ysqorz.forum.common.BaseMapper;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
 import top.ysqorz.forum.dto.resp.UserDTO;
-import top.ysqorz.forum.dto.resp.ChatUserCardDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO;
 import top.ysqorz.forum.po.User;
 
 import java.util.List;

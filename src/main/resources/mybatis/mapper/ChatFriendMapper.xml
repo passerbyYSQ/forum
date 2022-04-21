@@ -24,7 +24,7 @@
         </foreach>
     </update>
 
-    <select id="selectChatFriendsWithoutGroup" resultType="top.ysqorz.forum.dto.resp.ChatListDTO$ChatFriendDTO">
+    <select id="selectChatFriendsWithoutGroup" resultType="top.ysqorz.forum.dto.resp.chat.ChatListDTO$ChatFriendDTO">
         select u.id, username, alias, photo as avatar, description as sign
         from chat_friend as cf
         left join user as u on cf.friend_id = u.id
