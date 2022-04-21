@@ -34,7 +34,6 @@
 		<aliyun-oss.version>3.11.2</aliyun-oss.version>
 		<thumbnailator.version>0.4.8</thumbnailator.version>
 		<shiro.version>1.7.0</shiro.version>
-		<thymeleaf-shiro.version>2.0.0</thymeleaf-shiro.version>
 		<okhttp.version>3.14.2</okhttp.version>
 		<jsoup.version>1.14.2</jsoup.version>
 	</properties>
@@ -168,11 +167,6 @@
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring-boot-web-starter</artifactId>
 			<version>${shiro.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.theborakompanioni</groupId>
-			<artifactId>thymeleaf-extras-shiro</artifactId>
-			<version>${thymeleaf-shiro.version}</version>
 		</dependency>
 		<!-- okhttp -->
 		<dependency>

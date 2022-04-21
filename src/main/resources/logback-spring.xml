@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <!--彩色日志输出格式-->
+    <property name="CONSOLE_LOG_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%level){blue} %clr(${PID}){magenta} %clr([%thread]){orange} %clr(%logger){cyan} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <!--非彩色日志输出格式-->
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+
+    <!--dev文件路径：src同级目录logs,如果上级目录不存在会自动创建-->
+    <property name="LOG_PATH" value="./logs" />
+
+    <!-- 控制台输出 -->
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 按照每天生成输出日志文件 -->
+    <appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程，%-5level：级别从左显示五个字符宽度，%logger{36}：logger是class的全名,后面的数字代表限制最长的字符，%msg：日志消息，%n换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <!--滚动策略按照时间滚动-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily 文件名称 -->
+            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM}/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 10MB, keep 60 days worth of history, but at most 2GB -->
+            <!--单个文件大小-->
+            <maxFileSize>10MB</maxFileSize>
+            <!--日志文件保留天数-->
+            <maxHistory>365</maxHistory>
+            <!--用来指定日志文件的上限大小，到了这个值就会删除旧日志-->
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 按照每天生成错误日志文件 -->
+    <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 此日志文件只记录ERROR级别的 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <!--输出日志到src同级目录logs中的error.log文件中-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--基于大小和时间的轮转策略，当日志内容超出文件大小限制后，会自动生成一个文件来继续记录和重命名-->
+            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM}/error/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 10MB, keep 60 days worth of history, but at most 2GB -->
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>365</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!--开发环境:打印控制台-->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="consoleAppender" />
+            <appender-ref ref="fileAppender" />
+            <appender-ref ref="errorAppender" />
+        </root>
+    </springProfile>
+
+    <!--生产环境:输出到文件-->
+    <springProfile name="prod">
+        <!-- root日志以INFO级别输出，指定日志信息输出到哪个地方-->
+        <root level="INFO">
+            <!-- 生产环境下不输出控制台日志 -->
+<!--            <appender-ref ref="consoleAppender" />-->
+            <appender-ref ref="fileAppender" />
+            <appender-ref ref="errorAppender" />
+        </root>
+    </springProfile>
+
+</configuration>
