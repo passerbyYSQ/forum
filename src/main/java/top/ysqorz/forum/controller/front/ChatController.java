@@ -111,9 +111,9 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/apply/process")
-    public ResultModel processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
+    public ResultModel<String> processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
                                           @NotBlank String action) {
-        return ResultModel.wrap(chatService.processFriendApply(friendApplyId, friendGroupId, action));
+        return chatService.processFriendApply(friendApplyId, friendGroupId, action);
     }
 
     /**

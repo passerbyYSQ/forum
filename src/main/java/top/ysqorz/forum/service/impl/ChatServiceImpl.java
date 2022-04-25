@@ -286,12 +286,12 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional // 添加事务处理
-    public StatusCode processFriendApply(Integer friendApplyId, Integer friendGroupId, String action) {
+    public ResultModel<String> processFriendApply(Integer friendApplyId, Integer friendGroupId, String action) {
         ChatFriendApply apply = this.getFriendApplyById(friendApplyId);
         Integer myId = ShiroUtils.getUserId();
         if (ObjectUtils.isEmpty(apply) || !apply.getReceiverId().equals(myId) // 接收者是我才能处理
                 || !ObjectUtils.isEmpty(apply.getStatus())) {
-            return StatusCode.CHAT_FRIEND_APPLY_INVALID;
+            return ResultModel.failed(StatusCode.CHAT_FRIEND_APPLY_INVALID);
         }
         if ("ignore".equalsIgnoreCase(action)) {
             chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId); // 忽略直接删除
@@ -302,33 +302,37 @@ public class ChatServiceImpl implements ChatService {
         } else if ("agree".equalsIgnoreCase(action)) {
             // 同意后，需要等对方签收后再删除
             if (this.isInvalidFriendGroup(friendGroupId)) {
-                return StatusCode.CHAT_FRIEND_GROUP_INVALID; // 好友分组非法
+                return ResultModel.failed(StatusCode.CHAT_FRIEND_GROUP_INVALID); // 好友分组非法
             }
             ChatFriend chatFriend = this.getMyChatFriendById(apply.getSenderId());
             if (!ObjectUtils.isEmpty(chatFriend)) { // 已经是好友，不能添加，把好友申请给删除
                 chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId);
-                return StatusCode.CHAT_ALREADY_FRIEND;
+                return ResultModel.failed(StatusCode.CHAT_ALREADY_FRIEND);
             }
             Integer toGroupId = apply.getFriendGroupId();
             this.updateFriendApplyStatusById(friendApplyId, (byte) 1);
             this.addChatFriend(myId, apply.getSenderId(), friendGroupId);
             this.addChatFriend(apply.getSenderId(), myId, toGroupId);
             // 消息推送，将自己添加到对方好友列表中
-            User friendUser = userService.getUserById(apply.getSenderId());
+            User self = userService.getUserById(myId);
             ChatNotificationDTO notification = new ChatNotificationDTO();
-            notification.setReceiverId(friendUser.getId())
+            notification.setReceiverId(apply.getSenderId())
                     .setSenderId(myId)
                     .setAction("add_friend")
-                    .addPayload("username", friendUser.getUsername())
-                    .addPayload("avatar", friendUser.getPhoto())
-                    .addPayload("sign", friendUser.getDescription())
-                    .addPayload("groupid", ObjectUtils.isEmpty(toGroupId) ? -1 : toGroupId);
+                    .addPayload("username", self.getUsername())
+                    .addPayload("avatar", self.getPhoto())
+                    .addPayload("sign", self.getDescription())
+                    .addPayload("groupid", ObjectUtils.isEmpty(toGroupId) ? -1 : toGroupId)
+                    .addPayload("status", "online"); // 由于我正在处理该申请，因此我肯定在线
             MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
             MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
             // 推送消息盒子数量变化
-            this.pushMsgBoxCount(friendUser.getId());
+            this.pushMsgBoxCount(apply.getSenderId());
+            // 返回对方的在线状态
+            boolean iOnline = redisService.isUserOnline(apply.getSenderId());
+            return ResultModel.success(iOnline ? "online" : "offline");
         }
-        return StatusCode.SUCCESS;
+        return ResultModel.success();
     }
 
     @Override

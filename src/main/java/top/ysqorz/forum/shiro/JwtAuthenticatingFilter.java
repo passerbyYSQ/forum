@@ -66,7 +66,7 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
         if (CommonUtils.isApiRequest(httpRequest)) { // api
             CommonUtils.writeJson(httpResponse, ResultModel.failed(StatusCode.AUTHENTICATION_FAILED));
         } else { // html
-            httpResponse.sendRedirect("/user/login"); // 重定向到登录页面
+            httpResponse.sendRedirect("/user/login?referer=" + httpRequest.getRequestURI()); // 重定向到登录页面
         }
         return false;
     }

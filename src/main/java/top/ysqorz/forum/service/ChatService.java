@@ -105,7 +105,7 @@ public interface ChatService {
      * 处理好友申请
      * @param action    agree, refuse, ignore
      */
-    StatusCode processFriendApply(Integer friendApplyId, Integer friendGroupId, String action);
+    ResultModel<String> processFriendApply(Integer friendApplyId, Integer friendGroupId, String action);
 
     /**
      * 消息盒子的数量变化后，推送消息

@@ -203,9 +203,10 @@
                                 avatar: payload.avatar,
                                 groupid: payload.groupid,
                                 id: senderId,
-                                sign: payload.sign
+                                sign: payload.sign,
+                                status: payload.status
                             });
-
+                            initFriendContextMenu();
                         }
                     } else { // senderId为0表示系统消息
                         if (action === 'msg_box') {
@@ -299,11 +300,13 @@
                             avatar: user.photo,
                             groupid: group, //所在的分组id
                             id: user.id,  //好友ID
-                            sign: user.sign //好友签名
+                            sign: user.sign, //好友签名
+                            status: res.data
                         });
                         layer.msg('已成功添加好友', { icon: 1, shade: 0.5 }, function () {
                             layer.close(index);
                         });
+                        initFriendContextMenu();
                         callback && callback(res);
                     }, 'POST', function (res) {
                         layer.close(index);
@@ -416,7 +419,8 @@
                         avatar: friend.avatar,
                         groupid: targetGroupId + '',  // 目标分组的id
                         id: friend.id, // 好友的用户ID
-                        sign: friend.sign  //好友签名
+                        sign: friend.sign,  //好友签名
+                        status: friend.status
                     });
                     // 重新初始化右键菜单
                     initFriendContextMenu();
@@ -434,16 +438,18 @@
             let createGroupItem = {
                 icon: 'layui-icon layui-icon-add-circle',
                 name: '创建分组',
-                click: createFriendGroup
+                click: createFriendGroup.bind(this)
             };
-            let blankCtxMenus = [{
-                icon: 'layui-icon layui-icon-refresh',
-                name: '刷新好友列表',
-                click: function () {
-                    app.errorNotice('暂不支持');
+            let deleteFriendItem = {
+                icon: 'layui-icon layui-icon-delete',
+                name: '删除好友',
+                click: function (ev1, ev2) {
+                    let friendId = $(ev2.currentTarget).data("id");
+                    let friendName = $(ev2.currentTarget).children('span:first').text();
+                    deleteFriend(friendId, friendName);
                 }
-            }, createGroupItem];
-            let groupCtxMenus = [createGroupItem, {
+            };
+            let deleteGroupItem = {
                 icon: 'layui-icon layui-icon-delete',
                 name: '删除分组',
                 click: function (ev1, ev2) {
@@ -452,40 +458,45 @@
                     let groupName = groupTitleDom.children('span').text();
                     deleteFriendGroup(groupId, groupName);
                 }
-            }];
-            let subs = layim.cache().friend.map(item => {
+            };
+            let blankCtxMenus = [{
+                icon: 'layui-icon layui-icon-refresh',
+                name: '刷新好友列表',
+                click: function () {
+                    app.errorNotice('暂不支持');
+                }
+            }, createGroupItem];
+            let groupItems = layim.cache().friend.map(item => {
                 return {
                     id: item.id,
                     name: item.groupname,
                     click: function (ev1, ev2) {
-                        let friendName = $(ev2.currentTarget).children('span:first').text();
+                        // let friendName = $(ev2.currentTarget).children('span:first').text();
                         let friendId = $(ev2.currentTarget).data('id');
                         let { friend, groupId: sourceGroupId } = findFriendFromCache(friendId);
                         let targetGroupId = this.id;
-                        if (parseInt(sourceGroupId) === parseInt(targetGroupId)) {
-                            app.errorNotice('无须移动');
-                            return;
-                        }
                         moveFriendToOtherGroup(friend, targetGroupId, this.name);
                     }
                 }
             });
-            let friendCtxMenus = [{
-                icon: 'layui-icon layui-icon-delete',
-                name: '删除好友',
-                click: function (ev1, ev2) {
-                    let friendId = $(ev2.currentTarget).data("id");
-                    let friendName = $(ev2.currentTarget).children('span:first').text();
-                    deleteFriend(friendId, friendName);
-                }
-            }, {
-                icon: 'layui-icon layui-icon-next',
-                name: '移动至',
-                subs
-            }];
-            contextMenu.bind('ul.layim-list-friend', blankCtxMenus);
-            contextMenu.bind('ul.layim-list-friend > li', groupCtxMenus);
-            contextMenu.bind('ul.layui-layim-list > li[data-type="friend"]', friendCtxMenus);
+            // 为了避免事件重复注册，先对所有事件进行移除
+            $('ul.layim-list-friend').unbind('contextmenu');
+            $('ul.layim-list-friend > li').unbind('contextmenu');
+            contextMenu.bind('ul.layim-list-friend', blankCtxMenus); // 空白处的右键菜单
+            contextMenu.bind('ul.layim-list-friend > li:not(:last)', [createGroupItem, deleteGroupItem]); // 分组的右键菜单
+            contextMenu.bind('ul.layim-list-friend > li:last', [createGroupItem]); // 分组的右键菜单
+            // 对于动态生成的元素可以使用事件委托的方式来绑定：
+            $('ul.layui-layim-list > li[data-type="friend"]').unbind('contextmenu').bind('contextmenu', function (ev) {
+                let friendGroupId = $(ev.currentTarget).parents('li').children('h5').data('id');
+                let subs = groupItems.filter(item => item.id !== friendGroupId);
+                let friendCtxMenus = [deleteFriendItem, {
+                    icon: 'layui-icon layui-icon-next',
+                    name: '移动至',
+                    subs
+                }];
+                contextMenu.show(friendCtxMenus, ev.clientX, ev.clientY, ev);
+                return false;
+            });
         }
 
         // 根据用户id查询好友信息
