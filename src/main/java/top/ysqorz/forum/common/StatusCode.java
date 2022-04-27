@@ -45,6 +45,7 @@ public enum StatusCode {
     // 用户相关
     USERNAME_EXIST(6101, "用户名已存在"),
     USER_NOT_EXIST(6102, "用户不存在"), // 可能是userId错误
+    USER_ID_INVALID(6103, "用户id非法"),
     USER_NOT_BLOCK(6103, "用户当前不处于封禁状态"),
     USER_NOT_LOGIN(6104, "用户未登录"),
     PHONE_IS_EXIST(6105, "该手机号码已被绑定"),

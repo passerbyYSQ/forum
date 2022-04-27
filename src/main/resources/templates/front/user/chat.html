@@ -187,13 +187,15 @@
                 } else if (msgType === app.MSG_TYPE.CHAT_NOTIFICATION) {
                     let { senderId, action, payload } = data;
                     if (senderId > 0) {
+                        let { friend, groupId } = findFriendFromCache(senderId);
                         if (action === 'online') {
-                            let { friend, groupId } = findFriendFromCache(senderId);
                             let content = `您的好友 ${friend.username} 在 ${app.formatDateTime(data.time)} 上线了！`;
                             app.noticeFromUser(friend.avatar, friend.username, content);
-                            layim.setFriendStatus(friend.id, 'online');
+                            layim.setFriendStatus(friend.id, 'online'); // 服了，居然没有更新缓存...
+                            friend.status = 'online'; // 更新缓存
                         } else if (action === 'offline') {
                             layim.setFriendStatus(senderId, 'offline');
+                            friend.status = 'offline';
                         } else if (action === 'delete_friend') {
                             layim.removeList({ id: senderId, type: 'friend' });
                         } else if (action === 'add_friend') {
@@ -329,7 +331,7 @@
                     form.on('submit(createFriendGroupSubmit)', function (data) {
                         app.ajax('/chat/friend/group/create', data.field, function (res) {
                             // 先更新缓存
-                            layim.cache().friend.push({
+                            layim.cache().friend.splice(layim.cache().friend.length - 1, 0, {
                                 id: res.data.id,
                                 groupname: res.data.groupName,
                                 list: []
@@ -417,7 +419,7 @@
                         type: 'friend',
                         username: friend.username,
                         avatar: friend.avatar,
-                        groupid: targetGroupId + '',  // 目标分组的id
+                        groupid: parseInt(targetGroupId),  // 目标分组的id
                         id: friend.id, // 好友的用户ID
                         sign: friend.sign,  //好友签名
                         status: friend.status

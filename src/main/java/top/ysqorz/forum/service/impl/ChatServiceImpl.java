@@ -155,8 +155,8 @@ public class ChatServiceImpl implements ChatService {
             return StatusCode.CHAT_FRIEND_GROUP_INVALID;
         }
         User receiver = userService.getUserById(receiverId);
-        if (ObjectUtils.isEmpty(receiver)) { // 确保插入到数据库的receiverId是正确的
-            return StatusCode.USER_NOT_EXIST;
+        if (ObjectUtils.isEmpty(receiver) || receiverId.equals(ShiroUtils.getUserId())) { // 接收者id不能是自己
+            return StatusCode.USER_ID_INVALID;
         }
         ChatFriend chatFriend = this.getMyChatFriendById(receiverId);
         if (!ObjectUtils.isEmpty(chatFriend)) { // 已经是好友，不能发送申请
