@@ -7,7 +7,6 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.IMUtils;
-import top.ysqorz.forum.im.entity.MsgType;
 
 /**
  * 之所以不继承SimpleChannelInboundHandler方法，而实现它的父类ChannelInboundHandlerAdapter
@@ -18,6 +17,11 @@ import top.ysqorz.forum.im.entity.MsgType;
  */
 @Slf4j
 public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        ctx.channel().attr(IMUtils.ALL_IDLE_KEY).set(0); // 通道一旦建立，设置空闲次数为0，否则第一次get出来为null
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -31,7 +35,6 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
                 Integer allIdleCount = channel.attr(IMUtils.ALL_IDLE_KEY).get();
                 if (Integer.valueOf(3).equals(allIdleCount)) { // >=3
                     log.info("channel[读写]空闲状态超过3次，已关闭：{}", channelId);
-                    channel.writeAndFlush(IMUtils.createTextFrame(MsgType.CLOSE));
                     channel.close();
                 } else { // <3
                     channel.attr(IMUtils.ALL_IDLE_KEY).compareAndSet(allIdleCount, allIdleCount + 1);

@@ -32,11 +32,6 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-//        UserChannelRepository.add(ctx.channel());
-    }
-
-    @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         MsgCenter.getInstance().unBind(ctx.channel());
     }
