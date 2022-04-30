@@ -14,13 +14,9 @@ import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.DateTimeUtils;
-import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -142,13 +138,10 @@ public class RedisServiceImpl implements RedisService {
      */
     @Override
     public void bindWsServer(ChannelType channelType, String groupId) {
-        int randMinutes = RandomUtils.generateInt(30);
-        // 次日凌晨两点多
-        LocalDateTime expireTime = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(2, randMinutes));
-        long millis = Duration.between(LocalDateTime.now(), expireTime).toMillis();
+        long millis = Duration.ofHours(12).toMillis();
+        // 如果12小时内再bind，重置12个小时后过期；如果超过12小时没有bind，则直接过期
         String lua = "redis.call('hincrby', KEYS[1], KEYS[2], 1) " +
-                "if (redis.call('ttl', KEYS[1]) == -1) then " +
-                "redis.call('pexpire', KEYS[1], ARGV[1]) end";
+                "redis.call('pexpire', KEYS[1], ARGV[1])";
         DefaultRedisScript<Void> script = new DefaultRedisScript<>(lua, Void.class);
         String key = String.format(Constant.REDIS_KEY_IM_WS, channelType.name(), groupId);
         String hashKey = IMUtils.getWebServer();

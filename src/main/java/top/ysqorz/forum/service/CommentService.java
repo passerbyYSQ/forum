@@ -1,10 +1,10 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.PageData;
-import top.ysqorz.forum.dto.resp.SecondCommentDTO;
+import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
+import top.ysqorz.forum.dto.resp.SecondCommentDTO;
 import top.ysqorz.forum.po.FirstComment;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.po.SecondComment;
@@ -20,11 +20,11 @@ public interface CommentService {
     /**
      * 该条一级评论前面有多少条评论
      */
-    int getFrontFirstCommentCount(Integer firstCommentId);
+    int getFrontFirstCommentCount(Integer postId, Integer firstCommentId);
     /**
      * 该条二级评论前面有多少条评论
      */
-    int[] getFrontSecondCommentCount(Integer secondCommentId);
+    int[] getFrontSecondCommentCount(Integer postId, Integer secondCommentId);
 
     // 发布一级评论
     void publishFirstComment(Post post, String content);

@@ -91,10 +91,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int getFrontFirstCommentCount(Integer firstCommentId) {
+    public int getFrontFirstCommentCount(Integer postId, Integer firstCommentId) {
         FirstComment firstComment = firstCommentMapper.selectByPrimaryKey(firstCommentId);
-        if (ObjectUtils.isEmpty(firstCommentId)) {
-            return -1;
+        if (ObjectUtils.isEmpty(firstComment) || !postId.equals(firstComment.getPostId())) {
+            return -1; // firstCommentId非法
         }
         Example example = new Example(FirstComment.class);
         example.createCriteria().andEqualTo("postId", firstComment.getPostId())
@@ -103,18 +103,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int[] getFrontSecondCommentCount(Integer secondCommentId) {
+    public int[] getFrontSecondCommentCount(Integer postId, Integer secondCommentId) {
         SecondComment secondComment = secondCommentMapper.selectByPrimaryKey(secondCommentId);
         if (ObjectUtils.isEmpty(secondComment)) {
             return null;
         }
         Integer firstCommentId = secondComment.getFirstCommentId();
+        int firstCount = this.getFrontFirstCommentCount(postId, firstCommentId);
+        if (firstCount == -1) {
+            return null; // secondCommentId非法
+        }
         Example example = new Example(SecondComment.class);
         example.createCriteria().andEqualTo("firstCommentId", firstCommentId)
                 .andLessThan("createTime", secondComment.getCreateTime());
         int secondCount = secondCommentMapper.selectCountByExample(example);
-        int firstCount = this.getFrontFirstCommentCount(firstCommentId);
-        return new int[] {firstCount, secondCount};
+        return new int[] {firstCount, secondCount, firstCommentId};
     }
 
 

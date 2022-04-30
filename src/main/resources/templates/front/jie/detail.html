@@ -1187,14 +1187,16 @@
             scid = app.getUrlParam("scid");
             // 两个if的顺序不能调换。否则 fcid和scid都存在时有问题
             if (scid) {
-                app.ajax('/comment/second/frontCount', {secondCommentId: scid}, function (res) {
+                app.ajax('/comment/second/frontCount', {postId, secondCommentId: scid}, function (res) {
                     console.log(res);
-                    page1 = Math.floor(res.data.firstCount / 6) + 1;
-                    page2 = Math.floor(res.data.secondCount / 5) + 1;
+                    let { firstCount, secondCount, firstCommentId } = res.data;
+                    page1 = Math.floor(firstCount / 6) + 1;
+                    page2 = Math.floor(secondCount / 5) + 1;
+                    fcid = firstCommentId;
                 }, "get");
             } else if (fcid) {
                 // 计算page1
-                app.ajax('/comment/first/frontCount', {firstCommentId: fcid}, function (res) {
+                app.ajax('/comment/first/frontCount', {postId, firstCommentId: fcid}, function (res) {
                     // console.log(res);
                     page1 = Math.floor(res.data / 6) + 1;
                 }, "get");

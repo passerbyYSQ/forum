@@ -29,6 +29,7 @@ import java.util.Map;
  * @author passerbyYSQ
  * @create 2021-06-20 16:26
  */
+@Validated
 @Controller
 @ResponseBody
 @RequestMapping("/comment")
@@ -129,21 +130,21 @@ public class CommentController {
     }
 
     @GetMapping("/first/frontCount")
-    public ResultModel<Integer> getFrontFirstCommentCount(@RequestParam Integer firstCommentId) {
-        int count = commentService.getFrontFirstCommentCount(firstCommentId);
-        return count != -1 ? ResultModel.success(count) :
-                ResultModel.failed(StatusCode.FIRST_COMMENT_NOT_EXIST);
+    public ResultModel<Integer> getFrontFirstCommentCount(@NotNull Integer postId, @NotNull Integer firstCommentId) {
+        int count = commentService.getFrontFirstCommentCount(postId, firstCommentId);
+        return count != -1 ? ResultModel.success(count) : ResultModel.failed(StatusCode.FIRST_COMMENT_NOT_EXIST);
     }
 
     @GetMapping("/second/frontCount")
-    public ResultModel<Map<String, Integer>> getFrontSecondCommentCount(@RequestParam Integer secondCommentId) {
-        int[] countArr = commentService.getFrontSecondCommentCount(secondCommentId);
-        if (countArr == null) {
+    public ResultModel<Map<String, Integer>> getFrontSecondCommentCount(@NotNull Integer postId, @NotNull Integer secondCommentId) {
+        int[] res = commentService.getFrontSecondCommentCount(postId, secondCommentId);
+        if (res == null) {
             return ResultModel.failed(StatusCode.SECOND_COMMENT_NOT_EXIST);
         }
         Map<String, Integer> data = new HashMap<>();
-        data.put("firstCount", countArr[0]);
-        data.put("secondCount", countArr[1]);
+        data.put("firstCount", res[0]);
+        data.put("secondCount", res[1]);
+        data.put("firstCommentId", res[2]);
         return ResultModel.success(data);
     }
 
