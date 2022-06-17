@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.QueryPostCondition;
 import top.ysqorz.forum.dto.resp.AttendCardDTO;
 import top.ysqorz.forum.dto.resp.AttendDTO;
@@ -65,15 +65,14 @@ public class IndexController {
      */
     @ResponseBody
     @GetMapping("/index/list")
-    public ResultModel<PageData<PostDTO>> getPostList(@RequestParam(defaultValue = "10") Integer limit,
+    public PageData<PostDTO> getPostList(@RequestParam(defaultValue = "10") Integer limit,
                                                       @RequestParam(defaultValue = "1") Integer page,
                                                       QueryPostCondition conditions) {
         if (limit <= 0) {
             limit = 10;
         }
         conditions.splitLabelsStr();
-        PageData<PostDTO> indexPost = postService.getIndexPost(page, limit, conditions);
-        return ResultModel.success(indexPost);
+        return postService.getIndexPost(page, limit, conditions);
     }
 
     /**

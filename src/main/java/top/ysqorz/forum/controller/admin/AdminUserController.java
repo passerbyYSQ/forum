@@ -7,12 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.dto.resp.BlackInfoDTO;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
+import top.ysqorz.forum.dto.resp.BlackInfoDTO;
 import top.ysqorz.forum.dto.resp.UserDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
@@ -104,7 +103,7 @@ public class AdminUserController {
     @RequiresPermissions("user:allotRole")
     @PostMapping("/addRole")
     public ResultModel addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
-                               @RequestParam("userId") @NotNull Integer userId) throws ParameterErrorException {
+                               @RequestParam("userId") @NotNull Integer userId) {
         if (userService.getUserById(userId) == null) {
             return ResultModel.failed(StatusCode.USER_NOT_EXIST);
         }

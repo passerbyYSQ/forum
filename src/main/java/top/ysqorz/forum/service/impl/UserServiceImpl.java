@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
-import top.ysqorz.forum.common.ParameterErrorException;
+import top.ysqorz.forum.common.exception.ParameterInvalidException;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.*;
 import top.ysqorz.forum.dto.req.CheckUserDTO;
@@ -163,7 +163,7 @@ public class UserServiceImpl implements UserService {
         for (Integer roleId : roleIds) {
             Role role = roleService.getRoleById(roleId);
             if (role == null) {
-                throw new ParameterErrorException(StatusCode.ROLE_NOT_EXIST.getMsg());
+                throw new ParameterInvalidException(StatusCode.ROLE_NOT_EXIST.getMsg());
             }
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)

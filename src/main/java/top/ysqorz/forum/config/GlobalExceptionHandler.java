@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-import top.ysqorz.forum.common.FileUploadException;
-import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ServiceFailedException;
+import top.ysqorz.forum.utils.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -41,9 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     public ModelAndView handleBindException(BindException e, HttpServletRequest request) {
         List<FieldError> errors = e.getFieldErrors();
-        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(),
-                joinErrorMsg(errors));
-        return wrapModelAndView(res, request);
+        return wrapModelAndView(StatusCode.PARAM_INVALID, joinErrorMsg(errors), request);
     }
 
     // 参数错误
@@ -58,27 +58,31 @@ public class GlobalExceptionHandler {
                     .append(cvl.getMessage())
                     .append(";");
         }
-        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(),
-                errorMsg.toString());
-        return wrapModelAndView(res, request);
+        return wrapModelAndView(StatusCode.PARAM_INVALID,  errorMsg.toString(), request);
     }
 
     // 参数错误
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ModelAndView methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ModelAndView handleArgumentNotValidExceptionHandler(MethodArgumentNotValidException e, HttpServletRequest request) {
         List<FieldError> errors = e.getBindingResult().getFieldErrors();
-        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(),
-                joinErrorMsg(errors));
-        return wrapModelAndView(res, request);
+        return wrapModelAndView(StatusCode.PARAM_INVALID, joinErrorMsg(errors), request);
     }
 
     // 参数错误
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({ParameterErrorException.class, FileUploadException.class})
-    public ModelAndView handleMyrException(Exception e, HttpServletRequest request) { // 注意写基类！！！
-        ResultModel res = ResultModel.failed(StatusCode.PARAM_INVALID.getCode(), e.getMessage());
-        return wrapModelAndView(res, request);
+    @ExceptionHandler(ParameterInvalidException.class)
+    public ModelAndView handleParameterInvalidException(ParameterInvalidException e, HttpServletRequest request) {
+        return wrapModelAndView(StatusCode.PARAM_INVALID, e.getMessage(), request);
+    }
+
+    /**
+     * 对于接口业务失败的情况(如：密码错误，验证码错误等)，这些不属于异常(http响应码仍为200)，但属于业务失败。
+     * 为了对接口返回值进行统一处理，业务失败的情况通过异常抛出，在此处做统一包装处理
+     */
+    @ExceptionHandler(ServiceFailedException.class)
+    public ModelAndView handleServiceFailedException(ServiceFailedException e, HttpServletRequest request) {
+        return wrapModelAndView(e.getCode(), null, request);
     }
 
     // jwt校验错误
@@ -95,7 +99,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AuthorizationException.class)
     public ModelAndView handlerAuthorizationException(AuthorizationException e, HttpServletRequest request) {
-        return wrapModelAndView(ResultModel.failed(403, e.getMessage()), request);
+        return wrapModelAndView(StatusCode.AUTHORIZATION_FAILED, e.getMessage(), request);
     }
 
 
@@ -105,28 +109,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({Exception.class})
     public ModelAndView handleOtherException(Exception e, HttpServletRequest request) {
         e.printStackTrace();
-        ResultModel<Object> res = ResultModel.failed(StatusCode.UNKNOWN_ERROR.getCode(), e.toString());
-        return wrapModelAndView(res, request);
+        return wrapModelAndView(StatusCode.UNKNOWN_ERROR, e.toString(), request);
     }
 
-    private ModelAndView wrapModelAndView(ResultModel resultModel, HttpServletRequest request) {
-        ModelAndView modelAndView = isApiRequest(request) ?
+    private ModelAndView wrapModelAndView(StatusCode code, String errorMsg, HttpServletRequest request) {
+        ResultModel<Object> res = ObjectUtils.isEmpty(errorMsg) ?
+                ResultModel.failed(code) :
+                ResultModel.failed(code.getCode(), errorMsg); // errorMsg覆盖code的msg
+        ModelAndView modelAndView = CommonUtils.isApiRequest(request) ?
                 new ModelAndView(new MappingJackson2JsonView(objectMapper)) : //new MappingJackson2JsonView()
                 new ModelAndView("error/500");
-        modelAndView.addObject("code", resultModel.getCode());
-        modelAndView.addObject("msg", resultModel.getMsg());
-        modelAndView.addObject("data", resultModel.getData());
-        modelAndView.addObject("time", resultModel.getTime());
+        modelAndView.addObject("code", res.getCode())
+                .addObject("msg", res.getMsg())
+                .addObject("data", res.getData())
+                .addObject("time", res.getTime());
         return modelAndView;
-    }
-
-    /**
-     * 判断出错的API方法是返回json数据还是页面
-     * 出错的API方法有ResponseBody注解，表示接口返回json数组。否则表示接口渲染页面
-     */
-    private boolean isApiRequest(HttpServletRequest request) {
-        return request.getHeader("Accept") == null ||
-                !request.getHeader("Accept").contains("text/html");
     }
 
     // 拼接错误信息

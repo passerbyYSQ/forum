@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ParameterErrorException;
+import top.ysqorz.forum.common.exception.ParameterInvalidException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
@@ -58,7 +58,7 @@ public class PostController {
                              Model model, HttpServletRequest request) {
         Post post = postService.getPostById(postId);
         if (ObjectUtils.isEmpty(post)) {
-            throw new ParameterErrorException(StatusCode.POST_NOT_EXIST.getMsg());
+            throw new ParameterInvalidException(StatusCode.POST_NOT_EXIST.getMsg());
         }
 
         // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post的访问量
@@ -99,7 +99,7 @@ public class PostController {
         if (!ObjectUtils.isEmpty(postId)) { // 修改的时候需要传值
             Post post = postService.getPostById(postId);
             if (ObjectUtils.isEmpty(post)) {
-                throw new ParameterErrorException(StatusCode.POST_NOT_EXIST.getMsg());
+                throw new ParameterInvalidException(StatusCode.POST_NOT_EXIST.getMsg());
             }
             // 不能修改其他人的帖子
             if (!permManager.allowUpdatePost(post.getCreatorId())) {

@@ -7,9 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ParameterErrorException;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.req.LoginDTO;
 import top.ysqorz.forum.dto.req.RegisterDTO;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
@@ -122,25 +123,25 @@ public class UserController {
      */
     @PostMapping("/login")
     @ResponseBody
-    public ResultModel<String> login(@Validated LoginDTO dto, @RequestHeader(defaultValue = "") String referer,
+    public String login(@Validated LoginDTO dto, @RequestHeader(defaultValue = "") String referer,
                                             HttpServletResponse response) {
         String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
-            return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
+            throw new ServiceFailedException(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
         }
         if (!dto.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
-            return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码过期
+            throw new ServiceFailedException(StatusCode.CAPTCHA_INVALID); // 验证码无效
         }
 
         User user = userService.getUserByEmail(dto.getEmail());
         if (ObjectUtils.isEmpty(user)) {
-            return ResultModel.failed(StatusCode.EMAIL_INCORRECT); // 邮箱错误
+            throw new ServiceFailedException(StatusCode.EMAIL_INCORRECT);
         }
 
         // 以注册时的相同规则，加密用户输入的密码
         String encryptPwd = userService.encryptLoginPwd(dto.getPassword(), user.getLoginSalt());
         if (!user.getPassword().equals(encryptPwd)) {
-            return ResultModel.failed(StatusCode.PASSWORD_INCORRECT); // 密码错误
+            throw new ServiceFailedException(StatusCode.PASSWORD_INCORRECT); // 密码错误
         }
 
         String token = userService.login(user.getId(), user.getLoginSalt(), response);
@@ -156,7 +157,7 @@ public class UserController {
 
         // 将token放到请求头中，方便前端判断有无token刷新
         // 将常显的数据返回给前端缓存
-        return ResultModel.success(originReferer);
+        return originReferer;
     }
 
     /**
@@ -255,7 +256,7 @@ public class UserController {
         User user = userService.getUserById(visitId);
         //确认用户是否存在
         if (ObjectUtils.isEmpty(user)) {
-            throw new ParameterErrorException("用户不存在");
+            throw new ParameterInvalidException("用户不存在");
         }
         SimpleUserDTO information = userService.getHomeInformationById(visitId);
         model.addAttribute("information", information);

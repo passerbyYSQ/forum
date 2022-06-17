@@ -5,7 +5,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
-import top.ysqorz.forum.common.FileUploadException;
+import top.ysqorz.forum.common.exception.ParameterInvalidException;
 import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.upload.UploadRepository;
 
@@ -51,17 +51,17 @@ public abstract class AbstractFileUploader implements FileUploader {
     public UploadResult upload() throws IOException {
         // 先完成校验
         if (multipartFile.getSize() <= 0) {
-            throw new FileUploadException("上传文件不能为空");
+            throw new ParameterInvalidException("上传文件不能为空");
         }
         if (!checkSuffix(multipartFile.getOriginalFilename())) {
-            throw new FileUploadException("不支持该文件格式：" + this.suffix);
+            throw new ParameterInvalidException("不支持该文件格式：" + this.suffix);
         }
         if (!checkContentType(multipartFile.getContentType())) {
-            throw new FileUploadException("不支持该媒体类型：" + multipartFile.getContentType());
+            throw new ParameterInvalidException("不支持该媒体类型：" + multipartFile.getContentType());
         }
 
         if (!checkFileSize(multipartFile.getSize())) {
-            throw new FileUploadException(
+            throw new ParameterInvalidException(
                     String.format("当前文件大小：%d MB，超出可上传的最大值：%d MB",
                     fileSize.toMegabytes(), allowedMaximumFileSize.toMegabytes()));
         }
