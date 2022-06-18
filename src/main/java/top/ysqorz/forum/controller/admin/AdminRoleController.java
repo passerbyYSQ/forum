@@ -7,8 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.PermZTreeNode;
 import top.ysqorz.forum.po.Resource;
@@ -40,9 +40,9 @@ public class AdminRoleController {
 
     @RequiresPermissions("role:delete")
     @PostMapping("/del")
-    public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds) {
+    public StatusCode delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds) {
         roleService.delRoleWithPerms(roleIds);
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -50,9 +50,9 @@ public class AdminRoleController {
      */
     @RequiresPermissions("role:update")
     @PostMapping("/update")
-    public ResultModel updateRole(@Validated(Role.Update.class) Role role) {
+    public StatusCode updateRole(@Validated(Role.Update.class) Role role) {
         int cnt = roleService.updateRoleById(role);
-        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.ROLE_NOT_EXIST); // 修改失败，可能是角色不存在
+        return cnt == 1 ? StatusCode.SUCCESS : StatusCode.ROLE_NOT_EXIST;
     }
 
     /**
@@ -60,8 +60,8 @@ public class AdminRoleController {
      */
     @RequiresPermissions("role:add")
     @PostMapping("/add")
-    public ResultModel<Role> addRole(@Validated(Role.Add.class) Role role) {
-        return ResultModel.success(roleService.addRole(role));
+    public Role addRole(@Validated(Role.Add.class) Role role) {
+        return roleService.addRole(role);
     }
 
     /**
@@ -69,9 +69,9 @@ public class AdminRoleController {
      */
     @RequiresPermissions("role:allotPerm")
     @PostMapping("/assign")
-    public ResultModel assignPerms(@NotNull Integer roleId,
+    public StatusCode assignPerms(@NotNull Integer roleId,
            @RequestParam(value = "permIds[]", defaultValue = "") Integer[] permIds) {
-        return ResultModel.wrap(roleService.assignPerms(roleId, permIds));
+        return roleService.assignPerms(roleId, permIds);
     }
 
     /**
@@ -79,22 +79,19 @@ public class AdminRoleController {
      */
     @RequiresPermissions("perm:view")
     @GetMapping("/perm")
-    public ResultModel<List<PermZTreeNode>> rolePermList(@NotNull Integer roleId) {
+    public List<PermZTreeNode> rolePermList(@NotNull Integer roleId) {
         Role role = roleService.getRoleById(roleId);
         if (ObjectUtils.isEmpty(role)) {
-            return ResultModel.failed(StatusCode.ROLE_NOT_EXIST); // 角色不存在
+            throw new ServiceFailedException(StatusCode.ROLE_NOT_EXIST);
         }
-
         // 查询所有权限（用于形成整棵权限树）
         List<Resource> permList = authorityService.getAuthorityList(null);
         // 查询该角色拥有的所有权限的id，用于勾选权限树上对应的已拥有的权限
         Set<Integer> rolePermIds = roleService.getRoleAllPermIds(roleId);
         // 数据转换
-        List<PermZTreeNode> nodeList = permList.stream()
+        return permList.stream()
                 .map(resource -> new PermZTreeNode(resource, rolePermIds))
                 .collect(Collectors.toList());
-
-        return ResultModel.success(nodeList);
     }
 
     /**
@@ -102,7 +99,7 @@ public class AdminRoleController {
      */
     @RequiresPermissions("role:view")
     @GetMapping("/list")
-    public ResultModel<PageData<Role>> roleList(
+    public PageData<Role> roleList(
             @RequestParam(defaultValue = "1") Integer page, // 当前页
             @RequestParam(defaultValue = "10") Integer count, // 每一页显示条数
             String roleName) { // 根据角色名来筛选
@@ -113,7 +110,6 @@ public class AdminRoleController {
         // 紧跟在这个方法后的第一个MyBatis 查询方法会被进行分页
         PageHelper.startPage(page, count);
         // 该查询被分页
-        List<Role> roleList = roleService.getRoleList(roleName);
-        return ResultModel.success(new PageData<>(roleList));
+        return new PageData<>(roleService.getRoleList(roleName));
     }
 }

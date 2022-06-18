@@ -19,6 +19,7 @@ import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.JwtUtils;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,21 +51,22 @@ public class JwtRealm extends AuthorizingRealm {
                 authorityService.getAuthorityList(null);
         List<Role> roles = roleService.getRoleByUserId(userId);
         // 将所有权限形成一棵树
-        TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0);
-
-        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        for (Role role : roles) {
-            authorizationInfo.addRole(role.getRoleName());
-            // 当前角色的所有权限
-            List<String> leafPermList = roleService.getRoleAllPerms(role.getId())
-                    // 只筛选出叶子节点权限
-                    .stream().filter(resource -> builder.isLeaf(resource.getId()))
-                    .map(top.ysqorz.forum.po.Resource::getPermission)
-                    .collect(Collectors.toList());
-            authorizationInfo.addStringPermissions(leafPermList);
+        SimpleAuthorizationInfo authorizationInfo;
+        try (TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0)) {
+            authorizationInfo = new SimpleAuthorizationInfo();
+            for (Role role : roles) {
+                authorizationInfo.addRole(role.getRoleName());
+                // 当前角色的所有权限
+                List<String> leafPermList = roleService.getRoleAllPerms(role.getId())
+                        // 只筛选出叶子节点权限
+                        .stream().filter(resource -> builder.isLeaf(resource.getId()))
+                        .map(top.ysqorz.forum.po.Resource::getPermission)
+                        .collect(Collectors.toList());
+                authorizationInfo.addStringPermissions(leafPermList);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        builder.destroy();
         return authorizationInfo;
     }
 

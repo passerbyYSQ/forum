@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
@@ -20,7 +19,6 @@ import top.ysqorz.forum.service.UserService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author 阿灿
@@ -39,16 +37,15 @@ public class AdminUserController {
      */
     @RequiresPermissions("user:view")
     @GetMapping("/table")
-    public ResultModel<PageData<UserDTO>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
-                                                         @RequestParam(defaultValue = "1") Integer page,
-                                                         QueryUserCondition conditions) {
+    public PageData<UserDTO> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
+                                            @RequestParam(defaultValue = "1") Integer page,
+                                            QueryUserCondition conditions) {
         if (limit <= 0) {
             limit = 10;
         }
         PageHelper.startPage(page, limit);
         //  PageHelper.clearPage(); //不加报错
-        List<UserDTO> myUserList = userService.getMyUserList(conditions);
-        return ResultModel.success(new PageData<>(myUserList));
+        return new PageData<>(userService.getMyUserList(conditions));
     }
 
     /**
@@ -56,13 +53,13 @@ public class AdminUserController {
      */
     @RequiresPermissions("user:resetPwd")
     @PostMapping("/resetPsw")
-    public ResultModel ResetPsw(@RequestParam("userId") @NotNull Integer userId) {
+    public StatusCode resetPsw(@RequestParam("userId") @NotNull Integer userId) {
         User user = userService.getUserById(userId);
         if (ObjectUtils.isEmpty(user)) {
-            ResultModel.failed(StatusCode.USER_NOT_EXIST);
+            return StatusCode.USER_NOT_EXIST;
         }
-        int i = userService.updatePsw(user.getId(), user.getLoginSalt());
-        return ResultModel.success();
+        int cnt = userService.updatePsw(user.getId(), user.getLoginSalt());
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -70,9 +67,9 @@ public class AdminUserController {
      */
     @RequiresPermissions("user:blacklist")
     @PostMapping("/cancelBlock")
-    public ResultModel cancelBlock(@RequestParam("userId") @NotNull Integer userId) {
-        int i = userService.cancelBlock(userId);
-        return i == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.USER_NOT_BLOCK);
+    public StatusCode cancelBlock(@RequestParam("userId") @NotNull Integer userId) {
+        int cnt = userService.cancelBlock(userId);
+        return cnt == 1 ? StatusCode.SUCCESS : StatusCode.USER_NOT_BLOCK;
     }
 
     /**
@@ -80,9 +77,9 @@ public class AdminUserController {
      */
     @RequiresPermissions("user:blacklist")
     @PostMapping("/block")
-    public ResultModel block(@Validated(Blacklist.Add.class) Blacklist blacklist) {
-        int i = userService.block(blacklist);
-        return i == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.USERNAME_EXIST);
+    public StatusCode block(@Validated(Blacklist.Add.class) Blacklist blacklist) {
+        int cnt = userService.block(blacklist);
+        return cnt == 1 ? StatusCode.SUCCESS : StatusCode.USERNAME_EXIST;
 
     }
 
@@ -91,9 +88,8 @@ public class AdminUserController {
      */
     @RequiresPermissions("user:blacklist")
     @GetMapping("/getBlockInfo")
-    public ResultModel<BlackInfoDTO> getBlockInfo(@RequestParam("userId") @NotNull Integer userId) {
-        BlackInfoDTO blackInfo = userService.getBlackInfo(userId);
-        return ResultModel.success(blackInfo);
+    public BlackInfoDTO getBlockInfo(@RequestParam("userId") @NotNull Integer userId) {
+        return userService.getBlackInfo(userId);
     }
 
 
@@ -102,13 +98,13 @@ public class AdminUserController {
      */
     @RequiresPermissions("user:allotRole")
     @PostMapping("/addRole")
-    public ResultModel addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
+    public StatusCode addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) {
         if (userService.getUserById(userId) == null) {
-            return ResultModel.failed(StatusCode.USER_NOT_EXIST);
+            return StatusCode.USER_NOT_EXIST;
         }
         userService.addRoleForUser(roleIds, userId);
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -116,15 +112,14 @@ public class AdminUserController {
      */
     @RequiresPermissions("role:view")
     @GetMapping("/getRoleByUserId")
-    public ResultModel<PageData<Role>> getRoleByUserId(@RequestParam(defaultValue = "10") Integer limit,
-                                                       @RequestParam(defaultValue = "1") Integer page,
-                                                       @RequestParam("userId") @NotNull Integer userId) {
+    public PageData<Role> getRoleByUserId(@RequestParam(defaultValue = "10") Integer limit,
+                                          @RequestParam(defaultValue = "1") Integer page,
+                                          @RequestParam("userId") @NotNull Integer userId) {
         if (limit <= 0) {
             limit = 10;
         }
         PageHelper.startPage(page, limit);
-        List<Role> roles = userService.getRoleByUserId(userId);
-        return ResultModel.success(new PageData<>(roles));
+        return new PageData<>(userService.getRoleByUserId(userId));
     }
 
     /**
@@ -132,12 +127,12 @@ public class AdminUserController {
      */
     @RequiresPermissions("user:deleteRole")
     @PostMapping("/delRole")
-    public ResultModel delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
-                               @RequestParam("userId") @NotNull Integer userId) {
+    public StatusCode delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
+                              @RequestParam("userId") @NotNull Integer userId) {
         if (userService.getUserById(userId) == null) {
-            return ResultModel.failed(StatusCode.USER_NOT_EXIST);
+            return StatusCode.USER_NOT_EXIST;
         }
         userService.delRoleForUser(roleIds, userId);
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 }

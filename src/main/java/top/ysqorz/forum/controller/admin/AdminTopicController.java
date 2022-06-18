@@ -5,7 +5,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.TopicDTO;
@@ -13,7 +12,6 @@ import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author 阿灿
@@ -30,15 +28,14 @@ public class AdminTopicController {
      */
     @RequiresPermissions("topic:view")
     @GetMapping("/table")
-    public ResultModel<PageData<TopicDTO>> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
-                                                          @RequestParam(defaultValue = "1") Integer page,
-                                                          String topicName) {
+    public PageData<TopicDTO> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
+                                             @RequestParam(defaultValue = "1") Integer page,
+                                             String topicName) {
         if (limit <= 0) {
             limit = 10;
         }
         PageHelper.startPage(page, limit);
-        List<TopicDTO> allTopic = topicService.getAllTopic(topicName);
-        return ResultModel.success(new PageData<>(allTopic));
+        return new PageData<>(topicService.getAllTopic(topicName));
     }
 
 
@@ -47,8 +44,8 @@ public class AdminTopicController {
      */
     @RequiresPermissions("topic:add")
     @PostMapping("/add")
-    public ResultModel<Topic> addTopic(@Validated(Topic.Add.class) Topic topic) {
-        return ResultModel.success(topicService.addTopic(topic));
+    public Topic addTopic(@Validated(Topic.Add.class) Topic topic) {
+        return topicService.addTopic(topic);
     }
 
     /**
@@ -56,9 +53,9 @@ public class AdminTopicController {
      */
     @RequiresPermissions("topic:update")
     @PostMapping("/update")
-    public ResultModel updateTopic(@Validated(Topic.Update.class) Topic topic) {
+    public StatusCode updateTopic(@Validated(Topic.Update.class) Topic topic) {
         int cnt = topicService.updateTopic(topic);
-        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.TOPIC_NOT_EXIST);
+        return cnt == 1 ? StatusCode.SUCCESS : StatusCode.TOPIC_NOT_EXIST;
     }
 
     /**
@@ -70,12 +67,8 @@ public class AdminTopicController {
      */
     @RequiresPermissions("topic:archive")
     @PostMapping("/archive")
-    public ResultModel archive(@NotNull Integer id, @NotNull Integer state) {
+    public StatusCode archive(@NotNull Integer id, @NotNull Integer state) {
         int cnt = topicService.archive(id, state);
-        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.PARAM_NOT_COMPLETED);
+        return cnt == 1 ? StatusCode.SUCCESS : StatusCode.PARAM_NOT_COMPLETED;
     }
-
-
 }
-
-

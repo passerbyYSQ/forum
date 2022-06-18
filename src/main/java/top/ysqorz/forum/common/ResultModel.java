@@ -38,7 +38,7 @@ public class ResultModel<T>  {
         return new ResultModel<>(statusCode.getCode(), statusCode.getMsg(), data);
     }
 
-    public static ResultModel wrap(StatusCode statusCode) {
+    public static ResultModel<Object> wrap(StatusCode statusCode) {
         return wrap(statusCode, null);
     }
 

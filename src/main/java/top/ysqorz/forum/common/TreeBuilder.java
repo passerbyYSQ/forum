@@ -1,5 +1,7 @@
 package top.ysqorz.forum.common;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -7,7 +9,7 @@ import java.util.*;
  * @author passerbyYSQ
  * @create 2021-04-12 14:16
  */
-public class TreeBuilder<T> {
+public class TreeBuilder<T> implements Closeable {
 
     // 所有节点
     private List<? extends TreeNode<T>> nodeList;
@@ -148,5 +150,10 @@ public class TreeBuilder<T> {
                 map.put(parentId, children);
             }
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        destroy();
     }
 }

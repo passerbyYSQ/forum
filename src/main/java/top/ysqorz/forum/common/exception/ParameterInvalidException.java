@@ -24,6 +24,7 @@ public class ParameterInvalidException extends RuntimeException {
 
     /**
      * 兼容旧代码
+     * @deprecated
      */
     public ParameterInvalidException(String msg) {
         super(msg);

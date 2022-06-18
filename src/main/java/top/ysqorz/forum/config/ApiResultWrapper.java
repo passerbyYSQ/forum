@@ -31,7 +31,7 @@ public class ApiResultWrapper implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         return  !(returnType.getParameterType().isAssignableFrom(ResultModel.class) // 兼容旧代码
-                || returnType.hasMethodAnnotation(NotWrapWithResultModel.class));
+                || returnType.hasMethodAnnotation(NotWrapWithResultModel.class)); // 提供灵活处理的钩子
     }
 
     @Override
@@ -41,6 +41,7 @@ public class ApiResultWrapper implements ResponseBodyAdvice<Object> {
         // 特殊处理返回值为String的情况，虽然selectedContentType为application/json，
         // 但是selectedConverterType却是StringHttpMessageConverter，导致包装成ResultModel后强转String报错
         // 所以需要在此处手动转json，StringHttpMessageConverter将json串强转成String时就不会报错了
+        // https://zhuanlan.zhihu.com/p/413133915
         if (String.class.equals(returnType.getGenericParameterType())) {
             return JsonUtils.objectToJson(ResultModel.success(res));
         }

@@ -6,14 +6,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.common.TreeBuilder;
+import top.ysqorz.forum.dto.req.QueryAuthorityCondition;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.service.AuthorityService;
-import top.ysqorz.forum.dto.req.QueryAuthorityCondition;
-import top.ysqorz.forum.common.ResultModel;
-import top.ysqorz.forum.common.StatusCode;
 
 import javax.validation.constraints.NotEmpty;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,8 +34,8 @@ public class AdminAuthorityController {
      */
     @RequiresPermissions("perm:view")
     @GetMapping("/tree")
-    public ResultModel<List<Resource>> authorityTree(QueryAuthorityCondition conditions) {
-        return ResultModel.success(authorityService.getAuthorityList(conditions));
+    public List<Resource> authorityTree(QueryAuthorityCondition conditions) {
+        return authorityService.getAuthorityList(conditions);
     }
 
     /**
@@ -43,15 +43,15 @@ public class AdminAuthorityController {
      */
     @RequiresPermissions("perm:add")
     @PostMapping("/add")
-    public ResultModel<Resource> addAuthority(@Validated(Resource.Add.class) Resource resource) {
-        return ResultModel.success( authorityService.addAuthority(resource));
+    public Resource addAuthority(@Validated(Resource.Add.class) Resource resource) {
+        return authorityService.addAuthority(resource);
     }
 
     @RequiresPermissions("perm:update")
     @PostMapping("/update")
-    public ResultModel updateAuthority(@Validated(Resource.Update.class) Resource resource) {
+    public StatusCode updateAuthority(@Validated(Resource.Update.class) Resource resource) throws IOException {
         if (ObjectUtils.isEmpty(authorityService.getAuthorityById(resource.getId()))) {
-            return ResultModel.failed(StatusCode.AUTHORITY_NOT_EXIST);
+            return StatusCode.AUTHORITY_NOT_EXIST;
         }
 
         // parentId为空，说明为根权限
@@ -62,20 +62,20 @@ public class AdminAuthorityController {
         // 查询权限列表
         List<Resource> resourceList = authorityService.getAuthorityList(null);
         // 构建一棵树
-        TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0);
-        // 权限id是否合法（是否存在）
-        if (!builder.isValidId(resource.getId()) || !builder.isValidId(resource.getParentId())) {
-            return ResultModel.failed(StatusCode.AUTHORITY_NOT_EXIST);
-        }
+        try (TreeBuilder<Integer> builder = new TreeBuilder<>(resourceList, 0)) {
+            // 权限id是否合法（是否存在）
+            if (!builder.isValidId(resource.getId()) || !builder.isValidId(resource.getParentId())) {
+                return StatusCode.AUTHORITY_NOT_EXIST;
+            }
 
-        // 判断新的parentId是否是当前id的子孙，如果是，parentId非法
-        boolean flag = builder.isDescendant(resource.getId(), resource.getParentId());
-        if (flag) {
-            return ResultModel.failed(StatusCode.AUTHORITY_PID_NOT_VALID);
+            // 判断新的parentId是否是当前id的子孙，如果是，parentId非法
+            boolean flag = builder.isDescendant(resource.getId(), resource.getParentId());
+            if (flag) {
+                return StatusCode.AUTHORITY_PID_NOT_VALID;
+            }
         }
-
         int cnt = authorityService.updateAuthorityById(resource);
-        return cnt == 1 ? ResultModel.success() : ResultModel.failed(StatusCode.AUTHORITY_UPDATE_FAILED);
+        return cnt == 1 ? StatusCode.SUCCESS : StatusCode.AUTHORITY_UPDATE_FAILED;
     }
 
     /**
@@ -85,8 +85,8 @@ public class AdminAuthorityController {
      */
     @RequiresPermissions("perm:delete")
     @PostMapping("/del")
-    public ResultModel delAuthority(@RequestParam("authorityIds[]") @NotEmpty Integer[] authorityIds) {
+    public StatusCode delAuthority(@RequestParam("authorityIds[]") @NotEmpty Integer[] authorityIds) {
         int cnt = authorityService.delAuthorityById(authorityIds);
-        return cnt == authorityIds.length ? ResultModel.success() : ResultModel.failed(StatusCode.AUTHORITY_DEL_FAILED);
+        return cnt == 1 ? StatusCode.SUCCESS : StatusCode.AUTHORITY_DEL_FAILED;
     }
 }
