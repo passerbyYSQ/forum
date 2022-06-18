@@ -31,6 +31,7 @@ public enum StatusCode {
     CAPTCHA_INVALID(6005, "验证码错误"),
     CAPTCHA_EXPIRED(6005, "验证码已过期"),
     DO_NOT_REPEAT_OPERATE(6006, "请勿重复操作"),
+    BASE64_INVALID(6007, "base64编码错误"),
 
     // 认证相关
     TOKEN_INVALID(6000, "无效token"),

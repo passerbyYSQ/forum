@@ -1,6 +1,5 @@
 package top.ysqorz.forum.service;
 
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO;
@@ -105,7 +104,7 @@ public interface ChatService {
      * 处理好友申请
      * @param action    agree, refuse, ignore
      */
-    ResultModel<String> processFriendApply(Integer friendApplyId, Integer friendGroupId, String action);
+    String processFriendApply(Integer friendApplyId, Integer friendGroupId, String action);
 
     /**
      * 消息盒子的数量变化后，推送消息
@@ -126,7 +125,7 @@ public interface ChatService {
     /**
      * 创建好友分组
      */
-    ResultModel<ChatFriendGroup> createFriendGroup(String friendGroupName);
+    ChatFriendGroup createFriendGroup(String friendGroupName);
 
     /**
      * 移动好友至指定分组
@@ -163,5 +162,5 @@ public interface ChatService {
     /**
      * 获取跟某个好友的聊天历史记录
      */
-    ResultModel<PageData<ChatFriendMsg>> getChatHistoryWithFriend(Integer friendId, Integer page, Integer count);
+    PageData<ChatFriendMsg> getChatHistoryWithFriend(Integer friendId, Integer page, Integer count);
 }

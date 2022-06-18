@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.upload.UploadRepository;
@@ -38,10 +37,9 @@ public class CommonController {
      * 前后台公用的上传的图片的接口
      */
     @PostMapping("/upload/image")
-    public ResultModel<UploadResult> uploadImage(@NotNull MultipartFile image) throws IOException  {
+    public UploadResult uploadImage(@NotNull MultipartFile image) throws IOException  {
         ImageUploader imageUploader = new ImageUploader(image, aliyunOssRepository);
-        UploadResult uploadResult = imageUploader.upload();
-        return ResultModel.success(uploadResult);
+        return imageUploader.upload();
     }
 
     /**

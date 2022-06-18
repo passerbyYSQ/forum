@@ -40,10 +40,7 @@ public class AdminUserController {
     public PageData<UserDTO> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
                                             @RequestParam(defaultValue = "1") Integer page,
                                             QueryUserCondition conditions) {
-        if (limit <= 0) {
-            limit = 10;
-        }
-        PageHelper.startPage(page, limit);
+        PageHelper.startPage(page, Math.max(1, limit));
         //  PageHelper.clearPage(); //不加报错
         return new PageData<>(userService.getMyUserList(conditions));
     }
@@ -115,10 +112,7 @@ public class AdminUserController {
     public PageData<Role> getRoleByUserId(@RequestParam(defaultValue = "10") Integer limit,
                                           @RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam("userId") @NotNull Integer userId) {
-        if (limit <= 0) {
-            limit = 10;
-        }
-        PageHelper.startPage(page, limit);
+        PageHelper.startPage(page, Math.max(1, limit));
         return new PageData<>(userService.getRoleByUserId(userId));
     }
 

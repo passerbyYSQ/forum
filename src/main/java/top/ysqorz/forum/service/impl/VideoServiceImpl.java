@@ -26,11 +26,11 @@ public class VideoServiceImpl implements VideoService {
     public Video getVideoDetailById(Integer videoId) {
         Video video = videoMapper.selectVideoDetailById(videoId);
         if (ObjectUtils.isEmpty(video)) {
-            throw new ParameterInvalidException(StatusCode.VIDEO_NOT_EXIST.getMsg());
+            throw new ParameterInvalidException(StatusCode.VIDEO_NOT_EXIST);
         }
         DbFile file = video.getFile();
         if (ObjectUtils.isEmpty(file)) {
-            throw new ParameterInvalidException(StatusCode.FILE_NOT_EXIST.getMsg());
+            throw new ParameterInvalidException(StatusCode.FILE_NOT_EXIST);
         }
         if (!ObjectUtils.isEmpty(file.getLocalPath())) {
             String completedLocalPath = ServletUriComponentsBuilder.fromCurrentContextPath()

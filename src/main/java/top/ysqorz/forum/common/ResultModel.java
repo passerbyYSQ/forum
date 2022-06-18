@@ -65,7 +65,4 @@ public class ResultModel<T>  {
     public static <T> ResultModel<T> failed(StatusCode code) {
         return failed(code.getCode(), code.getMsg());
     }
-
-
-
 }

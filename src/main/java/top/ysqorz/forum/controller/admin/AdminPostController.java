@@ -34,11 +34,8 @@ public class AdminPostController {
             @RequestParam(defaultValue = "1") Integer page, // 当前页
             @RequestParam(defaultValue = "10") Integer count, // 每一页显示条数
             QueryPostCondition condition) { // 查询条件
-        if (count < 1) {
-            count = 10;
-        }
         condition.generateOrderByStr(); // 校验参数，并拼接order by部分的字符串
-        PageHelper.startPage(page, count); // 里面会做page的越界纠正
+        PageHelper.startPage(page, Math.max(1, count)); // 里面会做page的越界纠正
         return new PageData<>(postService.getPostList(condition));
     }
 

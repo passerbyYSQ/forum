@@ -6,7 +6,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.Constant;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.CheckUserDTO;
@@ -75,17 +74,17 @@ public class UserCenterController {
 
     @PostMapping("/updatePassword")
     @ResponseBody
-    public ResultModel updatePassword(@Validated(RegisterDTO.UpdatePassword.class)
+    public StatusCode updatePassword(@Validated(RegisterDTO.UpdatePassword.class)
                                                   RegisterDTO dto) {
         if (!dto.getNewPassword().equals(dto.getRePassword())) {
-            return ResultModel.failed(StatusCode.PASSWORD_NOT_EQUAL); // 两次密码不一致
+            return StatusCode.PASSWORD_NOT_EQUAL; // 两次密码不一致
         }
         User me = userService.getUserById(ShiroUtils.getUserId());
 
         String encryptPwd = userService.encryptLoginPwd(dto.getPassword(), me.getLoginSalt());
         if (!me.getEmail().equals(dto.getEmail()) ||
                 !me.getPassword().equals(encryptPwd)) {
-            return ResultModel.failed(StatusCode.ACCOUNT_OR_PASSWORD_INCORRECT); // 邮箱或密码错误
+            return StatusCode.ACCOUNT_OR_PASSWORD_INCORRECT; // 邮箱或密码错误
         }
 
         String newEncryptPwd = userService.encryptLoginPwd(dto.getNewPassword(), me.getLoginSalt());
@@ -93,24 +92,24 @@ public class UserCenterController {
         record.setId(me.getId())
                 .setPassword(newEncryptPwd);
         userService.updateUserById(record);
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     @PostMapping("/updateInfo")
     @ResponseBody
-    public ResultModel updatePersonalInfo(User user) {
+    public StatusCode updatePersonalInfo(User user) {
         user.setId(ShiroUtils.getUserId());
         int cnt = userService.updateUserById(user);
         if (cnt != 1) {
-            return ResultModel.failed(StatusCode.INFO_UPDATE_FAILED);
+            return StatusCode.INFO_UPDATE_FAILED;
         }
         ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     @PostMapping("/uploadFaceImage")
     @ResponseBody
-    public ResultModel uploadFaceImage(@NotBlank String imageBase64) throws IOException {
+    public UploadResult uploadFaceImage(@NotBlank String imageBase64) throws IOException {
         ImageUploader imageUploader = new ImageUploader(imageBase64, aliyunOssRepository);
         UploadResult uploadResult = imageUploader.uploadBase64();
         User record = new User();
@@ -118,7 +117,7 @@ public class UserCenterController {
                 .setPhoto(uploadResult.getUrl()[0]);
         userService.updateUserById(record);
         ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
-        return ResultModel.success(uploadResult);
+        return uploadResult;
     }
 
     /**
@@ -155,15 +154,10 @@ public class UserCenterController {
      */
     @ResponseBody
     @GetMapping("/message/list")
-    public ResultModel<PageData<MessageListDTO>> megList(@RequestParam(defaultValue = "3") Integer limit,
-                                                         @RequestParam(defaultValue = "1") Integer page,
-                                                         Integer conditions) {
-        if (limit <= 0) {
-            limit = 3;
-        }
-
-        PageData<MessageListDTO> megList = messageService.getMegList(page, limit, conditions);
-        return ResultModel.success(megList);
+    public PageData<MessageListDTO> megList(@RequestParam(defaultValue = "3") Integer limit,
+                                            @RequestParam(defaultValue = "1") Integer page,
+                                            Integer conditions) {
+        return messageService.getMegList(page, Math.max(1, limit), conditions);
     }
 
     /**
@@ -171,10 +165,9 @@ public class UserCenterController {
      */
     @ResponseBody
     @GetMapping("/message/clearAll")
-    public ResultModel clearAllMeg() {
-
-        int i = messageService.clearAllMeg();
-        return i >= 0 ? ResultModel.success() : ResultModel.failed(StatusCode.UNKNOWN_ERROR);
+    public StatusCode clearAllMeg() {
+        int cnt = messageService.clearAllMeg();
+        return cnt >= 0 ? StatusCode.SUCCESS : StatusCode.UNKNOWN_ERROR;
     }
 
 
@@ -183,26 +176,26 @@ public class UserCenterController {
      */
     @ResponseBody
     @PostMapping("changeUserPhone")
-    public ResultModel changeUserPhone(@Validated CheckUserDTO checkUser) {
+    public StatusCode changeUserPhone(@Validated CheckUserDTO checkUser) {
         //检查用户账号密码是否正确
         StatusCode check = userService.checkUser(checkUser);
         if (!check.equals(StatusCode.SUCCESS)) {
-            return ResultModel.failed(check);
+            return check;
         }
         //手机格式不正确
         if (!checkUser.getNewPhone().matches(Constant.REGEX_PHONE)) {
-            return ResultModel.failed(StatusCode.PHONE_INCORRECT);
+            return StatusCode.PHONE_INCORRECT;
         }
         //检查手机是否已被绑定
         if (userService.checkBind(checkUser.getNewPhone(), "phone")) {
-            return ResultModel.failed(StatusCode.PHONE_IS_EXIST);
+            return StatusCode.PHONE_IS_EXIST;
         }
         User record = new User();
         record.setId(ShiroUtils.getUserId())
             .setPhone(checkUser.getNewPhone());
         userService.updateUserById(record);
         ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -210,7 +203,7 @@ public class UserCenterController {
      */
     @ResponseBody
     @PostMapping("changeUserEmail")
-    public ResultModel changeUserEmail(@Validated CheckUserDTO checkUser) {
+    public StatusCode changeUserEmail(@Validated CheckUserDTO checkUser) {
         int myId = ShiroUtils.getUserId();
         User me = userService.getUserById(myId);
         User record = new User();
@@ -219,31 +212,31 @@ public class UserCenterController {
         if (ObjectUtils.isEmpty(me.getEmail())) { // 设置邮箱和密码
             //检查两次输入的密码是否一致
             if (!checkUser.getCheckPassword().equals(checkUser.getRePassword())) {
-                return ResultModel.failed(StatusCode.PASSWORD_NOT_EQUAL);
+                return StatusCode.PASSWORD_NOT_EQUAL;
             }
             //检查邮箱是否已被绑定
             if (userService.checkBind(checkUser.getOldEmail(), "email")) {
-                return ResultModel.failed(StatusCode.EMAIL_IS_EXIST);
+                return StatusCode.EMAIL_IS_EXIST;
             }
             record.setEmail(checkUser.getOldEmail())
                     .setPassword(userService.encryptLoginPwd(
-                            checkUser.getCheckPassword(),  me.getLoginSalt()));
+                            checkUser.getCheckPassword(), me.getLoginSalt()));
 
         } else { // 修改邮箱
             //检查用户账号密码是否正确
             StatusCode code = userService.checkUser(checkUser);
             if (!code.equals(StatusCode.SUCCESS)) {
-                return ResultModel.failed(code);
+                return code;
             }
             //检查邮箱是否已被绑定
             if (userService.checkBind(checkUser.getNewEmail(), "email")) {
-                return ResultModel.failed(StatusCode.EMAIL_IS_EXIST);
+                return StatusCode.EMAIL_IS_EXIST;
             }
             record.setEmail(checkUser.getNewEmail());
         }
         userService.updateUserById(record);
         ShiroUtils.clearCurrentUserAuthenticationCache(); // 清除缓存
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -251,11 +244,11 @@ public class UserCenterController {
      */
     @ResponseBody
     @PostMapping("Unbundling")
-    public ResultModel unbind(@Validated CheckUserDTO checkUser) {
+    public StatusCode unbind(@Validated CheckUserDTO checkUser) {
         //检查用户账号密码是否正确
         StatusCode check = userService.checkUser(checkUser);
         if (!check.equals(StatusCode.SUCCESS)) {
-            return ResultModel.failed(check);
+            return check;
         }
         User record = new User();
         record.setId(ShiroUtils.getUserId());
@@ -267,7 +260,7 @@ public class UserCenterController {
             }
             userService.updateUserById(record);
         }
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
 }

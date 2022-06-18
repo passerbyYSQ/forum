@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dao.ChatFriendApplyMapper;
 import top.ysqorz.forum.dao.ChatFriendGroupMapper;
 import top.ysqorz.forum.dao.ChatFriendMapper;
@@ -227,10 +227,10 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ResultModel<PageData<ChatFriendMsg>> getChatHistoryWithFriend(Integer friendId, Integer page, Integer count) {
+    public PageData<ChatFriendMsg> getChatHistoryWithFriend(Integer friendId, Integer page, Integer count) {
         ChatFriend friend = this.getMyChatFriendById(friendId);
         if (ObjectUtils.isEmpty(friend)) {
-            return ResultModel.failed(StatusCode.CHAT_FRIEND_NOT_EXIST);
+            throw new ServiceFailedException(StatusCode.CHAT_FRIEND_NOT_EXIST);
         }
         PageHelper.startPage(page, count); // 开启分页
         Example example = new Example(ChatFriendMsg.class);
@@ -245,7 +245,7 @@ public class ChatServiceImpl implements ChatService {
                 .andEqualTo("receiverId", myId);
         example.or(sentByFriend);
         List<ChatFriendMsg> history = chatFriendMsgMapper.selectByExample(example);
-        return ResultModel.success(new PageData<>(history));
+        return new PageData<>(history);
     }
 
     @Override
@@ -286,12 +286,12 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional // 添加事务处理
-    public ResultModel<String> processFriendApply(Integer friendApplyId, Integer friendGroupId, String action) {
+    public String processFriendApply(Integer friendApplyId, Integer friendGroupId, String action) {
         ChatFriendApply apply = this.getFriendApplyById(friendApplyId);
         Integer myId = ShiroUtils.getUserId();
         if (ObjectUtils.isEmpty(apply) || !apply.getReceiverId().equals(myId) // 接收者是我才能处理
                 || !ObjectUtils.isEmpty(apply.getStatus())) {
-            return ResultModel.failed(StatusCode.CHAT_FRIEND_APPLY_INVALID);
+            throw new ServiceFailedException(StatusCode.CHAT_FRIEND_APPLY_INVALID);
         }
         if ("ignore".equalsIgnoreCase(action)) {
             chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId); // 忽略直接删除
@@ -302,12 +302,12 @@ public class ChatServiceImpl implements ChatService {
         } else if ("agree".equalsIgnoreCase(action)) {
             // 同意后，需要等对方签收后再删除
             if (this.isInvalidFriendGroup(friendGroupId)) {
-                return ResultModel.failed(StatusCode.CHAT_FRIEND_GROUP_INVALID); // 好友分组非法
+                throw new ServiceFailedException(StatusCode.CHAT_FRIEND_GROUP_INVALID); // 好友分组非法
             }
             ChatFriend chatFriend = this.getMyChatFriendById(apply.getSenderId());
             if (!ObjectUtils.isEmpty(chatFriend)) { // 已经是好友，不能添加，把好友申请给删除
                 chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId);
-                return ResultModel.failed(StatusCode.CHAT_ALREADY_FRIEND);
+                throw new ServiceFailedException(StatusCode.CHAT_ALREADY_FRIEND);
             }
             Integer toGroupId = apply.getFriendGroupId();
             this.updateFriendApplyStatusById(friendApplyId, (byte) 1);
@@ -330,9 +330,9 @@ public class ChatServiceImpl implements ChatService {
             this.pushMsgBoxCount(apply.getSenderId());
             // 返回对方的在线状态
             boolean iOnline = redisService.isUserOnline(apply.getSenderId());
-            return ResultModel.success(iOnline ? "online" : "offline");
+            return iOnline ? "online" : "offline";
         }
-        return ResultModel.success();
+        return "";
     }
 
     @Override
@@ -400,16 +400,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ResultModel<ChatFriendGroup> createFriendGroup(String friendGroupName) {
+    public ChatFriendGroup createFriendGroup(String friendGroupName) {
         ChatFriendGroup friendGroup = this.getFriendGroupByName(friendGroupName);
         if (!ObjectUtils.isEmpty(friendGroup) || "未分组".equals(friendGroupName)) {
-            return ResultModel.failed(StatusCode.CHAT_FRIEND_GROUP_EXIST);
+            throw new ServiceFailedException(StatusCode.CHAT_FRIEND_GROUP_EXIST);
         }
         ChatFriendGroup newFriendGroup = new ChatFriendGroup();
         newFriendGroup.setGroupName(friendGroupName.trim())
                 .setUserId(ShiroUtils.getUserId());
         chatFriendGroupMapper.insertUseGeneratedKeys(newFriendGroup);
-        return ResultModel.success(newFriendGroup);
+        return newFriendGroup;
     }
 
     @Override

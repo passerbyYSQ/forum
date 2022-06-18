@@ -31,10 +31,7 @@ public class AdminTopicController {
     public PageData<TopicDTO> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
                                              @RequestParam(defaultValue = "1") Integer page,
                                              String topicName) {
-        if (limit <= 0) {
-            limit = 10;
-        }
-        PageHelper.startPage(page, limit);
+        PageHelper.startPage(page, Math.max(1, limit));
         return new PageData<>(topicService.getAllTopic(topicName));
     }
 

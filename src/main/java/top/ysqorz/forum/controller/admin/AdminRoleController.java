@@ -103,12 +103,8 @@ public class AdminRoleController {
             @RequestParam(defaultValue = "1") Integer page, // 当前页
             @RequestParam(defaultValue = "10") Integer count, // 每一页显示条数
             String roleName) { // 根据角色名来筛选
-        // 参数纠正
-        if (count < 1) {
-            count = 10;
-        }
         // 紧跟在这个方法后的第一个MyBatis 查询方法会被进行分页
-        PageHelper.startPage(page, count);
+        PageHelper.startPage(page, Math.max(1, count));
         // 该查询被分页
         return new PageData<>(roleService.getRoleList(roleName));
     }

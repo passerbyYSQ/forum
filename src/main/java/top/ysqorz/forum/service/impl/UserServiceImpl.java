@@ -163,7 +163,7 @@ public class UserServiceImpl implements UserService {
         for (Integer roleId : roleIds) {
             Role role = roleService.getRoleById(roleId);
             if (role == null) {
-                throw new ParameterInvalidException(StatusCode.ROLE_NOT_EXIST.getMsg());
+                throw new ParameterInvalidException(StatusCode.ROLE_NOT_EXIST);
             }
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)

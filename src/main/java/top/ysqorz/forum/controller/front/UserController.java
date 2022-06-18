@@ -70,26 +70,25 @@ public class UserController {
      */
     @PostMapping("/reg")
     @ResponseBody
-    public ResultModel register(@Validated(RegisterDTO.Register.class) RegisterDTO dto) {
+    public StatusCode register(@Validated(RegisterDTO.Register.class) RegisterDTO dto) {
         if (!dto.getPassword().equals(dto.getRePassword())) {
-            return ResultModel.failed(StatusCode.PASSWORD_NOT_EQUAL); // 两次输入密码不一致
+            return StatusCode.PASSWORD_NOT_EQUAL; // 两次输入密码不一致
         }
         String correctCaptcha = redisService.getCaptcha(dto.getToken());
         if (ObjectUtils.isEmpty(correctCaptcha)) {
-            return ResultModel.failed(StatusCode.CAPTCHA_EXPIRED); // 验证码过期
+            return StatusCode.CAPTCHA_EXPIRED; // 验证码过期
         }
         if (!dto.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
-            return ResultModel.failed(StatusCode.CAPTCHA_INVALID); // 验证码错误
+            return StatusCode.CAPTCHA_INVALID; // 验证码错误
         }
 
         User user = userService.getUserByEmail(dto.getEmail());
         if (!ObjectUtils.isEmpty(user)) {
-            return ResultModel.failed(StatusCode.EMAIL_IS_EXIST); // 该邮箱已注册
+            return StatusCode.EMAIL_IS_EXIST; // 该邮箱已注册
         }
 
         userService.register(dto);
-
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -256,7 +255,7 @@ public class UserController {
         User user = userService.getUserById(visitId);
         //确认用户是否存在
         if (ObjectUtils.isEmpty(user)) {
-            throw new ParameterInvalidException("用户不存在");
+            throw new ParameterInvalidException(StatusCode.USER_NOT_EXIST);
         }
         SimpleUserDTO information = userService.getHomeInformationById(visitId);
         model.addAttribute("information", information);
@@ -275,15 +274,15 @@ public class UserController {
      */
     @PostMapping("/home/{visitId}/changeFocus")
     @ResponseBody
-    public ResultModel changeFollowOther(boolean isFocusOn, @PathVariable Integer visitId) {
+    public StatusCode changeFollowOther(boolean isFocusOn, @PathVariable Integer visitId) {
         if (userService.isFocusOn(visitId) == isFocusOn) {
-            return ResultModel.failed(StatusCode.DO_NOT_REPEAT_OPERATE);
+            return StatusCode.DO_NOT_REPEAT_OPERATE;
         }
         if (isFocusOn) {
             userService.addFollow(visitId);
         } else {
             userService.deleteFollow(visitId);
         }
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.ResultModel;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO;
@@ -79,10 +80,11 @@ public class ChatController {
      */
     @ResponseBody
     @GetMapping("/search/user")
-    public ResultModel<PageData<ChatUserCardDTO>> searchUser(
-            @RequestParam(defaultValue = "") @Length(max = 16) String keyword, @RequestParam(defaultValue = "all") String status,
-             @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "8") Integer count) {
-        return ResultModel.success(chatService.getChatUserCards(keyword, status, page, count));
+    public PageData<ChatUserCardDTO> searchUser(
+            @RequestParam(defaultValue = "") @Length(max = 16) String keyword,
+            @RequestParam(defaultValue = "all") String status, @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "8") Integer count) {
+        return chatService.getChatUserCards(keyword, status, page, Math.max(1, count));
     }
 
     /**
@@ -90,9 +92,9 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/apply")
-    public ResultModel applyFiend(@NotNull Integer receiverId, Integer friendGroupId, // 允许为空，未分组就为空
-                                  @RequestParam(defaultValue = "") String content) {
-        return ResultModel.wrap(chatService.applyFriend(receiverId, friendGroupId, content));
+    public StatusCode applyFiend(@NotNull Integer receiverId, Integer friendGroupId, // 允许为空，未分组就为空
+                                 @RequestParam(defaultValue = "") String content) {
+        return chatService.applyFriend(receiverId, friendGroupId, content);
     }
 
     /**
@@ -100,9 +102,9 @@ public class ChatController {
      */
     @ResponseBody
     @GetMapping("/notification")
-    public ResultModel<PageData<ChatFriendApplyDTO>> notification(@RequestParam(defaultValue = "1") Integer page,
-                                                              @RequestParam(defaultValue = "8") Integer count) {
-        return ResultModel.success(chatService.getFriendApplyNotifications(page, count));
+    public PageData<ChatFriendApplyDTO> notification(@RequestParam(defaultValue = "1") Integer page,
+                                                     @RequestParam(defaultValue = "8") Integer count) {
+        return chatService.getFriendApplyNotifications(page, Math.max(1, count));
     }
 
     /**
@@ -111,8 +113,8 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/apply/process")
-    public ResultModel<String> processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
-                                          @NotBlank String action) {
+    public String processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
+                                     @NotBlank String action) {
         return chatService.processFriendApply(friendApplyId, friendGroupId, action);
     }
 
@@ -122,9 +124,9 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/apply/sign")
-    public ResultModel signNotification(@NotBlank String friendApplyIds) {
+    public StatusCode signNotification(@NotBlank String friendApplyIds) {
         chatService.signFriendApplyNotifications(friendApplyIds);
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -143,7 +145,7 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/group/create")
-    public ResultModel<ChatFriendGroup> createFriendGroup(@Length(max = 16) String friendGroupName) {
+    public ChatFriendGroup createFriendGroup(@Length(max = 16) String friendGroupName) {
         return chatService.createFriendGroup(friendGroupName);
     }
 
@@ -152,8 +154,8 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/group/delete")
-    public ResultModel deleteFriendGroup(@NotNull Integer friendGroupId) {
-        return ResultModel.wrap(chatService.deleteFriendGroup(friendGroupId));
+    public StatusCode deleteFriendGroup(@NotNull Integer friendGroupId) {
+        return chatService.deleteFriendGroup(friendGroupId);
     }
 
     /**
@@ -163,8 +165,8 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/move")
-    public ResultModel moveFriend(@NotBlank String friendIds, Integer targetFriendGroupId) {
-        return ResultModel.wrap(chatService.moveFriendToGroup(friendIds, targetFriendGroupId));
+    public StatusCode moveFriend(@NotBlank String friendIds, Integer targetFriendGroupId) {
+        return chatService.moveFriendToGroup(friendIds, targetFriendGroupId);
     }
 
     /**
@@ -173,8 +175,8 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/delete")
-    public ResultModel deleteFriend(@NotNull Integer friendId) {
-        return ResultModel.wrap(chatService.deleteChatFriend(friendId));
+    public StatusCode deleteFriend(@NotNull Integer friendId) {
+        return chatService.deleteChatFriend(friendId);
     }
 
     /**
@@ -182,9 +184,9 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/msg/send")
-    public ResultModel sendChatFriendMsg(@NotNull Integer friendId, @Length(max = 10000) String content,
+    public StatusCode sendChatFriendMsg(@NotNull Integer friendId, @Length(max = 10000) String content,
                                          @NotBlank String channelId) {
-       return ResultModel.wrap(chatService.sendChatFriendMsg(friendId, content, channelId));
+       return chatService.sendChatFriendMsg(friendId, content, channelId);
     }
 
     /**
@@ -193,9 +195,9 @@ public class ChatController {
      */
     @ResponseBody
     @PostMapping("/friend/msg/sign")
-    public ResultModel signChatFriendMsg(@NotBlank String msgIds) {
+    public StatusCode signChatFriendMsg(@NotBlank String msgIds) {
         chatService.signChatFriendMsg(msgIds);
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
@@ -203,8 +205,8 @@ public class ChatController {
      */
     @ResponseBody
     @GetMapping("/friend/msg/not_signed")
-    public ResultModel<List<NotSignedChatFriendMsg>> getNotSignedChatFriendMsg() {
-        return ResultModel.success(chatService.getNotSignedChatFriendMsg());
+    public List<NotSignedChatFriendMsg> getNotSignedChatFriendMsg() {
+        return chatService.getNotSignedChatFriendMsg();
     }
 
     /**
@@ -212,10 +214,10 @@ public class ChatController {
      */
     @ResponseBody
     @GetMapping("/friend/msg/history")
-    public ResultModel<PageData<ChatFriendMsg>> getChatHistoryWithFriend(@NotNull Integer friendId,
-                                                                         @RequestParam(defaultValue = "1") Integer page,
-                                                                         @RequestParam(defaultValue = "8") Integer count) {
-        return chatService.getChatHistoryWithFriend(friendId, page, count);
+    public PageData<ChatFriendMsg> getChatHistoryWithFriend(@NotNull Integer friendId,
+                                                            @RequestParam(defaultValue = "1") Integer page,
+                                                            @RequestParam(defaultValue = "8") Integer count) {
+        return chatService.getChatHistoryWithFriend(friendId, page, Math.max(1, count));
     }
 
     /**

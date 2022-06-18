@@ -23,10 +23,11 @@ public class ParameterInvalidException extends RuntimeException {
     }
 
     /**
-     * 兼容旧代码
-     * @deprecated
+     * 动态的(包含变量)提示信息
      */
     public ParameterInvalidException(String msg) {
         super(msg);
+        this.code = StatusCode.PARAM_INVALID;
+        this.code.setMsg(msg);
     }
 }

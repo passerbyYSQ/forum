@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.QueryPostCondition;
 import top.ysqorz.forum.dto.resp.AttendCardDTO;
@@ -68,11 +68,8 @@ public class IndexController {
     public PageData<PostDTO> getPostList(@RequestParam(defaultValue = "10") Integer limit,
                                                       @RequestParam(defaultValue = "1") Integer page,
                                                       QueryPostCondition conditions) {
-        if (limit <= 0) {
-            limit = 10;
-        }
         conditions.splitLabelsStr();
-        return postService.getIndexPost(page, limit, conditions);
+        return postService.getIndexPost(page, Math.max(1, limit), conditions);
     }
 
     /**
@@ -81,13 +78,12 @@ public class IndexController {
     //@RequiresAuthentication // 不能使用这个注解，因为认证检查不会经过我们自定义的jwtAuth拦截器
     @PostMapping("/attend")
     @ResponseBody
-    public ResultModel<AttendDTO> attend() {
+    public AttendDTO attend() {
         Attendance attend = attendService.getMyAttendToday(); // 判断今天我是否已经签到过
         if (!ObjectUtils.isEmpty(attend)) {
-            return ResultModel.failed(StatusCode.DO_NOT_REPEAT_OPERATE); // 请勿重复签到
+            throw new ServiceFailedException(StatusCode.DO_NOT_REPEAT_OPERATE); // 请勿重复签到
         }
-        AttendDTO attendDTO = attendService.attend();
-        return ResultModel.success(attendDTO);
+        return attendService.attend();
     }
 
     /**
@@ -95,10 +91,8 @@ public class IndexController {
      */
     @GetMapping("/attend/rank")
     @ResponseBody
-    public ResultModel<List<AttendDTO>> attendRankList(@NotNull @Min(1) @Max(20)
-                                                               Integer count) {
-        List<AttendDTO> rankList = attendService.rankList(count);
-        return ResultModel.success(rankList);
+    public List<AttendDTO> attendRankList(@NotNull @Min(1) @Max(20) Integer count) {
+        return attendService.rankList(count);
     }
 
     /**
@@ -106,10 +100,8 @@ public class IndexController {
      */
     @GetMapping("/attend/consecutive/rank")
     @ResponseBody
-    public ResultModel consecutiveDaysRankList(@NotNull @Min(1) @Max(20)
-                                                       Integer count) {
-        List<AttendDTO> rankList = attendService.consecutiveDaysRankList(count);
-        return ResultModel.success(rankList);
+    public List<AttendDTO> consecutiveDaysRankList(@NotNull @Min(1) @Max(20) Integer count) {
+        return attendService.consecutiveDaysRankList(count);
     }
 
     /**
@@ -117,18 +109,14 @@ public class IndexController {
      */
     @GetMapping("/index/label")
     @ResponseBody
-    public ResultModel achieveRandomLabels() {
-        Integer total = 10;
-        List<Label> labelList = labelService.achieveRandomLabels(total);
-        return ResultModel.success(labelList);
+    public List<Label> achieveRandomLabels() {
+        return labelService.achieveRandomLabels(10);
     }
 
     @GetMapping("/index/week/post")
     @ResponseBody
-    public ResultModel getWeekTopPostList() {
-        Integer count = 5;
-        List<WeekTopPostDTO> postList = redisService.hostPostWeekRankTop(count);
-        return ResultModel.success(postList);
+    public List<WeekTopPostDTO> getWeekTopPostList() {
+        return redisService.hostPostWeekRankTop(5);
     }
 
 }

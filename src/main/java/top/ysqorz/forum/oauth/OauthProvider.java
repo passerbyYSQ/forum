@@ -69,7 +69,7 @@ public abstract class OauthProvider<T> {
     public final T getUser(String code) throws IOException {
         T oauthUser = getOauthUser(getAccessToken(code));
         if (ObjectUtils.isEmpty(oauthUser)) {
-            throw new ParameterInvalidException(StatusCode.OAUTH_FAILED.getMsg());
+            throw new ParameterInvalidException(StatusCode.OAUTH_FAILED);
         }
         return oauthUser;
     }
@@ -81,7 +81,7 @@ public abstract class OauthProvider<T> {
      */
     public final User getDbUser(Object openId) {
         if (ObjectUtils.isEmpty(openId)) {
-            throw new ParameterInvalidException(StatusCode.OAUTH_FAILED.getMsg());
+            throw new ParameterInvalidException(StatusCode.OAUTH_FAILED);
         }
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo(poField, openId); //gitee_id
@@ -101,11 +101,11 @@ public abstract class OauthProvider<T> {
         }
         String[] params = state.split(",");
         if (params.length != 3) {
-            throw new ParameterInvalidException(StatusCode.CSRF_ATTACK.getMsg());
+            throw new ParameterInvalidException(StatusCode.CSRF_ATTACK);
         }
         String correctState = redisService.getOauthState(params[1]);
         if (ObjectUtils.isEmpty(correctState) || !correctState.equals(state)) {
-            throw new ParameterInvalidException(StatusCode.CSRF_ATTACK.getMsg());
+            throw new ParameterInvalidException(StatusCode.CSRF_ATTACK);
         }
         return params[0]; // 返回真正的referer
     }

@@ -7,8 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.po.DanmuMsg;
 import top.ysqorz.forum.po.Video;
 import top.ysqorz.forum.service.DanmuService;
@@ -34,9 +34,9 @@ public class VideoController {
 
     @ResponseBody
     @PostMapping("/danmu/send")
-    public ResultModel sendDanmu(@NotNull Integer videoId, @Length(max = 255) String content,
-                                 @Range Long startMs, @NotBlank String channelId) {
-        return ResultModel.wrap(danmuService.sendDanmu(videoId, content, startMs, channelId));
+    public StatusCode sendDanmu(@NotNull Integer videoId, @Length(max = 255) String content,
+                                @Range Long startMs, @NotBlank String channelId) {
+        return danmuService.sendDanmu(videoId, content, startMs, channelId);
     }
 
     @GetMapping("/{videoId}")
@@ -48,12 +48,11 @@ public class VideoController {
 
     @ResponseBody
     @GetMapping("/danmu/{videoId}")
-    public ResultModel<List<DanmuMsg>> getDanmuList(@PathVariable @NotNull Integer videoId) {
+    public List<DanmuMsg> getDanmuList(@PathVariable @NotNull Integer videoId) {
         Video video = videoService.getVideoById(videoId);
         if (ObjectUtils.isEmpty(video)) {
-            return ResultModel.failed(StatusCode.VIDEO_NOT_EXIST);
+            throw new ServiceFailedException(StatusCode.VIDEO_NOT_EXIST);
         }
-        List<DanmuMsg> danmuList = danmuService.getDanmuListByVideoId(videoId);
-        return ResultModel.success(danmuList);
+        return danmuService.getDanmuListByVideoId(videoId);
     }
 }

@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
                     .append(cvl.getMessage())
                     .append(";");
         }
-        return wrapModelAndView(StatusCode.PARAM_INVALID,  errorMsg.toString(), request);
+        return wrapModelAndView(StatusCode.PARAM_INVALID, errorMsg.toString(), request);
     }
 
     // 参数错误
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ParameterInvalidException.class)
     public ModelAndView handleParameterInvalidException(ParameterInvalidException e, HttpServletRequest request) {
-        return wrapModelAndView(StatusCode.PARAM_INVALID, e.getMessage(), request);
+        return wrapModelAndView(e.getCode(), null, request);
     }
 
     /**
