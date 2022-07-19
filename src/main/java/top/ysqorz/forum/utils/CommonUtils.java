@@ -35,7 +35,7 @@ public class CommonUtils {
         return idSet;
     }
 
-    public static void writeJson(HttpServletResponse httpResponse, ResultModel result) {
+    public static void writeJson(HttpServletResponse httpResponse, ResultModel<?> result) {
         httpResponse.setCharacterEncoding("UTF-8");
         httpResponse.setContentType("application/json;charset=UTF-8");
         try {

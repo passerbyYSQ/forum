@@ -16,6 +16,7 @@ import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.UserService;
+import top.ysqorz.forum.shiro.Permission;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -35,7 +36,7 @@ public class AdminUserController {
     /**
      * 获取User数据
      */
-    @RequiresPermissions("user:view")
+    @RequiresPermissions(Permission.USER_VIEW)
     @GetMapping("/table")
     public PageData<UserDTO> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
                                             @RequestParam(defaultValue = "1") Integer page,
@@ -48,7 +49,7 @@ public class AdminUserController {
     /**
      * 重置密码
      */
-    @RequiresPermissions("user:resetPwd")
+    @RequiresPermissions(Permission.USER_RESET_PWD)
     @PostMapping("/resetPsw")
     public StatusCode resetPsw(@RequestParam("userId") @NotNull Integer userId) {
         User user = userService.getUserById(userId);
@@ -62,7 +63,7 @@ public class AdminUserController {
     /**
      * 取消拉黑
      */
-    @RequiresPermissions("user:blacklist")
+    @RequiresPermissions(Permission.USER_BLACKLIST)
     @PostMapping("/cancelBlock")
     public StatusCode cancelBlock(@RequestParam("userId") @NotNull Integer userId) {
         int cnt = userService.cancelBlock(userId);
@@ -72,7 +73,7 @@ public class AdminUserController {
     /**
      * 拉黑
      */
-    @RequiresPermissions("user:blacklist")
+    @RequiresPermissions(Permission.USER_BLACKLIST)
     @PostMapping("/block")
     public StatusCode block(@Validated(Blacklist.Add.class) Blacklist blacklist) {
         int cnt = userService.block(blacklist);
@@ -83,7 +84,7 @@ public class AdminUserController {
     /**
      * 取消封禁时拉取封禁信息
      */
-    @RequiresPermissions("user:blacklist")
+    @RequiresPermissions(Permission.USER_BLACKLIST)
     @GetMapping("/getBlockInfo")
     public BlackInfoDTO getBlockInfo(@RequestParam("userId") @NotNull Integer userId) {
         return userService.getBlackInfo(userId);
@@ -93,7 +94,7 @@ public class AdminUserController {
     /**
      * 添加角色
      */
-    @RequiresPermissions("user:allotRole")
+    @RequiresPermissions(Permission.USER_ALLOT_ROLE)
     @PostMapping("/addRole")
     public StatusCode addRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                                @RequestParam("userId") @NotNull Integer userId) {
@@ -107,7 +108,7 @@ public class AdminUserController {
     /**
      * 查询每个用户所分配的角色
      */
-    @RequiresPermissions("role:view")
+    @RequiresPermissions(Permission.ROLE_VIEW)
     @GetMapping("/getRoleByUserId")
     public PageData<Role> getRoleByUserId(@RequestParam(defaultValue = "10") Integer limit,
                                           @RequestParam(defaultValue = "1") Integer page,
@@ -119,7 +120,7 @@ public class AdminUserController {
     /**
      * 删除角色
      */
-    @RequiresPermissions("user:deleteRole")
+    @RequiresPermissions(Permission.USER_DELETE_ROLE)
     @PostMapping("/delRole")
     public StatusCode delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds,
                               @RequestParam("userId") @NotNull Integer userId) {

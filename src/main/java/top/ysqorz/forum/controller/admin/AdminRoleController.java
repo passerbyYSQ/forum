@@ -15,6 +15,7 @@ import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.service.AuthorityService;
 import top.ysqorz.forum.service.RoleService;
+import top.ysqorz.forum.shiro.Permission;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -38,7 +39,7 @@ public class AdminRoleController {
     @Autowired
     private AuthorityService authorityService;
 
-    @RequiresPermissions("role:delete")
+    @RequiresPermissions(Permission.ROLE_DELETE)
     @PostMapping("/del")
     public StatusCode delRole(@RequestParam("roleIds[]") @NotEmpty Integer[] roleIds) {
         roleService.delRoleWithPerms(roleIds);
@@ -48,7 +49,7 @@ public class AdminRoleController {
     /**
      * 修改角色
      */
-    @RequiresPermissions("role:update")
+    @RequiresPermissions(Permission.ROLE_UPDATE)
     @PostMapping("/update")
     public StatusCode updateRole(@Validated(Role.Update.class) Role role) {
         int cnt = roleService.updateRoleById(role);
@@ -58,7 +59,7 @@ public class AdminRoleController {
     /**
      * 添加角色（没有任何权限）
      */
-    @RequiresPermissions("role:add")
+    @RequiresPermissions(Permission.ROLE_ADD)
     @PostMapping("/add")
     public Role addRole(@Validated(Role.Add.class) Role role) {
         return roleService.addRole(role);
@@ -67,7 +68,7 @@ public class AdminRoleController {
     /**
      * 分配权限
      */
-    @RequiresPermissions("role:allotPerm")
+    @RequiresPermissions(Permission.ROLE_ALLOT_PERM)
     @PostMapping("/assign")
     public StatusCode assignPerms(@NotNull Integer roleId,
            @RequestParam(value = "permIds[]", defaultValue = "") Integer[] permIds) {
@@ -77,7 +78,7 @@ public class AdminRoleController {
     /**
      * 某个角色的权限树
      */
-    @RequiresPermissions("perm:view")
+    @RequiresPermissions(Permission.PERM_VIEW)
     @GetMapping("/perm")
     public List<PermZTreeNode> rolePermList(@NotNull Integer roleId) {
         Role role = roleService.getRoleById(roleId);
@@ -97,7 +98,7 @@ public class AdminRoleController {
     /**
      * 角色列表
      */
-    @RequiresPermissions("role:view")
+    @RequiresPermissions(Permission.ROLE_VIEW)
     @GetMapping("/list")
     public PageData<Role> roleList(
             @RequestParam(defaultValue = "1") Integer page, // 当前页

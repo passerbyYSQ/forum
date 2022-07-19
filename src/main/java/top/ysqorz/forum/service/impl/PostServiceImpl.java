@@ -20,6 +20,7 @@ import top.ysqorz.forum.dto.resp.PostDetailDTO;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
+import top.ysqorz.forum.shiro.Permission;
 import top.ysqorz.forum.shiro.ShiroUtils;
 
 import javax.annotation.Resource;
@@ -218,10 +219,10 @@ public class PostServiceImpl implements PostService {
         postDetailDTO.setLikerList(likerList);
         // 权限
         boolean isCreator = creator.getId().equals(ShiroUtils.getUserId()); // 不登陆也不会报错
-        postDetailDTO.setIsShowEdit(ShiroUtils.hasPerm("post:update") || isCreator); // 不登陆也会返回false
-        postDetailDTO.setIsShowDelete(ShiroUtils.hasPerm("post:delete") || isCreator);
-        postDetailDTO.setIsShowTop(ShiroUtils.hasPerm("post:top"));
-        postDetailDTO.setIsShowQuality(ShiroUtils.hasPerm("post:quality"));
+        postDetailDTO.setIsShowEdit(ShiroUtils.hasPerm(Permission.POST_UPDATE) || isCreator); // 不登陆也会返回false
+        postDetailDTO.setIsShowDelete(ShiroUtils.hasPerm(Permission.POST_DELETE) || isCreator);
+        postDetailDTO.setIsShowTop(ShiroUtils.hasPerm(Permission.POST_TOP));
+        postDetailDTO.setIsShowQuality(ShiroUtils.hasPerm(Permission.POST_QUALITY));
         // 是否热门
         Set<Integer> top5 = redisService.hostPostDayRankTop(5);
         postDetailDTO.setIsHot(top5.contains(post.getId()));

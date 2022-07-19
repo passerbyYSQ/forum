@@ -11,6 +11,7 @@ import top.ysqorz.forum.dto.req.QueryPostCondition;
 import top.ysqorz.forum.dto.resp.PostDTO;
 import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.service.PostService;
+import top.ysqorz.forum.shiro.Permission;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Max;
@@ -28,7 +29,7 @@ public class AdminPostController {
     @Resource
     private PostService postService;
 
-    @RequiresPermissions("post:view")
+    @RequiresPermissions(Permission.POST_VIEW)
     @GetMapping("/list")
     public PageData<PostDTO> postList(
             @RequestParam(defaultValue = "1") Integer page, // 当前页
@@ -42,7 +43,7 @@ public class AdminPostController {
     /**
      * 修改置顶权重
      */
-    @RequiresPermissions("post:top")
+    @RequiresPermissions(Permission.POST_TOP)
     @PostMapping("/top")
     public StatusCode updateTopWeight(@NotNull Integer postId,
                                        @NotNull @Min(0) @Max(9999) Integer topWeight) {
@@ -55,7 +56,7 @@ public class AdminPostController {
     /**
      * 锁定和解锁帖子
      */
-    @RequiresPermissions("post:lock")
+    @RequiresPermissions(Permission.POST_LOCK)
     @PostMapping("/lock")
     public StatusCode lock(@RequestParam Integer postId, @RequestParam Boolean isLock) {
         Post post = new Post();
@@ -67,7 +68,7 @@ public class AdminPostController {
     /**
      * 加精品、取消精品
      */
-    @RequiresPermissions("post:quality")
+    @RequiresPermissions(Permission.POST_QUALITY)
     @PostMapping("/highQuality")
     public StatusCode highQuality(@RequestParam Integer postId,
                                    @RequestParam Boolean isHighQuality) {

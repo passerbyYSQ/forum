@@ -11,6 +11,7 @@ import top.ysqorz.forum.common.TreeBuilder;
 import top.ysqorz.forum.dto.req.QueryAuthorityCondition;
 import top.ysqorz.forum.po.Resource;
 import top.ysqorz.forum.service.AuthorityService;
+import top.ysqorz.forum.shiro.Permission;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class AdminAuthorityController {
     /**
      * 获取权限树形数据。树形结构不需要在后端形成，前端会生成
      */
-    @RequiresPermissions("perm:view")
+    @RequiresPermissions(Permission.PERM_VIEW)
     @GetMapping("/tree")
     public List<Resource> authorityTree(QueryAuthorityCondition conditions) {
         return authorityService.getAuthorityList(conditions);
@@ -41,13 +42,13 @@ public class AdminAuthorityController {
     /**
      * 新增权限
      */
-    @RequiresPermissions("perm:add")
+    @RequiresPermissions(Permission.PERM_ADD)
     @PostMapping("/add")
     public Resource addAuthority(@Validated(Resource.Add.class) Resource resource) {
         return authorityService.addAuthority(resource);
     }
 
-    @RequiresPermissions("perm:update")
+    @RequiresPermissions(Permission.PERM_UPDATE)
     @PostMapping("/update")
     public StatusCode updateAuthority(@Validated(Resource.Update.class) Resource resource) throws IOException {
         if (ObjectUtils.isEmpty(authorityService.getAuthorityById(resource.getId()))) {
@@ -83,7 +84,7 @@ public class AdminAuthorityController {
      * @param authorityIds  id经过前端的筛选，传过来的一定是叶子节点的数据。
      *                      当然后端校验才是最安全的，可以在后端校验安全后才删除。暂时不考虑，直接删除
      */
-    @RequiresPermissions("perm:delete")
+    @RequiresPermissions(Permission.PERM_DELETE)
     @PostMapping("/del")
     public StatusCode delAuthority(@RequestParam("authorityIds[]") @NotEmpty Integer[] authorityIds) {
         int cnt = authorityService.delAuthorityById(authorityIds);

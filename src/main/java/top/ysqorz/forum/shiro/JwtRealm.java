@@ -47,8 +47,7 @@ public class JwtRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         Integer userId = (Integer) principals.getPrimaryPrincipal();
-        List<top.ysqorz.forum.po.Resource> resourceList =
-                authorityService.getAuthorityList(null);
+        List<top.ysqorz.forum.po.Resource> resourceList = authorityService.getAuthorityList(null);
         List<Role> roles = roleService.getRoleByUserId(userId);
         // 将所有权限形成一棵树
         SimpleAuthorizationInfo authorizationInfo;

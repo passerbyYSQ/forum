@@ -17,6 +17,7 @@ import top.ysqorz.forum.dto.resp.UpdatePostDTO;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
 import top.ysqorz.forum.shiro.LoginUser;
+import top.ysqorz.forum.shiro.Permission;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
@@ -164,8 +165,7 @@ public class PostController {
             throw new ServiceFailedException(StatusCode.POST_NOT_EXIST); // 帖子不存在
         }
         // 不能修改其他人的帖子
-        if (!(post.getCreatorId().equals(ShiroUtils.getUserId())
-                || ShiroUtils.hasPerm("post:update"))) {
+        if (!(post.getCreatorId().equals(ShiroUtils.getUserId()) || ShiroUtils.hasPerm(Permission.POST_UPDATE))) {
             throw new AuthorizationException();
         }
 

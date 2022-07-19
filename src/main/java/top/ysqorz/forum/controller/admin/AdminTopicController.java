@@ -10,6 +10,7 @@ import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.TopicDTO;
 import top.ysqorz.forum.po.Topic;
 import top.ysqorz.forum.service.TopicService;
+import top.ysqorz.forum.shiro.Permission;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,7 +27,7 @@ public class AdminTopicController {
     /**
      * 获取Topic数据
      */
-    @RequiresPermissions("topic:view")
+    @RequiresPermissions(Permission.TOPIC_VIEW)
     @GetMapping("/table")
     public PageData<TopicDTO> getUserAndRole(@RequestParam(defaultValue = "10") Integer limit,
                                              @RequestParam(defaultValue = "1") Integer page,
@@ -39,7 +40,7 @@ public class AdminTopicController {
     /**
      * 添加话题
      */
-    @RequiresPermissions("topic:add")
+    @RequiresPermissions(Permission.TOPIC_ADD)
     @PostMapping("/add")
     public Topic addTopic(@Validated(Topic.Add.class) Topic topic) {
         return topicService.addTopic(topic);
@@ -48,7 +49,7 @@ public class AdminTopicController {
     /**
      * 修改话题
      */
-    @RequiresPermissions("topic:update")
+    @RequiresPermissions(Permission.TOPIC_UPDATE)
     @PostMapping("/update")
     public StatusCode updateTopic(@Validated(Topic.Update.class) Topic topic) {
         int cnt = topicService.updateTopic(topic);
@@ -62,7 +63,7 @@ public class AdminTopicController {
      * @param state
      * @return
      */
-    @RequiresPermissions("topic:archive")
+    @RequiresPermissions(Permission.TOPIC_ARCHIVE)
     @PostMapping("/archive")
     public StatusCode archive(@NotNull Integer id, @NotNull Integer state) {
         int cnt = topicService.archive(id, state);

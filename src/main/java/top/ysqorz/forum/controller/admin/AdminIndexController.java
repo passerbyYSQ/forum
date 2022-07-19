@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import top.ysqorz.forum.shiro.Permission;
 import top.ysqorz.forum.shiro.ShiroUtils;
 
 /**
@@ -23,7 +24,7 @@ public class AdminIndexController {
         return "admin/index";
     }
 
-    @RequiresPermissions("admin:access")
+    @RequiresPermissions(Permission.ADMIN_ACCESS)
     @GetMapping("/console/workplace")
     public String workplacePage() {
         return "admin/console/workplace";
@@ -32,7 +33,7 @@ public class AdminIndexController {
     /**
      * 权限管理页面
      */
-    @RequiresPermissions("perm:view")
+    @RequiresPermissions(Permission.PERM_VIEW)
     @GetMapping("/system/authorities")
     public String authoritiesPage() {
         return "admin/system/authorities";
@@ -41,7 +42,7 @@ public class AdminIndexController {
     /**
      * 角色管理页面
      */
-    @RequiresPermissions("role:view")
+    @RequiresPermissions(Permission.ROLE_VIEW)
     @GetMapping("/system/role")
     public String rolePage() {
         return "admin/system/role";
@@ -51,7 +52,7 @@ public class AdminIndexController {
     /**
      * 用户管理界面
      */
-    @RequiresPermissions("user:view")
+    @RequiresPermissions(Permission.USER_VIEW)
     @GetMapping("/system/user")
     public String userPage() {
         return "admin/system/user";
@@ -60,7 +61,7 @@ public class AdminIndexController {
     /**
      * 话题管理
      */
-    @RequiresPermissions("topic:view")
+    @RequiresPermissions(Permission.TOPIC_VIEW)
     @GetMapping("/system/topic")
     public String topicPage() {
         return "admin/system/topic";
@@ -69,7 +70,7 @@ public class AdminIndexController {
     /**
      * 帖子管理
      */
-    @RequiresPermissions("post:view")
+    @RequiresPermissions(Permission.POST_VIEW)
     @GetMapping("/system/post")
     public String postPage() {
         return "admin/system/post";
