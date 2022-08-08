@@ -1,6 +1,7 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.enumeration.ApplyStatus;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO;
 import top.ysqorz.forum.dto.resp.chat.ChatListDTO;
@@ -83,7 +84,7 @@ public interface ChatService {
     /**
      * 根据id修改好友申请的状态
      */
-    void updateFriendApplyStatusById(Integer friendApplyId, Byte status);
+    void updateFriendApplyStatusById(Integer friendApplyId, ApplyStatus status);
 
     /**
      * 好友分组的id是否非法

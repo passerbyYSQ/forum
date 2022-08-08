@@ -83,6 +83,7 @@ mybatis:
   configuration:
     # 将数据库表的带下划线字段转成java中的驼峰命名
     map-underscore-to-camel-case: true
+    default-enum-type-handler: top.ysqorz.forum.config.MybatisEnumTypeHandler
 
 # 分页插件
 pagehelper:

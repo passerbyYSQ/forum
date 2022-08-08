@@ -8,6 +8,7 @@ import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.enumeration.ApplyStatus;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dao.ChatFriendApplyMapper;
 import top.ysqorz.forum.dao.ChatFriendGroupMapper;
@@ -218,7 +219,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void updateFriendApplyStatusById(Integer friendApplyId, Byte status) {
+    public void updateFriendApplyStatusById(Integer friendApplyId, ApplyStatus status) {
         ChatFriendApply friendApply = new ChatFriendApply();
         friendApply.setId(friendApplyId)
                 .setStatus(status)
@@ -297,7 +298,7 @@ public class ChatServiceImpl implements ChatService {
             chatFriendApplyMapper.deleteByPrimaryKey(friendApplyId); // 忽略直接删除
         } else if ("refuse".equalsIgnoreCase(action)) {
             // 拒绝后，需要等对方签收后再删除
-            this.updateFriendApplyStatusById(friendApplyId, (byte) 0);
+            this.updateFriendApplyStatusById(friendApplyId, ApplyStatus.REFUSE);
             this.pushMsgBoxCount(apply.getSenderId());
         } else if ("agree".equalsIgnoreCase(action)) {
             // 同意后，需要等对方签收后再删除
@@ -310,7 +311,7 @@ public class ChatServiceImpl implements ChatService {
                 throw new ServiceFailedException(StatusCode.CHAT_ALREADY_FRIEND);
             }
             Integer toGroupId = apply.getFriendGroupId();
-            this.updateFriendApplyStatusById(friendApplyId, (byte) 1);
+            this.updateFriendApplyStatusById(friendApplyId, ApplyStatus.AGREE);
             this.addChatFriend(myId, apply.getSenderId(), friendGroupId);
             this.addChatFriend(apply.getSenderId(), myId, toGroupId);
             // 消息推送，将自己添加到对方好友列表中

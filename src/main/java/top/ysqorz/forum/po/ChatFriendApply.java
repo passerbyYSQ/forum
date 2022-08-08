@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import top.ysqorz.forum.common.enumeration.ApplyStatus;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -45,7 +46,9 @@ public class ChatFriendApply {
     /**
      * 状态。0：拒绝；1：同意
      */
-    private Byte status;
+    // private Byte status;
+    @Column
+    private ApplyStatus status;
 
     /**
      * 申请时间
