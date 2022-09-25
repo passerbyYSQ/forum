@@ -34,29 +34,30 @@ public class IMController {
     /**
      * 1. IM服务之间转发业务类型的消息需要调用此接口
      * 2. 客户端使用API发送业务类型的消息，而不是使用WebSocket
-     * @deprecated  弃用，每种业务消息都应该使用不同的接口
+     *
+     * @deprecated 弃用，每种业务消息都应该使用不同的接口
      */
     @PostMapping("/send")
-    public ResultModel sendMsg(@NotBlank String msgJson, @NotBlank  String channelId) {
+    public StatusCode sendMsg(@NotBlank String msgJson, @NotBlank String channelId) {
         MsgModel msg = JsonUtils.jsonToObj(HtmlUtils.htmlUnescape(msgJson), MsgModel.class);
         if (msg == null || !msg.check()) {
-            return ResultModel.failed(StatusCode.PARAM_INVALID);
+            return StatusCode.PARAM_INVALID;
         }
         if (MsgType.isFunctionalType(MsgType.valueOf(msg.getMsgType()))) { // 如果非法type会抛出异常
-            return ResultModel.failed(StatusCode.NOT_SUPPORT_FUNC_TYPE);
+            return StatusCode.NOT_SUPPORT_FUNC_TYPE;
         }
         MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getToken());
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     /**
      * 转交给 MsgCenter push
      */
     @PostMapping("/push")
-    public ResultModel pushMsg(@NotBlank String msgJson, String channelId) { // source channel
+    public StatusCode pushMsg(@NotBlank String msgJson, String channelId) { // source channel
         MsgModel msg = JsonUtils.jsonToObj(HtmlUtils.htmlUnescape(msgJson), MsgModel.class);
         MsgCenter.getInstance().push(msg, channelId);
-        return ResultModel.success();
+        return StatusCode.SUCCESS;
     }
 
     @GetMapping("/server")

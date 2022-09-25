@@ -9,6 +9,7 @@ import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.service.LabelService;
 
 import javax.annotation.Resource;
+import java.security.SecureRandom;
 import java.util.*;
 
 /**
@@ -62,7 +63,7 @@ public class LabelServiceImpl implements LabelService {
         int len = labelMapper.selectLastIdOfLabels();
         Set<Label> randLabels = new HashSet<>();
         while (randLabels.size() < total) {
-            Random rand = new Random();
+            Random rand = new SecureRandom();
             Integer randId = rand.nextInt(len) + 1; // [0, maxId-1] => [1, maxId]
             Label label = labelMapper.selectByPrimaryKey(randId);
             if (!ObjectUtils.isEmpty(label)) {

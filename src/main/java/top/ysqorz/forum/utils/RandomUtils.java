@@ -1,5 +1,6 @@
 package top.ysqorz.forum.utils;
 
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
@@ -17,14 +18,14 @@ public class RandomUtils {
      * [0, n)
      */
     public static int generateInt(int n) {
-        return new Random().nextInt(n);
+        return new SecureRandom().nextInt(n);
     }
 
     /**
      * [l, r]
      */
     public static int generateRange(int l, int r) {
-        int rand = new Random().nextInt(r - l + 1);
+        int rand = new SecureRandom().nextInt(r - l + 1);
         return l + rand;
     }
 
@@ -44,7 +45,7 @@ public class RandomUtils {
      */
     public static String generateStr(int length, String source) {
         StringBuilder sbd = new StringBuilder();
-        Random random = new Random();
+        Random random = new SecureRandom();
         for (int i = 0; i < length; i++) {
             sbd.append(allChar.charAt(random.nextInt(source.length())));
         }

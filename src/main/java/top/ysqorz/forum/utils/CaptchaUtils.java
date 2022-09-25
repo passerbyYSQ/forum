@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -22,7 +23,7 @@ public class CaptchaUtils {
 	private static Integer charCnt = 4; // 验证码图片中字符的个数
 	private static Integer lineCnt = 8;
 
-	private static Random r = new Random(); // 用于生产随机数
+	private static Random r = new SecureRandom(); // 用于生产随机数
 
 	public static String generateAndOutput(HttpServletResponse response)
 			throws ServletException, IOException {

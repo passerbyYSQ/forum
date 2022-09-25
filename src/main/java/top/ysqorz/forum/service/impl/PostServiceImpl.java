@@ -22,6 +22,7 @@ import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.*;
 import top.ysqorz.forum.shiro.Permission;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.utils.CommonUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -117,18 +118,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post addPost(PublishPostDTO vo) {
+    public Post addPost(PublishPostDTO dto) {
         Post post = new Post();
         LocalDateTime now = LocalDateTime.now();
+        // 富文本被全局转换器转义了，此处需要还原
+        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(dto.getContent()));
         post.setCreatorId(ShiroUtils.getUserId()) // 发帖人id
-                .setTopicId(vo.getTopicId())  // 所属话题的id
-                .setTitle(vo.getTitle()) // 帖子标题
+                .setTopicId(dto.getTopicId())  // 所属话题的id
+                .setTitle(dto.getTitle()) // 帖子标题
                 // 帖子内容，由于全局XSS防护做了转义，此处需要反转义
-                .setContent(HtmlUtils.htmlUnescape(vo.getContent()))
+                .setContent(escapedContent)
                 // [0, 3]：表示4种可见性。其中3表示：帖子需要花积分（[4,99]）购买才可见
                 // 所以当VisibilityType为3时，干脆直接用VisibilityType来存积分数x
-                .setVisibilityType(vo.getVisibilityType() == 3 ? vo.getPoints() : vo.getVisibilityType())
-                .setIsLocked((byte) (vo.getIsLocked() ? 1 : 0))
+                .setVisibilityType(dto.getVisibilityType() == 3 ? dto.getPoints() : dto.getVisibilityType())
+                .setIsLocked((byte) (dto.getIsLocked() ? 1 : 0))
 
 
                 .setCreateTime(now)
@@ -147,7 +150,7 @@ public class PostServiceImpl implements PostService {
         postMapper.insertUseGeneratedKeys(post);
 
         // 对应的话题下面的帖子数 +1
-        topicService.updatePostCountById(vo.getTopicId(), 1);
+        topicService.updatePostCountById(dto.getTopicId(), 1);
 
         return post;
     }
@@ -166,23 +169,25 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Post updatePostAndLabels(PublishPostDTO vo) {
+    public Post updatePostAndLabels(PublishPostDTO dto) {
         Post post = new Post();
-        post.setId(vo.getPostId())
-                .setTopicId(vo.getTopicId())
+        // 富文本被全局转换器转义了，此处需要还原
+        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(dto.getContent()));
+        post.setId(dto.getPostId())
+                .setTopicId(dto.getTopicId())
                 .setLastModifyTime(LocalDateTime.now()) // 最后一次的更新时间
-                .setTitle(vo.getTitle())
-                .setContent(HtmlUtils.htmlUnescape(vo.getContent())) // XSS防护做了转义，此处需要反转义
-                .setVisibilityType(vo.getVisibilityType() == 3 ?
-                        vo.getPoints() : vo.getVisibilityType())
-                .setIsLocked((byte) (vo.getIsLocked() ? 1 : 0));
+                .setTitle(dto.getTitle())
+                .setContent(escapedContent)
+                .setVisibilityType(dto.getVisibilityType() == 3 ?
+                        dto.getPoints() : dto.getVisibilityType())
+                .setIsLocked((byte) (dto.getIsLocked() ? 1 : 0));
         this.updatePostById(post);
 
         // 先把当与前帖子相关标签的映射关系全部删除
-        postLabelService.delPostLabelByPostId(vo.getPostId());
+        postLabelService.delPostLabelByPostId(dto.getPostId());
 
         // 批量插入帖子和标签的映射关系
-        postLabelService.addPostLabelList(vo.getPostId(), vo.splitLabels());
+        postLabelService.addPostLabelList(dto.getPostId(), dto.splitLabels());
 
         return post;
     }

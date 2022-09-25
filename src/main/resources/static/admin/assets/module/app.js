@@ -108,6 +108,15 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
             return len;
         },
 
+        // 反转义
+        unescapeHTML(text) {
+            let temp = document.createElement("div");
+            temp.innerHTML = text;
+            var output = temp.innerText || temp.textcontent;
+            temp = null;
+            return output;
+        },
+
         // base64 转 blob
         base64ToBlob: function () {
             var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],

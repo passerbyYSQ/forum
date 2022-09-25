@@ -26,6 +26,7 @@ import top.ysqorz.forum.service.PermManager;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RewardPointsAction;
 import top.ysqorz.forum.shiro.ShiroUtils;
+import top.ysqorz.forum.utils.CommonUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -136,10 +137,12 @@ public class CommentServiceImpl implements CommentService {
          */
         // 当前用户就是一级评论的creator
         Integer creatorId = ShiroUtils.getUserId();
+        // 富文本被全局转换器转义了，此处需要还原
+        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(content));
         // 插入一级评论
         FirstComment comment = new FirstComment();
         comment.setPostId(post.getId())
-                .setContent(HtmlUtils.htmlUnescape(content))
+                .setContent(escapedContent)
                 .setUserId(creatorId);
         // comment 会被设置自增长的id
         firstCommentMapper.addFirstCommentUseGeneratedKeys(comment);
@@ -176,10 +179,11 @@ public class CommentServiceImpl implements CommentService {
         Integer receiverId = firstComment.getUserId();
         byte commentType = 1;
         Integer repliedId = firstComment.getId();
-
+        // 富文本被全局转换器转义了，此处需要还原
+        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(content));
         // 插入二级评论
         SecondComment comment = new SecondComment();
-        comment.setContent(HtmlUtils.htmlUnescape(content))
+        comment.setContent(escapedContent)
                 .setCreateTime(LocalDateTime.now())
                 .setFirstCommentId(firstComment.getId())
                 .setUserId(myId);

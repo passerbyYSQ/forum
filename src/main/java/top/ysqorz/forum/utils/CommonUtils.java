@@ -22,6 +22,11 @@ import java.util.regex.Pattern;
  */
 public class CommonUtils {
 
+    public static String escapeScriptLabel(String text) {
+        return text.replaceAll("<script>", "&lt;script&gt;")
+                .replaceAll("</script>", "&lt;/script&gt;");
+    }
+
     public static Set<Integer> splitIdStr(String idStr) {
         String[] ids = idStr.split(",");
         Set<Integer> idSet = new HashSet<>();
