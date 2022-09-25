@@ -20,7 +20,7 @@ public class SpringUtils implements ApplicationContextAware {
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		if (SpringUtils.applicationContext == null) {
 			SpringUtils.applicationContext = applicationContext;
-			System.out.println("缓存IOC容器"); // 缺少@Component注解，不会被调用
+			System.out.println("成功缓存IOC容器"); // 缺少@Component注解，不会被调用
 		}
 	}
 

@@ -2,9 +2,10 @@ package top.ysqorz.forum.dto.req;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 /**
  *
@@ -16,29 +17,33 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 public class RegisterDTO {
     // 分组校验
-    public interface Register {} // 注册
-    public interface UpdatePassword {} // 更改密码
+    public interface Register {
+    } // 注册
 
-    @NotEmpty(groups = Register.class)
+    public interface UpdatePassword {
+    } // 更改密码
+
+    @NotBlank(groups = Register.class)
     private String token;
 
-    @NotEmpty(groups = Register.class)
+    @NotBlank(groups = Register.class)
+    @Length(groups = Register.class, max = 24)
     private String username;
 
-    @NotEmpty(groups = Register.class)
+    @NotBlank(groups = Register.class)
     private String captcha;
 
-    @NotEmpty(groups = Register.class)
+    @NotBlank(groups = Register.class)
     @Email(groups = Register.class)
     private String email;
 
-    @NotEmpty
+    @NotBlank
     private String password; // 公用
 
-    @NotEmpty
+    @NotBlank
     private String rePassword; // 公用
 
-    @NotEmpty(groups = UpdatePassword.class)
+    @NotBlank(groups = UpdatePassword.class)
     private String newPassword;
 }
 

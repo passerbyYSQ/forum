@@ -194,6 +194,7 @@
 
 <script th:src="@{/admin/assets/libs/layui/layui.js}" src="../res/layui/layui.js"></script>
 <script th:src="@{/admin/assets/js/common.js(v=318)}" src="admin/js/common.js?v=318"></script>
+<script th:src="@{/admin/assets/libs/jsencrypt/jsencrypt.min.js}"></script>
 
 <script th:inline="javascript">
     //获取链接参数
@@ -246,16 +247,19 @@
         var $ = layui.jquery
             , form = layui.form
             , app = layui.app;
+        let publicKey = [[${publicKey}]];
+        let jsEncrypt = new JSEncrypt();
+        jsEncrypt.setPublicKey(publicKey);
 
         form.verify({
-            username: function(value, item){ //value：表单的值、item：表单的DOM对象
-                if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+            username: function (value, item) { //value：表单的值、item：表单的DOM对象
+                if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
                     return '用户名不能有特殊字符';
                 }
-                if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                if (/(^\_)|(\__)|(\_+$)/.test(value)) {
                     return '用户名首尾不能出现下划线\'_\'';
                 }
-                if(/^\d+\d+\d$/.test(value)){
+                if (/^\d+\d+\d$/.test(value)) {
                     return '用户名不能全为数字';
                 }
             },
@@ -276,7 +280,11 @@
         });
 
         form.on('submit(register)', function (data) {
-
+            let encryptedPwd = jsEncrypt.encrypt(data.field.password);
+            Object.assign(data.field, {
+                password: encryptedPwd,
+                rePassword: encryptedPwd,
+            })
             console.log(data.field);
             app.ajax('/user/reg', data.field, function (res) {
                 // 业务成功（业务状态码）的回调

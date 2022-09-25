@@ -3,6 +3,7 @@ package top.ysqorz.forum.service;
 import top.ysqorz.forum.dto.resp.WeekTopPostDTO;
 import top.ysqorz.forum.im.entity.ChannelType;
 
+import java.security.KeyPair;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +68,7 @@ public interface RedisService {
      * @param maxCount  duration时长内允许的最大次数
      * @param duration  时长
      * @param blackDuration 封禁时长
-     * @return          true：放行；false：拦截
+     * @return true：放行；false：拦截
      */
     Boolean recordIpAccessAPI(String key, Integer maxCount, Duration duration, Duration blackDuration);
 
@@ -75,4 +76,9 @@ public interface RedisService {
      * 判断用户是否在线。判断该用户是否有WebSocket通道
      */
     boolean isUserOnline(Integer userId);
+
+
+    void saveRSAKeyPair();
+
+    KeyPair getRSAKeyPair();
 }

@@ -54,6 +54,7 @@ public enum StatusCode {
     ACCOUNT_OR_PASSWORD_INCORRECT(6107, "账号或密码错误"),
     PHONE_INCORRECT(6108, "请输入11位的正确手机号码"),
     INFO_UPDATE_FAILED(6109, "修改个人信息失败"),
+    DECRYPT_FAILED(6110, "解密失败"),
 
     // 账户相关
     TOKEN_IS_MISSING(6200, "token缺失"),

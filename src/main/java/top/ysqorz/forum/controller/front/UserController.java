@@ -18,6 +18,7 @@ import top.ysqorz.forum.oauth.BaiduProvider;
 import top.ysqorz.forum.oauth.GiteeProvider;
 import top.ysqorz.forum.oauth.QQProvider;
 import top.ysqorz.forum.po.User;
+import top.ysqorz.forum.service.RSAService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -42,21 +43,18 @@ import java.net.URLEncoder;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-
     @Resource
     private UserService userService;
-
     @Resource
     private RedisService redisService;
-
     @Resource
     private GiteeProvider giteeProvider;
-
     @Resource
     private QQProvider qqProvider;
-
     @Resource
     private BaiduProvider baiduProvider;
+    @Resource
+    private RSAService rsaService;
 
     @RequiresRoles({"ysq"})
     @RequestMapping("/info")
@@ -64,6 +62,7 @@ public class UserController {
     public ResultModel<String> index() {
         return ResultModel.success("用户信息！这个接口需要携带有效的token才能访问");
     }
+
 
     /**
      * 用户注册
@@ -81,12 +80,16 @@ public class UserController {
         if (!dto.getCaptcha().equalsIgnoreCase(correctCaptcha)) {
             return StatusCode.CAPTCHA_INVALID; // 验证码错误
         }
-
         User user = userService.getUserByEmail(dto.getEmail());
         if (!ObjectUtils.isEmpty(user)) {
             return StatusCode.EMAIL_IS_EXIST; // 该邮箱已注册
         }
-
+        String decryptedPwd = rsaService.decryptByPrivateKey(dto.getPassword());
+        if (ObjectUtils.isEmpty(decryptedPwd)) {
+            return StatusCode.DECRYPT_FAILED; // 解密失败
+        }
+        dto.setPassword(decryptedPwd);
+        dto.setRePassword(decryptedPwd);
         userService.register(dto);
         return StatusCode.SUCCESS;
     }
@@ -97,8 +100,9 @@ public class UserController {
     @GetMapping("/reg")
     public String registerPage(Model model) {
         // 用于验证码缓存和校验。植入到注册的登录页面的隐藏表单元素中
-        String token = RandomUtils.generateUUID();
-        model.addAttribute("token", token);
+        model.addAttribute("token", RandomUtils.generateUUID());
+        // 植入加密密码的公钥
+        model.addAttribute("publicKey", rsaService.getPublicKey());
         return "front/user/reg";
     }
 
@@ -109,10 +113,16 @@ public class UserController {
     public String loginPage(HttpServletRequest request, Model model) {
         if (ObjectUtils.isEmpty(request.getParameter("referer")) &&
                 !ObjectUtils.isEmpty(request.getHeader("referer"))) {
-            return "redirect:/user/login?referer=" + request.getHeader("referer");
+            String referer = request.getHeader("referer");
+            if (referer.endsWith("/reg")) {
+                referer = "/";
+            }
+            return "redirect:/user/login?referer=" + referer;
         } else {
             // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
             model.addAttribute("token", RandomUtils.generateUUID());
+            // 植入加密密码的公钥
+            model.addAttribute("publicKey", rsaService.getPublicKey());
             return "front/user/login";
         }
     }
@@ -136,6 +146,12 @@ public class UserController {
         if (ObjectUtils.isEmpty(user)) {
             throw new ServiceFailedException(StatusCode.EMAIL_INCORRECT);
         }
+
+        String decryptedPwd = rsaService.decryptByPrivateKey(dto.getPassword());
+        if (ObjectUtils.isEmpty(decryptedPwd)) {
+            throw new ServiceFailedException(StatusCode.DECRYPT_FAILED); // 解密失败
+        }
+        dto.setPassword(decryptedPwd);
 
         // 以注册时的相同规则，加密用户输入的密码
         String encryptPwd = userService.encryptLoginPwd(dto.getPassword(), user.getLoginSalt());

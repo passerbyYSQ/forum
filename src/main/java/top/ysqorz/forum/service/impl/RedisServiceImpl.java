@@ -12,10 +12,12 @@ import top.ysqorz.forum.dto.resp.WeekTopPostDTO;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.service.PostService;
+import top.ysqorz.forum.service.RSAService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.DateTimeUtils;
 
 import javax.annotation.Resource;
+import java.security.KeyPair;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,12 +36,14 @@ public class RedisServiceImpl implements RedisService {
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private PostService postService;
+    @Resource
+    private RSAService rsaService;
 
     @Override
     public void saveCaptcha(String key, String captcha) {
         redisTemplate.opsForValue()
                 .set(Constant.REDIS_KEY_CAPTCHA + key,
-                    captcha, Constant.DURATION_CAPTCHA);
+                        captcha, Constant.DURATION_CAPTCHA);
     }
 
     @Override
@@ -215,4 +219,23 @@ public class RedisServiceImpl implements RedisService {
         return isOnline;
     }
 
+    @Override
+    public void saveRSAKeyPair() {
+        String key = String.format(Constant.REDIS_KEY_KEY_PAIR, "RSA");
+        KeyPair keyPair = rsaService.generateKeyPair();
+        if (!ObjectUtils.isEmpty(keyPair)) {
+            redisTemplate.opsForValue().setIfAbsent(key, keyPair, Constant.DURATION_KEY_PAIR);
+        }
+    }
+
+    @Override
+    public KeyPair getRSAKeyPair() {
+        String key = String.format(Constant.REDIS_KEY_KEY_PAIR, "RSA");
+        KeyPair keyPair = (KeyPair) redisTemplate.opsForValue().get(key);
+        if (ObjectUtils.isEmpty(keyPair)) {
+            saveRSAKeyPair(); // KeyPair过期，则重新续费
+        }
+        // 重新获取KeyPair，因为如果并发续费，成功续上的有可能不是本机生成的KeyPair
+        return (KeyPair) redisTemplate.opsForValue().get(key);
+    }
 }
