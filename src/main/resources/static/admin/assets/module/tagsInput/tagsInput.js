@@ -254,7 +254,7 @@
             var markup = '<div id="' + id + '_tagsinput" class="tagsinput ' + settings.skin + '"><div id="' + id + '_addTag">';
 
             if (settings.interactive) {
-                markup = markup + '<input id="' + id + '_tag" value="" placeholder="' + settings.defaultText + '" autocomplete="off" />';
+                markup = markup + '<input type="search" id="' + id + '_tag" value="" placeholder="' + settings.defaultText + '" autocomplete="off" />';
             }
 
             markup = markup + '</div></div>';

@@ -60,7 +60,7 @@ div.tagsinput input {
     background: transparent;
     border: none;
     outline: none;
-    width: 60px;
+    width: 80px;
 }
 
 div.tagsinput div {
@@ -103,6 +103,15 @@ div.tagsinput > div {
 .tagsinput.tagsinput-default input:focus {
     border: 1px solid #ccc;
     text-align: left;
+}
+
+/*--清除谷歌浏览器下的 search 叉号*/
+.tagsinput.tagsinput-default input::-webkit-search-cancel-button {
+    display: none;
+}
+/*--清除IE下的 search 叉号*/
+.tagsinput.tagsinput-default input::-ms-clear {
+    display: none;
 }
 
 /* 提示列表 */

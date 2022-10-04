@@ -111,7 +111,7 @@
                                 <div class="layui-inline">
                                     <label class="layui-form-label">相关标签</label>
                                     <div class="layui-input-block" style="padding-left: 4px;">
-                                        <input id="label" name="labels" class="layui-hide"/>
+                                        <input type="text" id="label" name="labels" class="layui-hide"/>
                                     </div>
                                 </div>
                             </div>
@@ -146,16 +146,12 @@
 <script th:src="@{/admin/assets/libs/tinymce/tinymce.min.js}"
         src="../../../assets/libs/tinymce/tinymce.min.js"></script>
 <script th:src="@{/admin/assets/js/common.js(v=318)}" src="admin/js/common.js?v=318"></script>
+<!-- 手机浏览器控制台 -->
+<!--<script th:src="@{https://cdn.jsdelivr.net/npm/eruda}"></script>-->
+<!--<script>eruda.init();</script>-->
+
 <!-- th:inline="javascript"不能少！！！ -->
 <script th:inline="javascript">
-    // layui.cache.page = 'jie';
-    // layui.cache.user = {
-    //     username: '游客'
-    //     , uid: -1
-    //     , avatar: '../../res/images/avatar/00.jpg'
-    //     , experience: 83
-    //     , sex: '男'
-    // };
 
     // 验证码图片的点击事件
     function onCaptchaImageClicked(obj) {
@@ -199,7 +195,6 @@
         app.ajax("/topic/all", {}, function (res) {
             var html = '<option></option>';
             layui.each(res.data, function (index, item) {
-                console.log(item.id);
                 if (app.isNotNull(post) && item.id === post.topicId) {
                     html += ('<option value=' + item.id + ' selected>' + item.topicName + '</option>');
                 } else {
@@ -283,14 +278,14 @@
             },
             // 标签联想
             autocomplete_request: function (keyword, callback) {
-                // 不要使用 app.ajax() 因为由于加载图标频繁显示的问题
-                $.get('/post/label/like', {
+                // 不要显示loading
+                app.ajax('/post/label/like', {
                     name: keyword,
                     maxCount: 5
                 }, function (res) {
                     var labels = res.data.map(label => label.labelName);
                     callback(labels);
-                });
+                }, 'GET', null, false);
             }
         });
 
