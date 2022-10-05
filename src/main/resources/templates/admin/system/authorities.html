@@ -228,22 +228,17 @@
             showEditModel();
         });
 
-        // 在root这棵树去除id及其子孙
-        function removeDescendant(root, id) {
-            var children = root.children;
-            if (children == null) {
-                return false;
-            }
-            for (var i = 0; i < children.length; i++) {
-                if (children[i].id === id) {
-                    children.splice(i, 1); // 删除该元素
-                    return true;
-                }
-                if (removeDescendant(children[i], id)) {
-                    return true;
+        // 在root这棵树去除根节点为id的子树
+        function removeDescendant(root, id, found) { // 初始化found为false
+            let children = root.children;
+            if (children) {
+                for (let i = children.length - 1; i >= 0; i--) { // 如果从左往右遍历，splice之后下标会改变
+                    if (removeDescendant(children[i], id, (found || children[i].id === id))) { // 找到子树的根节点后，将标记传递给子节点
+                        children.splice(children.length - 1, 1); // 自下往上拆解子树
+                    }
                 }
             }
-            return false;
+            return found;
         }
 
         /* 显示表单弹窗。修改和新增公用 */
@@ -262,7 +257,7 @@
             };
 
             if (mData) { // 修改
-                removeDescendant(fakeRoot, mData.id);
+                removeDescendant(fakeRoot, mData.id, false);
             }
 
             admin.open({
