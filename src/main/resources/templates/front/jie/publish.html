@@ -75,17 +75,18 @@
                                     <label class="layui-form-label">帖子可见性</label>
                                     <div class="layui-input-inline" style="width: 190px;">
                                         <select name="visibilityType" lay-filter="visibilityType">
-                                            <option value="0" th:selected="${post != null and post.visibilityType == 0}">任何人可见</option>
-                                            <option value="1" th:selected="${post != null and post.visibilityType == 1}">粉丝可见</option>
-                                            <option value="2" th:selected="${post != null and post.visibilityType == 2}">点赞后可见</option>
-                                            <option value="3" th:selected="${post != null and post.visibilityType > 3}">积分购买后可见</option>
+                                            <option value="EVERYONE_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'EVERYONE_VISIBLE'}">任何人可见</option>
+                                            <option value="FOLLOWER_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'FOLLOWER_VISIBLE'}">粉丝可见</option>
+                                            <option value="LIKED_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'LIKED_VISIBLE'}">点赞后可见</option>
+                                            <option value="PURCHASED_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'PURCHASED_VISIBLE'}">积分购买后可见</option>
                                         </select>
                                     </div>
                                     <div class="layui-input-inline">
                                         <!-- th:value="${post} ? ${#strings.listJoin(post.labelList,',')}" -->
+                                        <!-- 暂未实现，静态数据 -->
                                         <input type="number" max="99" name="points" lay-verify="points" placeholder="积分数 <= 99"
-                                               th:value="${post != null and post.visibilityType > 3} ? ${post.visibilityType}"
-                                               th:class="${post != null and post.visibilityType > 3} ? 'layui-input inline-block' : 'layui-input inline-block layui-hide'"
+                                               th:value="${post != null and post.visibilityType.name() == 'PURCHASED_VISIBLE'} ? ${post.visibilityType.code}"
+                                               th:class="${post != null and post.visibilityType.name() == 'PURCHASED_VISIBLE'} ? 'layui-input inline-block' : 'layui-input inline-block layui-hide'"
                                                style="width: 160px;" onkeyup="this.value=this.value.replace(/\D/g,'')"
                                                onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
                                     </div>

@@ -9,6 +9,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.enumeration.CommentType;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
 import top.ysqorz.forum.dao.SecondCommentMapper;
@@ -199,7 +200,7 @@ public class CommentServiceImpl implements CommentService {
         postService.updateCommentCountAndLastTime(firstComment.getPostId(), 1);
 
         // 更新一级评论下的二级评论的数量
-        this.addSecondCommentCount(firstComment.getId(), 1);
+        this.updateSecondCommentCount(firstComment.getId(), 1);
 
         // 评论通知
         if (!myId.equals(receiverId)) {
@@ -268,7 +269,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int addSecondCommentCount(Integer firstCommentId, Integer dif) {
+    public int updateSecondCommentCount(Integer firstCommentId, Integer dif) {
         Map<String, Object> params = new HashMap<>();
         params.put("firstCommentId", firstCommentId);
         params.put("dif", dif);
@@ -277,34 +278,40 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public StatusCode deleteCommentById(Integer commentId, String type) {
+    public StatusCode deleteCommentById(Integer commentId, CommentType type) {
         StatusCode code = StatusCode.SUCCESS;
-        if ("FIRST_COMMENT".equals(type)) {
-            FirstComment firstComment = this.getFirstCommentById(commentId);
-            if (ObjectUtils.isEmpty(firstComment)) {
-                return StatusCode.FIRST_COMMENT_NOT_EXIST;
+        switch (type) {
+            case FIRST_COMMENT: {
+                FirstComment firstComment = this.getFirstCommentById(commentId);
+                if (ObjectUtils.isEmpty(firstComment)) {
+                    return StatusCode.FIRST_COMMENT_NOT_EXIST;
+                }
+                if (!permManager.allowDelComment(firstComment.getUserId())) {
+                    return StatusCode.NO_PERM;
+                }
+                firstCommentMapper.deleteByPrimaryKey(commentId);
+                postService.updateCommentCountAndLastTime(firstComment.getPostId(), -1);
+                // TODO 积分回退
+                break;
             }
-            if (!permManager.allowDelComment(firstComment.getUserId())) {
-                return StatusCode.NO_PERM;
+            case SECOND_COMMENT: {
+                SecondComment secondComment = this.getSecondCommentById(commentId);
+                if (ObjectUtils.isEmpty(secondComment)) {
+                    return StatusCode.SECOND_COMMENT_NOT_EXIST;
+                }
+                if (!permManager.allowDelComment(secondComment.getUserId())) {
+                    return StatusCode.NO_PERM;
+                }
+                secondCommentMapper.deleteByPrimaryKey(commentId);
+                FirstComment firstComment = this.getFirstCommentById(secondComment.getFirstCommentId());
+                this.updateSecondCommentCount(firstComment.getId(), -1);
+                postService.updateCommentCountAndLastTime(firstComment.getPostId(), -1);
+                // TODO 积分回退
+                break;
             }
-            firstCommentMapper.deleteByPrimaryKey(commentId);
-            postService.updateCommentCountAndLastTime(firstComment.getPostId(), -1);
-            // TODO 积分回退
-        } else if ("SECOND_COMMENT".equals(type)) {
-            SecondComment secondComment = this.getSecondCommentById(commentId);
-            if (ObjectUtils.isEmpty(secondComment)) {
-                return StatusCode.SECOND_COMMENT_NOT_EXIST;
+            default: {
+                code = StatusCode.COMMENT_TYPE_INVALID; // type错误
             }
-            if (!permManager.allowDelComment(secondComment.getUserId())) {
-                return StatusCode.NO_PERM;
-            }
-            secondCommentMapper.deleteByPrimaryKey(commentId);
-            FirstComment firstComment = this.getFirstCommentById(secondComment.getFirstCommentId());
-            this.addSecondCommentCount(firstComment.getId(), -1);
-            postService.updateCommentCountAndLastTime(firstComment.getPostId(), -1);
-            // TODO 积分回退
-        } else {
-            code = StatusCode.COMMENT_TYPE_INVALID; // type错误
         }
         return code;
     }

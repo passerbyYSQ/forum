@@ -1,6 +1,7 @@
 package top.ysqorz.forum.service;
 
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.enumeration.CommentType;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
@@ -48,12 +49,12 @@ public interface CommentService {
 
     SecondComment getSecondCommentById(Integer secondCommentId);
 
-    int addSecondCommentCount(Integer firstCommentId, Integer dif);
+    int updateSecondCommentCount(Integer firstCommentId, Integer dif);
 
     /**
      * 删除一级、二级评论
      */
-    StatusCode deleteCommentById(Integer commentId, String type);
+    StatusCode deleteCommentById(Integer commentId, CommentType type);
 
     /**
      * 获取最近发表评论的用户

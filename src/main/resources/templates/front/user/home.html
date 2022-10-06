@@ -39,9 +39,9 @@
         <h1 th:text="${information.username}" style="display:inline;">
             贤心
         </h1>
-        <span class="layui-icon layui-icon-male" style="color:#5d90ef;" th:if="${information.gender eq 0}"></span>
-        <span class="layui-icon layui-icon-female" style="color:#fb7299;" th:if="${information.gender eq 1}"></span>
-        <span th:if="${information.gender eq 3}"></span>
+        <span class="layui-icon layui-icon-male" style="color:#5d90ef;" th:if="${information.gender.name() eq 'MALE'}"></span>
+        <span class="layui-icon layui-icon-female" style="color:#fb7299;" th:if="${information.gender.name() eq 'FEMALE'}"></span>
+        <span th:if="${information.gender.name() eq 'SECRET'}"></span>
     </div>
 
 

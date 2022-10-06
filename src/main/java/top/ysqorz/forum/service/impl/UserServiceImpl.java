@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
+import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.common.exception.ParameterInvalidException;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.*;
@@ -105,7 +106,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> getMyUserList(QueryUserCondition conditions) {
-        //System.out.println(conditions);
         return userMapper.selectAllUser(conditions);
     }
 
@@ -218,7 +218,7 @@ public class UserServiceImpl implements UserService {
                 .setConsecutiveAttendDays(0)
                 .setRewardPoints(0)
                 .setFansCount(0)
-                .setGender((byte) 2) // 性别保密
+                .setGender(Gender.SECRET) // 性别保密
                 .setJwtSalt("")
                 .setPhoto("/admin/assets/images/defaultUserPhoto.jpg");
 
@@ -250,7 +250,7 @@ public class UserServiceImpl implements UserService {
                         .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
-                        .setGender((byte) 2)
+                        .setGender(Gender.SECRET)
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user); // 填充了主键
@@ -288,7 +288,7 @@ public class UserServiceImpl implements UserService {
                         .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
-                        .setGender((byte) ("男".equals(qqUser.getGender()) ? 0 : 1))
+                        .setGender("男".equals(qqUser.getGender()) ? Gender.MALE : Gender.FEMALE)
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user);
@@ -322,7 +322,7 @@ public class UserServiceImpl implements UserService {
                         .setConsecutiveAttendDays(0)
                         .setRewardPoints(0)
                         .setFansCount(0)
-                        .setGender((byte) 2)
+                        .setGender(Gender.SECRET)
                         .setJwtSalt("")
                         .setLoginSalt(RandomUtils.generateStr(8));
                 userMapper.insertUseGeneratedKeys(user);

@@ -145,9 +145,9 @@
                         <span>{{d.alias || d.username}}</span>
                         <span class="application-list-item-icons">
                             <!-- 性别 -->
-                            {{# if (d.gender === 0) { }}
+                            {{# if (d.gender === 'MALE') { }}
                             <i class="layui-icon layui-icon-male" style="color: #1E9FFF;" lay-tips="男生" lay-offset="0,-8px"></i>
-                            {{# } else if (d.gender === 1) { }}
+                            {{# } else if (d.gender === 'FEMALE') { }}
                             <i class="layui-icon layui-icon-female" style="color: #FF5722;" lay-tips="女生" lay-offset="0,-8px"></i>
                             {{# } else { }}
 							<i class="layui-icon layui-icon-help" style="color: #ccc;" lay-tips="保密" lay-offset="0,-8px"></i>

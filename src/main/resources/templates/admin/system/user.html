@@ -237,10 +237,10 @@
                     field: 'gender', title: '性别', templet: function (d) {
                         var icon;
                         switch (d.gender) {
-                            case 0: // 男
+                            case 'MALE': // 男
                                 icon = '<i class="layui-icon layui-icon-male" style="font-size: 20px; color: #1E9FFF;"></i>';
                                 break;
-                            case 1: // 女
+                            case 'FEMALE': // 女
                                 icon = '<i class="layui-icon layui-icon-female" style="font-size: 20px; color: #FF5722;"></i>';
                                 break;
                             default: // 保密

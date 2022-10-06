@@ -3,6 +3,7 @@ package top.ysqorz.forum.dto.resp;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
+import top.ysqorz.forum.common.enumeration.PostVisibility;
 import top.ysqorz.forum.po.Label;
 import top.ysqorz.forum.po.Post;
 
@@ -24,7 +25,7 @@ public class UpdatePostDTO {
     private Integer topicId; // 所属话题id
     private LocalDateTime createTime; // 发帖时间
     private LocalDateTime lastModifyTime; // 上一次编辑时间
-    private Byte visibilityType;
+    private PostVisibility visibilityType;
     private Byte isLocked; // 是否锁定
 
     private List<Label> labelList;  // 标签

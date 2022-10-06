@@ -103,9 +103,8 @@ public interface ChatService {
 
     /**
      * 处理好友申请
-     * @param action    agree, refuse, ignore
      */
-    String processFriendApply(Integer friendApplyId, Integer friendGroupId, String action);
+    String processFriendApply(Integer friendApplyId, Integer friendGroupId, ApplyStatus status);
 
     /**
      * 消息盒子的数量变化后，推送消息

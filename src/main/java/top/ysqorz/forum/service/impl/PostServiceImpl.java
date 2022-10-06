@@ -12,7 +12,7 @@ import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.LikeMapper;
 import top.ysqorz.forum.dao.PostMapper;
 import top.ysqorz.forum.dao.UserMapper;
-import top.ysqorz.forum.dto.*;
+import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.PublishPostDTO;
 import top.ysqorz.forum.dto.req.QueryPostCondition;
 import top.ysqorz.forum.dto.resp.PostDTO;
@@ -128,9 +128,8 @@ public class PostServiceImpl implements PostService {
                 .setTitle(dto.getTitle()) // 帖子标题
                 // 帖子内容，由于全局XSS防护做了转义，此处需要反转义
                 .setContent(escapedContent)
-                // [0, 3]：表示4种可见性。其中3表示：帖子需要花积分（[4,99]）购买才可见
-                // 所以当VisibilityType为3时，干脆直接用VisibilityType来存积分数x
-                .setVisibilityType(dto.getVisibilityType() == 3 ? dto.getPoints() : dto.getVisibilityType())
+                // TODO 帖子可见性待实现
+                .setVisibilityType(dto.getVisibilityType())
                 .setIsLocked((byte) (dto.getIsLocked() ? 1 : 0))
 
 
@@ -157,11 +156,11 @@ public class PostServiceImpl implements PostService {
 
     @Transactional // 开启事务
     @Override
-    public Post publishPost(PublishPostDTO vo) {
+    public Post publishPost(PublishPostDTO dto) {
         // 注意要用this对象，否则调用的不是被AOP代理后的对象的方法
-        Post post = this.addPost(vo);
+        Post post = this.addPost(dto);
         // 批量插入帖子和标签的映射关系
-        postLabelService.addPostLabelList(post.getId(), vo.splitLabels());
+        postLabelService.addPostLabelList(post.getId(), dto.splitLabels());
         // 奖励积分
         rewardPointsAction.publishPost();
         return post;
@@ -178,8 +177,7 @@ public class PostServiceImpl implements PostService {
                 .setLastModifyTime(LocalDateTime.now()) // 最后一次的更新时间
                 .setTitle(dto.getTitle())
                 .setContent(escapedContent)
-                .setVisibilityType(dto.getVisibilityType() == 3 ?
-                        dto.getPoints() : dto.getVisibilityType())
+                .setVisibilityType(dto.getVisibilityType())
                 .setIsLocked((byte) (dto.getIsLocked() ? 1 : 0));
         this.updatePostById(post);
 

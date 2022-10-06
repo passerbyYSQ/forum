@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import top.ysqorz.forum.common.enumeration.PostVisibility;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -107,7 +108,7 @@ public class Post {
      * 可见策略（之后再考虑规划）
      */
     @Column(name = "visibility_type")
-    private Byte visibilityType;
+    private PostVisibility visibilityType;
 
     /**
      * 内容

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
+import top.ysqorz.forum.common.enumeration.Gender;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -61,7 +62,7 @@ public class User {
     /**
      * 性别。0：男；1：女；2：保密
      */
-    private Byte gender;
+    private Gender gender;
 
     /**
      * 头像

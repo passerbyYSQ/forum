@@ -157,10 +157,10 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="margin-right: 16px;">性别</label>
                             <div class="layui-input-inline" style="max-width: 280px;">
-                                <input th:checked="${user.gender == 0}" type="radio" name="gender" value="0" checked
+                                <input th:checked="${user.gender.name() == 'MALE'}" type="radio" name="gender" value="MALE" checked
                                        title="男">
-                                <input th:checked="${user.gender == 1}" type="radio" name="gender" value="1" title="女">
-                                <input th:checked="${user.gender == 2}" type="radio" name="gender" value="2" title="保密">
+                                <input th:checked="${user.gender.name() == 'FEMALE'}" type="radio" name="gender" value="FEMALE" title="女">
+                                <input th:checked="${user.gender.name() == 'SECRET'}" type="radio" name="gender" value="SECRET" title="保密">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -676,16 +676,16 @@
             var id = $(this).attr('id');
             app.infoNotice("请谨慎解绑账号");
             var title = '';
-            var poFileId = "";
-            if (id == "UnbundlingQQ") {
+            var oauth2App = '';
+            if (id === "UnbundlingQQ") {
                 title = '解绑QQ账号';
-                poFile = "qq";
-            } else if (id == "UnbundlingGitee") {
+                oauth2App = "QQ";
+            } else if (id === "UnbundlingGitee") {
                 title = '解绑Gitee账号';
-                poFile = "gitee";
+                oauth2App = "GITEE";
             } else {
                 title = '解绑百度账号';
-                poFile = "baidu";
+                oauth2App = "BAIDU";
             }
             admin.open({
                 type: 1,
@@ -698,7 +698,7 @@
                         var resultData = {};
                         resultData.oldEmail = data.field.oldEmail;
                         resultData.checkPassword = data.field.checkPassword;
-                        resultData.poFile = poFile;
+                        resultData.oauth2App = oauth2App;
                         var url = '/user/center/Unbundling';
                         app.ajax(url, resultData, function (res) {
                             app.successNotice(res.msg);

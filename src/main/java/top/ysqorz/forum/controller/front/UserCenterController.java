@@ -252,11 +252,11 @@ public class UserCenterController {
         }
         User record = new User();
         record.setId(ShiroUtils.getUserId());
-        if (checkUser.getPoFile() != null) {
-            switch (checkUser.getPoFile()) {
-                case "qq":      record.setQqId("");     break;
-                case "gitee":   record.setGiteeId("");  break;
-                case "baidu":   record.setBaiduId("");  break;
+        if (checkUser.getOauth2App() != null) {
+            switch (checkUser.getOauth2App()) {
+                case QQ:      record.setQqId("");     break;
+                case GITEE:   record.setGiteeId("");  break;
+                case BAIDU:   record.setBaiduId("");  break;
             }
             userService.updateUserById(record);
         }

@@ -5,6 +5,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.enumeration.CommentType;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.PublishFirstCommentDTO;
@@ -19,7 +20,6 @@ import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RedisService;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
@@ -143,7 +143,7 @@ public class CommentController {
     }
 
     @PostMapping("/delete")
-    public StatusCode deleteComment(@NotNull Integer commentId, @NotBlank String type) {
+    public StatusCode deleteComment(@NotNull Integer commentId, @NotNull CommentType type) {
         return commentService.deleteCommentById(commentId, type);
     }
 

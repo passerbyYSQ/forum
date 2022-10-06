@@ -97,7 +97,7 @@
   {{# } else if (!item.senderId && item.receiverId) { }}
     <li class="layim-msgbox-system">
       <p><em>系统：</em>
-        {{ item.username }}&nbsp;{{ item.status === 1 ? '同意' : '拒绝' }}&nbsp;了您的好友申请
+        {{ item.username }}&nbsp;{{ item.status === 'AGREE' ? '同意' : '拒绝' }}&nbsp;了您的好友申请
         <span>{{ item.modifyTime }}</span>
       </p>
     </li>
@@ -170,18 +170,18 @@
             },
             //拒绝
             refuse: function (btn, applyId) {
-                this.showConfirmDialog('refuse', btn, applyId);
+                this.showConfirmDialog('REFUSE', btn, applyId);
             },
             // 忽略
             ignore: function (btn, applyId) {
-                this.showConfirmDialog('ignore', btn, applyId)
+                this.showConfirmDialog('IGNORE', btn, applyId)
             },
-            showConfirmDialog: function (type, btn, applyId) {
-                var msg = type === 'refuse' ? '拒绝' : '忽略';
+            showConfirmDialog: function (status, btn, applyId) {
+                var msg = status === 'REFUSE' ? '拒绝' : '忽略';
                 layer.confirm(`确定${msg}吗？`, function (index) {
                     app.ajax('/chat/apply/process', {
                         friendApplyId: applyId,
-                        action: type
+                        status
                     }, function (res) {
                         layer.close(index);
                         btn.parent().html(`已${msg}`);

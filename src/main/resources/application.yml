@@ -101,3 +101,9 @@ server:
     include-message: always
     include-stacktrace: always
     include-binding-errors: always
+
+# tk mapper的配置
+mapper:
+  # 默认情况下，枚举不会当作表中的字段，如果想要自动把枚举作为表中字段，需要配置 enumAsSimpleType=true
+  # 如果不启用这个功能，也需要加 @Column 或者 @ColumnType 注解
+  enum-as-simple-type: true

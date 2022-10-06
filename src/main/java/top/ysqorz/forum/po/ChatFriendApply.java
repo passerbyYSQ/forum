@@ -46,8 +46,6 @@ public class ChatFriendApply {
     /**
      * 状态。0：拒绝；1：同意
      */
-    // private Byte status;
-    @Column
     private ApplyStatus status;
 
     /**

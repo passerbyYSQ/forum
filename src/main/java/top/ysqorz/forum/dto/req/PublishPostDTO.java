@@ -2,8 +2,11 @@ package top.ysqorz.forum.dto.req;
 
 import lombok.Getter;
 import lombok.Setter;
+import top.ysqorz.forum.common.enumeration.PostVisibility;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,16 +55,11 @@ public class PublishPostDTO {
      * 3：积分购买后可见（积分就是points）
      */
     @NotNull
-    @Min(0)
-    @Max(3)
-    private Byte visibilityType;
+    private PostVisibility visibilityType;
 
     private Byte points; // 其他用户查看该贴需要支付的积分
 
     // 帖子标签
-//    @NotNull // 可以为空，但不能为null
-//    @Size(min = 0, max = 5)
-//    private List<String> labels;
     private String labels;  // 标签，逗号作为分隔符
 
     public Set<String> splitLabels() {

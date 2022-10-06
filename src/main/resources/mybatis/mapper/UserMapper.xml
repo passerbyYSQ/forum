@@ -49,8 +49,6 @@
         <result column="reward_points" jdbcType="INTEGER" property="rewardPoints" />
         <result column="photo" jdbcType="VARCHAR" property="photo" />
         <result column="black_id" jdbcType="INTEGER" property="blackId" />
-        <result column="last_attend_time" jdbcType="TIMESTAMP" property="lastAttendTime" />
-        <result column="consecutive_attend_days" jdbcType="INTEGER" property="consecutiveAttendDays" />
     </resultMap>
 
     <select id="selectAllUser" parameterType="top.ysqorz.forum.dto.req.QueryUserCondition" resultMap="allUserAndRole">
@@ -99,7 +97,7 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="photo" jdbcType="VARCHAR" property="photo"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
-        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="gender" jdbcType="TINYINT" property="gender"/>
         <result column="reward_points" jdbcType="INTEGER" property="rewardPoints"/>
         <result column="register_time" jdbcType="DATE" property="registerTime"/>
         <result column="position" jdbcType="VARCHAR" property="position"/>

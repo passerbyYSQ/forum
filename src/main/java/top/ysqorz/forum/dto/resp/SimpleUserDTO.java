@@ -3,6 +3,7 @@ package top.ysqorz.forum.dto.resp;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.po.User;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class SimpleUserDTO {
     private Integer id;
     private String username;
-    private Byte gender;
+    private Gender gender;
     private Integer rewardPoints; // 积分
     private Integer level; // 等级 ！！！
     private String photo; // 以后增加 缩略图和原图

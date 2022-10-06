@@ -2,6 +2,7 @@ package top.ysqorz.forum.dto.resp.chat;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.ysqorz.forum.common.enumeration.ApplyStatus;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +23,7 @@ public class ChatFriendApplyDTO {
     private String photo;
     private String sign; // 用户描述，用作签名
     private String content; // 好友申请的内容
-    private Byte status; // 状态。null：未处理，0：拒绝；1：同意；2：忽略；
+    private ApplyStatus status; // 状态。null：未处理，0：拒绝；1：同意；2：忽略；
     // 如果是我处理的，这是发送者申请的时间；如果是我发送的，这是接收者处理申请的时间
     private LocalDateTime modifyTime;
 }

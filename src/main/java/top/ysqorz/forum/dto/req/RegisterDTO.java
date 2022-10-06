@@ -26,8 +26,7 @@ public class RegisterDTO {
     @NotBlank(groups = Register.class)
     private String token;
 
-    @NotBlank(groups = Register.class)
-    @Length(groups = Register.class, max = 24)
+    @Length(groups = Register.class, min = 3, max = 24)
     private String username;
 
     @NotBlank(groups = Register.class)

@@ -63,7 +63,6 @@ public class UserController {
         return ResultModel.success("用户信息！这个接口需要携带有效的token才能访问");
     }
 
-
     /**
      * 用户注册
      */

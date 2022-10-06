@@ -55,8 +55,7 @@ public class PostController {
     private PermManager permManager;
 
     @GetMapping("/detail/{postId}")
-    public String detailPage(@PathVariable Integer postId,
-                             Model model, HttpServletRequest request) {
+    public String detailPage(@PathVariable Integer postId, Model model, HttpServletRequest request) {
         Post post = postService.getPostById(postId);
         if (ObjectUtils.isEmpty(post)) {
             throw new ParameterInvalidException(StatusCode.POST_NOT_EXIST);

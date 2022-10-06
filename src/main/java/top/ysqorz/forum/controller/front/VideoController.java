@@ -34,7 +34,7 @@ public class VideoController {
 
     @ResponseBody
     @PostMapping("/danmu/send")
-    public StatusCode sendDanmu(@NotNull Integer videoId, @Length(max = 255) String content,
+    public StatusCode sendDanmu(@NotNull Integer videoId, @Length(min = 1, max = 64) String content,
                                 @Range Long startMs, @NotBlank String channelId) {
         return danmuService.sendDanmu(videoId, content, startMs, channelId);
     }

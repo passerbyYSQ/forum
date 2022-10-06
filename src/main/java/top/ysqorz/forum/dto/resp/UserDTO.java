@@ -1,6 +1,7 @@
 package top.ysqorz.forum.dto.resp;
 
 import lombok.Data;
+import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.po.Role;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ public class UserDTO {
     private String username;
     private String email;
     private String phone;
-    private Byte gender;
+    private Gender gender;
     private String photo;
     private LocalDateTime registerTime;
     private LocalDateTime lastLoginTime;

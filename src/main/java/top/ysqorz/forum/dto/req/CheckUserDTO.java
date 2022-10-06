@@ -1,6 +1,7 @@
 package top.ysqorz.forum.dto.req;
 
 import lombok.Data;
+import top.ysqorz.forum.common.enumeration.Oauth2App;
 
 import javax.validation.constraints.NotBlank;
 
@@ -22,6 +23,6 @@ public class CheckUserDTO {
 
     private String newPhone;
 
-    private String poFile; // 第三方账号的类型
+    private Oauth2App oauth2App; // 第三方账号的类型
 
 }

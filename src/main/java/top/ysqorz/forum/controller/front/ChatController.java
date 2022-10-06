@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.enumeration.ApplyStatus;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.dto.resp.chat.ChatFriendApplyDTO;
@@ -75,8 +76,9 @@ public class ChatController {
 
     /**
      * 查找用户，添加好友。暂不支持状态（在线/离线）条件
-     * @param keyword   关键词。手机号，邮箱，用户名
-     * @param status    状态。all, online, offline
+     *
+     * @param keyword 关键词。手机号，邮箱，用户名
+     * @param status  状态。all, online, offline
      */
     @ResponseBody
     @GetMapping("/search/user")
@@ -109,18 +111,18 @@ public class ChatController {
 
     /**
      * 处理好友申请
-     * @param action    agree, refuse, ignore
      */
     @ResponseBody
     @PostMapping("/apply/process")
     public String processFriendApply(@NotNull Integer friendApplyId, Integer friendGroupId, // agree时才需要
-                                     @NotBlank String action) {
-        return chatService.processFriendApply(friendApplyId, friendGroupId, action);
+                                     @NotNull ApplyStatus status) {
+        return chatService.processFriendApply(friendApplyId, friendGroupId, status);
     }
 
     /**
      * 签收好友申请的通知
-     * @param friendApplyIds    用逗号分隔。形如：1,2,3
+     *
+     * @param friendApplyIds 用逗号分隔。形如：1,2,3
      */
     @ResponseBody
     @PostMapping("/apply/sign")
@@ -160,8 +162,9 @@ public class ChatController {
 
     /**
      * 移动好友至指定分组
-     * @param friendIds                 好友的用户id，用逗号分隔。形如：1,2,3
-     * @param targetFriendGroupId       如果缺省，则全部移动至"未分组"
+     *
+     * @param friendIds           好友的用户id，用逗号分隔。形如：1,2,3
+     * @param targetFriendGroupId 如果缺省，则全部移动至"未分组"
      */
     @ResponseBody
     @PostMapping("/friend/move")
@@ -171,7 +174,8 @@ public class ChatController {
 
     /**
      * 删除好友
-     * @param friendId      好友的用户id，而非好友关系id
+     *
+     * @param friendId 好友的用户id，而非好友关系id
      */
     @ResponseBody
     @PostMapping("/friend/delete")
@@ -185,13 +189,14 @@ public class ChatController {
     @ResponseBody
     @PostMapping("/friend/msg/send")
     public StatusCode sendChatFriendMsg(@NotNull Integer friendId, @Length(max = 10000) String content,
-                                         @NotBlank String channelId) {
-       return chatService.sendChatFriendMsg(friendId, content, channelId);
+                                        @NotBlank String channelId) {
+        return chatService.sendChatFriendMsg(friendId, content, channelId);
     }
 
     /**
      * 签收多条聊天消息
-     * @param msgIds    需要签收的消息的id。用逗号分隔，形如：id1,id2
+     *
+     * @param msgIds 需要签收的消息的id。用逗号分隔，形如：id1,id2
      */
     @ResponseBody
     @PostMapping("/friend/msg/sign")

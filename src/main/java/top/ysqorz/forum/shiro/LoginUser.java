@@ -3,6 +3,7 @@ package top.ysqorz.forum.shiro;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.po.User;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ public class LoginUser implements Serializable {
     private String email;
     private String phone;
     private String loginSalt;
-    private Byte gender;
+    private Gender gender;
     private String photo;
     private String token;
 
