@@ -5,16 +5,15 @@ import top.ysqorz.forum.dto.req.CheckUserDTO;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
 import top.ysqorz.forum.dto.req.RegisterDTO;
 import top.ysqorz.forum.dto.resp.BlackInfoDTO;
-import top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
 import top.ysqorz.forum.dto.resp.UserDTO;
+import top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO;
 import top.ysqorz.forum.po.Blacklist;
 import top.ysqorz.forum.po.Role;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.shiro.JwtToken;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -134,21 +133,6 @@ public interface UserService {
      * 注册
      */
     void register(RegisterDTO vo);
-
-    /**
-     * gitee授权
-     */
-    User oauth2Gitee(String code) throws IOException;
-
-    /**
-     * qq授权
-     */
-    User oauth2QQ(String code) throws IOException;
-
-    /**
-     * 百度授权
-     */
-    User oauth2Baidu(String code) throws IOException;
 
     SimpleUserDTO getSimpleUser(Integer userId);
 

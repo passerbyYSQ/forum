@@ -1,23 +1,24 @@
-package top.ysqorz.forum.oauth;
+package top.ysqorz.forum.oauth.provider;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import top.ysqorz.forum.dto.resp.oauth.BaiduUserDTO;
+import top.ysqorz.forum.common.enumeration.Gender;
+import top.ysqorz.forum.oauth.AbstractOauthProvider;
+import top.ysqorz.forum.oauth.dto.BaiduUserDTO;
+import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 
-import java.io.IOException;
-
 /**
- * https://pan.baidu.com/union/doc/0ksg0sbig
+ * <a href="https://pan.baidu.com/union/doc/0ksg0sbig">...</a>
  *
  * @author ligouzi
  * @create 2021-06-21 10:57
  */
-@Component
+@Component("baidu")
 @ConfigurationProperties(prefix = "oauth.baidu")
-public class BaiduProvider extends OauthProvider<BaiduUserDTO> {
+public class BaiduProvider extends AbstractOauthProvider<BaiduUserDTO> {
 
     @Override
     public String joinAuthorizeUrl(String state) {
@@ -32,7 +33,7 @@ public class BaiduProvider extends OauthProvider<BaiduUserDTO> {
     }
 
     @Override
-    protected String getAccessToken(String code) throws IOException {
+    public String getAccessToken(String code) {
         // 方法顺序按照这种方式，切记选择post/get一定要放在倒数第二，同步或者异步倒数第一，才会正确执行
         String body = OkHttpUtils.builder().url("https://openapi.baidu.com/oauth/2.0/token")
                 // 有参数的话添加参数，可多个
@@ -47,12 +48,25 @@ public class BaiduProvider extends OauthProvider<BaiduUserDTO> {
     }
 
     @Override
-    protected BaiduUserDTO getOauthUser(String accessToken) throws IOException {
+    public BaiduUserDTO getOauthUser(String accessToken) {
         String body = OkHttpUtils.builder().url("https://pan.baidu.com/rest/2.0/xpan/nas")
                 .addParam("method", "uinfo")
                 .addParam("access_token", accessToken)
                 .get()
                 .sync();
         return JsonUtils.jsonToObj(body, BaiduUserDTO.class);
+    }
+
+    @Override
+    protected String getUniqueId(BaiduUserDTO oauthUser) {
+        return oauthUser.getUk();
+    }
+
+    @Override
+    protected void completeDbUser(BaiduUserDTO oauthUser, User dbUser) {
+        dbUser.setUsername(oauthUser.getBaidu_name())
+                .setPhoto(oauthUser.getAvatar_url())
+                .setEmail("")
+                .setGender(Gender.SECRET);
     }
 }

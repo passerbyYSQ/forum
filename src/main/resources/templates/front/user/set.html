@@ -144,7 +144,7 @@
             </ul>
             <div class="layui-tab-content" style="padding: 20px 0;">
                 <!-- 修改个人信息的选项卡 -->
-                <div class="layui-form layui-form-pane layui-tab-item  layui-show">
+                <div class="layui-form layui-form-pane layui-tab-item layui-show">
                     <form method="post">
                         <div class="layui-form-item">
                             <label for="username" class="layui-form-label">用户名</label>
@@ -515,21 +515,7 @@
         var app = layui.app;
         var citypicker = layui.citypicker;
         var laydate = layui.laydate;
-        //后端返回的提示码msg，显示信息两秒后刷新去除url中的信息
-        var code = app.getUrlParam("code");
-        var msg = app.getUrlParam("msg");
         var oldUrl = '/user/center/set';
-
-        if (code && msg) {
-            if (code === '2000') {
-                app.successNotice('绑定成功');
-            } else {
-                app.errorNotice(msg);
-            }
-            setTimeout(function () {
-                location.href = oldUrl;
-            }, 2000);
-        }
 
         window.logout = function () {
             window.location.href = '/user/logout';

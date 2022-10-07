@@ -1,4 +1,4 @@
-package top.ysqorz.forum.dto.resp.oauth;
+package top.ysqorz.forum.oauth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

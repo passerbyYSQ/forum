@@ -1,23 +1,25 @@
-package top.ysqorz.forum.oauth;
+package top.ysqorz.forum.oauth.provider;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import top.ysqorz.forum.dto.resp.oauth.QQUserDTO;
+import top.ysqorz.forum.common.enumeration.Gender;
+import top.ysqorz.forum.oauth.AbstractOauthProvider;
+import top.ysqorz.forum.oauth.dto.QQUserDTO;
+import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 
-import java.io.IOException;
-
 /**
- * https://wiki.connect.qq.com/
+ * <a href="https://wiki.connect.qq.com/">...</a>
+ *
  * @author passerbyYSQ
  * @create 2021-06-15 11:14
  */
-@Component
+@Component("qq")
 @ConfigurationProperties(prefix = "oauth.qq")
-public class QQProvider extends OauthProvider<QQUserDTO> {
+public class QQProvider extends AbstractOauthProvider<QQUserDTO> {
 
     @Override
     public String joinAuthorizeUrl(String state) {
@@ -31,7 +33,7 @@ public class QQProvider extends OauthProvider<QQUserDTO> {
     }
 
     @Override
-    protected String getAccessToken(String code) throws IOException {
+    public String getAccessToken(String code) {
         // 方法顺序按照这种方式，切记选择post/get一定要放在倒数第二，同步或者异步倒数第一，才会正确执行
         String body = OkHttpUtils.builder().url("https://graph.qq.com/oauth2.0/token")
                 // 有参数的话添加参数，可多个
@@ -48,7 +50,7 @@ public class QQProvider extends OauthProvider<QQUserDTO> {
     }
 
     @Override
-    protected QQUserDTO getOauthUser(String accessToken) throws IOException {
+    public QQUserDTO getOauthUser(String accessToken) {
         String body = OkHttpUtils.builder().url("https://graph.qq.com/oauth2.0/me")
                 // 有参数的话添加参数，可多个
                 .addParam("access_token", accessToken)
@@ -70,5 +72,18 @@ public class QQProvider extends OauthProvider<QQUserDTO> {
         QQUserDTO qqUserDTO = JsonUtils.jsonToObj(userInfo, QQUserDTO.class);
         qqUserDTO.setOpenId(openId);
         return qqUserDTO;
+    }
+
+    @Override
+    protected String getUniqueId(QQUserDTO oauthUser) {
+        return oauthUser.getOpenId();
+    }
+
+    @Override
+    protected void completeDbUser(QQUserDTO oauthUser, User dbUser) {
+        dbUser.setUsername(oauthUser.getNickname())
+                .setPhoto(oauthUser.getFigureurl_qq_1())
+                .setEmail("")
+                .setGender("男".equals(oauthUser.getGender()) ? Gender.MALE : Gender.FEMALE);
     }
 }

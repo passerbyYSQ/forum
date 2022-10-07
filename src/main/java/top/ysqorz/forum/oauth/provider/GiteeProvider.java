@@ -1,22 +1,26 @@
-package top.ysqorz.forum.oauth;
+package top.ysqorz.forum.oauth.provider;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import top.ysqorz.forum.dto.resp.oauth.GiteeUserDTO;
+import top.ysqorz.forum.common.enumeration.Gender;
+import top.ysqorz.forum.oauth.AbstractOauthProvider;
+import top.ysqorz.forum.oauth.dto.GiteeUserDTO;
+import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.OkHttpUtils;
 
 /**
  * gitee认证登录网络链接
- * https://gitee.com/api/v5/oauth_doc#/
+ * <a href="https://gitee.com/api/v5/oauth_doc#/">...</a>
+ *
  * @author 阿灿
  * @create 2021-06-11 13:58
  */
-@Component
+@Component("gitee")
 @ConfigurationProperties(prefix = "oauth.gitee")
-public class GiteeProvider extends OauthProvider<GiteeUserDTO> {
+public class GiteeProvider extends AbstractOauthProvider<GiteeUserDTO> {
 
     @Override
     public String joinAuthorizeUrl(String state) {
@@ -30,7 +34,7 @@ public class GiteeProvider extends OauthProvider<GiteeUserDTO> {
     }
 
     @Override
-    protected String getAccessToken(String code) {
+    public String getAccessToken(String code) {
         // 方法顺序按照这种方式，切记选择post/get一定要放在倒数第二，同步或者异步倒数第一，才会正确执行
         String body = OkHttpUtils.builder().url("https://gitee.com/oauth/token")
                 // 有参数的话添加参数，可多个
@@ -47,7 +51,7 @@ public class GiteeProvider extends OauthProvider<GiteeUserDTO> {
     }
 
     @Override
-    protected GiteeUserDTO getOauthUser(String accessToken) {
+    public GiteeUserDTO getOauthUser(String accessToken) {
         // 方法顺序按照这种方式，切记选择post/get一定要放在倒数第二，同步或者异步倒数第一，才会正确执行
         String body = OkHttpUtils.builder().url("https://gitee.com/api/v5/user")
                 // 有参数的话添加参数，可多个
@@ -57,4 +61,16 @@ public class GiteeProvider extends OauthProvider<GiteeUserDTO> {
         return JsonUtils.jsonToObj(body, GiteeUserDTO.class);
     }
 
+    @Override
+    protected String getUniqueId(GiteeUserDTO oauthUser) {
+        return oauthUser.getId();
+    }
+
+    @Override
+    protected void completeDbUser(GiteeUserDTO oauthUser, User dbUser) {
+        dbUser.setUsername(oauthUser.getName())
+                .setPhoto(oauthUser.getAvatarUrl())
+                .setEmail(oauthUser.getEmail() != null ? oauthUser.getEmail() : "")
+                .setGender(Gender.SECRET);
+    }
 }

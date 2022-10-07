@@ -8,21 +8,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
+import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.common.exception.ParameterInvalidException;
-import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.dao.*;
 import top.ysqorz.forum.dto.req.CheckUserDTO;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
 import top.ysqorz.forum.dto.req.RegisterDTO;
-import top.ysqorz.forum.dto.resp.*;
+import top.ysqorz.forum.dto.resp.BlackInfoDTO;
+import top.ysqorz.forum.dto.resp.SimpleUserDTO;
+import top.ysqorz.forum.dto.resp.UserDTO;
 import top.ysqorz.forum.dto.resp.chat.ChatUserCardDTO;
-import top.ysqorz.forum.dto.resp.oauth.BaiduUserDTO;
-import top.ysqorz.forum.dto.resp.oauth.GiteeUserDTO;
-import top.ysqorz.forum.dto.resp.oauth.QQUserDTO;
-import top.ysqorz.forum.oauth.BaiduProvider;
-import top.ysqorz.forum.oauth.GiteeProvider;
-import top.ysqorz.forum.oauth.QQProvider;
+import top.ysqorz.forum.oauth.provider.BaiduProvider;
+import top.ysqorz.forum.oauth.provider.GiteeProvider;
+import top.ysqorz.forum.oauth.provider.QQProvider;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.RoleService;
 import top.ysqorz.forum.service.UserService;
@@ -35,7 +34,6 @@ import top.ysqorz.forum.utils.RandomUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -223,112 +221,6 @@ public class UserServiceImpl implements UserService {
                 .setPhoto("/admin/assets/images/defaultUserPhoto.jpg");
 
         userMapper.insertSelective(user);
-    }
-
-
-    @Override
-    public User oauth2Gitee(String code) throws IOException {
-        GiteeUserDTO giteeUser = giteeProvider.getUser(code);
-        User user = giteeProvider.getDbUser(giteeUser.getId());
-        if (ObjectUtils.isEmpty(user)) {
-            if (ShiroUtils.isAuthenticated()) {
-                user = this.getUserById(ShiroUtils.getUserId());
-                if (!ObjectUtils.isEmpty(user.getEmail())) { // 未绑定邮箱不允许操作
-                    user.setGiteeId(giteeUser.getId());
-                    userMapper.updateByPrimaryKeySelective(user);
-                }
-            } else {
-                LocalDateTime now = LocalDateTime.now();
-                user = new User();
-                user.setGiteeId(giteeUser.getId())
-                        .setUsername(giteeUser.getName())
-                        .setPhoto(giteeUser.getAvatarUrl())
-                        .setEmail(giteeUser.getEmail() != null ? giteeUser.getEmail() : "")
-                        .setPassword("")
-                        .setRegisterTime(now)
-                        .setModifyTime(now)
-                        .setConsecutiveAttendDays(0)
-                        .setRewardPoints(0)
-                        .setFansCount(0)
-                        .setGender(Gender.SECRET)
-                        .setJwtSalt("")
-                        .setLoginSalt(RandomUtils.generateStr(8));
-                userMapper.insertUseGeneratedKeys(user); // 填充了主键
-            }
-        }
-        return user;
-    }
-
-    @Override
-    public User oauth2QQ(String code) throws IOException {
-        QQUserDTO qqUser = qqProvider.getUser(code);
-        User user = qqProvider.getDbUser(qqUser.getOpenId());
-        // 第一次判断是否有该第三方授权绑定的用户
-        // 有则说明此操作是：通过第三方账号登录或绑定时检测到已绑定该第三方账号
-        if (ObjectUtils.isEmpty(user)) {
-            // 第二次判断是已登录用户还是要注册用户
-            if (ShiroUtils.isAuthenticated()) {
-                // 已登录，说明此操作是：绑定第三方账号
-                user = this.getUserById(ShiroUtils.getUserId());
-                if (!ObjectUtils.isEmpty(user.getEmail())) {
-                    user.setQqId(qqUser.getOpenId());
-                    userMapper.updateByPrimaryKeySelective(user);
-                }
-            } else {
-                // 未登录，说明此操作是：通过第三方账号授权注册
-                LocalDateTime now = LocalDateTime.now();
-                user = new User();
-                user.setQqId(qqUser.getOpenId())
-                        .setUsername(qqUser.getNickname())
-                        .setPhoto(qqUser.getFigureurl_qq_1())
-                        .setEmail("")
-                        .setPassword("")
-                        .setRegisterTime(now)
-                        .setModifyTime(now)
-                        .setConsecutiveAttendDays(0)
-                        .setRewardPoints(0)
-                        .setFansCount(0)
-                        .setGender("男".equals(qqUser.getGender()) ? Gender.MALE : Gender.FEMALE)
-                        .setJwtSalt("")
-                        .setLoginSalt(RandomUtils.generateStr(8));
-                userMapper.insertUseGeneratedKeys(user);
-            }
-        }
-        return user;
-    }
-
-    @Override
-    public User oauth2Baidu(String code) throws IOException {
-        BaiduUserDTO baiduUser = baiduProvider.getUser(code);
-        User user = baiduProvider.getDbUser(baiduUser.getUk());
-        //第一次查找是否有该第三方授权绑定的用户，没有则查找是否已经有登录用户
-        if (ObjectUtils.isEmpty(user)) {
-            if (ShiroUtils.isAuthenticated()) {
-                user = this.getUserById(ShiroUtils.getUserId());
-                if (!ObjectUtils.isEmpty(user.getEmail())) {
-                    user.setBaiduId(baiduUser.getUk());
-                    userMapper.updateByPrimaryKeySelective(user);
-                }
-            } else {
-                LocalDateTime now = LocalDateTime.now();
-                user = new User();
-                user.setBaiduId(baiduUser.getUk())
-                        .setUsername(baiduUser.getBaidu_name())
-                        .setPhoto(baiduUser.getAvatar_url())
-                        .setEmail("")
-                        .setPassword("")
-                        .setRegisterTime(now)
-                        .setModifyTime(now)
-                        .setConsecutiveAttendDays(0)
-                        .setRewardPoints(0)
-                        .setFansCount(0)
-                        .setGender(Gender.SECRET)
-                        .setJwtSalt("")
-                        .setLoginSalt(RandomUtils.generateStr(8));
-                userMapper.insertUseGeneratedKeys(user);
-            }
-        }
-        return user;
     }
 
     @Override

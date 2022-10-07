@@ -14,9 +14,7 @@ import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.req.LoginDTO;
 import top.ysqorz.forum.dto.req.RegisterDTO;
 import top.ysqorz.forum.dto.resp.SimpleUserDTO;
-import top.ysqorz.forum.oauth.BaiduProvider;
-import top.ysqorz.forum.oauth.GiteeProvider;
-import top.ysqorz.forum.oauth.QQProvider;
+import top.ysqorz.forum.oauth.OauthProvider;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RSAService;
 import top.ysqorz.forum.service.RedisService;
@@ -29,9 +27,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * 通过注解实现权限控制
@@ -48,11 +46,7 @@ public class UserController {
     @Resource
     private RedisService redisService;
     @Resource
-    private GiteeProvider giteeProvider;
-    @Resource
-    private QQProvider qqProvider;
-    @Resource
-    private BaiduProvider baiduProvider;
+    private Map<String, OauthProvider<?>> oauthProviderMap;
     @Resource
     private RSAService rsaService;
 
@@ -187,76 +181,28 @@ public class UserController {
         return "redirect:" + referer;
     }
 
-    @GetMapping("/oauth/gitee/authorize")
-    public String giteeAuthorize(@RequestHeader(defaultValue = "") String referer) {
-        return giteeProvider.redirectAuthorize(referer);
-    }
-
-    /**
-     * gitee第三方授权回调地址
-     */
-    @GetMapping("/oauth/gitee/callback")
-    public String giteeCallback(@RequestParam(defaultValue = "") String state,
-                                String code, HttpServletResponse response) throws IOException {
-        // 校验state，防止CSRF
-        String referer = giteeProvider.checkState(state);
-        // 检查是否存在现有账号与第三方的账号已绑定
-        User user = userService.oauth2Gitee(code);
-        return oauthCallbackRedirect(referer, user, response);
-    }
-
-    @GetMapping("/oauth/qq/authorize")
-    public String qqAuthorize(@RequestHeader(defaultValue = "") String referer) {
-        return qqProvider.redirectAuthorize(referer);
-    }
-
-    /**
-     * qq第三方授权回调地址
-     */
-    @GetMapping("/oauth/qq/callback")
-    public String qqCallback(@RequestParam(defaultValue = "") String state,
-                             String code, HttpServletResponse response) throws IOException {
-        String referer = qqProvider.checkState(state);
-        User user = userService.oauth2QQ(code);
-        return oauthCallbackRedirect(referer, user, response);
-    }
-
-    @GetMapping("/oauth/baidu/authorize")
-    public String baiduAuthorize(@RequestHeader(defaultValue = "") String referer) {
-        return baiduProvider.redirectAuthorize(referer);
-    }
-
-    /**
-     * baidu第三方授权回调地址
-     */
-    @GetMapping("/oauth/baidu/callback")
-    public String baiduCallback(@RequestParam(defaultValue = "") String state,
-                                String code, HttpServletResponse response) throws IOException {
-        String referer = baiduProvider.checkState(state);
-        User user = userService.oauth2Baidu(code);
-        return oauthCallbackRedirect(referer, user, response);
-    }
-
-    private String oauthCallbackRedirect(String referer, User user, HttpServletResponse response)
-            throws UnsupportedEncodingException {
-        StatusCode code = StatusCode.SUCCESS;
-        // 如果是从绑定界面过来
-        if (!ObjectUtils.isEmpty(referer) && referer.contains("user/center/set")) {
-            if (!ShiroUtils.getUserId().equals(user.getId())) { // 说明已经被其他账号绑定了
-                code = StatusCode.ACCOUNT_IS_BOUND;
-            } else if (ObjectUtils.isEmpty(user.getEmail())) { // 尚未设置邮箱，不能进行绑定或解绑操作
-                code = StatusCode.EMAIL_NOT_SET;
-            }
+    @GetMapping("/oauth/{provider}/authorize")
+    public String oauthAuthorize(@PathVariable @NotBlank String provider,
+                                 @RequestHeader(defaultValue = "") String referer) {
+        OauthProvider<?> oauthProvider = oauthProviderMap.get(provider);
+        if (ObjectUtils.isEmpty(oauthProvider)) {
+            throw new ServiceFailedException(StatusCode.UNSUPPORTED_OAUTH_AUTHORIZATION);
         }
-        if (StatusCode.SUCCESS.equals(code)) { // 成功
-            // 签发我们自己的token
-            userService.login(user.getId(), user.getLoginSalt(), response);
-            // 重定向携带token
-            //redirectAttributes.addAttribute("token", token);
-            // redirect:后不要加 "/"
+        return oauthProvider.redirectAuthorize(referer);
+    }
+
+    /**
+     * 第三方授权回调地址
+     */
+    @GetMapping("/oauth/{provider}/callback")
+    public String giteeCallback(@PathVariable @NotBlank String provider,
+                                @RequestParam(defaultValue = "") String state,
+                                String code, HttpServletResponse response) throws IOException {
+        OauthProvider<?> oauthProvider = oauthProviderMap.get(provider);
+        if (ObjectUtils.isEmpty(oauthProvider)) {
+            throw new ServiceFailedException(StatusCode.UNSUPPORTED_OAUTH_AUTHORIZATION);
         }
-        return String.format("redirect:%s?code=%d&msg=%s", referer, code.getCode(),
-                URLEncoder.encode(code.getMsg(), "utf-8"));
+        return oauthProvider.oauthCallback(state, code, response);
     }
 
     /**

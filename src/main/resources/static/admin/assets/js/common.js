@@ -49,13 +49,20 @@ function init($, app) {
 }
 
 function oauthRefresh(app) {
-    //后端返回的提示码msg，显示信息1秒后刷新去除url中的信息
+    // 后端返回的提示码msg，显示信息两秒后刷新去除url中的信息
     var code = app.getUrlParam("code");
     var msg = app.getUrlParam("msg");
-    if (code === '2000' && msg) {
+
+    if (code && msg) {
+        if (code === '2000') {
+            app.successNotice('绑定成功');
+        } else {
+            app.errorNotice(msg);
+        }
         setTimeout(function () {
+            // 刷新当前页面。不采用reload，是因为需要去除后面的路径参数
             location.href = location.href.substr(0, location.href.indexOf('?'));
-        }, 500);
+        }, 2000);
     }
 }
 
