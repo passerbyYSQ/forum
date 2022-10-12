@@ -63,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
             if (content.length() >= 100) {
                 content = content.substring(0, 100);
             }
-            firstCommentDTO.setContent(content);
+            firstCommentDTO.setContent(HtmlUtils.htmlEscape(content));
         }
         return new PageData<>(firstCommentDTOList);
     }

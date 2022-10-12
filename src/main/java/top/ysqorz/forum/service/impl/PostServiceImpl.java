@@ -316,7 +316,7 @@ public class PostServiceImpl implements PostService {
             if (content.length() >= 100) {
                 content= content.substring(0, 100);
             }
-            post.setContent(content);
+            post.setContent(HtmlUtils.htmlEscape(content));
             // 排除表情图片。表情图片有个特点：alt="[xxx]"。排除掉这种情况的图片
             //Pattern.compile("^((?!\\[\\S+\\]).)*$"); // 正则表达式测试
             // https://www.jb51.net/article/52491.htm

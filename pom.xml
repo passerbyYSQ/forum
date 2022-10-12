@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>top.ysqorz</groupId>
 	<artifactId>forum</artifactId>
-	<version>8765</version>
+	<version>v1.0</version>
 	<!-- 打包方式为war包	-->
 	<packaging>jar</packaging>
 	<name>forum</name>
