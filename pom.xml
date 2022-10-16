@@ -30,7 +30,6 @@
 		<tk-mapper.version>2.1.5</tk-mapper.version>
 		<jwt.version>3.3.0</jwt.version>
 		<pagehelper.version>1.2.13</pagehelper.version>
-		<zxing.version>3.3.3</zxing.version>
 		<aliyun-oss.version>3.11.2</aliyun-oss.version>
 		<thumbnailator.version>0.4.8</thumbnailator.version>
 		<shiro.version>1.7.0</shiro.version>
@@ -134,17 +133,6 @@
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>${jwt.version}</version>
-		</dependency>
-		<!-- ZXing 二维码 -->
-		<dependency>
-			<groupId>com.google.zxing</groupId>
-			<artifactId>core</artifactId>
-			<version>${zxing.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.zxing</groupId>
-			<artifactId>javase</artifactId>
-			<version>${zxing.version}</version>
 		</dependency>
 		<!-- 阿里云oss	-->
 		<dependency>

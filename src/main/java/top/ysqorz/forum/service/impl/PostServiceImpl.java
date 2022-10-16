@@ -121,13 +121,14 @@ public class PostServiceImpl implements PostService {
     public Post addPost(PublishPostDTO dto) {
         Post post = new Post();
         LocalDateTime now = LocalDateTime.now();
-        // 富文本被全局转换器转义了，此处需要还原
-        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(dto.getContent()));
+        // 富文本被转义了，此处需要还原，前端编辑器一次，全局转换器一次
+        String unEscapedText = HtmlUtils.htmlUnescape(HtmlUtils.htmlUnescape(dto.getContent()));
+        String cleanContent = CommonUtils.cleanRichText(unEscapedText);
         post.setCreatorId(ShiroUtils.getUserId()) // 发帖人id
                 .setTopicId(dto.getTopicId())  // 所属话题的id
                 .setTitle(dto.getTitle()) // 帖子标题
                 // 帖子内容，由于全局XSS防护做了转义，此处需要反转义
-                .setContent(escapedContent)
+                .setContent(cleanContent)
                 // TODO 帖子可见性待实现
                 .setVisibilityType(dto.getVisibilityType())
                 .setIsLocked((byte) (dto.getIsLocked() ? 1 : 0))
@@ -171,12 +172,14 @@ public class PostServiceImpl implements PostService {
     public Post updatePostAndLabels(PublishPostDTO dto) {
         Post post = new Post();
         // 富文本被全局转换器转义了，此处需要还原
-        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(dto.getContent()));
+        // 富文本被转义了，此处需要还原，前端编辑器一次，全局转换器一次
+        String unEscapedText = HtmlUtils.htmlUnescape(HtmlUtils.htmlUnescape(dto.getContent()));
+        String cleanContent = CommonUtils.cleanRichText(unEscapedText);
         post.setId(dto.getPostId())
                 .setTopicId(dto.getTopicId())
                 .setLastModifyTime(LocalDateTime.now()) // 最后一次的更新时间
                 .setTitle(dto.getTitle())
-                .setContent(escapedContent)
+                .setContent(cleanContent)
                 .setVisibilityType(dto.getVisibilityType())
                 .setIsLocked((byte) (dto.getIsLocked() ? 1 : 0));
         this.updatePostById(post);

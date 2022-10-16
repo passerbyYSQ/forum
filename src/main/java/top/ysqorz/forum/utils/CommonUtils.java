@@ -1,5 +1,8 @@
 package top.ysqorz.forum.utils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.common.ResultModel;
@@ -22,9 +25,44 @@ import java.util.regex.Pattern;
  */
 public class CommonUtils {
 
-    public static String escapeScriptLabel(String text) {
-        return text.replaceAll("<script>", "&lt;script&gt;")
-                .replaceAll("</script>", "&lt;/script&gt;");
+    private static final Safelist safeList = Safelist.basicWithImages();
+    private static final Document.OutputSettings outputSettings = new Document.OutputSettings().prettyPrint(false);
+
+    static {
+        // 富文本编辑时一些样式是使用style来进行实现的 比如红色字体 所以需要给所有标签添加style属性
+        safeList.addAttributes(":all", "style", "class");
+    }
+
+    public static String cleanXSS(String html) {
+        return Jsoup.clean(html, "", safeList, outputSettings);
+    }
+
+    public static String cleanRichText(String html) {
+        return cleanRichText(html, "<code>", "</code>");
+    }
+
+    public static String cleanRichText(String html, String leftDelimiter, String rightDelimiter) {
+        StringBuilder oldSbd = new StringBuilder(html);
+        StringBuilder newSbd = new StringBuilder();
+        int p = 0;
+        while (true) {
+            int leftIdx = oldSbd.indexOf(leftDelimiter, p);
+            int rightIdx = oldSbd.indexOf(rightDelimiter, leftIdx + 1);
+            if (leftIdx != -1 && rightIdx != -1) { // 成对出现
+//                String cleanText = cleanXSS(oldSbd.substring(p, leftIdx)); // 清除敏感标签
+                newSbd.append(oldSbd.substring(p, leftIdx));
+
+                int replaceStart = leftIdx + leftDelimiter.length();
+                String escapeText = HtmlUtils.htmlEscape(oldSbd.substring(replaceStart, rightIdx)); // 转义
+                newSbd.append(leftDelimiter).append(escapeText).append(rightDelimiter);
+
+                p = rightIdx + rightDelimiter.length();
+            } else {
+                break;
+            }
+        }
+        newSbd.append(oldSbd.substring(p, oldSbd.length()));
+        return cleanXSS(newSbd.toString());
     }
 
     public static Set<Integer> splitIdStr(String idStr) {
@@ -76,7 +114,7 @@ public class CommonUtils {
     }
 
     /**
-     * https://www.cnblogs.com/death00/p/11557305.html
+     * <a href="https://www.cnblogs.com/death00/p/11557305.html">...</a>
      */
     public static String getIpFromRequest(HttpServletRequest request) {
         List<String> candidateIps = new ArrayList<>();

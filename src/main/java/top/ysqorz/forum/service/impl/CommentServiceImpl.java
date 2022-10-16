@@ -138,12 +138,13 @@ public class CommentServiceImpl implements CommentService {
          */
         // 当前用户就是一级评论的creator
         Integer creatorId = ShiroUtils.getUserId();
-        // 富文本被全局转换器转义了，此处需要还原
-        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(content));
+        // 富文本被转义了，此处需要还原，前端编辑器一次，全局转换器一次
+        String unEscapedText = HtmlUtils.htmlUnescape(HtmlUtils.htmlUnescape(content));
+        String cleanContent = CommonUtils.cleanRichText(unEscapedText);
         // 插入一级评论
         FirstComment comment = new FirstComment();
         comment.setPostId(post.getId())
-                .setContent(escapedContent)
+                .setContent(cleanContent)
                 .setUserId(creatorId);
         // comment 会被设置自增长的id
         firstCommentMapper.addFirstCommentUseGeneratedKeys(comment);
@@ -173,18 +174,17 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void publishSecondComment(FirstComment firstComment,
-                                     SecondComment quoteComment,
-                                     String content) {
+    public void publishSecondComment(FirstComment firstComment, SecondComment quoteComment, String content) {
         Integer myId = ShiroUtils.getUserId();
         Integer receiverId = firstComment.getUserId();
         byte commentType = 1;
         Integer repliedId = firstComment.getId();
-        // 富文本被全局转换器转义了，此处需要还原
-        String escapedContent = CommonUtils.escapeScriptLabel(HtmlUtils.htmlUnescape(content));
+        // 富文本被转义了，此处需要还原，前端编辑器一次，全局转换器一次
+        String unEscapedText = HtmlUtils.htmlUnescape(HtmlUtils.htmlUnescape(content));
+        String cleanContent = CommonUtils.cleanRichText(unEscapedText);
         // 插入二级评论
         SecondComment comment = new SecondComment();
-        comment.setContent(escapedContent)
+        comment.setContent(cleanContent)
                 .setCreateTime(LocalDateTime.now())
                 .setFirstCommentId(firstComment.getId())
                 .setUserId(myId);
