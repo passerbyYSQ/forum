@@ -11,10 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +60,15 @@ public class CommonUtils {
         }
         newSbd.append(oldSbd.substring(p, oldSbd.length()));
         return cleanXSS(newSbd.toString());
+    }
+
+    public static String urlEncode(String str) {
+        try {
+            return URLEncoder.encode(str, "UTF-8").replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static Set<Integer> splitIdStr(String idStr) {

@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 
 /**
@@ -167,8 +166,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
         // 重定向携带token
         //redirectAttributes.addAttribute("token", token);
         // redirect:后不要加 "/"
-        return String.format("redirect:%s?code=%d&msg=%s", referer, code.getCode(),
-                URLEncoder.encode(code.getMsg(), "utf-8"));
+        return String.format("redirect:%s?code=%d&msg=%s", referer, code.getCode(), CommonUtils.urlEncode(code.getMsg()));
     }
 
     /**
