@@ -1,11 +1,13 @@
 package top.ysqorz.forum.im.handler;
 
+import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import org.springframework.core.ResolvableType;
+import top.ysqorz.forum.common.RestRequest;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.*;
 import top.ysqorz.forum.po.User;
@@ -32,7 +34,7 @@ public abstract class MsgHandler<DataType> {
     // 通道类型
     private ChannelType channelType;
     // 下一个消息处理器
-    private MsgHandler next;
+    private MsgHandler<?> next;
     // 该类型消息的所有通道。子类使用
     protected ChannelMap channelMap;
     // 线程池异步消费数据库操作。子类使用
@@ -93,19 +95,20 @@ public abstract class MsgHandler<DataType> {
         // 分发到各个服务器，然后进行推送
         for (String server : servers) {
             if (imServers.contains(server)) { // 如果服务是正常，才转发
-                String api = String.format("http://%s/im/push", server); // 如果设置了context-path，此处需要改动
-                OkHttpUtils okHttp = OkHttpUtils.builder().url(api)
+                String api = String.format("http://%s/im/push", server); // TODO 如果设置了context-path，此处需要改动
+                RestRequest restRequest = RestRequest.builder().url(api)
                         .addHeader("token", token)
-                        .addParam("msgJson", JsonUtils.objectToJson(msg));
+                        .body(msg);
                 if (sourceChannelId != null) {
-                    okHttp.addParam("channelId", sourceChannelId);
+                    restRequest.addParam("channelId", sourceChannelId);
                 }
-                okHttp.post(false).async(new PushApiCallback(data));
+                JSONObject res = restRequest.post(JSONObject.class);
+                log.info(JsonUtils.objectToJson(res));
             }
         }
     }
 
-    public void addBehind(MsgHandler handler) {
+    public void addBehind(MsgHandler<?> handler) {
         if (handler == null) {
             return;
         }

@@ -10,6 +10,7 @@ import top.ysqorz.forum.im.entity.OnOffLineAware;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.SpringUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
@@ -105,14 +106,18 @@ public class MsgCenter {
 
     private void invokeOnOffLineAware(ChannelType channelType, String token, String methodName) {
         // BindMsgHandler(first) -> PingPongMsgHandler -> xxxHandler(tail) -> TailHandler
-        MsgHandler p = first.getNext().getNext();
+        MsgHandler<?> p = first.getNext().getNext();
         while (p != null && !(p instanceof TailHandler)) {
             if (p instanceof OnOffLineAware && p.getChannelType().equals(channelType)) {
                 try {
                     Method onlineMethod = p.getClass().getMethod(methodName, String.class);
                     onlineMethod.invoke(p, token);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    if (e instanceof InvocationTargetException) {
+                        ((InvocationTargetException) e).getTargetException().printStackTrace();
+                    } else {
+                        e.printStackTrace();
+                    }
                 }
             }
             p = p.getNext();

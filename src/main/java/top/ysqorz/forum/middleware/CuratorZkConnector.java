@@ -16,9 +16,15 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
+import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import top.ysqorz.forum.im.IMUtils;
+import top.ysqorz.forum.utils.CommonUtils;
+import top.ysqorz.forum.utils.SpringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -36,7 +42,7 @@ import java.util.Set;
 @Data
 @Component
 @ConfigurationProperties(prefix = "zookeeper.curator")
-public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeChangedCallback>, ConnectionStateListener {
+public class CuratorZkConnector implements ZkConnector<ChildData, CuratorZkConnector.NodeChangedCallback>, ConnectionStateListener {
     private String namespace;
     // ACL digest方式
     private String user;
@@ -71,7 +77,7 @@ public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeCh
                 .addListener(this);
         log.info("开始连接Zookeeper");
         this.client.start();
-        // this.client.blockUntilConnected(); 不要在这里阻塞，否则会拖长初始化bean的时间，从而导致应用启动时间变长
+        // this.client.blockUntilConnected(); // 不要在这里阻塞，否则会拖长初始化bean的时间，从而导致应用启动时间变长
     }
 
     @PreDestroy
@@ -174,10 +180,23 @@ public class CuratorZkConnector implements ZkConnector<CuratorZkConnector.NodeCh
     public void stateChanged(CuratorFramework client, ConnectionState newState) {
         if (ConnectionState.CONNECTED == newState || ConnectionState.RECONNECTED == newState) {
             log.info("连接Zookeeper成功");
-            // 将当前服务器注册到zookeeper中，作为临时节点
-            String path = ZkConnector.PATH + "/" + IMUtils.getWebServer();
-            this.create(path, IMUtils.getWsServer(), CreateMode.EPHEMERAL);
-            log.info("往Zookeeper注册当前服务成功");
+            boolean failed = true;
+            do {
+                try {
+                    // 将当前服务器注册到zookeeper中，作为临时节点
+                    String path = ZkConnector.PATH + "/" + IMUtils.getWebServer();
+                    this.create(path, IMUtils.getWsServer(), CreateMode.EPHEMERAL);
+                    log.warn("往Zookeeper注册当前服务成功");
+                    failed = false;
+                } catch (Exception ignored) {
+                    log.info("服务IOC容器尚未初始化，往Zookeeper注册当前服务失败");
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } while (failed);
         }
     }
 

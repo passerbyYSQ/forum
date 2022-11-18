@@ -14,6 +14,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -21,6 +22,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -59,7 +62,6 @@ public class RestConfig {
         return httpClientBuilder.build();
     }
 
-
     @Bean
     public ClientHttpRequestFactory clientHttpRequestFactory(HttpClient httpClient) {
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -73,7 +75,12 @@ public class RestConfig {
     }
 
     @Bean
-    public RestTemplate restTemplate(ClientHttpRequestFactory requestFactory) {
-        return new RestTemplate(requestFactory);
+    public RestTemplate restTemplate(ClientHttpRequestFactory requestFactory, RestTemplateLogger restLogger) {
+        RestTemplate restTemplate = new RestTemplate();
+        // https://www.jianshu.com/p/96c1bef7856b
+        // 通过BufferingClientHttpRequestFactory对象包装现有的ResquestFactory，用来支持多次调用getBody()方法（增加了日志打印所引起）
+        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(requestFactory));
+        restTemplate.setInterceptors(Collections.singletonList(restLogger));
+        return restTemplate;
     }
 }

@@ -1,8 +1,10 @@
 package top.ysqorz.forum.oauth.provider;
 
+import cn.hutool.json.JSONObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
+import top.ysqorz.forum.common.RestRequest;
 import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.oauth.AbstractOauthProvider;
 import top.ysqorz.forum.oauth.dto.BaiduUserDTO;
@@ -34,27 +36,22 @@ public class BaiduProvider extends AbstractOauthProvider<BaiduUserDTO> {
 
     @Override
     public String getAccessToken(String code) {
-        // 方法顺序按照这种方式，切记选择post/get一定要放在倒数第二，同步或者异步倒数第一，才会正确执行
-        String body = OkHttpUtils.builder().url("https://openapi.baidu.com/oauth/2.0/token")
-                // 有参数的话添加参数，可多个
+        JSONObject data = RestRequest.builder().url("https://openapi.baidu.com/oauth/2.0/token")
                 .addParam("grant_type", "authorization_code")
                 .addParam("code", code)
                 .addParam("client_id", clientId)
                 .addParam("client_secret", clientSecret)
                 .addParam("redirect_uri", redirectUri)
-                .get()
-                .sync();
-        return JsonUtils.jsonToNode(body).get("access_token").asText();
+                .get(JSONObject.class);
+        return data.getStr("access_token");
     }
 
     @Override
     public BaiduUserDTO getOauthUser(String accessToken) {
-        String body = OkHttpUtils.builder().url("https://pan.baidu.com/rest/2.0/xpan/nas")
+        return RestRequest.builder().url("https://pan.baidu.com/rest/2.0/xpan/nas")
                 .addParam("method", "uinfo")
                 .addParam("access_token", accessToken)
-                .get()
-                .sync();
-        return JsonUtils.jsonToObj(body, BaiduUserDTO.class);
+                .get(BaiduUserDTO.class);
     }
 
     @Override
@@ -64,8 +61,8 @@ public class BaiduProvider extends AbstractOauthProvider<BaiduUserDTO> {
 
     @Override
     protected void completeDbUser(BaiduUserDTO oauthUser, User dbUser) {
-        dbUser.setUsername(oauthUser.getBaidu_name())
-                .setPhoto(oauthUser.getAvatar_url())
+        dbUser.setUsername(oauthUser.getBaiduName())
+                .setPhoto(oauthUser.getAvatarUrl())
                 .setEmail("")
                 .setGender(Gender.SECRET);
     }

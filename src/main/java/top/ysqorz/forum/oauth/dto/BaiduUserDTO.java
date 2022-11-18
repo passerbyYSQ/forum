@@ -1,5 +1,6 @@
 package top.ysqorz.forum.oauth.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,9 +15,17 @@ import lombok.NoArgsConstructor;
 public class BaiduUserDTO {
 
     private String uk;          // 用户ID
-    private Integer vip_type;    // 会员类型，0普通用户、1普通会员、2超级会员
-    private String baidu_name;   // 百度账号
-    private String netdisk_name; // 网盘账号
-    private String avatar_url;   // 头像地址
+
+    @JsonProperty("vip_type")
+    private Integer vipType;    // 会员类型，0普通用户、1普通会员、2超级会员
+
+    @JsonProperty("baidu_name")
+    private String baiduName;   // 百度账号
+
+    @JsonProperty("netdisk_name")
+    private String netDiskName; // 网盘账号
+
+    @JsonProperty("avatar_url")
+    private String avatarUrl;   // 头像地址
 
 }

@@ -1,5 +1,6 @@
 package top.ysqorz.forum.oauth.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,9 +13,15 @@ import lombok.Setter;
 public class QQUserDTO {
 
     private String openId;
+
     private String nickname;
-    private String figureurl_qq_1; // 大小为40×40像素的QQ头像URL。
-    private String figureurl_qq_2; // 不一定有。大小为100×100像素的QQ头像URL
+
+    @JsonProperty("figureurl_qq_1")
+    private String figureUrlQQ1; // 大小为40×40像素的QQ头像URL。
+
+    @JsonProperty("figureurl_qq_2")
+    private String figureUrlQQ2; // 不一定有。大小为100×100像素的QQ头像URL
+
     private String gender; // 性别。 "男"
 
 }

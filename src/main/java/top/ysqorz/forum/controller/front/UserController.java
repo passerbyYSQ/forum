@@ -195,9 +195,8 @@ public class UserController {
      * 第三方授权回调地址
      */
     @GetMapping("/oauth/{provider}/callback")
-    public String giteeCallback(@PathVariable @NotBlank String provider,
-                                @RequestParam(defaultValue = "") String state,
-                                String code, HttpServletResponse response) throws IOException {
+    public String giteeCallback(@PathVariable @NotBlank String provider, @RequestParam(defaultValue = "") String state,
+                                String code, HttpServletResponse response) {
         OauthProvider<?> oauthProvider = oauthProviderMap.get(provider);
         if (ObjectUtils.isEmpty(oauthProvider)) {
             throw new ServiceFailedException(StatusCode.UNSUPPORTED_OAUTH_AUTHORIZATION);

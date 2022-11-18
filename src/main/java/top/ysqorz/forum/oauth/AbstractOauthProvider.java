@@ -68,7 +68,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
     }
 
     @Override
-    public String oauthCallback(String state, String code, HttpServletResponse resp) throws IOException {
+    public String oauthCallback(String state, String code, HttpServletResponse resp) {
         String referer = this.checkState(state);
         String accessToken = this.getAccessToken(code);
         T oauthUser = this.getOauthUser(accessToken);
@@ -110,7 +110,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
             userService.login(dbUser.getId(), dbUser.getLoginSalt(), resp);
         }
 
-        return this.oauthCallbackRedirect(referer, dbUser, resp);
+        return this.oauthCallbackRedirect(referer, dbUser);
     }
 
     private void updateUniqueId(User dbUser, String uniqueId) {
@@ -152,8 +152,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
         return params[0]; // 返回真正的referer
     }
 
-    private String oauthCallbackRedirect(String referer, User user, HttpServletResponse resp)
-            throws UnsupportedEncodingException {
+    private String oauthCallbackRedirect(String referer, User user) {
         StatusCode code = StatusCode.SUCCESS;
         // 如果是从绑定界面过来
         if (ShiroUtils.isAuthenticated()) {

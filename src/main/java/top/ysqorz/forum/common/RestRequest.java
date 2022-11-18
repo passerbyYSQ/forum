@@ -1,16 +1,22 @@
 package top.ysqorz.forum.common;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
+import top.ysqorz.forum.config.RestTemplateLogger;
 import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author passerbyYSQ
@@ -18,12 +24,17 @@ import java.util.Set;
  */
 public class RestRequest {
     private String url;
-    private Map<String, String> header;
+    private MultiValueMap<String, String> header;
     private Map<String, String> params;
-    private Object postBody;
+    private Object requestBody;
+    private MultiValueMap<String, Object> formData;
+    private final RestTemplate restTemplate;
 
     private RestRequest() {
-
+        restTemplate = SpringUtils.getBean(RestTemplate.class);
+        header = new LinkedMultiValueMap<>();
+        params = new LinkedHashMap<>();
+        formData = new LinkedMultiValueMap<>();
     }
 
     public static RestRequest builder() {
@@ -35,47 +46,50 @@ public class RestRequest {
         return this;
     }
 
-    public RestRequest addParams(String key, String value) {
-        if (params == null) {
-            params = new LinkedHashMap<>();
-        }
+    public RestRequest body(Object body) {
+        this.requestBody = body;
+        return this;
+    }
+
+    public RestRequest addParam(String key, String value) {
         params.put(key, value);
         return this;
     }
 
     public RestRequest addHeader(String key, String value) {
-        if (header == null) {
-            header = new LinkedHashMap<>();
-        }
-        header.put(key, value);
+        header.add(key, value);
+        return this;
+    }
+
+    public RestRequest addFormData(String key, Object value) {
+        formData.add(key, value);
         return this;
     }
 
     public <T> T get(Class<T> clazz) {
-        Map<String, String> encodedParams = encodeUrlParams(params);
-        String completedUrl = generateUrl(url, encodedParams.keySet());
-        RestTemplate restTemplate = SpringUtils.getBean(RestTemplate.class);
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(header);
-        ResponseEntity<T> response = restTemplate.exchange(completedUrl, HttpMethod.GET, entity, clazz, encodedParams);
+        String completedUrl = generateUrl(url, params);
+        ResponseEntity<T> response = restTemplate.exchange(completedUrl, HttpMethod.GET, new HttpEntity<>(header), clazz, params);
         return response.getBody();
     }
 
-    private Map<String, String> encodeUrlParams(Map<String, String> params) {
-        Map<String, String> encodedParams = new HashMap<>();
-        params.forEach((key, value) -> {
-            String encodedKey = CommonUtils.urlEncode(key);
-            String encodedValue = CommonUtils.urlEncode(value);
-            encodedParams.put(encodedKey, encodedValue);
-        });
-        return encodedParams;
+    public <T> T post(Class<T> clazz) {
+        String completedUrl = generateUrl(url, params);
+        Object body = ObjectUtils.isEmpty(requestBody) ? formData : requestBody;
+        HttpEntity<Object> httpEntity = new HttpEntity<>(body, header);
+        ResponseEntity<T> response = restTemplate.exchange(completedUrl, HttpMethod.POST, httpEntity, clazz, params);
+        return response.getBody();
     }
 
-    private String generateUrl(String rawUrl, Set<String> keys) {
+    private String generateUrl(String rawUrl, Map<String, String> params) {
+        if (ObjectUtils.isEmpty(params)) {
+            return rawUrl;
+        }
         StringBuilder completedUrl = new StringBuilder(rawUrl);
         StringBuilder paramStr = new StringBuilder();
-        for (String key : keys) {
-            paramStr.append(key).append("=").append("?"); // 占位符
+        for (String key : params.keySet()) {
+            paramStr.append(key).append("=").append(String.format("{%s}", key)).append("&"); // 占位符
         }
+        paramStr.deleteCharAt(paramStr.length() - 1);
         int questionIdx = completedUrl.lastIndexOf("?");
         int equalIdx = completedUrl.lastIndexOf("=");
         if (paramStr.length() > 0) {

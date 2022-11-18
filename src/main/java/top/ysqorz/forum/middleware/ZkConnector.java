@@ -9,7 +9,7 @@ import java.util.List;
  * @author passerbyYSQ
  * @create 2022-01-28 0:11
  */
-public interface ZkConnector<Callback extends ZkConnector.NodeChangedCallback> {
+public interface ZkConnector<T, Callback extends ZkConnector.NodeChangedCallback<T>> {
 
     String PATH = "/im/ws"; // 最后不能加 /
 

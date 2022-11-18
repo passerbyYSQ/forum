@@ -14,5 +14,5 @@ public interface OauthProvider<T> {
 
     T getOauthUser(String code);
 
-    String oauthCallback(String state, String code, HttpServletResponse resp) throws IOException;
+    String oauthCallback(String state, String code, HttpServletResponse resp);
 }

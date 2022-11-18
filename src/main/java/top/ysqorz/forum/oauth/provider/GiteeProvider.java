@@ -1,9 +1,12 @@
 package top.ysqorz.forum.oauth.provider;
 
 
+import cn.hutool.json.JSONObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import top.ysqorz.forum.common.RestRequest;
 import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.oauth.AbstractOauthProvider;
 import top.ysqorz.forum.oauth.dto.GiteeUserDTO;
@@ -35,30 +38,21 @@ public class GiteeProvider extends AbstractOauthProvider<GiteeUserDTO> {
 
     @Override
     public String getAccessToken(String code) {
-        // 方法顺序按照这种方式，切记选择post/get一定要放在倒数第二，同步或者异步倒数第一，才会正确执行
-        String body = OkHttpUtils.builder().url("https://gitee.com/oauth/token")
-                // 有参数的话添加参数，可多个
+        JSONObject data = RestRequest.builder().url("https://gitee.com/oauth/token")
                 .addParam("grant_type", "authorization_code")
                 .addParam("client_id", clientId)
                 .addParam("client_secret", clientSecret)
                 .addParam("redirect_uri", redirectUri)
                 .addParam("code", code)
-                .post(true)
-                .sync();
-        String token = body.split(",")[0].split(":")[1];
-        return token.substring(1, token.length() - 1); // 此上述token去除“”后的值
-
+                .post(JSONObject.class);
+        return data.getStr("access_token");
     }
 
     @Override
     public GiteeUserDTO getOauthUser(String accessToken) {
-        // 方法顺序按照这种方式，切记选择post/get一定要放在倒数第二，同步或者异步倒数第一，才会正确执行
-        String body = OkHttpUtils.builder().url("https://gitee.com/api/v5/user")
-                // 有参数的话添加参数，可多个
+        return RestRequest.builder().url("https://gitee.com/api/v5/user")
                 .addParam("access_token", accessToken)
-                .get()
-                .sync();
-        return JsonUtils.jsonToObj(body, GiteeUserDTO.class);
+                .get(GiteeUserDTO.class);
     }
 
     @Override

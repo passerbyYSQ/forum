@@ -1,5 +1,6 @@
 package top.ysqorz.forum.oauth.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,5 +47,7 @@ public class GiteeUserDTO {
     private String login;
     private String name;
     private String email;
+
+    @JsonProperty("avatar_url")
     private String avatarUrl;
 }

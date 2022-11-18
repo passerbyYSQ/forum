@@ -1,11 +1,9 @@
-package top.ysqorz.forum.im;
+package top.ysqorz.forum.controller;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
@@ -54,8 +52,7 @@ public class IMController {
      * 转交给 MsgCenter push
      */
     @PostMapping("/push")
-    public StatusCode pushMsg(@NotBlank String msgJson, String channelId) { // source channel
-        MsgModel msg = JsonUtils.jsonToObj(HtmlUtils.htmlUnescape(msgJson), MsgModel.class);
+    public StatusCode pushMsg(@RequestBody MsgModel msg, String channelId) { // source channel
         MsgCenter.getInstance().push(msg, channelId);
         return StatusCode.SUCCESS;
     }

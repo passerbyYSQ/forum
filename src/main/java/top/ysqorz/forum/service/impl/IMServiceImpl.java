@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class IMServiceImpl implements IMService {
     @Resource
-    private ZkConnector zkConnector;
+    private ZkConnector<?, ?> zkConnector;
     @Resource
     private RedisService redisService;
 

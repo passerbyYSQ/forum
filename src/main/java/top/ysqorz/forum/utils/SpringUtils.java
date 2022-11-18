@@ -1,6 +1,7 @@
 package top.ysqorz.forum.utils;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * @Description: 提供手动获取被spring管理的bean对象
  */
+@Slf4j
 @Component // 缺少这个注解，报空指针异常
 public class SpringUtils implements ApplicationContextAware {
 
@@ -20,7 +22,7 @@ public class SpringUtils implements ApplicationContextAware {
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		if (SpringUtils.applicationContext == null) {
 			SpringUtils.applicationContext = applicationContext;
-			System.out.println("成功缓存IOC容器"); // 缺少@Component注解，不会被调用
+			log.info("成功缓存IOC容器"); // 缺少@Component注解，不会被调用
 		}
 	}
 
