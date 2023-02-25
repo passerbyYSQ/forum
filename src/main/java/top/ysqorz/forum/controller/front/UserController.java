@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ParamInvalidException;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.req.LoginDTO;
 import top.ysqorz.forum.dto.req.RegisterDTO;
@@ -28,7 +28,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -215,7 +214,7 @@ public class UserController {
         User user = userService.getUserById(visitId);
         //确认用户是否存在
         if (ObjectUtils.isEmpty(user)) {
-            throw new ParameterInvalidException(StatusCode.USER_NOT_EXIST);
+            throw new ParamInvalidException(StatusCode.USER_NOT_EXIST);
         }
         SimpleUserDTO information = userService.getHomeInformationById(visitId);
         model.addAttribute("information", information);

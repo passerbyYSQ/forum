@@ -10,7 +10,7 @@ import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.common.enumeration.Gender;
-import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ParamInvalidException;
 import top.ysqorz.forum.dao.*;
 import top.ysqorz.forum.dto.req.CheckUserDTO;
 import top.ysqorz.forum.dto.req.QueryUserCondition;
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
         for (Integer roleId : roleIds) {
             Role role = roleService.getRoleById(roleId);
             if (role == null) {
-                throw new ParameterInvalidException(StatusCode.ROLE_NOT_EXIST);
+                throw new ParamInvalidException(StatusCode.ROLE_NOT_EXIST);
             }
             Example example = new Example(UserRole.class);
             example.createCriteria().andEqualTo("userId", userId)

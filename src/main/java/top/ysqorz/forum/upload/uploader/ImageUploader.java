@@ -4,7 +4,7 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ParamInvalidException;
 import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.upload.UploadRepository;
 
@@ -45,16 +45,16 @@ public class ImageUploader extends AbstractFileUploader {
     public UploadResult uploadBase64() throws IOException {
         Matcher matcher = BASE64_PATTERN.matcher(this.base64);
         if (!matcher.find()) {
-            throw new ParameterInvalidException(StatusCode.BASE64_INVALID);
+            throw new ParamInvalidException(StatusCode.BASE64_INVALID);
         }
         String suffix = matcher.group(2); // 取出图片的后缀
         if (!checkSuffix("." + suffix)) {
-            throw new ParameterInvalidException("不支持该图片类型：" + suffix);
+            throw new ParamInvalidException("不支持该图片类型：" + suffix);
         }
         String data = matcher.group(3); // 取出data部分
         byte[] bytes = Base64.getDecoder().decode(data);
         if (!checkFileSize(bytes.length)) {
-            throw new ParameterInvalidException("不支持该图片类型：" + suffix);
+            throw new ParamInvalidException("不支持该图片类型：" + suffix);
         }
 
         String newFilename = generateNewFilename();

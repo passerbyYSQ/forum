@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import java.security.KeyPair;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -83,7 +84,7 @@ public class RedisServiceImpl implements RedisService {
         // 如果没有 zset，会先创建
         redisTemplate.opsForZSet().incrementScore(key, postId, 1);
         if (redisTemplate.getExpire(key) == -1) { // 秒数。-1：不过期
-            redisTemplate.expire(key, DateTimeUtils.durationToNextDay());
+            redisTemplate.expire(key, DateTimeUtils.durationToNextDay().toMillis(), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -103,7 +104,7 @@ public class RedisServiceImpl implements RedisService {
         // 如果没有 zset，会先创建
         redisTemplate.opsForZSet().incrementScore(key, postId, 1);
         if (redisTemplate.getExpire(key) == -1) { // 秒数。-1：不过期
-            redisTemplate.expire(key, DateTimeUtils.durationToNextWeek());
+            redisTemplate.expire(key, DateTimeUtils.durationToNextWeek().toMillis(), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -206,17 +207,15 @@ public class RedisServiceImpl implements RedisService {
     public boolean isUserOnline(Integer userId) {
         String key = String.format(Constant.REDIS_KEY_IM_WS, ChannelType.CHAT.name(), userId);
         Map<Object, Object> hash = stringRedisTemplate.opsForHash().entries(key); // 使用 redisTemplate 反序列化报错
-        boolean isOnline = false;
         if (!ObjectUtils.isEmpty(hash)) {
             for (Map.Entry<Object, Object> entry : hash.entrySet()) {
                 int wsCount = Integer.parseInt((String) entry.getValue());
                 if (wsCount > 0) {
-                    isOnline = true;
-                    break;
+                    return true;
                 }
             }
         }
-        return isOnline;
+        return false;
     }
 
     @Override

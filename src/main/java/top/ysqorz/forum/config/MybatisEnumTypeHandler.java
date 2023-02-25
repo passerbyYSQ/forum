@@ -1,5 +1,6 @@
 package top.ysqorz.forum.config;
 
+import cn.hutool.core.convert.Convert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaClass;
@@ -104,7 +105,9 @@ public class MybatisEnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
 
     @Override
     public E getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        Object value = rs.getObject(columnName, this.propertyType);
+        // tinyint类型getObject获取出来实际是Integer，此时propertyType为Byte会报错转换异常
+        //Object value = rs.getObject(columnName, this.propertyType);
+        Object value = Convert.convert(this.propertyType, rs.getObject(columnName));
         if (null == value && rs.wasNull()) {
             return null;
         }
@@ -113,7 +116,7 @@ public class MybatisEnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
 
     @Override
     public E getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        Object value = rs.getObject(columnIndex, this.propertyType);
+        Object value = Convert.convert(this.propertyType, rs.getObject(columnIndex));
         if (null == value && rs.wasNull()) {
             return null;
         }
@@ -122,7 +125,7 @@ public class MybatisEnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
 
     @Override
     public E getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        Object value = cs.getObject(columnIndex, this.propertyType);
+        Object value = Convert.convert(this.propertyType, cs.getObject(columnIndex));
         if (null == value && cs.wasNull()) {
             return null;
         }

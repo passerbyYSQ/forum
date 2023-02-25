@@ -80,16 +80,15 @@
     </update>
 
     <select id="selectSimpleUserById" parameterType="Integer" resultMap="simpleUser">
-        select
-               u.id,
+        select u.id,
                username,
                gender,
                photo,
                reward_points,
                b.id as black_id
         from user u
-        left join blacklist b on
-            (u.id = b.user_id and #{now} between b.start_time and b.end_time)
+                 left join blacklist b on
+            (u.id = b.user_id and now() between b.start_time and b.end_time)
         where u.id = ${userId}
     </select>
 

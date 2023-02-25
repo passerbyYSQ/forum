@@ -14,7 +14,7 @@ public enum Gender {
     SECRET(2, "保密");
 
     @EnumValue
-    private byte code;
+    private Byte code;
     private String desc;
 
     Gender(int code, String desc) {

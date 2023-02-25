@@ -1,5 +1,6 @@
 package top.ysqorz.forum.config.interceptor;
 
+import cn.hutool.extra.servlet.ServletUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,7 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String ip = CommonUtils.getIpFromRequest(request);
+        String ip = ServletUtil.getClientIP(request);
         String path = request.getServletPath();
         String key = "API:" + path + ":" + ip;
         // 加一层本地缓存，如果被封禁的IP刷接口，会将压力阻挡到集群节点，降低Redis缓存的压力

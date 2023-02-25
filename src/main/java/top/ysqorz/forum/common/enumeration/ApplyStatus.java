@@ -15,7 +15,7 @@ public enum ApplyStatus {
     IGNORE(2, "忽略");
 
     @EnumValue
-    private byte code;
+    private Byte code;
     private String desc;
 
     ApplyStatus(int code, String desc) {

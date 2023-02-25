@@ -1,12 +1,14 @@
 package top.ysqorz.forum.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.hutool.core.exceptions.ExceptionUtil;
 import org.apache.shiro.authz.AuthorizationException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,15 +17,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ParamInvalidException;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.utils.CommonUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常捕获
@@ -33,47 +38,41 @@ import java.util.List;
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    // 注入容器中的ObjectMapper（被我们定制过的）
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Resource
+    private MappingJackson2JsonView mappingJackson2JsonView; // 被定制过
 
     // 参数错误
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public ModelAndView handleBindException(BindException e, HttpServletRequest request) {
-        List<FieldError> errors = e.getFieldErrors();
-        return wrapModelAndView(StatusCode.PARAM_INVALID, joinErrorMsg(errors), request);
+        return wrapModelAndView(StatusCode.PARAM_INVALID, joinErrorMsg(e.getBindingResult()), request);
     }
 
     // 参数错误
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public ModelAndView handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
-        Iterator<ConstraintViolation<?>> iterator = e.getConstraintViolations().iterator();
-        StringBuilder errorMsg = new StringBuilder();
-        while (iterator.hasNext()) {
-            ConstraintViolation<?> cvl = iterator.next();
-            errorMsg.append(cvl.getPropertyPath().toString().split("\\.")[1]) // .需要转义
-                    .append(cvl.getMessage())
-                    .append(";");
-        }
-        return wrapModelAndView(StatusCode.PARAM_INVALID, errorMsg.toString(), request);
+        String errorMsg = e.getConstraintViolations().stream()
+                .map(cvl -> {
+                    String attr = cvl.getPropertyPath().toString().split("\\.")[1];
+                    return attr + cvl.getMessage();
+                })
+                .collect(Collectors.joining("; "));
+        return wrapModelAndView(StatusCode.PARAM_INVALID, errorMsg, request);
     }
 
     // 参数错误
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ModelAndView handleArgumentNotValidExceptionHandler(MethodArgumentNotValidException e, HttpServletRequest request) {
-        List<FieldError> errors = e.getBindingResult().getFieldErrors();
-        return wrapModelAndView(StatusCode.PARAM_INVALID, joinErrorMsg(errors), request);
+        return wrapModelAndView(StatusCode.PARAM_INVALID, joinErrorMsg(e.getBindingResult()), request);
     }
 
     // 参数错误
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ParameterInvalidException.class)
-    public ModelAndView handleParameterInvalidException(ParameterInvalidException e, HttpServletRequest request) {
-        return wrapModelAndView(e.getCode(), null, request);
+    @ExceptionHandler(ParamInvalidException.class)
+    public ModelAndView handleParameterInvalidException(ParamInvalidException e, HttpServletRequest request) {
+        return wrapModelAndView(e.getCode(), e.getMessage(), request);
     }
 
     /**
@@ -82,7 +81,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ServiceFailedException.class)
     public ModelAndView handleServiceFailedException(ServiceFailedException e, HttpServletRequest request) {
-        return wrapModelAndView(e.getCode(), null, request);
+        return wrapModelAndView(e.getCode(), e.getMessage(), request);
     }
 
     // jwt校验错误
@@ -102,14 +101,13 @@ public class GlobalExceptionHandler {
         return wrapModelAndView(StatusCode.AUTHORIZATION_FAILED, e.getMessage(), request);
     }
 
-
     // 前后端联调时和正式上线后开启
     // 后端编码时，为了方便测试，先注释掉
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 非业务层面的异常，表示出现了服务端错误。
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler(Exception.class)
     public ModelAndView handleOtherException(Exception e, HttpServletRequest request) {
         e.printStackTrace();
-        return wrapModelAndView(StatusCode.UNKNOWN_ERROR, e.toString(), request);
+        return wrapModelAndView(StatusCode.SERVER_ERROR, ExceptionUtil.stacktraceToString(e), request);
     }
 
     private ModelAndView wrapModelAndView(StatusCode code, String errorMsg, HttpServletRequest request) {
@@ -117,8 +115,8 @@ public class GlobalExceptionHandler {
                 ResultModel.failed(code) :
                 ResultModel.failed(code.getCode(), errorMsg); // errorMsg覆盖code的msg
         ModelAndView modelAndView = CommonUtils.isApiRequest(request) ?
-                new ModelAndView(new MappingJackson2JsonView(objectMapper)) : //new MappingJackson2JsonView()
-                new ModelAndView("error/500");
+                new ModelAndView(mappingJackson2JsonView) : // new MappingJackson2JsonView()
+                new ModelAndView("error/500"); // 需要配置500页面的模板
         modelAndView.addObject("code", res.getCode())
                 .addObject("msg", res.getMsg())
                 .addObject("data", res.getData())
@@ -127,14 +125,28 @@ public class GlobalExceptionHandler {
     }
 
     // 拼接错误信息
-    private String joinErrorMsg(List<FieldError> errors) {
-        StringBuilder errorMsg = new StringBuilder();
-        for (FieldError error : errors) {
-            errorMsg.append(error.getField())
-                    .append(error.getDefaultMessage())
-                    .append(";");
+    private String joinErrorMsg(BindingResult bindingRes) {
+        List<FieldError> fieldErrors = new ArrayList<>();
+        List<ObjectError> otherErrors = new ArrayList<>();
+        List<ObjectError> allErrors = bindingRes.getAllErrors();
+        for (ObjectError objError : allErrors) {
+            if (objError instanceof FieldError) {
+                fieldErrors.add((FieldError) objError);
+            } else {
+                otherErrors.add(objError);
+            }
         }
-        return errorMsg.toString();
+        Collector<CharSequence, ?, String> collector = Collectors.joining("; ");
+        // FieldError
+        String fieldErrorMsg = fieldErrors.stream()
+                .map(fieldError -> fieldError.getField() + fieldError.getDefaultMessage())
+                .collect(collector);
+        // ObjectError
+        String otherErrorMsg = otherErrors.stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(collector);
+        return Arrays.stream(new String[]{fieldErrorMsg, otherErrorMsg})
+                .filter(s -> !ObjectUtils.isEmpty(s))
+                .collect(collector);
     }
-
 }

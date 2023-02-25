@@ -41,6 +41,7 @@ public class DateTimeUtils {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now());
     }
 
+
     // 距离下一天凌晨，还有多长时间（可精确到纳秒）
     public static Duration durationToNextDay() {
         // 次日凌晨的时间，LocalDateTime.of(日期, 时间)
@@ -59,7 +60,7 @@ public class DateTimeUtils {
         if (LocalDateTime.now().getDayOfWeek().getValue() == 7) {
             week--;
         }
-        return week < 10 ? year + "-0" + week.toString() : year + "-" + week.toString();
+        return week < 10 ? year + "-0" + week : year + "-" + week;
     }
 
     // 距离下周一凌晨，还有多少时间（可精确到纳秒）

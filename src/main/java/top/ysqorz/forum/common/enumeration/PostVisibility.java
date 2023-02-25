@@ -15,7 +15,7 @@ public enum PostVisibility {
     PURCHASED_VISIBLE(3, "积分购买后可见");
 
     @EnumValue
-    private byte code;
+    private Byte code;
     private String desc;
 
     PostVisibility(int code, String desc) {

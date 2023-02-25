@@ -167,7 +167,7 @@ public class UserCenterController {
     @GetMapping("/message/clearAll")
     public StatusCode clearAllMeg() {
         int cnt = messageService.clearAllMeg();
-        return cnt >= 0 ? StatusCode.SUCCESS : StatusCode.UNKNOWN_ERROR;
+        return cnt >= 0 ? StatusCode.SUCCESS : StatusCode.SERVER_ERROR;
     }
 
 

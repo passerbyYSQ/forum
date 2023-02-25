@@ -47,7 +47,7 @@ public class IMUtils {
 
     public static TextWebSocketFrame createTextFrame(MsgType type, Object data) {
         MsgModel respModel = new MsgModel(type, data);
-        String respText = JsonUtils.objectToJson(respModel);
+        String respText = JsonUtils.objToJson(respModel);
         return new TextWebSocketFrame(respText);
     }
 

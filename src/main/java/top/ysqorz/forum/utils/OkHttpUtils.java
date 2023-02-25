@@ -152,7 +152,7 @@ public class OkHttpUtils {
         if (isJsonPost) {
             String json = "";
             if (paramMap != null) {
-                json = JsonUtils.objectToJson(paramMap);
+                json = JsonUtils.objToJson(paramMap);
             }
             requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
         } else {

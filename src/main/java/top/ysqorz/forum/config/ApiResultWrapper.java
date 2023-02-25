@@ -43,7 +43,7 @@ public class ApiResultWrapper implements ResponseBodyAdvice<Object> {
         // 所以需要在此处手动转json，StringHttpMessageConverter将json串强转成String时就不会报错了
         // https://zhuanlan.zhihu.com/p/413133915
         if (String.class.equals(returnType.getGenericParameterType())) {
-            return JsonUtils.objectToJson(ResultModel.success(res));
+            return JsonUtils.objToJson(ResultModel.success(res));
         }
         // returnType为void，res为null，也直接包装。但事实上连support()方法也不会进来
         // 所以如果实在不需要返回值，则可以将返回值类型声明为StatusCode，返回StatusCode.SUCCESS

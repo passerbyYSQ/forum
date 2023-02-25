@@ -4,24 +4,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
- * 暂时不要用
- *
- * @Description: 自定义响应结构, 转换类
+ * ObjectMapper(被我们定制过)的工具类
  */
+@Component
 public class JsonUtils {
+    private static ObjectMapper objectMapper;
+
+    // 静态变量可通过构造方法注入
+    @Autowired
+    public JsonUtils(ObjectMapper objectMapper) {
+        JsonUtils.objectMapper = objectMapper;
+    }
+
     /**
      * 将对象转换成json字符串
-     *
-     * @param obj
-     * @return
      */
-    public static String objectToJson(Object obj) {
+    public static String objToJson(Object obj) {
         try {
-            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
             return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -29,28 +35,46 @@ public class JsonUtils {
         return null;
     }
 
-    /**
-     * 将json结果集转化为对象（不包含泛型）
-     *
-     * @param json  json数据
-     * @param clazz 对象中的object类型
-     * @return
-     */
-    public static <T> T jsonToObj(String json, Class<T> clazz) {
+    public static String objToPrettyJson(Object obj) {
         try {
-            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
-            return objectMapper.readValue(json, clazz);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    /**
+     * 将json字符串转化为指定对象(不包含泛型)
+     */
+    public static <T> T jsonToObj(String json, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 通过序列化实现对象的深度克隆或转化
+     */
+    public static <T> T convertBySerialization(Object obj, Class<T> clazz) {
+        if (obj.getClass().isAssignableFrom(clazz)) {
+            return clazz.cast(obj);
+        }
+        return jsonToObj(objToJson(obj), clazz);
+    }
+
+    /**
+     * 尽量不要使用JsonNode对象，Hutool的JSONObject对象更强大
+     *
+     * @see cn.hutool.json.JSONObject
+     */
     public static JsonNode jsonToNode(String json) {
         try {
-            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
             return objectMapper.readTree(json);
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -58,7 +82,6 @@ public class JsonUtils {
 
     public static <T> T nodeToObj(JsonNode node, Class<T> clazz) {
         try {
-            ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
             return objectMapper.treeToValue(node, clazz);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -67,7 +90,6 @@ public class JsonUtils {
     }
 
     public static JsonNode objToNode(Object obj) {
-        ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
         return objectMapper.valueToTree(obj);
     }
 
@@ -75,14 +97,12 @@ public class JsonUtils {
      * 将json数据转换成pojo对象list
      */
     public static <T> List<T> jsonToList(String json, Class<T> clazz) {
-        ObjectMapper objectMapper = SpringUtils.getBean(ObjectMapper.class);
         JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, clazz);
         try {
             return objectMapper.readValue(json, javaType);
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
-
 }

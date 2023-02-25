@@ -10,14 +10,14 @@ import top.ysqorz.forum.common.StatusCode;
  */
 @Getter
 @Setter
-public class ParameterInvalidException extends RuntimeException {
+public class ParamInvalidException extends RuntimeException {
     private StatusCode code;
 
-    public ParameterInvalidException() {
+    public ParamInvalidException() {
         this(StatusCode.PARAM_INVALID);
     }
 
-    public ParameterInvalidException(StatusCode code) {
+    public ParamInvalidException(StatusCode code) {
         super(code.getMsg());
         this.code = code;
     }
@@ -25,7 +25,7 @@ public class ParameterInvalidException extends RuntimeException {
     /**
      * 动态的(包含变量)提示信息
      */
-    public ParameterInvalidException(String msg) {
+    public ParamInvalidException(String msg) {
         super(msg);
         this.code = StatusCode.PARAM_INVALID;
         this.code.setMsg(msg);

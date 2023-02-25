@@ -2,12 +2,13 @@ package top.ysqorz.forum.oauth;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ParamInvalidException;
 import top.ysqorz.forum.dao.UserMapper;
 import top.ysqorz.forum.po.User;
 import top.ysqorz.forum.service.RedisService;
@@ -18,7 +19,6 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
@@ -73,7 +73,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
         String accessToken = this.getAccessToken(code);
         T oauthUser = this.getOauthUser(accessToken);
         if (ObjectUtils.isEmpty(oauthUser)) {
-            throw new ParameterInvalidException(StatusCode.OAUTH_FAILED);
+            throw new ParamInvalidException(StatusCode.OAUTH_FAILED);
         }
         String uniqueId = this.getUniqueId(oauthUser);
         User dbUser = this.getDbUser(uniqueId);
@@ -125,7 +125,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
      */
     private User getDbUser(String uniqueId) {
         if (ObjectUtils.isEmpty(uniqueId)) {
-            throw new ParameterInvalidException(StatusCode.OAUTH_FAILED);
+            throw new ParamInvalidException(StatusCode.OAUTH_FAILED);
         }
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo(poField, uniqueId);
@@ -143,11 +143,11 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
         }
         String[] params = state.split(",");
         if (params.length != 3) {
-            throw new ParameterInvalidException(StatusCode.CSRF_ATTACK);
+            throw new ParamInvalidException(StatusCode.CSRF_ATTACK);
         }
         String correctState = redisService.getOauthState(params[1]);
         if (ObjectUtils.isEmpty(correctState) || !correctState.equals(state)) {
-            throw new ParameterInvalidException(StatusCode.CSRF_ATTACK);
+            throw new ParamInvalidException(StatusCode.CSRF_ATTACK);
         }
         return params[0]; // 返回真正的referer
     }
@@ -165,7 +165,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
         // 重定向携带token
         //redirectAttributes.addAttribute("token", token);
         // redirect:后不要加 "/"
-        return String.format("redirect:%s?code=%d&msg=%s", referer, code.getCode(), CommonUtils.urlEncode(code.getMsg()));
+        return String.format("redirect:%s?code=%d&msg=%s", referer, code.getCode(), URLUtil.encodeAll(code.getMsg()));
     }
 
     /**

@@ -16,7 +16,6 @@ import javax.annotation.Resource;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-
     @Resource
     private ApiAccessLimitInterceptor apiAccessLimitInterceptor;
     @Resource
@@ -37,15 +36,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 前后端分离需要解决跨域问题
+     * 跨域配置
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*")  // 放行哪些原始域
                 .allowCredentials(true) // 是否发送cookie
-                .allowedMethods("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH")
-                .exposedHeaders("*")
+                .allowedMethods("*")
+//                .exposedHeaders("*") // 不能为*
                 .allowedHeaders("*") // allowedHeaders是exposedHeaders的子集
                 .maxAge(3600); // 预检请求OPTIONS请求的缓存时间
     }
@@ -57,6 +56,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(escapeStringConverter);
-
     }
 }

@@ -3,6 +3,7 @@ package top.ysqorz.forum.utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
+import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 import top.ysqorz.forum.common.ResultModel;
@@ -62,6 +63,11 @@ public class CommonUtils {
         return cleanXSS(newSbd.toString());
     }
 
+    /**
+     * 请使用#{@link cn.hutool.core.util.URLUtil#encodeAll(String)}
+     *
+     * @deprecated
+     */
     public static String urlEncode(String str) {
         try {
             return URLEncoder.encode(str, "UTF-8").replaceAll("\\+", "%20");
@@ -88,7 +94,7 @@ public class CommonUtils {
         httpResponse.setCharacterEncoding("UTF-8");
         httpResponse.setContentType("application/json;charset=UTF-8");
         try {
-            httpResponse.getWriter().print(JsonUtils.objectToJson(result));
+            httpResponse.getWriter().print(JsonUtils.objToJson(result));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,9 +103,34 @@ public class CommonUtils {
     /**
      * 判断是否为API请求
      */
-    public static boolean isApiRequest(HttpServletRequest httpRequest) {
-        return httpRequest.getHeader("Accept") == null ||
-                !httpRequest.getHeader("Accept").contains("text/html");
+    public static boolean isApiRequest(HttpServletRequest request) {
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            return true; // ajax异步请求，返回json
+        }
+        String acceptStr = request.getHeader("Accept");
+        if (ObjectUtils.isEmpty(acceptStr)) {
+            return true; // accept为空则默认返回json
+        }
+        List<MediaType> acceptList = MediaType.parseMediaTypes(acceptStr);
+        MediaType jsonType = null, htmlType = null;
+        for (MediaType mediaType : acceptList) {
+            if (MediaType.APPLICATION_JSON.equalsTypeAndSubtype(mediaType)) {
+                jsonType = mediaType;
+            }
+            if (MediaType.TEXT_HTML.equalsTypeAndSubtype(mediaType)) {
+                htmlType = mediaType;
+            }
+        }
+        if ((ObjectUtils.isEmpty(jsonType) && ObjectUtils.isEmpty(htmlType)) || ObjectUtils.isEmpty(htmlType)) {
+            // 同时为空 或者 jsonType不为空且htmlType为空 时返回true
+            return true;
+        } else if (ObjectUtils.isEmpty(jsonType)) { // json为空，html不为空则返回html
+            // jsonType为空且htmlType不为空 时返回false
+            return false;
+        } else {
+            // jsonType和htmlType都不为空时，比较权重。如果jsonType的权重比htmlType的权重更大时，则返回true
+            return Double.compare(jsonType.getQualityValue(), htmlType.getQualityValue()) > 0;
+        }
     }
 
     /**
@@ -120,7 +151,11 @@ public class CommonUtils {
     }
 
     /**
+     * 请使用#{@link cn.hutool.extra.servlet.ServletUtil#getClientIP(HttpServletRequest, String...)}
+     *
      * <a href="https://www.cnblogs.com/death00/p/11557305.html">...</a>
+     *
+     * @deprecated
      */
     public static String getIpFromRequest(HttpServletRequest request) {
         List<String> candidateIps = new ArrayList<>();

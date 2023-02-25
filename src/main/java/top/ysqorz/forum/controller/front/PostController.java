@@ -1,5 +1,6 @@
 package top.ysqorz.forum.controller.front;
 
+import cn.hutool.extra.servlet.ServletUtil;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,7 +8,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.StatusCode;
-import top.ysqorz.forum.common.exception.ParameterInvalidException;
+import top.ysqorz.forum.common.exception.ParamInvalidException;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.PublishPostDTO;
@@ -19,7 +20,6 @@ import top.ysqorz.forum.service.*;
 import top.ysqorz.forum.shiro.LoginUser;
 import top.ysqorz.forum.shiro.Permission;
 import top.ysqorz.forum.shiro.ShiroUtils;
-import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
@@ -58,11 +58,11 @@ public class PostController {
     public String detailPage(@PathVariable Integer postId, Model model, HttpServletRequest request) {
         Post post = postService.getPostById(postId);
         if (ObjectUtils.isEmpty(post)) {
-            throw new ParameterInvalidException(StatusCode.POST_NOT_EXIST);
+            throw new ParamInvalidException(StatusCode.POST_NOT_EXIST);
         }
 
         // 更新访问量。注意放在 getPostById 之前。因为 PostDetailDTO 里面的数据复用post的访问量
-        post = postService.addVisitCount(CommonUtils.getIpFromRequest(request), post);
+        post = postService.addVisitCount(ServletUtil.getClientIP(request), post);
 
         // 用于验证码缓存和校验。植入到页面的登录页面的隐藏表单元素中
         String token = RandomUtils.generateUUID();
@@ -99,7 +99,7 @@ public class PostController {
         if (!ObjectUtils.isEmpty(postId)) { // 修改的时候需要传值
             Post post = postService.getPostById(postId);
             if (ObjectUtils.isEmpty(post)) {
-                throw new ParameterInvalidException(StatusCode.POST_NOT_EXIST);
+                throw new ParamInvalidException(StatusCode.POST_NOT_EXIST);
             }
             // 不能修改其他人的帖子
             if (!permManager.allowUpdatePost(post.getCreatorId())) {

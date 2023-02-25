@@ -20,7 +20,7 @@ public enum StatusCode {
     AUTHORIZATION_FAILED(403, "无权限访问"), // ！！！
 
     // 服务器内部错误
-    UNKNOWN_ERROR(5000, "未知错误"),
+    SERVER_ERROR(5000, "服务器异常"),
     NO_PERM(5001, "无权限操作"),
 
     // 参数相关
