@@ -11,6 +11,7 @@ import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.dto.resp.WeekTopPostDTO;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelType;
+import top.ysqorz.forum.po.Post;
 import top.ysqorz.forum.service.PostService;
 import top.ysqorz.forum.service.RSAService;
 import top.ysqorz.forum.service.RedisService;
@@ -59,7 +60,7 @@ public class RedisServiceImpl implements RedisService {
     public void saveOauthState(String key, String salt) {
         redisTemplate.opsForValue()
                 .set(Constant.REDIS_KEY_OAUTH_STATE + key,
-                    salt, Constant.DURATION_OAUTH_STATE);
+                        salt, Constant.DURATION_OAUTH_STATE);
     }
 
     @Override
@@ -114,19 +115,22 @@ public class RedisServiceImpl implements RedisService {
         String key = "post:hot_rank:" + DateTimeUtils.getFormattedWeek();
         Set<ZSetOperations.TypedTuple<Object>> typedTupleSet =
                 redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, count - 1);
-        Iterator<ZSetOperations.TypedTuple<Object>> iterator =
-                typedTupleSet.iterator();
         List<WeekTopPostDTO> list = new ArrayList<>();
-        while (iterator.hasNext()) {
-            ZSetOperations.TypedTuple<Object> typedTuple = iterator.next();
-            // 全局配置了二级key的序列化为string。集合内的类型不一样，不能直接强转，只能先抹除泛型
-            Object value = typedTuple.getValue();
-            Integer score = typedTuple.getScore().intValue();
-            WeekTopPostDTO post = new WeekTopPostDTO();
-            post.setPostId((Integer) value);
-            post.setViews(score);
-            post.setTitle(postService.getPostById(post.getPostId()).getTitle());
-            list.add(post);
+        if (!ObjectUtils.isEmpty(typedTupleSet)) {
+            typedTupleSet.forEach(typedTuple -> {
+                // 全局配置了二级key的序列化为string。集合内的类型不一样，不能直接强转，只能先抹除泛型
+                Object value = typedTuple.getValue();
+                Integer score = typedTuple.getScore().intValue();
+                WeekTopPostDTO postDTO = new WeekTopPostDTO();
+                postDTO.setPostId((Integer) value);
+                postDTO.setViews(score);
+                Post post = postService.getPostById(postDTO.getPostId());
+                if (ObjectUtils.isEmpty(post)) { // 帖子可能已经被删除
+                    return;
+                }
+                postDTO.setTitle(post.getTitle());
+                list.add(postDTO);
+            });
         }
         return list;
     }
