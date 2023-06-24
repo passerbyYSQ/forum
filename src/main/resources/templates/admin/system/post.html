@@ -241,7 +241,8 @@
                 '</p>'].join(''),
             cellMinWidth: 100,
             cols: [[
-                {field: 'creator', title: '作者', templet: function (d) {
+                {
+                    field: 'creator', title: '作者', templet: function (d) {
                         return d.creator.username;
                     }, align: 'center'
                 },
@@ -335,7 +336,7 @@
                 content: $('#topDialog').html(),
                 success: function (layero, dIndex) {
                     // 回显表单数据
-                    form.val('topForm',{postId: mData.id});
+                    form.val('topForm', {postId: mData.id});
                     // 表单提交事件
                     form.on('submit(topSubmit)', function (data) {
                         console.log(data);
@@ -375,26 +376,13 @@
                 shade: .1
             }, function (i) {
                 layer.close(i);
-                // var loadIndex = layer.load(2);
-                app.ajax('../../json/ok.json', {
-                        id: obj.data ? obj.data.userId : '',
-                        ids: obj.ids ? obj.ids.join(',') : ''
-                    }, function (res) {
-                        app.successNotice(res.msg);
-                        insTb.reload({page: {curr: 1}});
-                    }, "get");
-                // $.get('../../json/ok.json', {
-                //     id: obj.data ? obj.data.userId : '',
-                //     ids: obj.ids ? obj.ids.join(',') : ''
-                // }, function (res) {
-                //     layer.close(loadIndex);
-                //     if (res.code === 2000) {
-                //         layer.msg(res.msg, {icon: 1});
-                //         insTb.reload({page: {curr: 1}});
-                //     } else {
-                //         layer.msg(res.msg, {icon: 2});
-                //     }
-                // }, 'json');
+                app.ajax('/post/delete', {
+                    postId: obj.data ? obj.data.id : '',
+                    //ids: obj.ids ? obj.ids.join(',') : ''
+                }, function (res) {
+                    app.successNotice(res.msg);
+                    insTb.reload({page: {curr: 1}});
+                });
             });
         }
 
