@@ -8,6 +8,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.annotation.ApiAccessLimit;
 import top.ysqorz.forum.common.exception.ParamInvalidException;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.PageData;
@@ -25,6 +26,7 @@ import top.ysqorz.forum.utils.RandomUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -125,6 +127,7 @@ public class PostController {
     /**
      * 发帖
      */
+    @ApiAccessLimit(unit = ChronoUnit.MINUTES, maxCount = 10) // 1小时发帖超过10篇，认为接口被恶意调用，禁用IP
     @ResponseBody
     @PostMapping("/publish")
     public Post publish(@Validated(PublishPostDTO.Add.class) PublishPostDTO dto) {

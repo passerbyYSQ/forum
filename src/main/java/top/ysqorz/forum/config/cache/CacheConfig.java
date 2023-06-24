@@ -1,4 +1,4 @@
-package top.ysqorz.forum.config;
+package top.ysqorz.forum.config.cache;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
