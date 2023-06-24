@@ -145,6 +145,17 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
             console.log(selector);
         },
 
+        // 函数防抖
+        debounce: function (func, duration = 400) {
+            let timerId;
+            return function (...args) {
+                clearTimeout(timerId);
+                timerId = setTimeout(() => {
+                    func.apply(this, args);
+                }, duration);
+            }
+        },
+
         // 格式化时间
         formatDateTime: function (dateTimeStr) { // yyyy-MM-dd HH:mm:ss
             var timestamp = Date.parse(dateTimeStr.replace(/-/gi, "/"));

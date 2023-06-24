@@ -17,6 +17,7 @@
             border: 1px solid #e6e6e6;
             border-radius: 2px !important;
         }
+
         .tox-fullscreen {
             z-index: 99999 !important;
         }
@@ -40,9 +41,9 @@
                     <div class="layui-tab-item layui-show">
                         <form action="/post/publish" method="post">
                             <!--  验证码的token  -->
-                            <input type="hidden" name="token" th:value="${token}" />
+                            <input type="hidden" name="token" th:value="${token}"/>
 
-                            <input type="hidden" name="postId" th:value="${post} ? ${post.id}" />
+                            <input type="hidden" name="postId" th:value="${post} ? ${post.id}"/>
                             <div class="layui-row layui-col-space15 layui-form-item">
                                 <div class="layui-col-md3">
                                     <label class="layui-form-label">所属话题</label>
@@ -75,16 +76,29 @@
                                     <label class="layui-form-label">帖子可见性</label>
                                     <div class="layui-input-inline" style="width: 190px;">
                                         <select name="visibilityType" lay-filter="visibilityType">
-                                            <option value="EVERYONE_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'EVERYONE_VISIBLE'}">任何人可见</option>
-                                            <option value="FOLLOWER_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'FOLLOWER_VISIBLE'}">粉丝可见</option>
-                                            <option value="LIKED_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'LIKED_VISIBLE'}">点赞后可见</option>
-                                            <option value="PURCHASED_VISIBLE" th:selected="${post != null and post.visibilityType.name() == 'PURCHASED_VISIBLE'}">积分购买后可见</option>
+                                            <option value="EVERYONE_VISIBLE"
+                                                    th:selected="${post != null and post.visibilityType.name() == 'EVERYONE_VISIBLE'}">
+                                                任何人可见
+                                            </option>
+                                            <option value="FOLLOWER_VISIBLE"
+                                                    th:selected="${post != null and post.visibilityType.name() == 'FOLLOWER_VISIBLE'}">
+                                                粉丝可见
+                                            </option>
+                                            <option value="LIKED_VISIBLE"
+                                                    th:selected="${post != null and post.visibilityType.name() == 'LIKED_VISIBLE'}">
+                                                点赞后可见
+                                            </option>
+                                            <option value="PURCHASED_VISIBLE"
+                                                    th:selected="${post != null and post.visibilityType.name() == 'PURCHASED_VISIBLE'}">
+                                                积分购买后可见
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="layui-input-inline">
                                         <!-- th:value="${post} ? ${#strings.listJoin(post.labelList,',')}" -->
                                         <!-- 暂未实现，静态数据 -->
-                                        <input type="number" max="99" name="points" lay-verify="points" placeholder="积分数 <= 99"
+                                        <input type="number" max="99" name="points" lay-verify="points"
+                                               placeholder="积分数 <= 99"
                                                th:value="${post != null and post.visibilityType.name() == 'PURCHASED_VISIBLE'} ? ${post.visibilityType.code}"
                                                th:class="${post != null and post.visibilityType.name() == 'PURCHASED_VISIBLE'} ? 'layui-input inline-block' : 'layui-input inline-block layui-hide'"
                                                style="width: 160px;" onkeyup="this.value=this.value.replace(/\D/g,'')"
@@ -96,7 +110,8 @@
                                 <div class="layui-inline">
                                     <label class="layui-form-label">是否锁定</label>
                                     <div class="layui-input-block">
-                                        <input type="hidden" name="isLocked" th:value="${post == null or post.isLocked == 0} ? false : true">
+                                        <input type="hidden" name="isLocked"
+                                               th:value="${post == null or post.isLocked == 0} ? false : true">
                                         <input type="checkbox" lay-filter="lockStateCk" lay-skin="switch"
                                                th:checked="${post == null or post.isLocked == 0}"
                                                lay-text="正常|锁定"/>
@@ -125,7 +140,8 @@
 
                                     </div>
                                     <div class="layui-input-inline">
-                                        <img id="captchaImage" th:src="@{/captcha(token=${token})}" class="captcha" alt=""
+                                        <img id="captchaImage" th:src="@{/captcha(token=${token})}" class="captcha"
+                                             alt=""
                                              onclick="onCaptchaImageClicked(this)"/>
                                     </div>
                                 </div>
@@ -261,11 +277,22 @@
             }
         });
 
+        let autocompleteRequest = function (keyword, callback) {
+            // 不要显示loading
+            app.ajax('/post/label/like', {
+                name: keyword,
+                maxCount: 5
+            }, function (res) {
+                var labels = res.data.map(label => label.labelName);
+                callback(labels);
+            }, 'GET', null, false);
+        }
+
         // 渲染标签输入
         $("#label").tagsInput({
             skin: 'tagsinput-default',
             maxChars: 16,
-            removeWithBackspace : true,
+            removeWithBackspace: true,
             defaultText: '敲回车',
             onChange: function () {
                 var input = $(this).siblings('.tagsinput');
@@ -278,16 +305,7 @@
                 // console.log($(this).val());
             },
             // 标签联想
-            autocomplete_request: function (keyword, callback) {
-                // 不要显示loading
-                app.ajax('/post/label/like', {
-                    name: keyword,
-                    maxCount: 5
-                }, function (res) {
-                    var labels = res.data.map(label => label.labelName);
-                    callback(labels);
-                }, 'GET', null, false);
-            }
+            autocomplete_request: app.debounce(autocompleteRequest)
         });
 
         // 渲染标签
