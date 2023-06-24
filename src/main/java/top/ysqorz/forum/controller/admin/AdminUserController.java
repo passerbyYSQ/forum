@@ -75,10 +75,9 @@ public class AdminUserController {
      */
     @RequiresPermissions(Permission.USER_BLACKLIST)
     @PostMapping("/block")
-    public StatusCode block(@Validated(Blacklist.Add.class) Blacklist blacklist) {
+    public StatusCode block(@Validated Blacklist blacklist) {
         int cnt = userService.block(blacklist);
         return cnt == 1 ? StatusCode.SUCCESS : StatusCode.USERNAME_EXIST;
-
     }
 
     /**

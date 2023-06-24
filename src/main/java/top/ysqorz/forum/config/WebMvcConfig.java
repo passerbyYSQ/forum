@@ -5,6 +5,8 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.ysqorz.forum.config.converter.EscapeStringConverter;
+import top.ysqorz.forum.config.converter.LocalDateTimeConverter;
 import top.ysqorz.forum.config.interceptor.ApiAccessLimitInterceptor;
 import top.ysqorz.forum.config.interceptor.HeaderInfoInterceptor;
 
@@ -22,6 +24,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private HeaderInfoInterceptor headerInfoInterceptor;
     @Resource
     private EscapeStringConverter escapeStringConverter;
+    @Resource
+    private LocalDateTimeConverter localDateTimeConverter;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -56,5 +60,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(escapeStringConverter);
+        registry.addConverter(localDateTimeConverter);
     }
 }

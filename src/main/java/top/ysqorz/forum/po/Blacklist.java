@@ -8,7 +8,6 @@ import lombok.experimental.Accessors;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -19,10 +18,6 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Table(name = "blacklist")
 public class Blacklist {
-
-    public interface Add {}
-
-    @NotNull(groups = Add.class) // 分组校验
     @Id
     private Integer id;
 
@@ -49,7 +44,7 @@ public class Blacklist {
     /**
      * 结束时间
      */
-    @Future
+    @NotNull
     @Column(name = "end_time")
     private LocalDateTime endTime;
 

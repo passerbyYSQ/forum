@@ -1,4 +1,4 @@
-package top.ysqorz.forum.config;
+package top.ysqorz.forum.config.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

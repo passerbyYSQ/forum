@@ -139,8 +139,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int block(Blacklist blacklist) {
+        LocalDateTime start = LocalDateTime.now();
+        if (start.isAfter(blacklist.getEndTime())) {
+            throw new ParamInvalidException(StatusCode.END_TIME_BEFORE_START_TIME);
+        }
         blacklist.setCreateTime(LocalDateTime.now());
-        blacklist.setStartTime(LocalDateTime.now());
+        blacklist.setStartTime(start);
         blacklist.setIsRead((byte) 0);
         return blacklistMapper.insert(blacklist);
     }

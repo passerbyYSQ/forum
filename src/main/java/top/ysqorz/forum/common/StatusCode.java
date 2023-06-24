@@ -32,6 +32,7 @@ public enum StatusCode {
     CAPTCHA_EXPIRED(6005, "验证码已过期"),
     DO_NOT_REPEAT_OPERATE(6006, "请勿重复操作"),
     BASE64_INVALID(6007, "base64编码错误"),
+    END_TIME_BEFORE_START_TIME(6008, "结束时间早于起始时间"),
 
     // 认证相关
     TOKEN_INVALID(6000, "无效token"),
@@ -39,7 +40,7 @@ public enum StatusCode {
     ACCOUNT_INCORRECT(6002, "账号错误"),
     CREDENTIAL_INCORRECT(6003, "密码错误"), // 凭证错误
     AUTHENTICATION_FAILED(6004, "尚未登录或登录过期"),
-    PASSWORD_NOT_EQUAL(6005,"两次输入密码不一致"),
+    PASSWORD_NOT_EQUAL(6005, "两次输入密码不一致"),
     OAUTH_FAILED(6006, "oauth授权登录失败"),
     CSRF_ATTACK(6007, "正在受到CSRF攻击"),
 
