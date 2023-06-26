@@ -1,18 +1,14 @@
 package top.ysqorz.forum.oauth.provider;
 
-
 import cn.hutool.json.JSONObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import top.ysqorz.forum.common.RestRequest;
 import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.oauth.AbstractOauthProvider;
 import top.ysqorz.forum.oauth.dto.GiteeUserDTO;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.utils.JsonUtils;
-import top.ysqorz.forum.utils.OkHttpUtils;
 
 /**
  * gitee认证登录网络链接

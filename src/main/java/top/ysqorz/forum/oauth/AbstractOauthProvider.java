@@ -19,8 +19,7 @@ import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 /**
@@ -136,11 +135,7 @@ public abstract class AbstractOauthProvider<T> implements OauthProvider<T> {
      * 校验state，防止CSRF
      */
     private String checkState(String state) {
-        try {
-            state = URLDecoder.decode(state, "utf-8"); // url decode
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        state = URLUtil.decode(state, StandardCharsets.UTF_8);
         String[] params = state.split(",");
         if (params.length != 3) {
             throw new ParamInvalidException(StatusCode.CSRF_ATTACK);

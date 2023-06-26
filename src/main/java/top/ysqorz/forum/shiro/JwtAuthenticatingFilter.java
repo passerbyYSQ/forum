@@ -51,9 +51,9 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
         try {
             allowed = executeLogin(request, response);
         } catch (IllegalStateException e) { //not found any token
-            log.info("Not found any token");
+            log.error("Not found any token", e);
         } catch (Exception e) {
-            log.info("Error occurs when login");
+            log.error("Error occurs when login", e);
         }
         //return allowed;
         return allowed || super.isPermissive(mappedValue);
