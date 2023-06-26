@@ -241,7 +241,8 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
         ajax: function (url, data = {}, successCallback = function (res) {
                         }, type = "post",
                         failedCallback = function (res) {
-                        }, showLoading = true) { // 业务失败
+                        }, showLoading = true,
+                        contentType = 'application/x-www-form-urlencoded') { // 业务失败
             showLoading && app.showLoading();
 
             var user = app.getLoginUser();
@@ -254,6 +255,7 @@ layui.define(['jquery', 'layer', 'form', 'notice', 'element', 'upload', 'util'],
                 type: type,
                 dataType: "json",
                 // traditional:true, // value可以是数组
+                contentType,
                 data: data,
                 timeout: 30000, // 超时时间为30秒
                 // headers: {

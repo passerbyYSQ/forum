@@ -10,10 +10,14 @@ import org.springframework.web.util.HtmlUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.common.enumeration.CommentType;
+import top.ysqorz.forum.common.enumeration.OrderMode;
+import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dao.CommentNotificationMapper;
 import top.ysqorz.forum.dao.FirstCommentMapper;
 import top.ysqorz.forum.dao.SecondCommentMapper;
 import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.req.FirstCommentFrontCountDTO;
+import top.ysqorz.forum.dto.req.SecondCommentFrontCountDTO;
 import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
 import top.ysqorz.forum.dto.resp.SecondCommentDTO;
@@ -93,33 +97,39 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int getFrontFirstCommentCount(Integer postId, Integer firstCommentId) {
-        FirstComment firstComment = firstCommentMapper.selectByPrimaryKey(firstCommentId);
-        if (ObjectUtils.isEmpty(firstComment) || !postId.equals(firstComment.getPostId())) {
-            return -1; // firstCommentId非法
+    public int getFrontFirstCommentCount(FirstCommentFrontCountDTO dto) {
+        FirstComment firstComment = firstCommentMapper.selectByPrimaryKey(dto.getFirstCommentId());
+        if (ObjectUtils.isEmpty(firstComment) || !dto.getPostId().equals(firstComment.getPostId())) {
+            throw new ServiceFailedException(StatusCode.FIRST_COMMENT_NOT_EXIST);
         }
         Example example = new Example(FirstComment.class);
-        example.createCriteria().andEqualTo("postId", firstComment.getPostId())
-                .andLessThan("createTime", firstComment.getCreateTime());
+        Example.Criteria criteria = example.createCriteria().andEqualTo("postId", firstComment.getPostId());
+        if (OrderMode.ASC.equals(dto.getFirstCommentOrder())) { // 升序
+            criteria.andLessThan("createTime", firstComment.getCreateTime());
+        } else { // 降序
+            criteria.andGreaterThan("createTime", firstComment.getCreateTime());
+        }
         return firstCommentMapper.selectCountByExample(example);
     }
 
     @Override
-    public int[] getFrontSecondCommentCount(Integer postId, Integer secondCommentId) {
-        SecondComment secondComment = secondCommentMapper.selectByPrimaryKey(secondCommentId);
+    public int[] getFrontSecondCommentCount(SecondCommentFrontCountDTO dto) {
+        SecondComment secondComment = secondCommentMapper.selectByPrimaryKey(dto.getSecondCommentId());
         if (ObjectUtils.isEmpty(secondComment)) {
-            return null;
+            throw new ServiceFailedException(StatusCode.SECOND_COMMENT_NOT_EXIST);
         }
         Integer firstCommentId = secondComment.getFirstCommentId();
-        int firstCount = this.getFrontFirstCommentCount(postId, firstCommentId);
-        if (firstCount == -1) {
-            return null; // secondCommentId非法
-        }
+        int firstCount = this.getFrontFirstCommentCount(new FirstCommentFrontCountDTO(dto.getPostId(), firstCommentId, dto.getFirstCommentOrder()));
+
         Example example = new Example(SecondComment.class);
-        example.createCriteria().andEqualTo("firstCommentId", firstCommentId)
-                .andLessThan("createTime", secondComment.getCreateTime());
+        Example.Criteria criteria = example.createCriteria().andEqualTo("firstCommentId", firstCommentId);
+        if (OrderMode.ASC.equals(dto.getSecondCommentOrder())) {
+            criteria.andLessThan("createTime", secondComment.getCreateTime());
+        } else {
+            criteria.andGreaterThan("createTime", secondComment.getCreateTime());
+        }
         int secondCount = secondCommentMapper.selectCountByExample(example);
-        return new int[] {firstCount, secondCount, firstCommentId};
+        return new int[]{firstCount, secondCount, firstCommentId};
     }
 
 

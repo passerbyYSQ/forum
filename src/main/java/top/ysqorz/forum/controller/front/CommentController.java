@@ -8,7 +8,9 @@ import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.common.enumeration.CommentType;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.PageData;
+import top.ysqorz.forum.dto.req.FirstCommentFrontCountDTO;
 import top.ysqorz.forum.dto.req.PublishFirstCommentDTO;
+import top.ysqorz.forum.dto.req.SecondCommentFrontCountDTO;
 import top.ysqorz.forum.dto.resp.FirstCommentDTO;
 import top.ysqorz.forum.dto.resp.RecentCommentUserDTO;
 import top.ysqorz.forum.dto.resp.SecondCommentDTO;
@@ -121,20 +123,13 @@ public class CommentController {
     }
 
     @GetMapping("/first/frontCount")
-    public Integer getFrontFirstCommentCount(@NotNull Integer postId, @NotNull Integer firstCommentId) {
-        int count = commentService.getFrontFirstCommentCount(postId, firstCommentId);
-        if (count == -1) {
-            throw new ServiceFailedException(StatusCode.FIRST_COMMENT_NOT_EXIST);
-        }
-        return count;
+    public Integer getFrontFirstCommentCount(@Validated FirstCommentFrontCountDTO dto) {
+        return commentService.getFrontFirstCommentCount(dto);
     }
 
     @GetMapping("/second/frontCount")
-    public Map<String, Integer> getFrontSecondCommentCount(@NotNull Integer postId, @NotNull Integer secondCommentId) {
-        int[] res = commentService.getFrontSecondCommentCount(postId, secondCommentId);
-        if (res == null) {
-            throw new ServiceFailedException(StatusCode.SECOND_COMMENT_NOT_EXIST);
-        }
+    public Map<String, Integer> getFrontSecondCommentCount(@Validated SecondCommentFrontCountDTO dto) {
+        int[] res = commentService.getFrontSecondCommentCount(dto);
         Map<String, Integer> data = new HashMap<>();
         data.put("firstCount", res[0]);
         data.put("secondCount", res[1]);

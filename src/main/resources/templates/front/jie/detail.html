@@ -19,6 +19,7 @@
         .ew-head-list {
             margin-bottom: 20px;
         }
+
         .ew-head-list .ew-head-list-item {
             width: 22px;
             height: 22px;
@@ -26,6 +27,7 @@
             border: 1px solid #fff;
             margin-left: -10px;
         }
+
         .ew-head-list .ew-head-list-item:first-child {
             margin-left: 0;
         }
@@ -228,11 +230,13 @@
                 <h1 class="title">
                     <span th:text="${post.detail.topic}" class="layui-badge layui-badge-green">话题</span>
                     <span th:utext="${post.detail.title}"></span>
-                    <span th:if="${post.detail.isLocked == 1}" class="layui-badge" style="background-color: #999;">锁定</span>
+                    <span th:if="${post.detail.isLocked == 1}" class="layui-badge"
+                          style="background-color: #999;">锁定</span>
                     <!-- <span class="layui-badge" style="background-color: #5FB878;">锁定</span> -->
                     <span th:if="${post.detail.topWeight > 0}" class="layui-badge layui-bg-blue">置顶</span>
                     <span th:if="${post.detail.isHighQuality == 1}" class="layui-badge layui-bg-red">精帖</span>
-                    <span th:if="${post.isHot}" class="myiconfont icon-remen" style="color: #fc3218; font-size: 26px;"></span>
+                    <span th:if="${post.isHot}" class="myiconfont icon-remen"
+                          style="color: #fc3218; font-size: 26px;"></span>
                 </h1>
                 <div class="fly-detail-info clear-float">
                     <!-- <span class="layui-badge">审核中</span> -->
@@ -377,7 +381,8 @@
                            name="isFollow" th:href="@{/user/login}">关注</a>
                     </div>
                     <!--已登录且身份为访客-->
-                    <div class="fly-sns" data-user="" id="visit" th:if="${!isMyself && isLogin}" style="text-align:center">
+                    <div class="fly-sns" data-user="" id="visit" th:if="${!isMyself && isLogin}"
+                         style="text-align:center">
                         <a href="javascript:;" class="layui-btn layui-btn-normal" name="isFollow"
                            data-type="follow" th:if="${!isFocusOn && isLogin}">关注</a>
                         <a href="javascript:;" class="layui-btn layui-btn-disabled button-isFollowed" name="isFollow"
@@ -637,11 +642,14 @@
         var page2;  //二级评论页码
         var fcid;  //一级定位id
         var scid;  //二级定位id
+        var firstCommentOrder = 'ASC';
 
         var dataGridMap = new Map(); // 二级评论列表的dataGrid
         var editorMap = new Map(); // 二级评论的editor
+        var firstListGrid;
 
-        calPageNumOfComment();
+        // 计算
+        calPageNumAndRenderComment();
 
         var imgList = [];
         // 将主题帖内容所包含的图片制成相册
@@ -665,205 +673,206 @@
             });
         });
 
-
         /* 渲染一级评论列表 */
-        var commentList = dataGrid.render({
-            elem: '#commentList',
-            templet: '#firstCommentItem',
-            url: '/comment/first/list',
-            where: {
-                postId: postId
-            },
-            request: {
-                limitName: 'count' //每页数据量的参数名，默认：limit
-            },
-            // 无效设置。源码封装的问题
-            // response: {
-            //     statusCode: 2000 //规定成功的状态码，默认：0
-            // },
-            parseData: function (res) { //res 即为原始返回的数据
-                var list = res.data.list;
-                list.map(item => {
-                    item.createTime = app.formatDateTime(item.createTime);
-                    return item;
-                });
-                return {
-                    "code": res.code === 2000 ? 0 : -1, //解析接口状态
-                    "msg": res.msg, //解析提示文本
-                    "count": res.data.total, //解析数据长度
-                    "data": list //解析数据列表
-                };
-            },
-            page: {
-                limit: 6,
-                limits: [6, 10, 20, 30]
-            },
-            done: function (res, curr, count) {
-                //如果是异步请求数据方式，res即为你接口返回的信息。
-                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                //console.log(curr);
-                curPage = curr; // 当前页码
-                dataGridMap.clear();
-                editorMap.clear();
+        function renderFirstComment() {
+            firstListGrid = dataGrid.render({
+                elem: '#commentList',
+                templet: '#firstCommentItem',
+                url: '/comment/first/list',
+                where: {
+                    postId: postId
+                },
+                request: {
+                    limitName: 'count' //每页数据量的参数名，默认：limit
+                },
+                // 无效设置。源码封装的问题
+                // response: {
+                //     statusCode: 2000 //规定成功的状态码，默认：0
+                // },
+                parseData: function (res) { //res 即为原始返回的数据
+                    var list = res.data.list;
+                    list.map(item => {
+                        item.createTime = app.formatDateTime(item.createTime);
+                        return item;
+                    });
+                    return {
+                        "code": res.code === 2000 ? 0 : -1, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "count": res.data.total, //解析数据长度
+                        "data": list //解析数据列表
+                    };
+                },
+                page: {
+                    limit: 6,
+                    limits: [6, 10, 20, 30]
+                },
+                done: function (res, curr, count) {
+                    //如果是异步请求数据方式，res即为你接口返回的信息。
+                    //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+                    //console.log(curr);
+                    curPage = curr; // 当前页码
+                    dataGridMap.clear();
+                    editorMap.clear();
 
-                if (page1) {
-                    if (curr !== page1) { // 不在当前页面，先跳转加载到对应页面。重新回到done
-                        commentList.reload({page: {curr: page1}});
-                    } else {
-                        if (page2) { // 模拟点击，加载对应的二级列表
-                            document.getElementById("expend-fcid-" + fcid).click();
+                    if (page1) {
+                        if (curr !== page1) { // 不在当前页面，先跳转加载到对应页面。重新回到done
+                            firstListGrid.reload({page: {curr: page1}});
                         } else {
-                            app.scrollIntoView("ul[data-id=fcid-" + fcid + "]");
-                            // flash("ul[data-id=fcid-" + fcid + "]");
-                            shadowAnimate("ul[data-id=fcid-" + fcid + "]");
-                        }
-                        page1 = null; // 当前页已经是page1，故将page1置空
-                    }
-                }
-                Prism.highlightAll();
-
-                $("ul.jieda").hover(function () {
-                    $(this).find("div.first-opr").removeClass("layui-hide");
-                }, function () {
-                    $(this).find("div.first-opr").addClass("layui-hide");
-                });
-            }
-        });
-
-        dataGrid.on('tool(commentList)', function (obj) {
-            var firstCommentId = obj.data.id;
-            if (obj.event === 'expand') {
-                var secondList = $('#secondCommentList_' + firstCommentId).parent('div');
-                var span = obj.elem.context;
-                var isExpanded = $(span).attr('data-expand');
-                console.log(isExpanded);
-                if (isExpanded === 'true') { // true
-                    // 点击收回
-                    $(span).attr('data-expand', false);
-                    $(span).text('展开评论');
-                    secondList.slideUp();
-                } else { // false
-                    // 点击展开
-                    $(span).attr('data-expand', true);
-                    $(span).text('收起评论');
-                    if (dataGridMap.has(firstCommentId)) {
-                        secondList.slideDown();
-                        return;
-                    }
-                    var secondListGrid = dataGrid.render({
-                        elem: '#secondCommentList_' + firstCommentId,
-                        templet: '#secondCommentItem',
-                        url: '/comment/second/list',
-                        where: {
-                            firstCommentId: firstCommentId
-                        },
-                        request: {
-                            limitName: 'count' //每页数据量的参数名，默认：limit
-                        },
-                        response: {
-                            statusCode: 2000 //规定成功的状态码，默认：0
-                        },
-                        parseData: function (res) { //res 即为原始返回的数据
-                            var list = res.data.list;
-                            list.map(item => {
-                                item.createTime = app.formatDateTime(item.createTime);
-                                item.content = app.content(item.content);
-                                return item;
-                            });
-                            return {
-                                "code": res.code, //解析接口状态
-                                "msg": res.msg, //解析提示文本
-                                "count": res.data.total, //解析数据长度
-                                "data": list //解析数据列表
-                            };
-                        },
-                        page: {
-                            limit: 5,
-                            layout: ['page', 'count']
-                        },
-                        done: function (res, curr, count) {
-                            //如果是异步请求数据方式，res即为你接口返回的信息。
-                            //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                            if (page2) {
-                                if (curr !== page2) {
-                                    secondListGrid.reload({page: {curr: page2}});
-                                } else {
-                                    app.scrollIntoView("div[data-id=scid-" + scid + "]");
-                                    shadowAnimate("div[data-id=scid-" + scid + "]");
-                                    page2 = null;
-                                }
+                            if (page2) { // 模拟点击，加载对应的二级列表
+                                document.getElementById("expend-fcid-" + fcid).click();
+                            } else {
+                                app.scrollIntoView("ul[data-id=fcid-" + fcid + "]");
+                                // flash("ul[data-id=fcid-" + fcid + "]");
+                                shadowAnimate("ul[data-id=fcid-" + fcid + "]");
                             }
-                            Prism.highlightAll();
-                            $("div.second-comment").hover(function () {
-                                $(this).find("div.second-opr").removeClass("layui-hide");
-                            }, function () {
-                                $(this).find("div.second-opr").addClass("layui-hide");
-                            });
+                            page1 = null; // 当前页已经是page1，故将page1置空
                         }
-                    });
-                    var selector = 'tool(secondCommentList_' + firstCommentId + ')';
-                    dataGridMap.set(firstCommentId, secondListGrid);
-                    dataGrid.on(selector, function (obj) {
-                        if (obj.event === 'reply') {
-                            // 回复二级评论
-                            console.log('回复二级评论');
-                            obj.data.type = "second";
-                            showSecondEditor(firstCommentId, obj.data);
-                        } else if (obj.event === 'delete_second') {
-                            var id =obj.elem.parents("ul.jieda").attr('data-id');
-                            var fcid = parseInt(id.substring(id.indexOf('-') + 1));
-                            showDelConfirmDialog({
-                                type: 'SECOND_COMMENT',
-                                commentId: obj.data.id,
-                                firstCommentId: fcid
-                            });
-                        }
+                    }
+                    Prism.highlightAll();
+
+                    $("ul.jieda").hover(function () {
+                        $(this).find("div.first-opr").removeClass("layui-hide");
+                    }, function () {
+                        $(this).find("div.first-opr").addClass("layui-hide");
                     });
                 }
+            });
 
-            } else if (obj.event === 'reply') {
-                // 回复一级评论  一级评论id：obj.data.id
-                console.log('回复一级评论');
-                obj.data.type = "first";
-                showSecondEditor(firstCommentId, obj.data);
-            } else if (obj.event === 'cancel') {
-                // 取消回复
-                cancelReply(firstCommentId);
-            } else if (obj.event === 'submit') {
-                // 提交回复
-                var comment = editorMap.get(firstCommentId);
-                var content = $('#secondEditor_' + firstCommentId).val();
-                console.log("提交回复。被回复的评论是：");
-                console.log(comment);
-                console.log("回复的内容的是：");
-                console.log(content);
-
-                var params = {
-                    firstCommentId: firstCommentId,
-                    content: content
-                };
-                if ("second" === comment.type) {
-                    params.quoteSecondCommentId = comment.id;
-                }
-
-                app.ajax('/comment/second/publish', params, function (res) {
-                    app.successNotice('回复成功');
-                    // reload
-                    var dataGrid = dataGridMap.get(firstCommentId);
-                    if (app.isNotNull(dataGrid)) {
-                        dataGrid.reload();
+            dataGrid.on('tool(commentList)', function (obj) {
+                var firstCommentId = obj.data.id;
+                if (obj.event === 'expand') {
+                    var secondList = $('#secondCommentList_' + firstCommentId).parent('div');
+                    var span = obj.elem.context;
+                    var isExpanded = $(span).attr('data-expand');
+                    console.log(isExpanded);
+                    if (isExpanded === 'true') { // true
+                        // 点击收回
+                        $(span).attr('data-expand', false);
+                        $(span).text('展开评论');
+                        secondList.slideUp();
+                    } else { // false
+                        // 点击展开
+                        $(span).attr('data-expand', true);
+                        $(span).text('收起评论');
+                        if (dataGridMap.has(firstCommentId)) {
+                            secondList.slideDown();
+                            return;
+                        }
+                        var secondListGrid = dataGrid.render({
+                            elem: '#secondCommentList_' + firstCommentId,
+                            templet: '#secondCommentItem',
+                            url: '/comment/second/list',
+                            where: {
+                                firstCommentId: firstCommentId
+                            },
+                            request: {
+                                limitName: 'count' //每页数据量的参数名，默认：limit
+                            },
+                            response: {
+                                statusCode: 2000 //规定成功的状态码，默认：0
+                            },
+                            parseData: function (res) { //res 即为原始返回的数据
+                                var list = res.data.list;
+                                list.map(item => {
+                                    item.createTime = app.formatDateTime(item.createTime);
+                                    item.content = app.content(item.content);
+                                    return item;
+                                });
+                                return {
+                                    "code": res.code, //解析接口状态
+                                    "msg": res.msg, //解析提示文本
+                                    "count": res.data.total, //解析数据长度
+                                    "data": list //解析数据列表
+                                };
+                            },
+                            page: {
+                                limit: 5,
+                                layout: ['page', 'count']
+                            },
+                            done: function (res, curr, count) {
+                                //如果是异步请求数据方式，res即为你接口返回的信息。
+                                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+                                if (page2) {
+                                    if (curr !== page2) {
+                                        secondListGrid.reload({page: {curr: page2}});
+                                    } else {
+                                        app.scrollIntoView("div[data-id=scid-" + scid + "]");
+                                        shadowAnimate("div[data-id=scid-" + scid + "]");
+                                        page2 = null;
+                                    }
+                                }
+                                Prism.highlightAll();
+                                $("div.second-comment").hover(function () {
+                                    $(this).find("div.second-opr").removeClass("layui-hide");
+                                }, function () {
+                                    $(this).find("div.second-opr").addClass("layui-hide");
+                                });
+                            }
+                        });
+                        var selector = 'tool(secondCommentList_' + firstCommentId + ')';
+                        dataGridMap.set(firstCommentId, secondListGrid);
+                        dataGrid.on(selector, function (obj) {
+                            if (obj.event === 'reply') {
+                                // 回复二级评论
+                                console.log('回复二级评论');
+                                obj.data.type = "second";
+                                showSecondEditor(firstCommentId, obj.data);
+                            } else if (obj.event === 'delete_second') {
+                                var id = obj.elem.parents("ul.jieda").attr('data-id');
+                                var fcid = parseInt(id.substring(id.indexOf('-') + 1));
+                                showDelConfirmDialog({
+                                    type: 'SECOND_COMMENT',
+                                    commentId: obj.data.id,
+                                    firstCommentId: fcid
+                                });
+                            }
+                        });
                     }
 
-                    updateSecondCount(firstCommentId, 1);
+                } else if (obj.event === 'reply') {
+                    // 回复一级评论  一级评论id：obj.data.id
+                    console.log('回复一级评论');
+                    obj.data.type = "first";
+                    showSecondEditor(firstCommentId, obj.data);
+                } else if (obj.event === 'cancel') {
+                    // 取消回复
                     cancelReply(firstCommentId);
-                });
-            } else if (obj.event === 'delete_first') {
-                showDelConfirmDialog({
-                    type: 'FIRST_COMMENT',
-                    commentId: firstCommentId
-                });
-            }
-        });
+                } else if (obj.event === 'submit') {
+                    // 提交回复
+                    var comment = editorMap.get(firstCommentId);
+                    var content = $('#secondEditor_' + firstCommentId).val();
+                    console.log("提交回复。被回复的评论是：");
+                    console.log(comment);
+                    console.log("回复的内容的是：");
+                    console.log(content);
+
+                    var params = {
+                        firstCommentId: firstCommentId,
+                        content: content
+                    };
+                    if ("second" === comment.type) {
+                        params.quoteSecondCommentId = comment.id;
+                    }
+
+                    app.ajax('/comment/second/publish', params, function (res) {
+                        app.successNotice('回复成功');
+                        // reload
+                        var dataGrid = dataGridMap.get(firstCommentId);
+                        if (app.isNotNull(dataGrid)) {
+                            dataGrid.reload();
+                        }
+
+                        updateSecondCount(firstCommentId, 1);
+                        cancelReply(firstCommentId);
+                    });
+                } else if (obj.event === 'delete_first') {
+                    showDelConfirmDialog({
+                        type: 'FIRST_COMMENT',
+                        commentId: firstCommentId
+                    });
+                }
+            });
+        }
 
         function updateCommentCount(dif) {
             $("#commentCount").text(parseInt($("#commentCount").text()) + dif);
@@ -902,7 +911,7 @@
         }
 
         window.showDelConfirmDialog = function (data) {
-            var param = data || { type: 'POST', postId: postId };
+            var param = data || {type: 'POST', postId: postId};
             console.log(param);
             if (param.type === 'POST') {
                 doShowConfirmDialog('是否确认删除该帖子？', '/post/delete', param, function () {
@@ -913,7 +922,7 @@
                 });
             } else if (param.type === 'FIRST_COMMENT') {
                 doShowConfirmDialog("是否确认删除该评论？", '/comment/delete', param, function () {
-                    commentList.reload({page: {curr: curPage}});
+                    firstListGrid.reload({page: {curr: curPage}});
                     updateCommentCount(-1);
                     app.successNotice('删除成功，界面已刷新');
                 });
@@ -950,7 +959,7 @@
             }, function (res) {
                 var iElem = $(_this).children('i');
                 var num = parseInt(iElem.text());
-                let { userId, username, photo } = res.data;
+                let {userId, username, photo} = res.data;
                 if (isLike) { // 点赞成功
                     $(_this).removeClass("layui-icon-heart");
                     $(_this).addClass("layui-icon-heart-fill");
@@ -998,11 +1007,12 @@
         $("a.comment-sort").click(function () {
             // 注意与 attr的区别 .attr('data-isTimeAsc')，且取出的是字符串 'true'
             var isTimeAsc = $(this).data("istimeasc");  // 注意不要写驼峰。返回的是布尔值 true
+            firstCommentOrder = isTimeAsc ? 'ASC' : 'DESC';
             // console.log(typeof isTimeAsc);
             // console.log(isTimeAsc);
-            commentList.reload({
-                where: { isTimeAsc: isTimeAsc },
-                page: { curr: 1 }
+            firstListGrid.reload({
+                where: {isTimeAsc: isTimeAsc},
+                page: {curr: 1}
             });
             // 高亮标识当前的排序方式
             $(this).css({"color": "#5FB878"});
@@ -1093,7 +1103,7 @@
                 var url = '/comment/first/publish';
                 // 网络请求
                 app.ajax(url, data.field, function (res) {
-                    commentList.reload({ page: { curr: curPage } });
+                    firstListGrid.reload({page: {curr: curPage}});
                     //commentList.reload();
                     app.successNotice('评论成功，界面已刷新');
                     editorObj.setContent('');
@@ -1179,25 +1189,39 @@
             });
         });
 
-        // 计算评论所在页码
-        function calPageNumOfComment() {
+        // 计算评论所在页码并渲染评论列表
+        function calPageNumAndRenderComment() {
             fcid = app.getUrlParam("fcid");
             scid = app.getUrlParam("scid");
             // 两个if的顺序不能调换。否则 fcid和scid都存在时有问题
             if (scid) {
-                app.ajax('/comment/second/frontCount', {postId, secondCommentId: scid}, function (res) {
+                app.ajax('/comment/second/frontCount', {
+                    postId,
+                    secondCommentId: scid,
+                    firstCommentOrder,
+                    secondCommentOrder: 'DESC'
+                }, function (res) {
                     console.log(res);
-                    let { firstCount, secondCount, firstCommentId } = res.data;
+                    let {firstCount, secondCount, firstCommentId} = res.data;
                     page1 = Math.floor(firstCount / 6) + 1;
                     page2 = Math.floor(secondCount / 5) + 1;
                     fcid = firstCommentId;
-                }, "get");
+                    renderFirstComment();
+                }, "get", renderFirstComment);
             } else if (fcid) {
                 // 计算page1
-                app.ajax('/comment/first/frontCount', {postId, firstCommentId: fcid}, function (res) {
+                app.ajax('/comment/first/frontCount', {
+                    postId,
+                    firstCommentId: fcid,
+                    firstCommentOrder
+                }, function (res) {
                     // console.log(res);
                     page1 = Math.floor(res.data / 6) + 1;
-                }, "get");
+                    renderFirstComment();
+                }, "get", renderFirstComment);
+            } else {
+                // 没有页码参数，直接渲染评论列表
+                renderFirstComment();
             }
         }
 
@@ -1206,7 +1230,7 @@
             var elem = $(selector);
             setTimeout(function () {
                 for (var i = 0; i < 3; i++) {
-                    elem.fadeOut(300).fadeIn(300);
+                    elem.fadeOut(280).fadeIn(280);
                 }
             }, 1000);
         }
