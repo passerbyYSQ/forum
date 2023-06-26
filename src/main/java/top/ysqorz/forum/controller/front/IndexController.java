@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.ysqorz.forum.common.StatusCode;
+import top.ysqorz.forum.common.annotation.ApiAccessLimit;
 import top.ysqorz.forum.common.exception.ServiceFailedException;
 import top.ysqorz.forum.dto.PageData;
 import top.ysqorz.forum.dto.req.QueryPostCondition;
@@ -25,6 +26,7 @@ import javax.annotation.Resource;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -63,6 +65,7 @@ public class IndexController {
     /**
      * 获取Post列表
      */
+    //@ApiAccessLimit(maxCount = 3, blackDuration = 2, blackUnit = ChronoUnit.MINUTES) // test
     @ResponseBody
     @GetMapping("/index/list")
     public PageData<PostDTO> getPostList(@RequestParam(defaultValue = "10") Integer limit,

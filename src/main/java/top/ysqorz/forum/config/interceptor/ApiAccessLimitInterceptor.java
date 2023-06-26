@@ -1,5 +1,6 @@
 package top.ysqorz.forum.config.interceptor;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
@@ -59,8 +60,7 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
         );
         Integer userID = blackCache.get(clientIP, Integer.class); // 动态创建，cache不可能为null
         if (!ObjectUtils.isEmpty(userID)) {
-            refuse(clientIP, servletPath, response);
-            return false;
+            return refuse(clientIP, servletPath, response);
         }
 
         // 维护Redis缓存计数器
@@ -69,9 +69,9 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
         Boolean isPassed = redisService.recordIpAccessAPI(key, maxCount, duration, blackDuration);
         if (Boolean.FALSE.equals(isPassed)) {
             // 不存在才放入。尝试获取UserID，如果未登录获取不到
-            blackCache.putIfAbsent(key, ShiroUtils.getUserId());
-            refuse(clientIP, servletPath, response);
-            return false;
+            Integer userId = ObjectUtil.defaultIfNull(ShiroUtils.getUserId(), -1);
+            blackCache.putIfAbsent(clientIP, userId);
+            return refuse(clientIP, servletPath, response);
         }
         return true;
     }
@@ -88,12 +88,13 @@ public class ApiAccessLimitInterceptor implements HandlerInterceptor {
         return AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), ApiAccessLimit.class);
     }
 
-    private void refuse(String ip, String path, HttpServletResponse response) {
-        String msg = String.format("当前ip(%s)访问接口(%s)过于频繁，已被暂时封禁！当前登录用户ID：%s", ip, path, ShiroUtils.getUserId());
+    private boolean refuse(String ip, String path, HttpServletResponse response) {
+        String msg = String.format("当前IP(%s)访问接口(%s)过于频繁，已被暂时封禁！当前登录用户ID：%s", ip, path, ShiroUtils.getUserId());
         log.error(msg);
         // 此处无法被GlobalExceptionHandler所捕获，但能被SpringBoot的默认异常处理所捕获
         // throw new AuthorizationException(msg);
         response.setStatus(HttpStatus.FORBIDDEN.value());
         CommonUtils.writeJson(response, ResultModel.failed(HttpStatus.FORBIDDEN.value(), msg));
+        return false;
     }
 }
