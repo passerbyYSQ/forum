@@ -144,4 +144,10 @@ public class User {
      */
     @Column(name = "baidu_id")
     private String baiduId;
+
+    /**
+     * githubId
+     */
+    @Column(name = "github_id")
+    private String githubId;
 }
