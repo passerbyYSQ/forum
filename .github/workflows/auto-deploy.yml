@@ -1,0 +1,32 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to Server
+      if: github.ref == 'refs/heads/master'
+      uses: appleboy/ssh-action@v0.1.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: 22
+        script: |
+          cd /root/project/forum/source/forum
+          git pull origin master
+          mvn clean install -DskipTests -U
+          jps -l | grep -E -i 'forum' | awk '{print "kill "$1}' | sh
+          rm -rf /root/project/forum/forum-v1.0.jar
+          cp target/forum-v1.0.jar /root/project/forum
+          java -jar /root/project/forum/forum-v1.0.jar --spring.profiles.active=dev >/dev/null 2>&1 &
+          echo 'forum-v1.0 service started successfully.'
+

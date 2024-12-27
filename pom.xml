@@ -26,7 +26,7 @@
 		<!--	使用1.1.10，datetime转LocalDatetime会报错java.sql.SQLFeatureNotSupportedException: null
 			原因是不支持将数据库的datetime类型转成localDateTime
 			https://blog.csdn.net/sinat_14977855/article/details/104042952-->
-		<druid.version>1.1.21</druid.version>
+		<druid.version>1.2.9</druid.version>
 		<tk-mapper.version>2.1.5</tk-mapper.version>
 		<jwt.version>3.3.0</jwt.version>
 		<pagehelper.version>1.2.13</pagehelper.version>
@@ -67,6 +67,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </dependency>
 		<!-- web模块 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -231,13 +235,6 @@
 						</exclude>
 					</excludes>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

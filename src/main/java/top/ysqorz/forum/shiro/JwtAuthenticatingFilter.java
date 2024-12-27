@@ -5,7 +5,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.service.UserService;
@@ -50,8 +50,7 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
         boolean allowed = false;
         try {
             allowed = executeLogin(request, response);
-        } catch (IllegalStateException e) { //not found any token
-            log.error("Not found any token", e);
+        } catch (IllegalStateException ignored) { //not found any token
         } catch (Exception e) {
             log.error("Error occurs when login", e);
         }
@@ -80,25 +79,23 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpRequest = WebUtils.toHttp(request);
         // 从请求头中的Authorization字段尝试获取jwt token
         String token = httpRequest.getHeader("Authorization");
-        // 从请求头中的token字段（自定义字段）尝试获取jwt token
-        if (StringUtils.isEmpty(token)) {
-            token = httpRequest.getHeader("token");
-        }
         // 从请求参数中尝试获取jwt token
-//        if (StringUtils.isEmpty(token)) {
-//            token = httpRequest.getParameter("token");
-//        }
+        if (ObjectUtils.isEmpty(token)) {
+            token = httpRequest.getParameter("token");
+        }
         // 从cookie中尝试获取token
-        if (StringUtils.isEmpty(token)) {
+        if (ObjectUtils.isEmpty(token)) {
             Cookie[] cookies = httpRequest.getCookies();
-            for (Cookie cookie : cookies) {
-                if ("token".equalsIgnoreCase(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
+            if (!ObjectUtils.isEmpty(cookies)) {
+                for (Cookie cookie : cookies) {
+                    if ("token".equalsIgnoreCase(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
                 }
             }
         }
-        return !StringUtils.isEmpty(token) ? new JwtToken(token) : null;
+        return !ObjectUtils.isEmpty(token) ? new JwtToken(token) : null;
     }
 
     /**
