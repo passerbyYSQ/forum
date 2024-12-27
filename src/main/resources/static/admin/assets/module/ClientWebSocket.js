@@ -20,17 +20,17 @@ layui.define(['app'], function (exports) {
         constructor(opt) {
             this.options = opt || {};
             // ====== dev ======
-            var _that = this;
-            let callback = function (res) {
-                _that.server = res.data;
-                _that.SocketClazz = window.WebSocket || window.MozWebSocket;
-                _that._initSocket();
-            };
-            app.ajax('/im/server', {}, callback, 'get', null, false);
+            // var _that = this;
+            // let callback = function (res) {
+            //     _that.server = res.data;
+            //     _that.SocketClazz = window.WebSocket || window.MozWebSocket;
+            //     _that._initSocket();
+            // };
+            // app.ajax('/im/server', {}, callback, 'get', null, false);
             // ====== prod ======
-            // this.server = WS_SERVER;
-            // this.SocketClazz = window.WebSocket || window.MozWebSocket;
-            // this._initSocket();
+            this.server = WS_SERVER;
+            this.SocketClazz = window.WebSocket || window.MozWebSocket;
+            this._initSocket();
 
             window.addEventListener("online", this._onNetworkChanged.bind(this));
             window.addEventListener("offline", this._onNetworkChanged.bind(this));
