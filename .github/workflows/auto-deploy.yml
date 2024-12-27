@@ -11,9 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' && !startsWith(github.event.head_commit.message, 'draft') && !startsWith(github.event.pull_request.title, 'draft') }}
     steps:
     - name: Deploy to Server
-      if: github.ref == 'refs/heads/master'
       uses: appleboy/ssh-action@v0.1.0
       with:
         host: ${{ secrets.HOST }}
