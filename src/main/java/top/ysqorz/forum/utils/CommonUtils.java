@@ -179,26 +179,48 @@ public class CommonUtils {
         return finalIp.map(String::trim).orElse("");
     }
 
-    public static String getLocalIp() {
+    public static boolean isVirtualInterface(NetworkInterface netInterface) throws SocketException {
+        return netInterface.getName().contains("veth") ||
+                netInterface.getName().contains("docker") ||
+                netInterface.isLoopback() ||
+                netInterface.isPointToPoint() ||
+                netInterface.isVirtual();
+    }
+
+    public static String getLocalHostStr() {
+        return getLocalHost().getHostAddress();
+    }
+
+    public static InetAddress getLocalHost() {
         try {
             Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
-            InetAddress ip;
+            InetAddress candidate = null;
             while (allNetInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = allNetInterfaces.nextElement();
-                if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) {
+                if (!netInterface.isUp() || isVirtualInterface(netInterface)) {
                     continue;
                 }
                 Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
                 while (addresses.hasMoreElements()) {
-                    ip = addresses.nextElement();
-                    if (ip instanceof Inet4Address) {
-                        return ip.getHostAddress();
+                    InetAddress ipAddr = addresses.nextElement();
+                    if (!(ipAddr instanceof Inet4Address)) {
+                        continue;
+                    }
+                    if (!ipAddr.isSiteLocalAddress()) {
+                        // 非地区本地地址，指10.0.0.0 ~ 10.255.255.255、172.16.0.0 ~ 172.31.255.255、192.168.0.0 ~ 192.168.255.255
+                        return ipAddr;
+                    } if (Objects.isNull(candidate)) {
+                        // 取第一个匹配的地址
+                        candidate = ipAddr;
                     }
                 }
             }
+            if (Objects.nonNull(candidate)) {
+                return candidate;
+            }
+            return InetAddress.getLocalHost();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return "";
     }
 }

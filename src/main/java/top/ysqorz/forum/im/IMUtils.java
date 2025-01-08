@@ -1,6 +1,5 @@
 package top.ysqorz.forum.im;
 
-import cn.hutool.core.net.NetUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.timeout.IdleState;
@@ -28,12 +27,12 @@ public class IMUtils {
 
 
     public static String getWsServer() {
-        return String.format("ws://%s:%d/ws", NetUtil.getLocalhostStr(), Constant.WS_SERVER_PORT);
+        return String.format("ws://%s:%d/ws", CommonUtils.getLocalHostStr(), Constant.WS_SERVER_PORT);
     }
 
     public static String getWebServer() {
         Environment env = SpringUtils.getBean(Environment.class);
-        return NetUtil.getLocalhostStr() + ":" + env.getProperty("server.port");
+        return CommonUtils.getLocalHostStr() + ":" + env.getProperty("server.port");
     }
 
     public static String generateAuthDigest(String userPwd) {
