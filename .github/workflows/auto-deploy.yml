@@ -12,7 +12,6 @@ jobs:
   build:
     name: Build Project
     runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.event.head_commit.message, 'draft') && !startsWith(github.event.pull_request.title, 'draft') }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
