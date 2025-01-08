@@ -66,5 +66,6 @@ jobs:
         script: |
           cd /root/project/forum
           jps -l | grep -E -i 'forum' | awk '{print "kill "$1}' | sh
+          rm -rf logs
           nohup java -jar forum-v1.0.jar --spring.profiles.active=dev >/dev/null 2>&1 &
           echo 'forum-v1.0 service started successfully.'
