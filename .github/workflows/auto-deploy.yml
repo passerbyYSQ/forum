@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - test/test-cicd
-# 测试
+
 jobs:
   build:
     name: Build Project
@@ -65,5 +65,6 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
           jps -l | grep -E -i 'forum' | awk '{print "kill "$1}' | sh
+          chown root:root /root/project/forum/forum-v1.0.jar
           nohup java -jar /root/project/forum/forum-v1.0.jar --spring.profiles.active=dev >/dev/null 2>&1 &
           echo 'forum-v1.0 service started successfully.'
