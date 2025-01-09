@@ -1,5 +1,6 @@
 package top.ysqorz.forum.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
  * @author passerbyYSQ
  * @create 2021-06-19 23:15
  */
+@Slf4j
 public class CommonUtils {
 
     private static final Safelist safeList = Safelist.basicWithImages();
@@ -72,7 +74,7 @@ public class CommonUtils {
         try {
             return URLEncoder.encode(str, "UTF-8").replaceAll("\\+", "%20");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log.error("URL encode failed", e);
             return null;
         }
     }
@@ -96,7 +98,7 @@ public class CommonUtils {
         try {
             httpResponse.getWriter().print(JsonUtils.objToJson(result));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Write json to response failed", e);
         }
     }
 
@@ -140,7 +142,7 @@ public class CommonUtils {
         try {
             url = HtmlUtils.htmlUnescape(URLDecoder.decode(url, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log.error("Get url params failed", e);
         }
         Pattern pattern = Pattern.compile("(^|\\?|&)" + name + "=([^&]*)(&|$)");
         Matcher matcher = pattern.matcher(url);
@@ -180,11 +182,15 @@ public class CommonUtils {
     }
 
     public static boolean isVirtualInterface(NetworkInterface netInterface) throws SocketException {
-        return netInterface.getName().contains("veth") ||
-                netInterface.getName().contains("docker") ||
-                netInterface.isLoopback() ||
+        String name = netInterface.getName().toLowerCase(Locale.ROOT);
+        String displayName = netInterface.getDisplayName().toLowerCase(Locale.ROOT);
+        return netInterface.isLoopback() ||
                 netInterface.isPointToPoint() ||
-                netInterface.isVirtual();
+                netInterface.isVirtual() ||
+                name.contains("veth") ||
+                name.contains("docker") ||
+                displayName.contains("virtual") ||
+                displayName.contains("vmware");
     }
 
     public static String getLocalHostStr() {
