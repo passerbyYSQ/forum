@@ -1,3 +1,6 @@
+## CI/CD
+在master分支commit或者通过pr合并代码到master分支，只要标题不以draft开头，就会触发CI/CD流水线，自动编译和打包，部署到演示服务器
+
 ## idea设置
 
 1. 设置自动去除无效导包
