@@ -7,6 +7,7 @@ import io.netty.util.AttributeKey;
 import lombok.Getter;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
@@ -20,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
  * @create 2022-01-25 19:12
  */
 @Component
+@DependsOn("server-org.springframework.boot.autoconfigure.web.ServerProperties")
 public class IMUtils {
     public static final AttributeKey<String> TOKEN_KEY = AttributeKey.valueOf("token");
     public static final AttributeKey<String> GROUP_ID_KEY = AttributeKey.valueOf("groupId");
