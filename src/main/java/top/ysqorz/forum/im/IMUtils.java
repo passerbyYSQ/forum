@@ -1,13 +1,15 @@
 package top.ysqorz.forum.im;
 
+import cn.hutool.core.util.ObjectUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.timeout.IdleState;
 import io.netty.util.AttributeKey;
 import lombok.Getter;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Component;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
@@ -21,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
  * @create 2022-01-25 19:12
  */
 @Component
-@DependsOn("server-org.springframework.boot.autoconfigure.web.ServerProperties")
+//@DependsOn("server-org.springframework.boot.autoconfigure.web.ServerProperties")
 public class IMUtils {
     public static final AttributeKey<String> TOKEN_KEY = AttributeKey.valueOf("token");
     public static final AttributeKey<String> GROUP_ID_KEY = AttributeKey.valueOf("groupId");
@@ -35,14 +37,10 @@ public class IMUtils {
     @Getter
     private static int WebSocketPort;
 
-    @Value("${server.port}")
-    private void setWebPort(int webPort) {
-        IMUtils.WebPort = webPort;
-    }
-
-    @Value("${server.servlet.context-path:}")
-    private void setWebContextPath(String webContextPath) {
-        IMUtils.WebContextPath = webContextPath;
+    @Autowired
+    private IMUtils(ServerProperties serverProperties) {
+        IMUtils.WebPort = serverProperties.getPort();
+        IMUtils.WebContextPath = ObjectUtil.defaultIfEmpty(serverProperties.getServlet().getContextPath(), "");
     }
 
     @Value("${web-socket.port}")
