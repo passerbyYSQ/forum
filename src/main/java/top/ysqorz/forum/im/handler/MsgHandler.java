@@ -99,7 +99,7 @@ public abstract class MsgHandler<DataType> {
         //log.info("IM Servers: {}", imServers);
         for (String server : servers) {
             if (imServers.contains(server)) { // 如果服务是正常，才转发
-                String api = String.format("http://%s/im/push%s", server, IMUtils.WebContextPath);
+                String api = String.format("http://%s/im/push%s", server, IMUtils.getWebContextPath());
                 RestRequest restRequest = RestRequest.builder().url(api)
                         .addHeader(HttpHeaders.AUTHORIZATION, token)
                         .body(msg);

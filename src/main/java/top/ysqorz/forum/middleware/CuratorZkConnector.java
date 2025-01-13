@@ -177,6 +177,8 @@ public class CuratorZkConnector implements ZkConnector<ChildData, CuratorZkConne
             String path = ZkConnector.PATH + "/" + IMUtils.getWebServer();
             this.create(path, IMUtils.getWebSocketServer(), CreateMode.EPHEMERAL);
             log.info("Successfully registered the current websocket service with zookeeper");
+            log.info("Web Server: {}", IMUtils.getWebServer());
+            log.info("WebSocket Server: {}", IMUtils.getWebSocketServer());
         }
     }
 

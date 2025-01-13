@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.timeout.IdleState;
 import io.netty.util.AttributeKey;
+import lombok.Getter;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,9 +26,12 @@ public class IMUtils {
     public static final AttributeKey<String> CHANNEL_TYPE_KEY = AttributeKey.valueOf("channelType");
     public static final AttributeKey<Integer> ALL_IDLE_KEY = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
 
-    public static int WebPort;
-    public static String WebContextPath;
-    public static int WebSocketPort;
+    @Getter
+    private static int WebPort;
+    @Getter
+    private static String WebContextPath;
+    @Getter
+    private static int WebSocketPort;
 
     @Value("${server.port}")
     private void setWebPort(int webPort) {
