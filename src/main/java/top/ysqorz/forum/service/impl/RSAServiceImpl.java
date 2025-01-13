@@ -43,7 +43,7 @@ public class RSAServiceImpl implements RSAService, ApplicationListener<ContextRe
         // 对于web应用会出现父子容器，这样就会触发两次
         if (event.getApplicationContext().getParent() == null) {
             redisService.saveRSAKeyPair();
-            log.info("成功将RSA的KeyPair缓存至Redis");
+            log.info("Successfully cache RSA keypair to redis");
         }
     }
 

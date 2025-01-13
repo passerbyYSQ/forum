@@ -5,13 +5,12 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.timeout.IdleState;
 import io.netty.util.AttributeKey;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
-import org.springframework.core.env.Environment;
-import top.ysqorz.forum.common.Constant;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.JsonUtils;
-import top.ysqorz.forum.utils.SpringUtils;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -19,20 +18,38 @@ import java.security.NoSuchAlgorithmException;
  * @author passerbyYSQ
  * @create 2022-01-25 19:12
  */
+@Component
 public class IMUtils {
     public static final AttributeKey<String> TOKEN_KEY = AttributeKey.valueOf("token");
     public static final AttributeKey<String> GROUP_ID_KEY = AttributeKey.valueOf("groupId");
     public static final AttributeKey<String> CHANNEL_TYPE_KEY = AttributeKey.valueOf("channelType");
     public static final AttributeKey<Integer> ALL_IDLE_KEY = AttributeKey.valueOf(IdleState.ALL_IDLE.name());
 
+    public static int WebPort;
+    public static String WebContextPath;
+    public static int WebSocketPort;
 
-    public static String getWsServer() {
-        return String.format("ws://%s:%d/ws", CommonUtils.getLocalHostStr(), Constant.WS_SERVER_PORT);
+    @Value("${server.port}")
+    private void setWebPort(int webPort) {
+        IMUtils.WebPort = webPort;
+    }
+
+    @Value("${server.servlet.context-path:}")
+    private void setWebContextPath(String webContextPath) {
+        IMUtils.WebContextPath = webContextPath;
+    }
+
+    @Value("${web-socket.port}")
+    private void setWebSocketPort(int webSocketPort) {
+        IMUtils.WebSocketPort = webSocketPort;
     }
 
     public static String getWebServer() {
-        Environment env = SpringUtils.getBean(Environment.class);
-        return CommonUtils.getLocalHostStr() + ":" + env.getProperty("server.port");
+        return CommonUtils.getLocalHostStr() + ":" + WebPort;
+    }
+
+    public static String getWebSocketServer() {
+        return String.format("ws://%s:%d/ws", CommonUtils.getLocalHostStr(), WebSocketPort);
     }
 
     public static String generateAuthDigest(String userPwd) {

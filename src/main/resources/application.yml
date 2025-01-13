@@ -25,7 +25,7 @@ spring:
       filters: stat,wall
       use-global-data-source-stat: true
       # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-      connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      #connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       # 配置监控服务器 http://127.0.0.1:8080/druid
       stat-view-servlet:
         # 1.1.10以后的版本需要指定为true 不然默认是关闭的就会出现404
