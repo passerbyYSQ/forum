@@ -1,6 +1,7 @@
 package top.ysqorz.forum.utils;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component;
 @Component // 缺少这个注解，报空指针异常
 public class SpringUtils implements ApplicationContextAware {
 
-	private static ApplicationContext applicationContext;
+    // 获取applicationContext
+    @Getter
+    private static ApplicationContext applicationContext;
 	private static PropertyNamingStrategy.PropertyNamingStrategyBase
 			snakeCaseStrategy = new PropertyNamingStrategy.SnakeCaseStrategy();
 
@@ -22,16 +25,10 @@ public class SpringUtils implements ApplicationContextAware {
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		if (SpringUtils.applicationContext == null) {
 			SpringUtils.applicationContext = applicationContext;
-			log.info("成功缓存IOC容器"); // 缺少@Component注解，不会被调用
 		}
 	}
 
-	// 获取applicationContext
-	public static ApplicationContext getApplicationContext() {
-		return applicationContext;
-	}
-
-	// 通过name获取 Bean.
+    // 通过name获取 Bean.
 	public static Object getBean(String name) {
 		return getApplicationContext().getBean(name);
 	}

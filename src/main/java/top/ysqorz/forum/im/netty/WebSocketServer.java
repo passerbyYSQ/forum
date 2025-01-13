@@ -7,6 +7,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.server.ServerErrorException;
 import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.im.handler.ChatFriendMsgHandler;
 import top.ysqorz.forum.im.handler.ChatNotificationHandler;
@@ -56,20 +57,18 @@ public class WebSocketServer implements ChannelFutureListener {
     @Override
     public void operationComplete(ChannelFuture future) throws Exception {
         if (future.isSuccess()) {
-            log.info("netty websocket server 异步启动成功");
             initMsgHandlers();
+            log.info("Netty websocket server started asynchronously successfully");
         } else {
-            log.error("netty websocket server 异步启动失败");
+            throw new RuntimeException("Netty websocket server asynchronous start failed");
         }
     }
-
 
     private void initMsgHandlers() {
         MsgCenter.getInstance()
                 .addHandlerAtLast(new DanmuMsgHandler())
                 .addHandlerAtLast(new ChatFriendMsgHandler())
                 .addHandlerAtLast(new ChatNotificationHandler());
-        log.info("消息处理器初始化成功");
     }
 }
 
