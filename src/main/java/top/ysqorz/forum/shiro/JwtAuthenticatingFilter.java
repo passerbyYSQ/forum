@@ -5,7 +5,9 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.ObjectUtils;
+import top.ysqorz.forum.common.Constant;
 import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.service.UserService;
@@ -78,24 +80,35 @@ public class JwtAuthenticatingFilter extends BasicHttpAuthenticationFilter {
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
         HttpServletRequest httpRequest = WebUtils.toHttp(request);
         // 从请求头中的Authorization字段尝试获取jwt token
-        String token = httpRequest.getHeader("Authorization");
-        // 从请求参数中尝试获取jwt token
+        String token = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        // 从请求头中的token字段（自定义字段）尝试获取jwt token
         if (ObjectUtils.isEmpty(token)) {
-            token = httpRequest.getParameter("token");
+            token = httpRequest.getHeader(Constant.token);
         }
+        // 从请求参数中尝试获取jwt token。TODO 与验证码的token冲突，需要调整
+        /*
+        if (StringUtils.isEmpty(token)) {
+            token = httpRequest.getParameter(Constant.token);
+        }
+        */
         // 从cookie中尝试获取token
         if (ObjectUtils.isEmpty(token)) {
-            Cookie[] cookies = httpRequest.getCookies();
-            if (!ObjectUtils.isEmpty(cookies)) {
-                for (Cookie cookie : cookies) {
-                    if ("token".equalsIgnoreCase(cookie.getName())) {
-                        token = cookie.getValue();
-                        break;
-                    }
-                }
+            token = getTokenFromCookie(httpRequest);
+        }
+        return ObjectUtils.isEmpty(token) ? null: new JwtToken(token);
+    }
+
+    protected String getTokenFromCookie(HttpServletRequest httpRequest) {
+        Cookie[] cookies = httpRequest.getCookies();
+        if (ObjectUtils.isEmpty(cookies)) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (Constant.token.equalsIgnoreCase(cookie.getName())) {
+                return cookie.getValue();
             }
         }
-        return !ObjectUtils.isEmpty(token) ? new JwtToken(token) : null;
+        return null;
     }
 
     /**

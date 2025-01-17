@@ -42,4 +42,5 @@ public interface Constant {
     // 每一页的记录数，默认值
     Integer PAGE_DATA_COUNT = 10;
 
+    String token = "token";
 }
