@@ -50,9 +50,7 @@ public class LocalRepository implements UploadRepository {
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("/upload/images/" + filePath)
-                .queryParam("timestamp", System.currentTimeMillis())
                 .toUriString();
-
     }
 
     @Override

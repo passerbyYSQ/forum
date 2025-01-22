@@ -24,10 +24,9 @@ public class AliyunOssRepository extends OssUploadRepository {
         String objectName = StrUtil.join("/", "images", yearMonth, filename);
         upload(inputStream, objectName);
 
-        String timestamp = "timestamp=" + System.currentTimeMillis();
         // 拼接url。仅限于权限为公共读
-        String original = domainName + "/" + objectName + "?" + timestamp; // 原图
-        String thumb = original + "&x-oss-process=style/face_img"; // 缩略图
+        String original = domainName + "/" + objectName; // 原图
+        String thumb = original + "?x-oss-process=style/face_img"; // 缩略图
 
         return new String[]{original, thumb};
     }
