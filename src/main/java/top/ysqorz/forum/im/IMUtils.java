@@ -1,6 +1,5 @@
 package top.ysqorz.forum.im;
 
-import cn.hutool.core.util.ObjectUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.timeout.IdleState;
@@ -8,15 +7,14 @@ import io.netty.util.AttributeKey;
 import lombok.Getter;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
 import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 
+import javax.annotation.PostConstruct;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -24,7 +22,6 @@ import java.security.NoSuchAlgorithmException;
  * @create 2022-01-25 19:12
  */
 @Component
-@DependsOn("server-org.springframework.boot.autoconfigure.web.ServerProperties")
 public class IMUtils {
     public static final AttributeKey<String> TOKEN_KEY = AttributeKey.valueOf("token");
     public static final AttributeKey<String> GROUP_ID_KEY = AttributeKey.valueOf("groupId");
@@ -37,16 +34,18 @@ public class IMUtils {
     private static String WebContextPath;
     @Getter
     private static int WebSocketPort;
+    private Environment environment;
 
     @Autowired
-    private IMUtils(ServerProperties serverProperties) {
-        IMUtils.WebPort = serverProperties.getPort();
-        IMUtils.WebContextPath = ObjectUtil.defaultIfEmpty(serverProperties.getServlet().getContextPath(), "");
+    private void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 
-    @Value("${web-socket.port}")
-    private void setWebSocketPort(int webSocketPort) {
-        IMUtils.WebSocketPort = webSocketPort;
+    @PostConstruct
+    private void init() {
+        IMUtils.WebPort = environment.getProperty("server.port", int.class, 0);
+        IMUtils.WebContextPath = environment.getProperty("server.servlet.context-path", String.class, "");
+        IMUtils.WebSocketPort = environment.getProperty("web-socket.port", int.class, 0);
     }
 
     public static String getWebServer() {
