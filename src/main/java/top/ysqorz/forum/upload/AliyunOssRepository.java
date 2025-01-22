@@ -1,9 +1,11 @@
 package top.ysqorz.forum.upload;
 
+import cn.hutool.core.util.StrUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import top.ysqorz.forum.utils.DateTimeUtils;
 
 import java.io.InputStream;
 
@@ -17,7 +19,9 @@ public class AliyunOssRepository extends OssUploadRepository {
 
     @Override
     public String[] uploadImage(InputStream inputStream, String filename) {
-        String objectName = "images/" + filename;
+        String yearMonth = DateTimeUtils.formatNow(DateTimeUtils.MONTH_WITHOUT_BAR);
+        // oss只认斜杠，与操作系统的文件路径分隔符无关
+        String objectName = StrUtil.join("/", "images", yearMonth, filename);
         upload(inputStream, objectName);
 
         String timestamp = "timestamp=" + System.currentTimeMillis();

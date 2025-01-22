@@ -14,6 +14,24 @@ import java.util.Date;
  * @create 2021-04-21 15:29
  */
 public class DateTimeUtils {
+    public static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter MONTH = DateTimeFormatter.ofPattern("yyyy-MM");
+    public static final DateTimeFormatter MONTH_WITHOUT_BAR = DateTimeFormatter.ofPattern("yyyyMM");
+
+    // 获取当天格式化后的日期。例：2021-07-02
+    public static String getFormattedDate() {
+        return LocalDate.now().format(DATE);
+    }
+
+    // 获取当天格式化后的日期(精确到秒)。例：2021-07-04 20:17:20
+    public static String getFormattedTime() {
+        return LocalDateTime.now().format(TIME);
+    }
+
+    public static String formatNow(DateTimeFormatter formatter) {
+        return LocalDateTime.now().format(formatter);
+    }
 
     // LocalDateTime => Instant
     public static Instant toInstant(LocalDateTime dateTime) {
@@ -36,10 +54,6 @@ public class DateTimeUtils {
         return unit.between(early, late);
     }
 
-    // 获取当天格式化后的日期。例：2021-07-02
-    public static String getFormattedDate() {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now());
-    }
 
 
     // 距离下一天凌晨，还有多长时间（可精确到纳秒）
@@ -70,12 +84,6 @@ public class DateTimeUtils {
         // 下周一凌晨的时间，LocalDateTime.of(日期, 时间)
         LocalDateTime nextWeek = LocalDateTime.of(nextMonday, LocalTime.MIN);
         return Duration.between(LocalDateTime.now(), nextWeek);
-    }
-
-    // 获取当天格式化后的日期(精确到秒)。例：2021-07-04 20:17:20
-    public static String getFormattedTime() {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
-
     }
 
 }

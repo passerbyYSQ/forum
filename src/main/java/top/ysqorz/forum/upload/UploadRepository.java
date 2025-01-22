@@ -1,5 +1,6 @@
 package top.ysqorz.forum.upload;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -13,12 +14,12 @@ public interface UploadRepository {
      * @param filename      文件名。包含后缀
      * @return
      */
-    String[] uploadImage(InputStream inputStream, String filename);
+    String[] uploadImage(InputStream inputStream, String filename) throws IOException;
 
     /**
      * @param inputStream
      * @param filePath      文件的完整路径
      */
-    void upload(InputStream inputStream, String filePath);
+    void upload(InputStream inputStream, String filePath) throws IOException;
 
 }
