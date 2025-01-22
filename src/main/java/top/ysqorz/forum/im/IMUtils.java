@@ -21,7 +21,7 @@ import java.security.NoSuchAlgorithmException;
  * @author passerbyYSQ
  * @create 2022-01-25 19:12
  */
-@Component
+@Component("IMUtils")
 public class IMUtils {
     public static final AttributeKey<String> TOKEN_KEY = AttributeKey.valueOf("token");
     public static final AttributeKey<String> GROUP_ID_KEY = AttributeKey.valueOf("groupId");
@@ -43,9 +43,12 @@ public class IMUtils {
 
     @PostConstruct
     private void init() {
-        IMUtils.WebPort = environment.getProperty("server.port", int.class, 0);
+        IMUtils.WebPort = environment.getProperty("server.port", int.class, -1);
         IMUtils.WebContextPath = environment.getProperty("server.servlet.context-path", String.class, "");
-        IMUtils.WebSocketPort = environment.getProperty("web-socket.port", int.class, 0);
+        IMUtils.WebSocketPort = environment.getProperty("web-socket.port", int.class, -1);
+        if (WebPort < 0 || WebSocketPort < 0) {
+            throw new RuntimeException("Failed to get service port configuration");
+        }
     }
 
     public static String getWebServer() {
