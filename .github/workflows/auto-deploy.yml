@@ -3,16 +3,16 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - test/test-cicd
+      - master
   pull_request:
     branches:
-      - test/test-cicd
+      - master
 
 jobs:
   build:
     name: Build Project
     runs-on: ubuntu-24.04
-    if: ${{ github.ref == 'refs/heads/test/test-cicd' && !startsWith(github.event.head_commit.message, 'draft') && !startsWith(github.event.pull_request.title, 'draft') }}
+    if: ${{ github.ref == 'refs/heads/master' && !startsWith(github.event.head_commit.message, 'draft') && !startsWith(github.event.pull_request.title, 'draft') }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
