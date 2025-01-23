@@ -43,6 +43,7 @@ jobs:
       with:
         name: forum-${{ env.VERSION }}.jar
         path: target/forum-${{ env.VERSION }}.jar
+
     outputs:
       VERSION: ${{ steps.parse_version.outputs.VERSION }}
 
@@ -50,11 +51,13 @@ jobs:
     name: Deploy to Server
     runs-on: ubuntu-24.04
     needs: build
+    env:
+      VERSION: ${{ needs.build.outputs.VERSION }}
     steps:
     - name: Download the JAR file from build job
       uses: actions/download-artifact@v4
       with:
-        name: forum-${{ needs.build.outputs.VERSION }}.jar
+        name: forum-${{ env.VERSION }}.jar
         path: ./
 
     - name: Upload the JAR file to server
@@ -63,7 +66,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
-        source: forum-${{ needs.build.outputs.VERSION }}.jar
+        source: forum-${{ env.VERSION }}.jar
         target: /root/project/forum
 
     - name: Start Service
@@ -76,5 +79,5 @@ jobs:
           cd /root/project/forum
           jps -l | grep -E -i 'forum' | awk '{print "kill "$1}' | sh
           rm -rf logs
-          nohup java -jar forum-${{ needs.build.outputs.VERSION }}.jar --spring.profiles.active=dev >/dev/null 2>&1 &
-          echo 'forum-${{ needs.build.outputs.VERSION }} service started successfully.'
+          nohup java -jar forum-${{ env.VERSION }}.jar --spring.profiles.active=dev >/dev/null 2>&1 &
+          echo 'forum-${{ env.VERSION }} service started successfully.'
