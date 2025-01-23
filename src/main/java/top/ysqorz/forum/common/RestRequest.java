@@ -1,27 +1,24 @@
 package top.ysqorz.forum.common;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
-import top.ysqorz.forum.config.RestTemplateLogger;
-import top.ysqorz.forum.utils.CommonUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author passerbyYSQ
  * @create 2022-11-08 22:46
  */
+@Slf4j
 public class RestRequest {
     private String url;
     private MultiValueMap<String, String> header;
@@ -77,6 +74,9 @@ public class RestRequest {
         Object body = ObjectUtils.isEmpty(requestBody) ? formData : requestBody;
         HttpEntity<Object> httpEntity = new HttpEntity<>(body, header);
         ResponseEntity<T> response = restTemplate.exchange(completedUrl, HttpMethod.POST, httpEntity, clazz, params);
+        if (!HttpStatus.OK.equals(response.getStatusCode())) {
+            log.error("HTTP request failed: {}", response);
+        }
         return response.getBody();
     }
 

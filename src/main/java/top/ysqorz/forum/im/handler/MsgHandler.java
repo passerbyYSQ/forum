@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import org.springframework.core.ResolvableType;
+import org.springframework.http.HttpHeaders;
 import top.ysqorz.forum.common.RestRequest;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.*;
@@ -93,17 +94,19 @@ public abstract class MsgHandler<DataType> {
         IMService imService = SpringUtils.getBean(IMService.class);
         Set<String> imServers = new HashSet<>(imService.getIMServerIpList()); // web servers
         // 分发到各个服务器，然后进行推送
+        //log.info("Msg: {}", JsonUtils.objToJson(msg));
+        //log.info("Channel Located Servers: {}", servers);
+        //log.info("IM Servers: {}", imServers);
         for (String server : servers) {
             if (imServers.contains(server)) { // 如果服务是正常，才转发
-                String api = String.format("http://%s/im/push", server); // TODO 如果设置了context-path，此处需要改动
+                String api = String.format("http://%s/im/push%s", server, IMUtils.getWebContextPath());
                 RestRequest restRequest = RestRequest.builder().url(api)
-                        .addHeader("token", token)
+                        .addHeader(HttpHeaders.AUTHORIZATION, token)
                         .body(msg);
                 if (sourceChannelId != null) {
                     restRequest.addParam("channelId", sourceChannelId);
                 }
-                JSONObject res = restRequest.post(JSONObject.class);
-                log.info(JsonUtils.objToJson(res));
+                restRequest.post(JSONObject.class);
             }
         }
     }

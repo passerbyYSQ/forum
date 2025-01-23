@@ -24,6 +24,9 @@ mybatis:
 server:
   port: 8080
 
+web-socket:
+  port: 8081
+
 # 自定义配置
 # osss配置
 upload:

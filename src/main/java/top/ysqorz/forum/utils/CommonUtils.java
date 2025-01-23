@@ -1,5 +1,6 @@
 package top.ysqorz.forum.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
  * @author passerbyYSQ
  * @create 2021-06-19 23:15
  */
+@Slf4j
 public class CommonUtils {
 
     private static final Safelist safeList = Safelist.basicWithImages();
@@ -72,7 +74,7 @@ public class CommonUtils {
         try {
             return URLEncoder.encode(str, "UTF-8").replaceAll("\\+", "%20");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log.error("URL encode failed", e);
             return null;
         }
     }
@@ -96,7 +98,7 @@ public class CommonUtils {
         try {
             httpResponse.getWriter().print(JsonUtils.objToJson(result));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Write json to response failed", e);
         }
     }
 
@@ -140,7 +142,7 @@ public class CommonUtils {
         try {
             url = HtmlUtils.htmlUnescape(URLDecoder.decode(url, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log.error("Get url params failed", e);
         }
         Pattern pattern = Pattern.compile("(^|\\?|&)" + name + "=([^&]*)(&|$)");
         Matcher matcher = pattern.matcher(url);
@@ -179,26 +181,52 @@ public class CommonUtils {
         return finalIp.map(String::trim).orElse("");
     }
 
-    public static String getLocalIp() {
+    public static boolean isVirtualInterface(NetworkInterface netInterface) throws SocketException {
+        String name = netInterface.getName().toLowerCase(Locale.ROOT);
+        String displayName = netInterface.getDisplayName().toLowerCase(Locale.ROOT);
+        return netInterface.isLoopback() ||
+                netInterface.isPointToPoint() ||
+                netInterface.isVirtual() ||
+                name.contains("veth") ||
+                name.contains("docker") ||
+                displayName.contains("virtual") ||
+                displayName.contains("vmware");
+    }
+
+    public static String getLocalHostStr() {
+        return getLocalHost().getHostAddress();
+    }
+
+    public static InetAddress getLocalHost() {
         try {
             Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
-            InetAddress ip;
+            InetAddress candidate = null;
             while (allNetInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = allNetInterfaces.nextElement();
-                if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) {
+                if (!netInterface.isUp() || isVirtualInterface(netInterface)) {
                     continue;
                 }
                 Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
                 while (addresses.hasMoreElements()) {
-                    ip = addresses.nextElement();
-                    if (ip instanceof Inet4Address) {
-                        return ip.getHostAddress();
+                    InetAddress ipAddr = addresses.nextElement();
+                    if (!(ipAddr instanceof Inet4Address)) {
+                        continue;
+                    }
+                    if (!ipAddr.isSiteLocalAddress()) {
+                        // 非地区本地地址，指10.0.0.0 ~ 10.255.255.255、172.16.0.0 ~ 172.31.255.255、192.168.0.0 ~ 192.168.255.255
+                        return ipAddr;
+                    } if (Objects.isNull(candidate)) {
+                        // 取第一个匹配的地址
+                        candidate = ipAddr;
                     }
                 }
             }
+            if (Objects.nonNull(candidate)) {
+                return candidate;
+            }
+            return InetAddress.getLocalHost();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return "";
     }
 }

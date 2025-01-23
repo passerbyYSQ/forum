@@ -4,10 +4,10 @@ import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ForumApplicationTests {
+public class ForumApplicationTest {
 
 	@Test
-	void contextLoads() {
+    public void contextLoads() {
 	}
 
 }

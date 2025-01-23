@@ -11,7 +11,7 @@
     </parent>
 	<groupId>top.ysqorz</groupId>
 	<artifactId>forum</artifactId>
-	<version>v1.0</version>
+	<version>1.1.0</version>
 	<!-- 打包方式为war包	-->
 	<packaging>jar</packaging>
 	<name>forum</name>
