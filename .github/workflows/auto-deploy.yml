@@ -31,7 +31,8 @@ jobs:
     - name: Parse version from pom.xml
       id: parse_version
       run: |
-        echo "VERSION=$(mvn help:evaluate -Dexpression='project.version' -q -DforceStdout)" >> $GITHUB_ENV
+        VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Build JAR with Maven
@@ -42,6 +43,8 @@ jobs:
       with:
         name: forum-${{ env.VERSION }}.jar
         path: target/forum-${{ env.VERSION }}.jar
+    outputs:
+      VERSION: ${{ steps.parse_version.outputs.VERSION }}
 
   deploy:
     name: Deploy to Server
@@ -51,7 +54,7 @@ jobs:
     - name: Download the JAR file from build job
       uses: actions/download-artifact@v4
       with:
-        name: forum-${{ steps.parse_version.outputs.VERSION }}.jar
+        name: forum-${{ needs.build.outputs.VERSION }}.jar
         path: ./
 
     - name: Upload the JAR file to server
@@ -60,7 +63,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
-        source: forum-${{ steps.parse_version.outputs.VERSION }}.jar
+        source: forum-${{ needs.build.outputs.VERSION }}.jar
         target: /root/project/forum
 
     - name: Start Service
@@ -73,5 +76,5 @@ jobs:
           cd /root/project/forum
           jps -l | grep -E -i 'forum' | awk '{print "kill "$1}' | sh
           rm -rf logs
-          nohup java -jar forum-${{ steps.parse_version.outputs.VERSION }}.jar --spring.profiles.active=dev >/dev/null 2>&1 &
-          echo 'forum-${{ steps.parse_version.outputs.VERSION }} service started successfully.'
+          nohup java -jar forum-${{ needs.build.outputs.VERSION }}.jar --spring.profiles.active=dev >/dev/null 2>&1 &
+          echo 'forum-${{ needs.build.outputs.VERSION }} service started successfully.'
