@@ -28,24 +28,36 @@ jobs:
       with:
         maven-version: '3.8.4'
 
+    - name: Parse version from pom.xml
+      id: parse_version
+      run: |
+        VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
     - name: Build JAR with Maven
       run: mvn clean package -DskipTests=true -U
 
     - name: Upload the JAR file as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: forum-v1.0.jar
-        path: target/forum-v1.0.jar
+        name: forum-${{ env.VERSION }}.jar
+        path: target/forum-${{ env.VERSION }}.jar
+
+    outputs:
+      VERSION: ${{ steps.parse_version.outputs.VERSION }}
 
   deploy:
     name: Deploy to Server
     runs-on: ubuntu-24.04
     needs: build
+    env:
+      VERSION: ${{ needs.build.outputs.VERSION }}
     steps:
     - name: Download the JAR file from build job
       uses: actions/download-artifact@v4
       with:
-        name: forum-v1.0.jar
+        name: forum-${{ env.VERSION }}.jar
         path: ./
 
     - name: Upload the JAR file to server
@@ -54,7 +66,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
-        source: forum-v1.0.jar
+        source: forum-${{ env.VERSION }}.jar
         target: /root/project/forum
 
     - name: Start Service
@@ -67,5 +79,5 @@ jobs:
           cd /root/project/forum
           jps -l | grep -E -i 'forum' | awk '{print "kill "$1}' | sh
           rm -rf logs
-          nohup java -jar forum-v1.0.jar --spring.profiles.active=dev >/dev/null 2>&1 &
-          echo 'forum-v1.0 service started successfully.'
+          nohup java -jar forum-${{ env.VERSION }}.jar --spring.profiles.active=dev >/dev/null 2>&1 &
+          echo 'forum-${{ env.VERSION }} service started successfully.'
