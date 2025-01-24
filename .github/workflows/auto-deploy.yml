@@ -12,7 +12,7 @@ jobs:
   build:
     name: Build Project
     runs-on: ubuntu-24.04
-    if: ${{ github.ref == 'refs/heads/master' && !startsWith(github.event.head_commit.message, 'draft') && !startsWith(github.event.pull_request.title, 'draft') }}
+    if: ${{ !startsWith(github.event.head_commit.message, 'draft') && !startsWith(github.event.pull_request.title, 'draft') }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -39,6 +39,7 @@ jobs:
       run: mvn clean package -DskipTests=true -U
 
     - name: Upload the JAR file as artifact
+      if: github.ref == 'refs/heads/master'
       uses: actions/upload-artifact@v4
       with:
         name: forum-${{ env.VERSION }}.jar
@@ -50,6 +51,7 @@ jobs:
   deploy:
     name: Deploy to Server
     runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/master'
     needs: build
     env:
       VERSION: ${{ needs.build.outputs.VERSION }}
