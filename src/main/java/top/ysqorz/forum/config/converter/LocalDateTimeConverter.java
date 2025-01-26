@@ -3,6 +3,7 @@ package top.ysqorz.forum.config.converter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +19,7 @@ public class LocalDateTimeConverter implements Converter<String, LocalDateTime> 
 
     @Override
     public LocalDateTime convert(String source) {
-        return LocalDateTime.parse(source, DateTimeFormatter.ofPattern(dateTimePattern));
+        return ObjectUtils.isEmpty(source) ? null :
+                LocalDateTime.parse(source, DateTimeFormatter.ofPattern(dateTimePattern));
     }
 }

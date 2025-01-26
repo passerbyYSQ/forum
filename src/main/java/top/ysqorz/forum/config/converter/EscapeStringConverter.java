@@ -2,7 +2,7 @@ package top.ysqorz.forum.config.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -13,8 +13,8 @@ import org.springframework.web.util.HtmlUtils;
 public class EscapeStringConverter implements Converter<String, String> {
 
     @Override
-    public String convert(String s) {
-        return StringUtils.isEmpty(s) ? s : HtmlUtils.htmlEscape(s);
+    public String convert(String source) {
+        return ObjectUtils.isEmpty(source) ? source : HtmlUtils.htmlEscape(source);
     }
 
 }
