@@ -1,6 +1,7 @@
 package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelMap;
@@ -27,23 +28,20 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public class MsgCenter {
-    private MsgHandler first, tail; // handler链
-    private Set<String> addedMsgTypes = new HashSet<>();
-    private Map<String, ChannelMap> typeToChannels = new ConcurrentHashMap<>(); // channelType --> ChannelMap
-    private volatile AtomicInteger channelCount = new AtomicInteger(0);
-    private ThreadPoolExecutor dbExecutor;
+    private MsgHandler<?> first, tail; // handler链
+    private final Set<String> addedMsgTypes = new HashSet<>();
+    private final Map<String, ChannelMap> typeToChannels = new ConcurrentHashMap<>(); // channelType --> ChannelMap
+    private final AtomicInteger channelCount = new AtomicInteger(0);
+    private final ThreadPoolExecutor dbExecutor;
 
-    private static MsgCenter instance = new MsgCenter();
+    @Getter
+    private final static MsgCenter instance = new MsgCenter();
 
     private MsgCenter() {
         int corePoolSize = Runtime.getRuntime().availableProcessors() * 2;
         dbExecutor = new ThreadPoolExecutor(corePoolSize, corePoolSize, 10,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<>(2000));
         initInternalHandlers();
-    }
-
-    public static MsgCenter getInstance() {
-        return instance;
     }
 
     public synchronized MsgCenter addHandlerAtLast(MsgHandler handler) { // 链式调用
@@ -64,8 +62,8 @@ public class MsgCenter {
             typeToChannels.put(channelType, channelMap);
         }
 
-        handler.setChannelMap(channelMap);
-        handler.setDbExecutor(dbExecutor);
+        handler.channelMap = channelMap;
+        handler.dbExecutor = dbExecutor;
 
         tail.addBehind(handler);
         tail = handler;

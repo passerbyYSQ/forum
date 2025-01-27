@@ -3,9 +3,9 @@ package top.ysqorz.forum.im.handler;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Call;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
 import top.ysqorz.forum.common.RestRequest;
@@ -16,7 +16,6 @@ import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.utils.JsonUtils;
 import top.ysqorz.forum.utils.JwtUtils;
-import top.ysqorz.forum.utils.OkHttpUtils;
 import top.ysqorz.forum.utils.SpringUtils;
 
 import java.util.HashSet;
@@ -27,14 +26,15 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author passerbyYSQ
  * @create 2022-01-11 23:57
  */
-@Data
+@Getter
 @Slf4j
 public abstract class MsgHandler<DataType> {
     // 能够处理的消息类型
-    private MsgType msgType;
+    private final MsgType msgType;
     // 通道类型
-    private ChannelType channelType;
+    private final ChannelType channelType;
     // 下一个消息处理器
+    @Setter
     private MsgHandler<?> next;
     // 该类型消息的所有通道。子类使用
     protected ChannelMap channelMap;
@@ -158,7 +158,7 @@ public abstract class MsgHandler<DataType> {
 
     // data is completed
     protected void doSave(DataType data) {
-        AsyncInsertTask insertTask = createAsyncInsertTask(data);
+        AsyncInsertTask<DataType> insertTask = createAsyncInsertTask(data);
         if (insertTask == null) {
             return;
         }
@@ -173,7 +173,7 @@ public abstract class MsgHandler<DataType> {
         return null;
     }
 
-    protected AsyncInsertTask createAsyncInsertTask(DataType data) {
+    protected AsyncInsertTask<DataType> createAsyncInsertTask(DataType data) {
         return null;
     }
 
@@ -207,21 +207,4 @@ public abstract class MsgHandler<DataType> {
      */
     protected abstract boolean doHandle0(DataType data, Channel channel);
 
-    class PushApiCallback implements OkHttpUtils.ApiCallback {
-        DataType data;
-
-        PushApiCallback(DataType data) {
-            this.data = data;
-        }
-
-        @Override
-        public void onSucceed(Call call, String bodyJson) {
-            log.info(bodyJson);
-        }
-
-        @Override
-        public void onFailed(Call call, String errorMsg) {
-            log.error(errorMsg);
-        }
-    }
 }

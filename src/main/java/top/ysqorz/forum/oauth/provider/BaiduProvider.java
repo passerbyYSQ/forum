@@ -9,8 +9,6 @@ import top.ysqorz.forum.common.enumeration.Gender;
 import top.ysqorz.forum.oauth.AbstractOauthProvider;
 import top.ysqorz.forum.oauth.dto.BaiduUserDTO;
 import top.ysqorz.forum.po.User;
-import top.ysqorz.forum.utils.JsonUtils;
-import top.ysqorz.forum.utils.OkHttpUtils;
 
 /**
  * <a href="https://pan.baidu.com/union/doc/0ksg0sbig">...</a>

@@ -7,9 +7,9 @@ import top.ysqorz.forum.common.BaseMapper;
  * @create 2022-01-16 1:03
  */
 public class AsyncInsertTask<T> implements Runnable { // T：PO的类型
-    private BaseMapper<T> mapper;
-    private T data;
-    private int retryCount;
+    private final BaseMapper<T> mapper;
+    private final T data;
+    private final int retryCount;
 
     public AsyncInsertTask(BaseMapper<T> mapper, T data) {
         this(mapper, data, 3);

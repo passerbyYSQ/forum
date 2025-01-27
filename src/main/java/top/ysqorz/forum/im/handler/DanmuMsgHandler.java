@@ -31,7 +31,7 @@ public class DanmuMsgHandler extends NonFunctionalMsgHandler<DanmuMsg> {
     }
 
     @Override
-    protected AsyncInsertTask createAsyncInsertTask(DanmuMsg danmu) {
+    protected AsyncInsertTask<DanmuMsg> createAsyncInsertTask(DanmuMsg danmu) {
         DanmuMsgMapper mapper = SpringUtils.getBean(DanmuMsgMapper.class);
         return new AsyncInsertTask<>(mapper, danmu);
     }

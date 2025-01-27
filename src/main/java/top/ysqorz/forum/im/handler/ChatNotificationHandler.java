@@ -58,7 +58,7 @@ public class ChatNotificationHandler extends NonFunctionalMsgHandler<ChatNotific
     }
 
     @Override
-    protected AsyncInsertTask createAsyncInsertTask(ChatNotificationDTO data) {
+    protected AsyncInsertTask<ChatNotificationDTO> createAsyncInsertTask(ChatNotificationDTO data) {
         return null;
     }
 }

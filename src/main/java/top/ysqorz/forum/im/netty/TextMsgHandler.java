@@ -20,7 +20,7 @@ import top.ysqorz.forum.utils.JsonUtils;
 @Slf4j
 public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
         JsonNode msgNode = JsonUtils.jsonToNode(frame.text());
         if (msgNode == null || !msgNode.has("msgType") || !msgNode.has("channelType")) {
             return;
@@ -32,13 +32,14 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         MsgCenter.getInstance().unBind(ctx.channel());
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        log.error("Channel error", cause);
+        ctx.close();
     }
 
 }

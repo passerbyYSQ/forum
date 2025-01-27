@@ -4,7 +4,6 @@ import top.ysqorz.forum.dao.ChatFriendMsgMapper;
 import top.ysqorz.forum.im.entity.AsyncInsertTask;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.entity.OnOffLineAware;
 import top.ysqorz.forum.po.ChatFriendMsg;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.SpringUtils;
@@ -33,7 +32,7 @@ public class ChatFriendMsgHandler extends NonFunctionalMsgHandler<ChatFriendMsg>
     }
 
     @Override
-    protected AsyncInsertTask createAsyncInsertTask(ChatFriendMsg msg) {
+    protected AsyncInsertTask<ChatFriendMsg> createAsyncInsertTask(ChatFriendMsg msg) {
         ChatFriendMsgMapper mapper = SpringUtils.getBean(ChatFriendMsgMapper.class);
         return new AsyncInsertTask<>(mapper, msg);
     }
