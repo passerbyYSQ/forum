@@ -1,4 +1,4 @@
-package top.ysqorz.forum.im.handler;
+package top.ysqorz.forum.im;
 
 import java.util.Iterator;
 
@@ -17,19 +17,21 @@ public interface MsgHandlerPipeline extends Iterable<MsgHandler<?>>, Iterator<Ms
 
     MsgHandlerPipeline addHandlerAtTail(MsgHandler<?> handler);
 
-    MsgHandlerPipeline addHandlerBefore(MsgHandler<?> baseHandler, MsgHandler<?> newHandler);
-
-    MsgHandlerPipeline addHandlerAfter(MsgHandler<?> baseHandler, MsgHandler<?> newHandler);
-
-    MsgHandler<?> findPrevHandler(MsgHandler<?> handler);
-
-    boolean exist(MsgHandler<?> handler);
+    MsgHandlerPipeline addHandlerAtIndex(int index, MsgHandler<?> handler);
 
     MsgHandler<?> getHeadHandler();
 
     MsgHandler<?> getTailHandler();
 
+    MsgHandler<?> getHandler(int index);
+
     void removeHandler(MsgHandler<?> handler);
 
+    void removeHandler(int index);
+
+    boolean exist(MsgHandler<?> handler);
+
     boolean isEmpty();
+
+    int size();
 }

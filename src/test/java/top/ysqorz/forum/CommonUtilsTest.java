@@ -1,6 +1,9 @@
 package top.ysqorz.forum;
 
 import org.junit.Test;
+import top.ysqorz.forum.im.handler.LinkedListMsgHandlerPipeline;
+import top.ysqorz.forum.im.MsgHandler;
+import top.ysqorz.forum.im.MsgHandlerPipeline;
 import top.ysqorz.forum.im.handler.*;
 import top.ysqorz.forum.utils.CommonUtils;
 
@@ -20,8 +23,8 @@ public class CommonUtilsTest {
 
     @Test
     public void testMsgHandlerPipeline() {
-        MsgHandlerPipeline pipeline = new SimpleMsgHandlerPipeline();
-        pipeline.addHandler(new BindMsgHandler())
+        MsgHandlerPipeline pipeline = new LinkedListMsgHandlerPipeline();
+        pipeline.addHandler(new BindMsgHandler(null))
                 .addHandler(new PingPongMsgHandler())
                 .addHandler(new DanmuMsgHandler())
                 .addHandler(new ChatFriendMsgHandler())

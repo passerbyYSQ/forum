@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.MsgCenter;
+import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.utils.JsonUtils;
 
 /**
@@ -28,12 +28,12 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
         String msgType = msgNode.get("msgType").asText();
         String channelType = msgNode.get("channelType").asText();
         MsgModel msg = new MsgModel(MsgType.valueOf(msgType), ChannelType.valueOf(channelType), msgNode.get("data"));
-        MsgCenter.getInstance().handle(msg, ctx.channel());
+        MsgCenterImpl.getInstance().handle(msg, ctx.channel());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        MsgCenter.getInstance().unBind(ctx.channel());
+        MsgCenterImpl.getInstance().unBind(ctx.channel());
     }
 
     @Override

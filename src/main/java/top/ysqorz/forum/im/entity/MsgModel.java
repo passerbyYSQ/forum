@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 
+import java.util.Objects;
+
 /**
  * @author passerbyYSQ
  * @create 2021-02-05 22:31
@@ -37,8 +39,12 @@ public class MsgModel {
     }
 
     // 不要以getXx开头，否则objectMapper在序列化为json的时候会认为是一个属性
-    public JsonNode transformToDataNode() {
+    public JsonNode transform2DataNode() {
         return data instanceof JsonNode ? (JsonNode) data : JsonUtils.objToNode(data);
+    }
+
+    public <T> T castData(Class<T> clazz) {
+        return Objects.isNull(data) ? null : clazz.cast(data);
     }
 
     public boolean check() {

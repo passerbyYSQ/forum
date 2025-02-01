@@ -19,7 +19,7 @@ import top.ysqorz.forum.dto.resp.chat.*;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.MsgCenter;
+import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.ChatService;
 import top.ysqorz.forum.service.RedisService;
@@ -282,7 +282,7 @@ public class ChatServiceImpl implements ChatService {
                 .setAction("msg_box")
                 .addPayload("count", this.getMsgBoxMsgCount(userId));
         MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
-        MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+        MsgCenterImpl.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
     }
 
     @Override
@@ -331,7 +331,7 @@ public class ChatServiceImpl implements ChatService {
                         .addPayload("groupid", ObjectUtils.isEmpty(toGroupId) ? -1 : toGroupId)
                         .addPayload("status", "online"); // 由于我正在处理该申请，因此我肯定在线
                 MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
-                MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+                MsgCenterImpl.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
                 // 推送消息盒子数量变化
                 this.pushMsgBoxCount(apply.getSenderId());
                 // 返回对方的在线状态
@@ -475,7 +475,7 @@ public class ChatServiceImpl implements ChatService {
                 .setSenderId(myId)
                 .setAction("delete_friend");
         MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
-        MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+        MsgCenterImpl.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
         return StatusCode.SUCCESS;
     }
 
@@ -493,7 +493,7 @@ public class ChatServiceImpl implements ChatService {
                 .setCreateTime(LocalDateTime.now())
                 .setSignFlag((byte) 0);
         MsgModel msgModel = new MsgModel(MsgType.CHAT_FRIEND, ChannelType.CHAT, msg);
-        MsgCenter.getInstance().remoteDispatch(msgModel, sourceChannelId, ShiroUtils.getToken());
+        MsgCenterImpl.getInstance().remoteDispatch(msgModel, sourceChannelId, ShiroUtils.getToken());
         return StatusCode.SUCCESS;
     }
 

@@ -1,6 +1,5 @@
 package top.ysqorz.forum.controller;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +8,8 @@ import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.MsgCenter;
+import top.ysqorz.forum.im.handler.FakeChannel;
+import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
@@ -44,7 +44,7 @@ public class IMController {
         if (MsgType.isFunctionalType(MsgType.valueOf(msg.getMsgType()))) { // 如果非法type会抛出异常
             return StatusCode.NOT_SUPPORT_FUNC_TYPE;
         }
-        MsgCenter.getInstance().remoteDispatch(msg, channelId, ShiroUtils.getToken());
+        MsgCenterImpl.getInstance().handle(msg, new FakeChannel(channelId, ShiroUtils.getToken()));
         return StatusCode.SUCCESS;
     }
 
@@ -53,7 +53,7 @@ public class IMController {
      */
     @PostMapping("/push")
     public StatusCode pushMsg(@RequestBody MsgModel msg, String channelId) { // source channel
-        MsgCenter.getInstance().push(msg, channelId);
+        MsgCenterImpl.getInstance().push(msg, channelId);
         return StatusCode.SUCCESS;
     }
 
