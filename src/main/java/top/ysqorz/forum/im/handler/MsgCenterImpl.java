@@ -124,6 +124,9 @@ public class MsgCenterImpl implements MsgCenter {
     }
 
     private ChannelMap getChannelMap(String channelType) {
+        if (Objects.isNull(channelType)) {
+            return null;
+        }
         return typeToChannels.get(channelType);
     }
 

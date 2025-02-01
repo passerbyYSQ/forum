@@ -61,21 +61,22 @@ public abstract class AbstractMsgHandler<DataType> implements MsgHandler<DataTyp
             return false;
         }
         saveData(data);
-        msg.setData(data); // completed data
         return doHandle(msg, data, channel);
     }
 
     protected DataType transformData(MsgModel msg) {
         Class<DataType> clazz = getDataClass();
         if (MsgModel.class.isAssignableFrom(clazz)) {
-            return msg.castData(clazz);
+            return clazz.cast(msg);
         }
         // 转换data部分
         // 由于远程转发，序列化成Object对象后实际类型是LinkedHashMap，这个时候强转类型报错
         // java.lang.ClassCastException: Cannot cast java.util.LinkedHashMap to top.ysqorz.forum.po.DanmuMsg
         // clazz.cast(msg.getData());
         // 解决方法：LinkedHashMap => JsonNode => 指定类型
-        return JsonUtils.nodeToObj(msg.transform2DataNode(), clazz);
+        DataType data = JsonUtils.nodeToObj(msg.transform2DataNode(), clazz);
+        msg.setData(data); // completed data
+        return data;
     }
 
     @Override
