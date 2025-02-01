@@ -8,10 +8,8 @@ import top.ysqorz.forum.common.ResultModel;
 import top.ysqorz.forum.common.StatusCode;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.FakeChannel;
 import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.service.IMService;
-import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.JsonUtils;
 
 import javax.annotation.Resource;
@@ -44,7 +42,7 @@ public class IMController {
         if (MsgType.isFunctionalType(MsgType.valueOf(msg.getMsgType()))) { // 如果非法type会抛出异常
             return StatusCode.NOT_SUPPORT_FUNC_TYPE;
         }
-        MsgCenterImpl.getInstance().handle(msg, new FakeChannel(channelId, ShiroUtils.getToken()));
+        imService.handleMsg(msg, channelId);
         return StatusCode.SUCCESS;
     }
 

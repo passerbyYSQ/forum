@@ -13,7 +13,6 @@ import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.utils.SpringUtils;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -49,8 +48,8 @@ public abstract class RemoteMsgHandlerProxy<DataType> extends AbstractMsgHandler
                 RestRequest restRequest = RestRequest.builder().url(api)
                         .addHeader(HttpHeaders.AUTHORIZATION, token)
                         .body(msg);
-                if (Objects.nonNull(sourceChannel)) {
-                    String sourceChannelId = sourceChannel.id().asLongText();
+                String sourceChannelId = sourceChannel.id().asLongText();
+                if (!ObjectUtils.isEmpty(sourceChannelId)) {
                     restRequest.addParam("channelId", sourceChannelId);
                 }
                 restRequest.post(JSONObject.class);

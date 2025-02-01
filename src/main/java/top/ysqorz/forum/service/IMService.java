@@ -1,5 +1,7 @@
 package top.ysqorz.forum.service;
 
+import top.ysqorz.forum.im.entity.MsgModel;
+
 import java.util.List;
 
 /**
@@ -11,5 +13,7 @@ public interface IMService {
     List<String> getIMServerIpList();
 
     String getRandWsServerUrl();
+
+    void handleMsg(MsgModel msg, String sourceChannelId);
 
 }

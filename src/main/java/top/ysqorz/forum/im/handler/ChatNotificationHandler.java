@@ -48,7 +48,7 @@ public class ChatNotificationHandler extends RemoteMsgHandlerProxy<ChatNotificat
         for (Integer friendId : friendIdSet) {
             notification.setReceiverId(friendId);
             msgModel.setData(notification);
-            doHandle(msgModel, notification, null);
+            doHandle(msgModel, notification, channel);
         }
     }
 

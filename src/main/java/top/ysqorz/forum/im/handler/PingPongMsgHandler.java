@@ -16,7 +16,7 @@ public class PingPongMsgHandler extends AbstractMsgHandler<MsgModel> {
     }
 
     @Override
-    protected boolean doHandle(MsgModel msg, MsgModel data, Channel channel, String token) {
+    protected boolean doHandle(MsgModel msg, MsgModel data, Channel channel) {
         // 必须在TailHandler之前消费PING消息，否则PING消息会流指TailHandler导致channel被关闭
         channel.writeAndFlush(IMUtils.createTextFrame(MsgType.PONG));
         return true;

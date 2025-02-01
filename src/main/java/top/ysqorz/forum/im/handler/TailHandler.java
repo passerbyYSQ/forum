@@ -26,7 +26,7 @@ public class TailHandler extends AbstractMsgHandler<MsgModel> {
     }
 
     @Override
-    protected boolean doHandle(MsgModel msg, MsgModel data, Channel channel, String token) {
+    protected boolean doHandle(MsgModel msg, MsgModel data, Channel channel) {
         // 消息能流至最后一个处理器，只能说客户端建立了长连接后，没有进行绑定操作，就发送消息，从而导致未被消费
         // 此时认为长连接非法建立，强制关闭长连接
         // MsgCenter.getInstance().unBind(channel);

@@ -2,9 +2,13 @@ package top.ysqorz.forum.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.ysqorz.forum.im.entity.MsgModel;
+import top.ysqorz.forum.im.handler.FakeChannel;
+import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.middleware.ZkConnector;
 import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.RedisService;
+import top.ysqorz.forum.shiro.ShiroUtils;
 import top.ysqorz.forum.utils.RandomUtils;
 
 import javax.annotation.Resource;
@@ -33,5 +37,10 @@ public class IMServiceImpl implements IMService {
         int index = RandomUtils.generateInt(imServerIps.size());
         String ip = imServerIps.get(index);
         return zkConnector.getData(ZkConnector.PATH + "/" + ip);
+    }
+
+    @Override
+    public void handleMsg(MsgModel msg, String sourceChannelId) {
+        MsgCenterImpl.getInstance().handle(msg, new FakeChannel(sourceChannelId, ShiroUtils.getToken()));
     }
 }

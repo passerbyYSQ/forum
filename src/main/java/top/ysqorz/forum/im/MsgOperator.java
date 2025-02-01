@@ -14,7 +14,7 @@ public interface MsgOperator {
     boolean handle(MsgModel msg, Channel channel);
 
     /**
-     * 推送消息到客户端
+     * 在当前服务节点，推送消息到客户端
      */
     boolean push(MsgModel msg, String channelId);
 }
