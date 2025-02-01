@@ -56,6 +56,12 @@ oauth:
     redirect-uri: http://localhost:8080/user/oauth/baidu/callback
     po-field: baiduId
 
+  github:
+    client-id: Ov23lipJqqWX8TQD2opG
+    client-secret: 24ce15c35c830fe112a0cbed976f68ab68ce300f
+    redirect-uri: http://localhost:8080/user/oauth/github/callback
+    po-field: githubId
+
 # zookeeper配置
 zookeeper:
   curator:
