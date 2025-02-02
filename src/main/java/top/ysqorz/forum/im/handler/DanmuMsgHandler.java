@@ -20,14 +20,14 @@ public class DanmuMsgHandler extends RemoteMsgHandlerProxy<DanmuMsg> {
     }
 
     @Override
-    protected Set<String> queryServersChannelLocated(DanmuMsg danmu) {
+    protected Set<String> queryServersChannelLocated(DanmuMsg data) {
         RedisService redisService = SpringUtils.getBean(RedisService.class);
-        return redisService.getWsServers(getChannelType(), danmu.getVideoId().toString());
+        return redisService.getWsServers(getChannelType(), data.getVideoId().toString());
     }
 
     @Override
-    protected boolean doPush(DanmuMsg danmu, String sourceChannelId) {  // data is completed
-        getChannelMap().pushToGroup(getMsgType(), danmu, sourceChannelId, danmu.getVideoId().toString());
+    protected boolean doPush(DanmuMsg data, String sourceChannelId) {  // data is completed
+        getChannelMap().pushToGroup(getMsgType(), data, sourceChannelId, data.getVideoId().toString());
         return true;
     }
 

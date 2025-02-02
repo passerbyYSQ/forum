@@ -2,6 +2,7 @@ package top.ysqorz.forum.im.handler;
 
 import cn.hutool.json.JSONObject;
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.ObjectUtils;
 import top.ysqorz.forum.common.RestRequest;
@@ -19,6 +20,7 @@ import java.util.Set;
  * @author passerbyYSQ
  * @create 2025-02-02 0:44
  */
+@Slf4j
 public abstract class RemoteMsgHandlerProxy<DataType> extends AbstractMsgHandler<DataType> {
     public RemoteMsgHandlerProxy(MsgType msgType, ChannelType channelType) {
         super(msgType, channelType);

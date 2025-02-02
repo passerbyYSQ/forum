@@ -2,17 +2,32 @@ package top.ysqorz.forum.im.handler;
 
 import io.netty.channel.Channel;
 import top.ysqorz.forum.im.IMUtils;
+import top.ysqorz.forum.im.MsgCenter;
+import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
+
+import java.util.Objects;
 
 /**
  * @author passerbyYSQ
  * @create 2022-01-25 19:07
  */
 public class PingPongMsgHandler extends AbstractMsgHandler<MsgModel> {
+    private final MsgCenter msgCenter;
 
-    public PingPongMsgHandler() {
+    public PingPongMsgHandler(MsgCenter msgCenter) {
         super(MsgType.PING);
+        this.msgCenter = msgCenter;
+    }
+
+    @Override
+    public boolean support(MsgModel msg, Channel channel) {
+        if (!super.matchMsgType(msg)) {
+            return false;
+        }
+        ChannelMap channelMap = msgCenter.getChannelMap(msg.getChannelType());
+        return (Objects.nonNull(channelMap) && channelMap.isBound(channel));
     }
 
     @Override

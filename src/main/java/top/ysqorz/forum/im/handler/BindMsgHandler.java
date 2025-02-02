@@ -35,13 +35,13 @@ public class BindMsgHandler extends AbstractMsgHandler<MsgModel> {
         String groupId = dataNode.get("groupId").asText();
         ChannelType channelType = ChannelType.valueOf(data.getChannelType());
         String token = dataNode.get("token").asText();
+        if (Objects.nonNull(callback)) {
+            callback.bind(channelType, token, groupId, channel);
+        }
         // 回送channelId
         Map<String, String> result = new HashMap<>();
         result.put("channelId", channel.id().asLongText());
         channel.writeAndFlush(IMUtils.createTextFrame(MsgType.BIND, result));
-        if (Objects.nonNull(callback)) {
-            callback.bind(channelType, token, groupId, channel);
-        }
         return true; // 消费完成
     }
 

@@ -25,7 +25,7 @@ public class CommonUtilsTest {
     public void testMsgHandlerPipeline() {
         MsgHandlerPipeline pipeline = new LinkedListMsgHandlerPipeline();
         pipeline.addHandler(new BindMsgHandler(null))
-                .addHandler(new PingPongMsgHandler())
+                .addHandler(new PingPongMsgHandler(null))
                 .addHandler(new DanmuMsgHandler())
                 .addHandler(new ChatFriendMsgHandler())
                 .addHandler(new ChatNotificationHandler())

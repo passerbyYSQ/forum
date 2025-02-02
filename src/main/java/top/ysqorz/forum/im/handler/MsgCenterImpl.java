@@ -47,12 +47,13 @@ public class MsgCenterImpl implements MsgCenter {
     private void initInternalHandlers() {
         BindMsgHandler bindHandler = new BindMsgHandler(this);
         // 需要增加 PingPongMsgHandler，否则已经登录情况下Ping消息会流至TailHandler，导致通道关闭
-        PingPongMsgHandler pingPongHandler = new PingPongMsgHandler();
+        PingPongMsgHandler pingPongHandler = new PingPongMsgHandler(this);
         TailHandler tailHandler = new TailHandler();
 
         addedMsgTypes.add(bindHandler.getMsgType().name());
         addedMsgTypes.add(pingPongHandler.getMsgType().name());
 
+        // 这3个功能Handler没有ChannelType。所有的业务Handler将会添加到pingPongHandler和tailHandler之间
         pipeline.addHandler(bindHandler)
                 .addHandler(pingPongHandler)
                 .addHandler(tailHandler);
@@ -123,7 +124,8 @@ public class MsgCenterImpl implements MsgCenter {
         return false;
     }
 
-    private ChannelMap getChannelMap(String channelType) {
+    @Override
+    public ChannelMap getChannelMap(String channelType) {
         if (Objects.isNull(channelType)) {
             return null;
         }
