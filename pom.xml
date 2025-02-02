@@ -11,13 +11,17 @@
     </parent>
 	<groupId>top.ysqorz</groupId>
 	<artifactId>forum</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<!-- 打包方式为war包	-->
 	<packaging>jar</packaging>
 	<name>forum</name>
 	<description>旨在打造一个功能齐全的论坛。It is not a small project!</description>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+		<argLine>-Dfile.encoding=UTF-8</argLine>
 		<java.version>1.8</java.version>
         <netty.version>4.1.50.Final</netty.version>
 		<!-- 版本过高，连接时会出现两次报错，然后才连接成功 -->
