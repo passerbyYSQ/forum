@@ -54,8 +54,4 @@ public class BindMsgHandler extends AbstractMsgHandler<MsgModel> {
     public Class<MsgModel> getDataClass() {
         return MsgModel.class;
     }
-
-    public interface BindEventCallback {
-        void bind(ChannelType channelType, String token, String groupId, Channel channel);
-    }
 }

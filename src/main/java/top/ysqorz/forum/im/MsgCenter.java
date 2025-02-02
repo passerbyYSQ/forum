@@ -1,13 +1,14 @@
 package top.ysqorz.forum.im;
 
 import top.ysqorz.forum.im.entity.ChannelMap;
+import top.ysqorz.forum.im.handler.BindEventCallback;
 import top.ysqorz.forum.im.handler.BindMsgHandler;
 
 /**
  * @author passerbyYSQ
  * @create 2025-02-01 22:24
  */
-public interface MsgCenter extends MsgOperator, BindMsgHandler.BindEventCallback {
+public interface MsgCenter extends MsgOperator, BindEventCallback {
     /**
      * 添加消息处理器
      */

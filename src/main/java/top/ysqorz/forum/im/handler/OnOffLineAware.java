@@ -1,4 +1,4 @@
-package top.ysqorz.forum.im.entity;
+package top.ysqorz.forum.im.handler;
 
 
 import io.netty.channel.Channel;

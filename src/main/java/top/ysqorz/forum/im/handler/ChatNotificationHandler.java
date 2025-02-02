@@ -6,7 +6,6 @@ import top.ysqorz.forum.im.IMUtils;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.entity.OnOffLineAware;
 import top.ysqorz.forum.service.ChatService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.JwtUtils;

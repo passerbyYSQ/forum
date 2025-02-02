@@ -7,7 +7,6 @@ import top.ysqorz.forum.im.*;
 import top.ysqorz.forum.im.entity.ChannelMap;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
-import top.ysqorz.forum.im.entity.OnOffLineAware;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.utils.SpringUtils;
 
@@ -31,7 +30,7 @@ public class MsgCenterImpl implements MsgCenter {
     private final ThreadPoolExecutor executor;
     // 单例
     @Getter
-    private final static MsgCenterImpl instance = new MsgCenterImpl();
+    private final static MsgCenter instance = new MsgCenterImpl();
 
     private MsgCenterImpl() {
         int corePoolSize = Runtime.getRuntime().availableProcessors() * 2;
@@ -147,6 +146,7 @@ public class MsgCenterImpl implements MsgCenter {
         invokeOnOffLineAware(channelType, channel, "online");
     }
 
+    @Override
     public void unBind(Channel channel) {
         String channelType = IMUtils.getChannelTypeFromChannel(channel);
         ChannelMap channelMap = getChannelMap(channelType);

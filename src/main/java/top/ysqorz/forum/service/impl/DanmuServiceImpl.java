@@ -7,8 +7,6 @@ import top.ysqorz.forum.dao.DanmuMsgMapper;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.FakeChannel;
-import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.po.DanmuMsg;
 import top.ysqorz.forum.po.Video;
 import top.ysqorz.forum.service.DanmuService;

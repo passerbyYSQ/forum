@@ -1,4 +1,4 @@
-package top.ysqorz.forum.im.handler;
+package top.ysqorz.forum.im.entity;
 
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;

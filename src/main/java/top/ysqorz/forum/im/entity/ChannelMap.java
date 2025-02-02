@@ -4,7 +4,6 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.Data;
 import top.ysqorz.forum.im.IMUtils;
-import top.ysqorz.forum.im.handler.FakeChannel;
 
 import java.util.HashSet;
 import java.util.Map;

@@ -4,7 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.ysqorz.forum.im.entity.MsgModel;
-import top.ysqorz.forum.im.handler.FakeChannel;
+import top.ysqorz.forum.im.entity.FakeChannel;
 import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.middleware.ZkConnector;
 import top.ysqorz.forum.service.IMService;
