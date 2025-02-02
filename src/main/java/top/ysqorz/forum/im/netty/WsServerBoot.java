@@ -1,9 +1,8 @@
-package top.ysqorz.forum.im;
+package top.ysqorz.forum.im.netty;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import top.ysqorz.forum.im.netty.WebSocketServer;
 
 /**
  * 在IOC的容器的启动过程，当所有的bean都已经处理完成之后，spring ioc容器会有一个发布事件的动作。

@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.MsgCenter;
+import top.ysqorz.forum.im.handler.MsgCenterImpl;
 import top.ysqorz.forum.utils.JsonUtils;
 
 /**
@@ -20,7 +20,7 @@ import top.ysqorz.forum.utils.JsonUtils;
 @Slf4j
 public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
         JsonNode msgNode = JsonUtils.jsonToNode(frame.text());
         if (msgNode == null || !msgNode.has("msgType") || !msgNode.has("channelType")) {
             return;
@@ -28,17 +28,18 @@ public class TextMsgHandler extends SimpleChannelInboundHandler<TextWebSocketFra
         String msgType = msgNode.get("msgType").asText();
         String channelType = msgNode.get("channelType").asText();
         MsgModel msg = new MsgModel(MsgType.valueOf(msgType), ChannelType.valueOf(channelType), msgNode.get("data"));
-        MsgCenter.getInstance().handle(msg, ctx.channel());
+        MsgCenterImpl.getInstance().handle(msg, ctx.channel());
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        MsgCenter.getInstance().unBind(ctx.channel());
+    public void channelInactive(ChannelHandlerContext ctx) {
+        MsgCenterImpl.getInstance().unBind(ctx.channel());
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        log.error("Channel error", cause);
+        ctx.close();
     }
 
 }

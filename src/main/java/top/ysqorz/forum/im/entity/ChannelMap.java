@@ -7,6 +7,7 @@ import top.ysqorz.forum.im.IMUtils;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,10 +34,10 @@ public class ChannelMap {
         channel.attr(IMUtils.GROUP_ID_KEY).set(groupId);
         channel.attr(IMUtils.CHANNEL_TYPE_KEY).set(channelType.name());
         // 双重检测锁
-        Set<Channel> channels = channelMap.get(groupId);
-        if (channels == null) {
+        Set<Channel> channels;
+        if (Objects.isNull(channels = channelMap.get(groupId))) {
             synchronized (this) {
-                if (channels == null) {
+                if (Objects.isNull(channels = channelMap.get(groupId))) {
                     channels = new HashSet<>();
                     channelMap.put(groupId, channels);
                 }
@@ -76,6 +77,9 @@ public class ChannelMap {
 
     public boolean isBound(Channel channel) {
         String token = IMUtils.getTokenFromChannel(channel);
+        if (channel instanceof FakeChannel && Objects.nonNull(token)) {
+            return true;
+        }
         String channelType = IMUtils.getChannelTypeFromChannel(channel);
         String groupId = IMUtils.getGroupIdFromChannel(channel);
         if (token == null || channelType == null || groupId == null) {

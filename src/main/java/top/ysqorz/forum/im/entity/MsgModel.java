@@ -37,7 +37,7 @@ public class MsgModel {
     }
 
     // 不要以getXx开头，否则objectMapper在序列化为json的时候会认为是一个属性
-    public JsonNode transformToDataNode() {
+    public JsonNode transform2DataNode() {
         return data instanceof JsonNode ? (JsonNode) data : JsonUtils.objToNode(data);
     }
 

@@ -7,12 +7,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.server.ServerErrorException;
 import top.ysqorz.forum.common.Constant;
-import top.ysqorz.forum.im.handler.ChatFriendMsgHandler;
-import top.ysqorz.forum.im.handler.ChatNotificationHandler;
-import top.ysqorz.forum.im.handler.DanmuMsgHandler;
-import top.ysqorz.forum.im.handler.MsgCenter;
+import top.ysqorz.forum.im.handler.*;
 
 /**
  * @author passerbyYSQ
@@ -34,7 +30,7 @@ public class WebSocketServer implements ChannelFutureListener {
         return SingletonWSServer.instance; // 此时才会加载内部类，所以是懒汉式
     }
 
-    private ServerBootstrap server;
+    private final ServerBootstrap server;
 
     /**
      *
@@ -65,10 +61,10 @@ public class WebSocketServer implements ChannelFutureListener {
     }
 
     private void initMsgHandlers() {
-        MsgCenter.getInstance()
-                .addHandlerAtLast(new DanmuMsgHandler())
-                .addHandlerAtLast(new ChatFriendMsgHandler())
-                .addHandlerAtLast(new ChatNotificationHandler());
+        MsgCenterImpl.getInstance()
+                .addHandler(new DanmuMsgHandler())
+                .addHandler(new ChatFriendMsgHandler())
+                .addHandler(new ChatNotificationHandler());
     }
 }
 

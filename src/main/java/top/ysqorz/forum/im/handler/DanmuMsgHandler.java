@@ -14,25 +14,31 @@ import java.util.Set;
  * @author passerbyYSQ
  * @create 2022-01-15 23:02
  */
-public class DanmuMsgHandler extends NonFunctionalMsgHandler<DanmuMsg> {
+public class DanmuMsgHandler extends RemoteMsgHandlerProxy<DanmuMsg> {
     public DanmuMsgHandler() {
         super(MsgType.DANMU, ChannelType.DANMU);
     }
 
     @Override
-    protected Set<String> queryServersChannelLocated(DanmuMsg danmu) {
+    protected Set<String> queryServersChannelLocated(DanmuMsg data) {
         RedisService redisService = SpringUtils.getBean(RedisService.class);
-        return redisService.getWsServers(this.getChannelType(), danmu.getVideoId().toString());
+        return redisService.getWsServers(getChannelType(), data.getVideoId().toString());
     }
 
     @Override
-    protected void doPush(DanmuMsg danmu, String sourceChannelId) {  // data is completed
-        this.channelMap.pushToGroup(this.getMsgType(), danmu, sourceChannelId, danmu.getVideoId().toString());
+    protected boolean doPush(DanmuMsg data, String sourceChannelId) {  // data is completed
+        getChannelMap().pushToGroup(getMsgType(), data, sourceChannelId, data.getVideoId().toString());
+        return true;
     }
 
     @Override
-    protected AsyncInsertTask createAsyncInsertTask(DanmuMsg danmu) {
+    protected void saveData(DanmuMsg data) {
         DanmuMsgMapper mapper = SpringUtils.getBean(DanmuMsgMapper.class);
-        return new AsyncInsertTask<>(mapper, danmu);
+        getExecutor().execute(new AsyncInsertTask<>(mapper, data));
+    }
+
+    @Override
+    public Class<DanmuMsg> getDataClass() {
+        return DanmuMsg.class;
     }
 }

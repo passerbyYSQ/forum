@@ -19,9 +19,9 @@ import top.ysqorz.forum.dto.resp.chat.*;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.MsgCenter;
 import top.ysqorz.forum.po.*;
 import top.ysqorz.forum.service.ChatService;
+import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.service.UserService;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -51,6 +51,8 @@ public class ChatServiceImpl implements ChatService {
     private ChatFriendGroupMapper chatFriendGroupMapper;
     @Resource
     private ChatFriendMsgMapper chatFriendMsgMapper;
+    @Resource
+    private IMService imService;
 
     @Override
     public Set<Integer> getAllFriendUserIds(Integer userId) {
@@ -74,7 +76,7 @@ public class ChatServiceImpl implements ChatService {
         }
 
         List<ChatUserCardDTO> userCards = new ArrayList<>();
-        Page pageInfo = PageHelper.startPage(page, count); // 开启分页
+        Page<?> pageInfo = PageHelper.startPage(page, count); // 开启分页
         if (!ObjectUtils.isEmpty(accurateUser)) { // 能够精确查找到
             ChatUserCardDTO userCard = new ChatUserCardDTO(accurateUser);
             ChatFriend chatFriend = this.getMyChatFriendById(accurateUser.getId());
@@ -282,7 +284,7 @@ public class ChatServiceImpl implements ChatService {
                 .setAction("msg_box")
                 .addPayload("count", this.getMsgBoxMsgCount(userId));
         MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
-        MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+        imService.handleMsg(msgModel, null);
     }
 
     @Override
@@ -331,7 +333,7 @@ public class ChatServiceImpl implements ChatService {
                         .addPayload("groupid", ObjectUtils.isEmpty(toGroupId) ? -1 : toGroupId)
                         .addPayload("status", "online"); // 由于我正在处理该申请，因此我肯定在线
                 MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
-                MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+                imService.handleMsg(msgModel, null);
                 // 推送消息盒子数量变化
                 this.pushMsgBoxCount(apply.getSenderId());
                 // 返回对方的在线状态
@@ -475,7 +477,7 @@ public class ChatServiceImpl implements ChatService {
                 .setSenderId(myId)
                 .setAction("delete_friend");
         MsgModel msgModel = new MsgModel(MsgType.CHAT_NOTIFICATION, ChannelType.CHAT, notification);
-        MsgCenter.getInstance().remoteDispatch(msgModel, null, ShiroUtils.getToken());
+        imService.handleMsg(msgModel, null);
         return StatusCode.SUCCESS;
     }
 
@@ -493,7 +495,7 @@ public class ChatServiceImpl implements ChatService {
                 .setCreateTime(LocalDateTime.now())
                 .setSignFlag((byte) 0);
         MsgModel msgModel = new MsgModel(MsgType.CHAT_FRIEND, ChannelType.CHAT, msg);
-        MsgCenter.getInstance().remoteDispatch(msgModel, sourceChannelId, ShiroUtils.getToken());
+        imService.handleMsg(msgModel, null);
         return StatusCode.SUCCESS;
     }
 

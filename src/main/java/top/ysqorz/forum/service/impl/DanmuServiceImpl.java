@@ -7,10 +7,10 @@ import top.ysqorz.forum.dao.DanmuMsgMapper;
 import top.ysqorz.forum.im.entity.ChannelType;
 import top.ysqorz.forum.im.entity.MsgModel;
 import top.ysqorz.forum.im.entity.MsgType;
-import top.ysqorz.forum.im.handler.MsgCenter;
 import top.ysqorz.forum.po.DanmuMsg;
 import top.ysqorz.forum.po.Video;
 import top.ysqorz.forum.service.DanmuService;
+import top.ysqorz.forum.service.IMService;
 import top.ysqorz.forum.service.VideoService;
 import top.ysqorz.forum.shiro.LoginUser;
 import top.ysqorz.forum.shiro.ShiroUtils;
@@ -30,6 +30,8 @@ public class DanmuServiceImpl implements DanmuService {
     private VideoService videoService;
     @Resource
     private DanmuMsgMapper danmuMsgMapper;
+    @Resource
+    private IMService imService;
 
     @Override
     public List<DanmuMsg> getDanmuListByVideoId(Integer videoId) {
@@ -56,7 +58,7 @@ public class DanmuServiceImpl implements DanmuService {
                 .setCreateTime(LocalDateTime.now())
                 .setStartMs(Math.max(startMs, 0)); // 负数时做纠正
         MsgModel msg = new MsgModel(MsgType.DANMU, ChannelType.DANMU, danmu);
-        MsgCenter.getInstance().remoteDispatch(msg, sourceChannelId, ShiroUtils.getToken());
+        imService.handleMsg(msg, sourceChannelId);
         return StatusCode.SUCCESS;
     }
 }
