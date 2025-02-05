@@ -51,7 +51,7 @@ public class WebSocketServer implements ChannelFutureListener {
     }
 
     @Override
-    public void operationComplete(ChannelFuture future) throws Exception {
+    public void operationComplete(ChannelFuture future) {
         if (future.isSuccess()) {
             initMsgHandlers();
             log.info("Netty websocket server started asynchronously successfully");
