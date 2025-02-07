@@ -74,15 +74,11 @@
                 <a th:href="@{/user/reg}" target="_parent">注册</a>
             </li>
             <li class="layui-nav-item layui-hide-xs" th:if="!${loginUser.id}">
-                <a th:href="@{/user/oauth/github/authorize}" target="_parent" class="myiconfont icon-GitHub"
-                   style="font-size: 22px;"></a>
-            </li>
-            <li class="layui-nav-item layui-hide-xs" th:if="!${loginUser.id}">
                 <a th:href="@{/user/oauth/qq/authorize}" target="_parent" class="myiconfont icon-QQ"
                    style="font-size: 22px;"></a>
             </li>
             <li class="layui-nav-item layui-hide-xs" th:if="!${loginUser.id}">
-                <a th:href="@{/user/oauth/gitee/authorize}" target="_parent" class="myiconfont icon-Gitee"
+                <a th:href="@{/user/oauth/github/authorize}" target="_parent" class="myiconfont icon-GitHub"
                    style="font-size: 22px;"></a>
             </li>
             <!-- 登入后的状态 -->
