@@ -12,10 +12,7 @@ import top.ysqorz.forum.oauth.dto.GithubUserDTO;
 import top.ysqorz.forum.po.User;
 
 /**
- * <a href="https://pan.baidu.com/union/doc/0ksg0sbig">...</a>
- *
- * @author ligouzi
- * @create 2021-06-21 10:57
+ * github 三方登陆
  */
 @Component("github")
 @ConfigurationProperties(prefix = "oauth.github")
