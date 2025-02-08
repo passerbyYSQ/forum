@@ -12,13 +12,16 @@ import org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import top.ysqorz.forum.shiro.JwtAuthenticatingFilter;
 import top.ysqorz.forum.shiro.JwtCredentialsMatcher;
 import top.ysqorz.forum.shiro.JwtRealm;
 import top.ysqorz.forum.shiro.ShiroCacheManager;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.Collections;
 import java.util.Map;
@@ -79,6 +82,22 @@ public class ShiroConfig {
         factoryBean.setFilterChainDefinitionMap(chainDefinition.getFilterChainMap());
 
         return factoryBean;
+    }
+
+    /**
+     * <a href="https://github.com/apache/shiro/issues/1950">...</a>
+     */
+    @Bean
+    public FilterRegistrationBean<DelegatingFilterProxy> filterRegistrationBean() {
+        DelegatingFilterProxy _proxy = new DelegatingFilterProxy();
+        _proxy.setTargetBeanName("shiroFilterFactoryBean");
+        _proxy.setTargetFilterLifecycle(true);
+
+        FilterRegistrationBean<DelegatingFilterProxy> _registration = new FilterRegistrationBean<>();
+        _registration.setFilter(_proxy);
+        _registration.setAsyncSupported(true);
+        _registration.setDispatcherTypes(DispatcherType.ASYNC);
+        return _registration;
     }
 
     @Bean
