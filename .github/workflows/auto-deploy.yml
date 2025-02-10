@@ -80,6 +80,7 @@ jobs:
         script: |
           cd /root/project/forum
           jps -l | grep -E -i 'forum' | awk '{print "kill "$1}' | sh
+          docker exec redis redis-cli -a ${{ secrets.REDIS_PASSWORD }} FLUSHDB
           rm -rf logs
           nohup java -jar forum-${{ env.VERSION }}.jar --spring.profiles.active=dev >/dev/null 2>&1 &
           echo 'forum-${{ env.VERSION }} service started successfully.'
