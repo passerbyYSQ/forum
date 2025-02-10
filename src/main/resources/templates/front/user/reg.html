@@ -171,6 +171,9 @@
                             <button class="layui-btn layui-btn-fluid" lay-filter="register" lay-submit>一键注册</button>
                         </div>
                         <div class="layui-form-item login-oauth-group">
+                            <a th:href="@{/user/oauth/github/authorize}">
+                                <i class="myiconfont icon-GitHub" style="font-size: 26px;color:#000000;"></i>
+                            </a>&emsp;
                             <a th:href="@{/user/oauth/gitee/authorize}">
                                 <i class="myiconfont icon-Gitee" style="font-size: 26px;color:#d12f00;"></i>
                             </a>&emsp;

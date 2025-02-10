@@ -27,6 +27,7 @@
     <result column="gitee_id" jdbcType="VARCHAR" property="giteeId" />
     <result column="qq_id" jdbcType="VARCHAR" property="qqId" />
 	<result column="baidu_id" jdbcType="VARCHAR" property="baiduId" />
+	<result column="github_id" jdbcType="BIGINT" property="githubId" />
   </resultMap>
     <resultMap id="allUserAndRole" type="top.ysqorz.forum.dto.resp.UserDTO">
         <id column="id" jdbcType="INTEGER" property="id" />
