@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - test/test-update-version
   pull_request:
     branches:
-      - master
+      - test/test-update-version
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
 
     # 只有合并到master分支才执行pom.xml的自动升版
     - name: Update the version of pom.xml
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/test/test-update-version'
       run: |
         chmod +x ./update-version.sh
         ./update-version.sh
