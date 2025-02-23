@@ -8,6 +8,7 @@ changed_module_paths=$(git diff --name-only HEAD^ HEAD | grep 'src/' | awk -F'/s
 if [ -z "$changed_module_paths" ]; then
     echo "No changed module paths found."
     exit 0
+fi
 
 update_pom_modules=()
 for current_module_path in $all_module_paths; do
