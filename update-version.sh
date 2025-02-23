@@ -40,12 +40,21 @@ done
 
 echo "Auto-increment version: $root_version"
 
-old_name=$(git config --global user.name)
-old_email=$(git config --global user.email)
-git config --global user.name "GitHub Actions Robot"
-git config --global user.email "1127664027@qq.com"
+temp_name="GitHub Actions Robot"
+temp_email="1127664027@qq.com"
+old_name=$(git config --local user.name)
+old_email=$(git config --local user.email)
+git config --local user.name "$temp_name"
+git config --local user.email "$temp_email"
+
+# 修复在Git Actions中临时用户名和邮箱不生效
+export GIT_AUTHOR_NAME="$temp_name"
+export GIT_COMMITTER_NAME="$temp_name"
+export GIT_AUTHOR_EMAIL="$temp_email"
+export GIT_COMMITTER_EMAIL="$temp_email"
+
 git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add
 git commit -m "Auto-increment version: $root_version"
 git push
-git config --global user.name "$old_name"
-git config --global user.email "$old_email"
+git config --local user.name "$old_name"
+git config --local user.email "$old_email"
