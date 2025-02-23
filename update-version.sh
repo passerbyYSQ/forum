@@ -5,6 +5,9 @@ all_module_paths=$(find . -type f -name "pom.xml" | xargs -I {} dirname {})
 
 changed_module_paths=$(git diff --name-only HEAD^ HEAD | grep 'src/' | awk -F'/src/' '{print "./"$1""}' | sort -u)
 #echo $changed_module_paths
+if [ -z "$changed_module_paths" ]; then
+    echo "No changed module paths found."
+    exit 0
 
 update_pom_modules=()
 for current_module_path in $all_module_paths; do
