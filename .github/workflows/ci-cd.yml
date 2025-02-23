@@ -32,15 +32,15 @@ jobs:
     - name: Build JAR with Maven
       run: mvn clean package -DskipTests=true -U
 
+    # 只有合并到master分支才执行pom.xml的自动升版
     - name: Update the version of pom.xml
-      # 只有合并到master分支才执行pom.xml的自动升版
       if: github.ref == 'refs/heads/master'
       run: |
         chmod +x ./update-version.sh
         ./update-version.sh
 
+    # 只有合并到master分支才解析版本号，用于上传制品
     - name: Parse version from pom.xml
-      # 只有合并到master分支才解析版本号，用于上传制品
       if: github.ref == 'refs/heads/master'
       id: parse_version
       run: |
@@ -48,8 +48,8 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
+    # 只有合并到master分支才上传制品
     - name: Upload the JAR file as artifact
-      # 只有合并到master分支才上传制品
       if: github.ref == 'refs/heads/master'
       uses: actions/upload-artifact@v4
       with:
