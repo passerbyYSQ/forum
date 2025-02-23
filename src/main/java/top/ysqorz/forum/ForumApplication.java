@@ -4,6 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import tk.mybatis.spring.annotation.MapperScan;
 
+/**
+ * 模拟文件改动
+ */
 @SpringBootApplication
 // 扫描Mapper接口
 @MapperScan("top.ysqorz.forum.dao") // 注解不要导入导错包！是tk下的，不是mybatis包下
