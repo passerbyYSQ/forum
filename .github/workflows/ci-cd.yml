@@ -36,8 +36,8 @@ jobs:
       # 只有合并到master分支才执行pom.xml的自动升版
       if: github.ref == 'refs/heads/master'
       run: |
-        chmod +x ./.github/workflows/update-version.sh
-        ./.github/workflows/update-version.sh
+        chmod +x ./update-version.sh
+        ./update-version.sh
 
     - name: Parse version from pom.xml
       # 只有合并到master分支才解析版本号，用于上传制品

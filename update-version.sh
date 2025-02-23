@@ -3,11 +3,11 @@
 all_module_paths=$(find . -type f -name "pom.xml" | xargs -I {} dirname {})
 #echo $all_module_paths
 
-changed_module_paths=$(git diff --name-only HEAD^ HEAD | grep '/src/' | awk -F'/src/' '{print "./"$1""}' | sort -u)
+changed_module_paths=$(git diff --name-only HEAD^ HEAD | grep 'src/' | awk -F'/src/' '{print "./"$1""}' | sort -u)
 #echo $changed_module_paths
 
 update_pom_modules=()
-for current_module_path in $all_module_paths; do 
+for current_module_path in $all_module_paths; do
     for changed_module_path in $changed_module_paths; do
 		if [[ "$changed_module_path" == "$current_module_path"* ]]; then
 			#echo $current_module_path"/pom.xml"
@@ -35,5 +35,5 @@ for module_path in "${update_pom_modules[@]}"; do
 done
 
 echo "Auto-increment version: $root_version"
-git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add 
+git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add
 git commit --author="GitHub Actions Robot <1127664027@qq.com>" -m "Auto-increment version: $root_version"
