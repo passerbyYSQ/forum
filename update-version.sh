@@ -41,3 +41,4 @@ done
 echo "Auto-increment version: $root_version"
 git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add
 git commit --author="GitHub Actions Robot <1127664027@qq.com>" -m "Auto-increment version: $root_version"
+git push
