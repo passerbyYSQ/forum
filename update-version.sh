@@ -39,6 +39,21 @@ for module_path in "${update_pom_modules[@]}"; do
 done
 
 echo "Auto-increment version: $root_version"
+
+old_name=$(git config --local user.name)
+old_email=$(git config --local user.email)
+git config --local user.name "GitHub Actions Robot"
+git config --local user.email "1127664027@qq.com"
 git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add
-git commit --author="GitHub Actions Robot <1127664027@qq.com>" -m "Auto-increment version: $root_version"
+git commit -m "Auto-increment version: $root_version"
 git push
+if [ -z "$old_name" ]; then
+    git config --unset --local user.name
+else
+    git config --local user.name "$old_name"
+fi
+if [ -z "$old_email" ]; then
+    git config --unset --local user.email
+else
+    git config --local user.email "$old_email"
+fi
