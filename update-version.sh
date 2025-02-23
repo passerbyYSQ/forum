@@ -27,15 +27,15 @@ root_version=""
 for module_path in "${update_pom_modules[@]}"; do
 	cd $module_path
 	artifact_id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
-    version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-    new_version=$(echo $version | awk -F'[.]' '{printf "%d.%d.%d", $1, $2, $3+1}')
-    echo "path=$module_path, artifact_id=${artifact_id}, version=$version, new_version=$new_version"
-    if [[ "$module_path" == "." ]]; then
+  version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+  new_version=$(echo $version | awk -F'[.]' '{printf "%d.%d.%d", $1, $2, $3+1}')
+  echo "path=$module_path, artifact_id=${artifact_id}, version=$version, new_version=$new_version"
+  if [[ "$module_path" == "." ]]; then
 		root_version=$new_version
 	fi
 	# -DprocessDependencies=false
-    mvn versions:set -q -DnewVersion=$new_version -DartifactId=$artifact_id -DgenerateBackupPoms=false -DupdateMatchingVersions=false
-    cd $project_path
+  mvn versions:set -q -DnewVersion=$new_version -DartifactId=$artifact_id -DgenerateBackupPoms=false -DupdateMatchingVersions=false
+  cd $project_path
 done
 
 echo "Auto-increment version: $root_version"
