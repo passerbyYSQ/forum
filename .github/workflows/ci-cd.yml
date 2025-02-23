@@ -39,6 +39,7 @@ jobs:
       if: github.ref == 'refs/heads/test/test-update-version'
       run: |
         chmod +x ./update-version.sh
+        set -x
         ./update-version.sh
 
     # 只有合并到master分支才解析版本号，用于上传制品
