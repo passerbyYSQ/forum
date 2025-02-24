@@ -28,7 +28,7 @@ for module_path in "${update_pom_modules[@]}"; do
 	cd "$module_path" || exit
 	artifact_id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
   version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-  new_version=$(echo $version | awk -F'[.]' '{printf "%d.%d.%d", $1, $2, $3+1}')
+  new_version=$(echo "$version" | awk -F'[.]' '{printf "%d.%d.%d", $1, $2, $3+1}')
   echo "path=$module_path, artifact_id=${artifact_id}, version=$version, new_version=$new_version"
   if [[ "$module_path" == "." ]]; then
 		root_version=$new_version
