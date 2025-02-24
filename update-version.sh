@@ -14,18 +14,18 @@ update_pom_modules=()
 for current_module_path in $all_module_paths; do
     for changed_module_path in $changed_module_paths; do
 		if [[ "$changed_module_path" == "$current_module_path"* ]]; then
-			#echo $current_module_path"/pom.xml"
-			update_pom_modules+=($current_module_path)
+      #echo "$current_module_path/pom.xml"
+			update_pom_modules+=("$current_module_path")
 			break
 		fi
     done
 done
 
 project_path=$(readlink -f ".")
-echo $project_path
+echo "$project_path"
 root_version=""
 for module_path in "${update_pom_modules[@]}"; do
-	cd $module_path
+	cd "$module_path" || exit
 	artifact_id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
   version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
   new_version=$(echo $version | awk -F'[.]' '{printf "%d.%d.%d", $1, $2, $3+1}')
@@ -35,19 +35,17 @@ for module_path in "${update_pom_modules[@]}"; do
 	fi
 	# -DprocessDependencies=false
   mvn versions:set -q -DnewVersion=$new_version -DartifactId=$artifact_id -DgenerateBackupPoms=false -DupdateMatchingVersions=false
-  cd $project_path
+  cd "$project_path" || exit
 done
 
 echo "Auto-increment version: $root_version"
 
-temp_name="GitHub Actions Robot"
-temp_email="1127664027@qq.com"
 old_name=$(git config --local user.name)
 old_email=$(git config --local user.email)
-git config --local user.name "$temp_name"
-git config --local user.email "$temp_email"
+git config --local user.name "GitHub Actions Robot"
+git config --local user.email "1127664027@qq.com"
 git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add
-git commit --author="$temp_name <$temp_email>"  -m "Auto-increment version: $root_version"
+git commit -m "Auto-increment version: $root_version"
 git push
 git config --local user.name "$old_name"
 git config --local user.email "$old_email"
