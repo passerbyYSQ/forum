@@ -36,14 +36,14 @@ jobs:
 
     # 只有合并到master分支才执行pom.xml的自动升版
     - name: Update the version of pom.xml
-      #if: github.ref == 'refs/heads/test/test-update-version'
+      #if: github.ref == 'refs/heads/master'
       run: |
         chmod +x ./update-version.sh
         ./update-version.sh
 
     # 只有合并到master分支才解析版本号，用于上传制品
     - name: Parse version from pom.xml
-#      if: github.ref == 'refs/heads/master'
+      #if: github.ref == 'refs/heads/master'
       id: parse_version
       run: |
         VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
