@@ -3,30 +3,20 @@ package top.ysqorz.forum.controller.front;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import lombok.Getter;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.util.ThreadContext;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import top.ysqorz.forum.common.annotation.NotWrapWithResultModel;
-import top.ysqorz.forum.controller.ai.SSEResponseCallback;
-import top.ysqorz.forum.controller.ai.SSEResponseExtractor;
-import top.ysqorz.forum.controller.ai.ZhiChatReq;
-import top.ysqorz.forum.controller.ai.ZhipuChatMessage;
 import top.ysqorz.forum.dto.resp.UploadResult;
 import top.ysqorz.forum.service.RedisService;
 import top.ysqorz.forum.upload.UploadRepository;
@@ -37,8 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -94,95 +85,84 @@ public class CommonController {
 
     @NotWrapWithResultModel
     @GetMapping(value = "/zhipu", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter testSSE(@NotBlank String content) {
-        ZhipuReqTask task = new ZhipuReqTask(restTemplate, apiKey, content);
+    public SseEmitter testSSE(@NotBlank String content, HttpServletResponse response) {
+        response.setContentType(MediaType.TEXT_EVENT_STREAM_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        // 这行代码设置了Cache-Control HTTP头部字段，值为no-cache。这意味着浏览器不应该缓存此响应。对于SSE来说，这是很重要的，因为我们希望实时更新数据，而不希望浏览器缓存旧的数据。
+        response.setHeader("Cache-Control", "no-cache");
+        // 这行代码设置了Connection HTTP头部字段，值为keep-alive。这意味着客户端和服务器之间的TCP连接在响应完成后保持打开状态，以便后续的SSE事件可以通过同一个连接发送。这对于持续的数据流非常重要，因为它减少了建立新连接的开销。
+        response.setHeader("Connection", "keep-alive");
+
+        ZhipuReqTask task = new ZhipuReqTask(content, response);
+        System.out.println("Tomcat线程: " + Thread.currentThread().getName());
         executor.submit(task);
         return task.getEmitter();
     }
 
-    public static class ZhipuReqTask implements Runnable {
+    public class ZhipuReqTask implements Runnable {
         public final String DATA_PREFIX = "data:";
         public final String DONE_FLAG = "[DONE]";
-        private final RestTemplate restTemplate;
-        private final String apiKey;
         private final String content;
         @Getter
         private final SseEmitter emitter;
+        private final HttpServletResponse response;
 
-        public ZhipuReqTask(RestTemplate restTemplate, String apiKey, String content) {
-            this.restTemplate = restTemplate;
-            this.apiKey = apiKey;
+        public ZhipuReqTask(String content, HttpServletResponse response) {
             this.content = content;
+            this.response = response;
             this.emitter = new SseEmitter(0L);  // 0表示不超时
         }
 
         @Override
         public void run() {
-            List<ZhipuChatMessage> messages = new ArrayList<>();
-            messages.add(new ZhipuChatMessage("user", content));
-            ZhiChatReq req = ZhiChatReq.builder()
-                    .model("GLM-4-Flash")
-                    .stream(true)
-                    .messages(messages)
-                    .build();
-            MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-            header.set(HttpHeaders.ACCEPT, MediaType.TEXT_EVENT_STREAM_VALUE);
-            header.set(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey);
-            header.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-            RequestCallback requestCallback = restTemplate.httpEntityCallback(new HttpEntity<>(req, header));
-            //{"id":"20250206093013a182c11a9afe42c8","created":1738805413,"model":"glm-4-flash","choices":[{"index":0,"delta":{"role":"assistant","content":"。"}}]}
-            //{"id":"20250206093013a182c11a9afe42c8","created":1738805413,"model":"glm-4-flash","choices":[{"index":0,"finish_reason":"stop","delta":{"role":"assistant","content":""}}],"usage":{"prompt_tokens":7,"completion_tokens":46,"total_tokens":53}}
-
-            SSEResponseExtractor<String> respExtractor = new SSEResponseExtractor<>(DATA_PREFIX, DONE_FLAG, new SSEResponseCallback<String>() {
-                @Override
-                public void onLineRead(String str, String data) throws IOException {
-                    emitter.send(SseEmitter.event().data(data));
-                }
-
-                @Override
-                public void onCompletedRead(String str, List<String> dataList) {
-                    emitter.complete();
-                }
-
-                @Override
-                public String convertLine(String str) {
-                    return str;
-                }
-            });
-
-            restTemplate.execute("https://open.bigmodel.cn/api/paas/v4/chat/completions",
-                    HttpMethod.POST,
-                    requestCallback,
-                    respExtractor);
+            String body = restTemplate.execute("http://localhost:8080/sse?content=" + content,
+                    HttpMethod.GET,
+                    null,
+                    new ResponseExtractor<String>() {
+                        @Override
+                        public String extractData(ClientHttpResponse response) throws IOException {
+                            StringBuilder sbd = new StringBuilder();
+                            try (Reader reader = new InputStreamReader(response.getBody(), StandardCharsets.UTF_8)) {
+                                int ch;
+                                while ((ch = reader.read()) != -1) {
+                                    sbd.append((char) ch);
+                                    System.out.print((char) ch);
+                                }
+                            }
+                            return sbd.toString();
+                        }
+                    });
+//            System.out.println("【响应内容】：" + body);
+            emitter.complete();
         }
     }
 
     @NotWrapWithResultModel
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamEvents() {
-        SseEmitter emitter = new SseEmitter(0L); // 0表示不超时
+    public SseEmitter streamEvents(HttpServletResponse response) {
+        response.setContentType(MediaType.TEXT_EVENT_STREAM_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        // 这行代码设置了Cache-Control HTTP头部字段，值为no-cache。这意味着浏览器不应该缓存此响应。对于SSE来说，这是很重要的，因为我们希望实时更新数据，而不希望浏览器缓存旧的数据。
+        response.setHeader("Cache-Control", "no-cache");
+        // 这行代码设置了Connection HTTP头部字段，值为keep-alive。这意味着客户端和服务器之间的TCP连接在响应完成后保持打开状态，以便后续的SSE事件可以通过同一个连接发送。这对于持续的数据流非常重要，因为它减少了建立新连接的开销。
+        response.setHeader("Connection", "keep-alive");
+//        response.setHeader(HttpHeaders.TRANSFER_ENCODING, "chunked");
 
-        // 获取当前 Shiro 上下文的 Subject
-        SecurityManager securityManager = SecurityUtils.getSecurityManager();
-        System.out.println("主线程：" + Thread.currentThread().getName());
+        SseEmitter emitter = new SseEmitter(0L); // 0表示不超时
 
         new Thread(() -> {
             try {
-                // 绑定 SecurityManager 到当前线程，以便 Shiro 访问
-                ThreadContext.bind(securityManager);
-                System.out.println("新创建的线程 bind：" + Thread.currentThread().getName());
-
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 5; i++) {
                     // 模拟数据生成
                     String data = "Event " + i + " at " + System.currentTimeMillis();
 
                     // 发送事件
                     emitter.send(
                             SseEmitter.event()
-                                    .id(String.valueOf(i))        // 事件ID
-                                    .name("message")              // 事件名称
+//                                    .id(String.valueOf(i))        // 事件ID
+//                                    .name("message")              // 事件名称
                                     .data(data)                   // 事件数据
-                                    .reconnectTime(5000)          // 重连时间
+//                                    .reconnectTime(5000)          // 重连时间
                     );
 
                     // 间隔1秒
@@ -194,10 +174,6 @@ public class CommonController {
             } catch (IOException | InterruptedException e) {
                 // 发生错误时终止连接
                 emitter.completeWithError(e);
-            } finally {
-                // 解绑 SecurityManager
-                ThreadContext.unbindSecurityManager();
-                System.out.println("新创建的线程 unBind：" + Thread.currentThread().getName());
             }
         }).start();
 
@@ -205,6 +181,7 @@ public class CommonController {
 //        emitter.onCompletion(() -> System.out.println("SSE connection completed"));
 //        emitter.onTimeout(() -> System.out.println("SSE connection timed out"));
 //        emitter.onError((ex) -> System.out.println("SSE error: " + ex.getMessage()));
+
 
         return emitter;
     }
