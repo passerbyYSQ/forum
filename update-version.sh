@@ -39,7 +39,7 @@ for module_path in $changed_module_paths; do
   version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
   new_version=$(echo "$version" | awk -F'[.]' '{printf "%d.%d.%d", $1, $2, $3+1}')
   echo "path=$module_path, artifact_id=${artifact_id}, version=$version, new_version=$new_version"
-  description+="${artifact_id}-$new_version; "
+  description+="${artifact_id}-$new_version;"
 	# 执行模块升版。约定主分支的版本号形如x.y.z
   mvn versions:set -q -DnewVersion="$new_version" -DartifactId="$artifact_id" -DgenerateBackupPoms=false -DupdateMatchingVersions=false -DprocessDependencies=false
   # 重新回到项目根目录
@@ -53,7 +53,7 @@ old_name=$(git config --local user.name)
 old_email=$(git config --local user.email)
 git config --local user.name "GitHub Actions Robot"
 git config --local user.email "1127664027@qq.com"
-git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add
+git add "**pom.xml"
 git commit -m "Auto-increment version: $description"
 git push
 # 还原原本的用户和邮箱信息
