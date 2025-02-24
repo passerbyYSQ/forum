@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
- * 模拟文件改动11222333444555666777888999 AABc
+ * 模拟文件改动11222333444555666777888999 AABcd
  */
 @SpringBootApplication
 // 扫描Mapper接口
