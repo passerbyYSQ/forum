@@ -52,10 +52,12 @@ echo "Auto-increment version: $description"
 # 备份旧的用户和邮箱信息，以便在CI/CD之后能够还原
 old_name=$(git config --local user.name)
 old_email=$(git config --local user.email)
-git config --local user.name "GitHub Actions Robot"
-git config --local user.email "1127664027@qq.com"
+temp_name="GitHub Actions Robot"
+temp_email="1127664027@qq.com"
+git config --local user.name "${temp_name}"
+git config --local user.email "${temp_email}"
 git add "**pom.xml"
-git commit -m "Auto-increment version: $description"
+git commit --author="$temp_name <$temp_email>" -m "Auto-increment version: $description"
 git push
 # 还原原本的用户和邮箱信息
 git config --local user.name "$old_name"
