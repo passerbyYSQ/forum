@@ -46,16 +46,33 @@ for module_path in $changed_module_paths; do
   cd "$project_path"
 done
 
-echo "Auto-increment version: xxx"
+echo "Auto-increment version: 111"
 
 # 备份旧的用户和邮箱信息，以便在CI/CD之后能够还原
 old_name=$(git config --local user.name)
+echo "old_name: ${old_name}"
 old_email=$(git config --local user.email)
+echo "old_email: ${old_email}"
+
 git config --local user.name "GitHub Actions Robot"
+echo "new_name:"
+git config --local user.name
+
 git config --local user.email "1127664027@qq.com"
+echo "new_email:"
+git config --local user.email
+
+echo "git status before: "
+git status
 git add "**pom.xml"
-git commit -m "Auto-increment version: xxx"
+echo "git status after: "
+git status
+
+git commit -m "Auto-increment version: 111"
+echo "commit success"
 git push
+echo "push success"
 # 还原原本的用户和邮箱信息
 git config --local user.name "$old_name"
 git config --local user.email "$old_email"
+echo "reset success"
