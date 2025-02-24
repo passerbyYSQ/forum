@@ -53,7 +53,7 @@ old_name=$(git config --local user.name)
 old_email=$(git config --local user.email)
 git config --local user.name "GitHub Actions Robot"
 git config --local user.email "1127664027@qq.com"
-git add "**pom.xml"
+git status --porcelain | grep 'pom.xml$' | awk '{print $2}' | xargs git add
 git commit -m "Auto-increment version: $description"
 git push
 # 还原原本的用户和邮箱信息
