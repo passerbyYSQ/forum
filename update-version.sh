@@ -10,7 +10,7 @@ set -e
 changed_module_paths=$(git diff --name-only HEAD^ HEAD | grep 'src/' | awk -F'src/' '{print "./"$1""}' | sort -u)
 #echo "changed_module_paths: $changed_module_paths"
 
-# 如果没有识别出改动的模块，则正常退出，防止CI/CD失败
+# 如果没有识别出改动的模块，则正常退出
 if [ -z "$changed_module_paths" ]; then
     echo "No changed module paths found."
     exit 0
@@ -46,9 +46,9 @@ for module_path in $changed_module_paths; do
   cd "$project_path"
 done
 
-echo "Auto-increment version: 111"
+echo "Auto-increment version: 222"
 
-# 备份旧的用户和邮箱信息，以便在CI/CD之后能够还原
+# 备份旧的用户和邮箱信息，以便在之后能够还原
 old_name=$(git config --local user.name)
 echo "old_name: ${old_name}"
 old_email=$(git config --local user.email)
@@ -68,7 +68,7 @@ git add "**pom.xml"
 echo "git status after: "
 git status
 
-git commit -m "Auto-increment version: 111"
+git commit -m "Auto-increment version: 222"
 echo "commit success"
 git push
 echo "push success"
