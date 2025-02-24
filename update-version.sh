@@ -55,7 +55,7 @@ git config --local user.name "GitHub Actions Robot"
 git config --local user.email "1127664027@qq.com"
 git add "**pom.xml"
 git commit -m "Auto-increment version: $description"
-#git push
+git push
 # 还原原本的用户和邮箱信息
 git config --local user.name "$old_name"
 git config --local user.email "$old_email"
